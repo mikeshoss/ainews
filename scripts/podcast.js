@@ -16,7 +16,7 @@ const { execFileSync, spawnSync } = require('child_process');
 const { loadEditions } = require('./build.js');
 const { longDate, PODCAST } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
-const { coverSvg } = require('./cover.js');
+const { coverSvg, wideCoverSvg } = require('./cover.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const AUDIO_DIR = path.join(ROOT, 'audio');
@@ -129,6 +129,16 @@ function makeCover(ed) {
   const png = path.join(AUDIO_DIR, `${ed.date}.png`);
   fs.writeFileSync(svg, coverSvg(ed));
   const r = spawnSync(path.join(__dirname, 'rasterize.sh'), [svg, png, '3000'], { encoding: 'utf8' });
+  makeWideCover(ed);
+  return r.status === 0 && fs.existsSync(png) ? png : null;
+}
+
+// 1200×630 share image for the edition page (social cards want 1.91:1, not the square podcast art).
+function makeWideCover(ed) {
+  const svg = path.join(AUDIO_DIR, `${ed.date}-og.svg`);
+  const png = path.join(AUDIO_DIR, `${ed.date}-og.png`);
+  fs.writeFileSync(svg, wideCoverSvg(ed));
+  const r = spawnSync(path.join(__dirname, 'rasterize.sh'), [svg, png, '1200', '630'], { encoding: 'utf8' });
   return r.status === 0 && fs.existsSync(png) ? png : null;
 }
 
@@ -190,7 +200,12 @@ async function synthesize(ed, seg, label) {
 
   // Make sure every published cover is present locally so build.js can serve it from the site (same-origin og:image).
   if (!DRY) for (const [date, ep] of Object.entries(index.episodes)) {
-    if (ep.image && !fs.existsSync(path.join(AUDIO_DIR, `${date}.png`))) spawnSync('gh', ['release', 'download', RELEASE_TAG, '-R', REPO, '-p', `${date}.png`, '-D', AUDIO_DIR, '--clobber'], { stdio: 'ignore' });
+    for (const f of [`${date}.png`, `${date}-og.png`]) if (!fs.existsSync(path.join(AUDIO_DIR, f))) spawnSync('gh', ['release', 'download', RELEASE_TAG, '-R', REPO, '-p', f, '-D', AUDIO_DIR, '--clobber'], { stdio: 'ignore' });
+    if (ep.image && !ep.og && !DRY) {
+      const ed = editions.find((e) => e.date === date);
+      const png = ed && makeWideCover(ed);
+      if (png) { try { sh('gh', ['release', 'upload', RELEASE_TAG, png, '-R', REPO, '--clobber']); ep.og = `${DOWNLOAD_BASE}/${date}-og.png`; saveIndex(index); console.log(`${date}: share image backfilled`); } catch (e) { console.log(`${date}: share image failed: ${e.message}`); } }
+    }
   }
 
   // Backfill covers for episodes that already have audio but no image (cheap: no TTS).
@@ -222,8 +237,9 @@ async function synthesize(ed, seg, label) {
       const label = FORCE === ed.date ? LABEL : 'v1';
       if (versions.some((v) => v.label === label)) throw new Error(`version "${label}" already exists for ${ed.date}; pick another label`);
       const a = await synthesize(ed, seg, label);
-      sh('gh', ['release', 'upload', RELEASE_TAG, a.file, ...(a.png ? [a.png] : []), '-R', REPO, '--clobber']);
-      const entry = { url: `${DOWNLOAD_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}) };
+      const wide = path.join(AUDIO_DIR, `${ed.date}-og.png`);
+      sh('gh', ['release', 'upload', RELEASE_TAG, a.file, ...(a.png ? [a.png] : []), ...(fs.existsSync(wide) ? [wide] : []), '-R', REPO, '--clobber']);
+      const entry = { url: `${DOWNLOAD_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${DOWNLOAD_BASE}/${ed.date}-og.png` } : {}) };
       versions.push({ label, ...entry });
       index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the release and on /podcast/
       saveIndex(index); // after each episode so a later failure keeps earlier work

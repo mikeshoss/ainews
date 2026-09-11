@@ -99,8 +99,10 @@ function buildTopicIndex(editions) {
 const ORG = { '@type': 'Organization', name: PODCAST.presenter, url: PODCAST.presenterUrl };
 const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>` : '';
 
-function layout({ title, description, base, body, canonical, og = {}, ld }) {
+function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
   const desc = description || SITE_TAGLINE;
+  // Current-section treatment: nav = 'editions' | 'trends' | 'podcast'
+  const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
   const image = og.image || `${SITE_URL}/og.png`;
   return `<!doctype html>
 <html lang="en">
@@ -136,11 +138,10 @@ ${jsonld(ld)}
   <div class="wrap">
     <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
     <nav>
-      <a href="${base}">Editions</a>
-      <a href="${base}trends/">Trends</a>
-      <a href="${base}podcast/">Podcast</a>
+      <a href="${base}"${cur('editions')}>Editions</a>
+      <a href="${base}trends/"${cur('trends')}>Trends</a>
+      <a href="${base}podcast/"${cur('podcast')}>Podcast</a>
       <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
-      <a href="${base}feed.xml">RSS</a>
     </nav>
   </div>
 </header>
@@ -218,7 +219,7 @@ function renderEditionPage(ed, editions, idx) {
     '@context': 'https://schema.org', '@type': 'NewsArticle', headline: `${longDate(ed.date)} — ${PODCAST.title}`, description: paragraphs(ed.summary)[0],
     datePublished: ed.generated_at || `${ed.date}T11:00:00Z`, dateModified: ed.generated_at || `${ed.date}T11:00:00Z`,
     author: ORG, publisher: { ...ORG, logo: { '@type': 'ImageObject', url: `${SITE_URL}/cover.png` } },
-    image: [ed.coverUrl || `${SITE_URL}/og.png`], mainEntityOfPage: url, isAccessibleForFree: true,
+    image: [ed.ogUrl || `${SITE_URL}/og.png`, ...(ed.coverUrl ? [ed.coverUrl] : [])], mainEntityOfPage: url, isAccessibleForFree: true,
   }];
   if (ed.audio) ld.push({
     '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: `${longDate(ed.date)}`, url, datePublished: ed.audio.generated_at,
@@ -226,8 +227,8 @@ function renderEditionPage(ed, editions, idx) {
     associatedMedia: { '@type': 'MediaObject', contentUrl: ed.audio.url, encodingFormat: 'audio/mpeg' },
     partOfSeries: { '@type': 'PodcastSeries', name: PODCAST.title, url: `${SITE_URL}/podcast/` }, image: ed.coverUrl,
   });
-  return layout({ title: `${longDate(ed.date)} — ${SITE_NAME}`, description: paragraphs(ed.summary)[0], base, body, canonical: url,
-    og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.coverUrl, imageAlt: `${PODCAST.title} cover for ${longDate(ed.date)}` }, ld });
+  return layout({ title: `${longDate(ed.date)} — ${SITE_NAME}`, description: paragraphs(ed.summary)[0], base, body, canonical: url, nav: 'editions',
+    og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.ogUrl, imageAlt: `${PODCAST.title} — ${longDate(ed.date)}` }, ld });
 }
 
 function renderHome(editions, trending) {
@@ -253,7 +254,7 @@ function renderHome(editions, trending) {
 <section class="editions">
 ${list || '<p class="muted">No editions yet.</p>'}
 </section>`;
-  return layout({ title: SITE_NAME, base, body, canonical: `${SITE_URL}/`, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
+  return layout({ title: `${SITE_NAME} — ${SITE_TAGLINE.split(' — ')[0].replace(/\.$/, '')}`, base, body, canonical: `${SITE_URL}/`, nav: 'editions', og: { title: `${SITE_NAME} — daily, fact-first frontier AI news` }, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
 }
 
 function topTopicsFor(ed) {
@@ -282,7 +283,7 @@ function renderTrendsIndex(topics, trending, editions) {
 <thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Last seen</th><th>First seen</th></tr></thead>
 <tbody>${rows}</tbody>
 </table></div>`;
-  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/`, ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Trends — ${SITE_NAME}`, url: `${SITE_URL}/trends/`, publisher: ORG } });
+  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Trends — ${SITE_NAME}`, url: `${SITE_URL}/trends/`, publisher: ORG } });
 }
 
 function renderTopicPage(t) {
@@ -297,7 +298,7 @@ function renderTopicPage(t) {
 <h1>${esc(t.label)}</h1>
 <p class="lede">${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.</p>
 ${groups}`;
-  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
+  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
 }
 
 function renderEmail(ed) {
@@ -363,6 +364,7 @@ a{color:var(--accent)}
 .site-header nav{display:flex;gap:18px;flex-wrap:wrap}
 .site-header nav a{color:var(--muted);text-decoration:none;font-size:.92rem}
 .site-header nav a:hover{color:var(--accent)}
+.site-header nav a.current{color:var(--fg);font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px}
 main{padding-block:32px 48px}
 h1{font-size:2rem;line-height:1.15;letter-spacing:-.02em;margin:.2em 0 .5em}
 h2{font-size:1.25rem;margin:0 0 .6em}
@@ -510,7 +512,7 @@ function renderScriptPage(ed, sc, ep) {
 <h1>Episode script — ${esc(shortDate(ed.date))}</h1>
 ${renderPlayer(ep, base, ed, false)}
 ${body}`;
-  return layout({ title: `Script — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/script/` });
+  return layout({ title: `Script — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/script/`, nav: 'podcast' });
 }
 
 function renderPodcastPage(editions, audio) {
@@ -539,8 +541,8 @@ function renderPodcastPage(editions, audio) {
   <div class="spectrum-legend">${legend}</div>
 </div>
 ${eps || '<p class="muted">No episodes yet.</p>'}`;
-  return layout({ title: `${PODCAST.title} — Podcast — ${SITE_NAME}`, description: `${PODCAST.title}, presented by ${PODCAST.presenter}: every edition of ${SITE_NAME} as a daily episode.`, base, body, canonical: `${SITE_URL}/podcast/`,
-    og: { title: `${PODCAST.title} — daily podcast`, image: `${SITE_URL}/cover.png`, imageAlt: `${PODCAST.title} cover` },
+  return layout({ title: `${PODCAST.title} — Podcast — ${SITE_NAME}`, description: `${PODCAST.title}, presented by ${PODCAST.presenter}: every edition of ${SITE_NAME} as a daily episode.`, base, body, canonical: `${SITE_URL}/podcast/`, nav: 'podcast',
+    og: { title: `${PODCAST.title} — daily podcast`, imageAlt: `${PODCAST.title}, presented by ${PODCAST.presenter}` },
     ld: { '@context': 'https://schema.org', '@type': 'PodcastSeries', name: PODCAST.title, url: `${SITE_URL}/podcast/`, webFeed: feed, image: `${SITE_URL}/cover.png`, description: `${PODCAST.tagline}. Presented by ${PODCAST.presenter}.`, author: ORG, sameAs: Object.values(PODCAST.listen || {}).map((v) => v.url) } });
 }
 
@@ -690,7 +692,7 @@ function renderTracePage(ed, trace) {
 ${stats}
 <p class="muted">Raw files: <a href="events.jsonl">events.jsonl</a>${trace.hasTranscript ? ` · <a href="transcript.jsonl">transcript.jsonl</a> (complete session, untruncated)` : ''}. Times are UTC. Responses longer than ${TRACE_MAX_SHOWN.toLocaleString()} characters are cut on this page but complete in the raw files.</p>
 <div class="trace">${body}</div>`;
-  return layout({ title: `Trace — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/trace/` });
+  return layout({ title: `Trace — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/trace/`, nav: 'editions' });
 }
 
 // ---------- main ----------
@@ -719,9 +721,12 @@ function main() {
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
     ed.hasTrace = !!trace;
-    const localCover = path.join(ROOT, 'audio', `${ed.date}.png`);
-    if (fs.existsSync(localCover)) { fs.mkdirSync(path.join(OUT_DIR, ed.date), { recursive: true }); fs.copyFileSync(localCover, path.join(OUT_DIR, ed.date, 'cover.png')); ed.coverUrl = `${SITE_URL}/${ed.date}/cover.png`; }
+    const localCover = path.join(ROOT, 'audio', `${ed.date}.png`), localWide = path.join(ROOT, 'audio', `${ed.date}-og.png`);
+    fs.mkdirSync(path.join(OUT_DIR, ed.date), { recursive: true });
+    if (fs.existsSync(localCover)) { fs.copyFileSync(localCover, path.join(OUT_DIR, ed.date, 'cover.png')); ed.coverUrl = `${SITE_URL}/${ed.date}/cover.png`; }
     else if (ed.audio && ed.audio.image) ed.coverUrl = ed.audio.image;
+    if (fs.existsSync(localWide)) { fs.copyFileSync(localWide, path.join(OUT_DIR, ed.date, 'og.png')); ed.ogUrl = `${SITE_URL}/${ed.date}/og.png`; }
+    else if (ed.audio && ed.audio.og) ed.ogUrl = ed.audio.og;
     write(`${ed.date}/index.html`, renderEditionPage(ed, editions, i));
     const sc = loadScript(ed.date);
     if (ed.audio || sc) write(`${ed.date}/script/index.html`, renderScriptPage(ed, sc, ed.audio));

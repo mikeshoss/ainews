@@ -6,6 +6,7 @@
 // Usage: node scripts/cover.js data/DATE.json out.svg      (episode cover)
 //        node scripts/cover.js --show [--variant prism|edge|line|aurora] out.svg   (show-level cover)
 //        node scripts/cover.js --favicon out.svg | --og out.svg                    (site icon, social share image)
+//        node scripts/cover.js --wide data/DATE.json out.svg                       (1200×630 share image for an edition)
 // Rasterise with scripts/rasterize.sh (librsvg).
 
 const fs = require('fs');
@@ -91,6 +92,36 @@ ${spectrumBar(weights, 2610, 64)}
 `;
 }
 
+
+// Wide daily cover for social share cards (1200×630): same colour field and spectrum bar, date large on the left.
+function wideCoverSvg(ed) {
+  const W = 1200, H = 630, m = 70;
+  const weights = sectionWeights(ed);
+  const field = colourField(weights, ed.date + ':wide');
+  const monday = ed.edition === 'monday';
+  const total = weights.reduce((a, w) => a + w.count, 0);
+  const weekday = longDate(ed.date).split(',')[0], rest = longDate(ed.date).split(', ')[1];
+  const legend = weights.slice(0, 4).map((w) => `${w.short} ${Math.round(w.share * 100)}%`).join('  ·  ');
+  // Blobs were placed for a 3000×3000 canvas; scale them onto the wide one.
+  const blobs = field.blobs.replace(/cx="(\d+)" cy="(\d+)" r="(\d+)"/g, (_, cx, cy, r) => `cx="${Math.round(cx * W / SIZE)}" cy="${Math.round(cy * H / SIZE)}" r="${Math.round(r * 0.36)}"`);
+  const gap = 6, barW = W - 2 * m - gap * (weights.length - 1); let x = m;
+  const bar = weights.map((w) => { const sw = Math.max(8, Math.round(barW * w.share)); const r = `<rect x="${x}" y="${H - 92}" width="${sw}" height="18" rx="9" fill="${w.hex}"/>`; x += sw + gap; return r; }).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+<defs>${field.defs}<filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="60"/></filter>
+<linearGradient id="shade" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0.72"/><stop offset="0.6" stop-color="#000" stop-opacity="0.35"/><stop offset="1" stop-color="#000" stop-opacity="0.2"/></linearGradient></defs>
+<rect width="${W}" height="${H}" fill="#0f0f10"/>
+<g filter="url(#blur)">${blobs}</g>
+<rect width="${W}" height="${H}" fill="url(#shade)"/>
+<text x="${m}" y="118" font-family="${FONT}" font-size="64" font-weight="800" fill="#ffffff" letter-spacing="3">${esc(PODCAST.title.toUpperCase())}</text>
+<text x="${m}" y="156" font-family="${FONT}" font-size="26" font-weight="500" fill="#ffffff" fill-opacity="0.72">presented by ${esc(PODCAST.presenter)}</text>
+<text x="${m}" y="340" font-family="${FONT}" font-size="46" font-weight="500" fill="#ffffff" fill-opacity="0.82">${esc(weekday)}</text>
+<text x="${m}" y="418" font-family="${FONT}" font-size="76" font-weight="700" fill="#ffffff" letter-spacing="-1">${esc(rest)}</text>
+<text x="${m}" y="462" font-family="${FONT}" font-size="26" font-weight="500" fill="#ffffff" fill-opacity="0.62">${esc(monday ? 'Monday edition · with the week in review' : 'Daily edition')}${total ? esc(` · ${total} items`) : ''}</text>
+${bar}
+<text x="${m}" y="${H - 42}" font-family="${FONT}" font-size="20" font-weight="500" fill="#ffffff" fill-opacity="0.7">${esc(legend)}</text>
+</svg>
+`;
+}
 
 // ---------- show-level cover variants ----------
 const ALL = Object.entries(SECTION_COLORS).map(([name, c]) => ({ name, ...c }));
@@ -186,7 +217,7 @@ function showCoverSvg(variant = DEFAULT_SHOW_VARIANT) {
   return fn();
 }
 
-module.exports = { coverSvg, showCoverSvg, faviconSvg, ogSvg, SHOW_VARIANTS };
+module.exports = { coverSvg, wideCoverSvg, showCoverSvg, faviconSvg, ogSvg, SHOW_VARIANTS };
 
 if (require.main === module) {
   const a = process.argv.slice(2);
@@ -194,7 +225,11 @@ if (require.main === module) {
   const out = a[a.length - 1];
   if (a.includes('--favicon')) fs.writeFileSync(out, faviconSvg());
   else if (a.includes('--og')) fs.writeFileSync(out, ogSvg());
-  else if (show) {
+  else if (a.includes('--wide')) {
+    const ed = JSON.parse(fs.readFileSync(path.resolve(a[a.indexOf('--wide') + 1]), 'utf8'));
+    ed.sections = (ed.sections || []).filter((x) => x.items && x.items.length);
+    fs.writeFileSync(out, wideCoverSvg(ed));
+  } else if (show) {
     const vi = a.indexOf('--variant');
     fs.writeFileSync(out, showCoverSvg(vi >= 0 ? a[vi + 1] : undefined));
   } else {
