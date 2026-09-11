@@ -488,7 +488,8 @@ function renderPodcastPage(editions, audio) {
 <h1>${esc(PODCAST.title)}</h1>
 <p class="lede">Presented by ${esc(PODCAST.presenter)}. Every edition as an episode, ready when the morning edition is. Subscribe once and each day's episode downloads to your phone.</p></div></div>
 <div class="card">
-  <p><b>Feed URL</b> — paste into your podcast app:</p>
+  ${Object.keys(PODCAST.listen || {}).length ? `<p><b>Listen on</b> ${Object.entries(PODCAST.listen).map(([n, u]) => `<a href="${esc(u)}" rel="noopener">${esc(n)}</a>`).join(' · ')}</p>` : ''}
+  <p><b>Feed URL</b> — paste into any other podcast app:</p>
   <p><code class="feed">${esc(feed)}</code></p>
   <p class="muted">Apple Podcasts: Library → ⋯ → <i>Follow a Show by URL</i>. Overcast: + → <i>Add URL</i>. Pocket Casts: search bar → paste the URL. Episodes are voiced by AI from the written edition; the two-host format is used only when the script passes every factual lock, otherwise the day is narrated straight from the edition text. Each episode page has the script with every claim linked to its source.</p>
 </div>
