@@ -188,6 +188,11 @@ async function synthesize(ed, seg, label) {
 
   const cutoff = new Date(Date.parse(latest.date + 'T12:00:00Z') - LOOKBACK_DAYS * 86400000);
 
+  // Make sure every published cover is present locally so build.js can serve it from the site (same-origin og:image).
+  if (!DRY) for (const [date, ep] of Object.entries(index.episodes)) {
+    if (ep.image && !fs.existsSync(path.join(AUDIO_DIR, `${date}.png`))) spawnSync('gh', ['release', 'download', RELEASE_TAG, '-R', REPO, '-p', `${date}.png`, '-D', AUDIO_DIR, '--clobber'], { stdio: 'ignore' });
+  }
+
   // Backfill covers for episodes that already have audio but no image (cheap: no TTS).
   for (const ed of editions) {
     const ep = index.episodes[ed.date];

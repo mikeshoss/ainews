@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, sectionWeights } = require('./lib.js');
+const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -96,18 +96,40 @@ function buildTopicIndex(editions) {
 }
 
 // ---------- rendering ----------
-function layout({ title, description, base, body, canonical }) {
+const ORG = { '@type': 'Organization', name: PODCAST.presenter, url: PODCAST.presenterUrl };
+const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>` : '';
+
+function layout({ title, description, base, body, canonical, og = {}, ld }) {
+  const desc = description || SITE_TAGLINE;
+  const image = og.image || `${SITE_URL}/og.png`;
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
-<meta name="description" content="${esc(description || SITE_TAGLINE)}">
+<meta name="description" content="${esc(desc)}">
+<meta name="theme-color" content="#121212">
 ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
+<meta property="og:site_name" content="${esc(SITE_NAME)}">
+<meta property="og:type" content="${esc(og.type || 'website')}">
+<meta property="og:title" content="${esc(og.title || title)}">
+<meta property="og:description" content="${esc(desc)}">
+${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
+<meta property="og:image" content="${esc(image)}">
+<meta property="og:image:alt" content="${esc(og.imageAlt || `${PODCAST.title} — ${SITE_TAGLINE}`)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${esc(og.title || title)}">
+<meta name="twitter:description" content="${esc(desc)}">
+<meta name="twitter:image" content="${esc(image)}">
+<link rel="icon" type="image/svg+xml" href="${base}favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="${base}favicon-32.png">
+<link rel="apple-touch-icon" href="${base}apple-touch-icon.png">
+<link rel="manifest" href="${base}site.webmanifest">
 <link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
-<link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)} — Podcast" href="${base}podcast.xml">
+<link rel="alternate" type="application/rss+xml" title="${esc(PODCAST.title)} — Podcast" href="${base}podcast.xml">
 <link rel="stylesheet" href="${base}style.css">
+${jsonld(ld)}
 </head>
 <body>
 <header class="site-header">
@@ -126,7 +148,8 @@ ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
 ${body}
 </main>
 <footer class="site-footer"><div class="wrap">
-  <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source. <a href="${REPO_URL}">Data &amp; code on GitHub</a>.</p>
+  <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source.</p>
+  <p>Presented by <a href="${esc(PODCAST.presenterUrl)}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(CREDITS.url)}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
 </div></footer>
 </body>
 </html>
@@ -190,7 +213,21 @@ function renderEditionPage(ed, editions, idx) {
     ${newer ? `<a href="${base}${newer.date}/">${esc(shortDate(newer.date))} →</a>` : '<span></span>'}
   </nav>
 </article>`;
-  return layout({ title: `${longDate(ed.date)} — ${SITE_NAME}`, description: paragraphs(ed.summary)[0], base, body, canonical: `${SITE_URL}/${ed.date}/` });
+  const url = `${SITE_URL}/${ed.date}/`;
+  const ld = [{
+    '@context': 'https://schema.org', '@type': 'NewsArticle', headline: `${longDate(ed.date)} — ${PODCAST.title}`, description: paragraphs(ed.summary)[0],
+    datePublished: ed.generated_at || `${ed.date}T11:00:00Z`, dateModified: ed.generated_at || `${ed.date}T11:00:00Z`,
+    author: ORG, publisher: { ...ORG, logo: { '@type': 'ImageObject', url: `${SITE_URL}/cover.png` } },
+    image: [ed.coverUrl || `${SITE_URL}/og.png`], mainEntityOfPage: url, isAccessibleForFree: true,
+  }];
+  if (ed.audio) ld.push({
+    '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: `${longDate(ed.date)}`, url, datePublished: ed.audio.generated_at,
+    duration: `PT${Math.floor(ed.audio.seconds / 60)}M${ed.audio.seconds % 60}S`, description: paragraphs(ed.summary)[0],
+    associatedMedia: { '@type': 'MediaObject', contentUrl: ed.audio.url, encodingFormat: 'audio/mpeg' },
+    partOfSeries: { '@type': 'PodcastSeries', name: PODCAST.title, url: `${SITE_URL}/podcast/` }, image: ed.coverUrl,
+  });
+  return layout({ title: `${longDate(ed.date)} — ${SITE_NAME}`, description: paragraphs(ed.summary)[0], base, body, canonical: url,
+    og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.coverUrl, imageAlt: `${PODCAST.title} cover for ${longDate(ed.date)}` }, ld });
 }
 
 function renderHome(editions, trending) {
@@ -216,7 +253,7 @@ function renderHome(editions, trending) {
 <section class="editions">
 ${list || '<p class="muted">No editions yet.</p>'}
 </section>`;
-  return layout({ title: SITE_NAME, base, body, canonical: `${SITE_URL}/` });
+  return layout({ title: SITE_NAME, base, body, canonical: `${SITE_URL}/`, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
 }
 
 function topTopicsFor(ed) {
@@ -245,7 +282,7 @@ function renderTrendsIndex(topics, trending, editions) {
 <thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Last seen</th><th>First seen</th></tr></thead>
 <tbody>${rows}</tbody>
 </table></div>`;
-  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/` });
+  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/`, ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Trends — ${SITE_NAME}`, url: `${SITE_URL}/trends/`, publisher: ORG } });
 }
 
 function renderTopicPage(t) {
@@ -260,7 +297,7 @@ function renderTopicPage(t) {
 <h1>${esc(t.label)}</h1>
 <p class="lede">${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.</p>
 ${groups}`;
-  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/` });
+  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
 }
 
 function renderEmail(ed) {
@@ -402,6 +439,8 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .spectrum-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);margin-bottom:8px}.spectrum-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:1px}
 .versions{margin-top:10px}.versions summary{cursor:pointer;font-size:.85rem;color:var(--muted)}.version{padding:10px 0;border-top:1px solid var(--line)}.version audio{width:100%;max-width:560px;display:block;margin-top:4px}
+.listen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}.listen-label{font-size:.85rem;color:var(--muted);margin-right:4px}
+.badge-listen{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--card);border-radius:20px;padding:4px 12px 4px 6px;font-size:.88rem}.badge-listen:hover{border-color:var(--accent)}
 .podcast-hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}
 .player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
@@ -414,6 +453,11 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 
 
 // ---------- podcast ----------
+const PLATFORM_ICONS = {
+  // Spotify mark: green disc with three arcs.
+  Spotify: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.2 9.3c3.9-1.2 8.3-.8 11.7 1.1" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round"/><path d="M6.8 12.5c3.2-1 6.9-.6 9.8.9" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round"/><path d="M7.3 15.5c2.6-.8 5.5-.5 7.9.7" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  RSS: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#f26522"/><circle cx="7" cy="17" r="2" fill="#fff"/><path d="M5 10a9 9 0 0 1 9 9M5 5a14 14 0 0 1 14 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+};
 const AUDIO_INDEX = path.join(ROOT, 'audio', 'index.json');
 let AUDIO_VERSIONS = {};
 function loadAudio() {
@@ -484,21 +528,20 @@ function renderPodcastPage(editions, audio) {
 </article>`;
   }).join('\n');
   const legend = Object.entries(SECTION_COLORS).map(([name, c]) => `<span><i style="background:${c.hex}"></i>${esc(name)} <span class="muted">${esc(c.name)}</span></span>`).join('');
+  const badges = [...Object.entries(PODCAST.listen || {}).map(([k, v]) => `<a class="badge-listen" href="${esc(v.url)}" rel="noopener">${PLATFORM_ICONS[k] || ''}<span>${esc(v.label || k)}</span></a>`),
+    `<a class="badge-listen" href="${base}podcast.xml" title="Podcast RSS feed">${PLATFORM_ICONS.RSS}<span>RSS</span></a>`].join('');
   const body = `<div class="podcast-hero"><img src="${base}cover.png" alt="${esc(PODCAST.title)} cover" width="180" height="180"><div>
 <h1>${esc(PODCAST.title)}</h1>
-<p class="lede">Presented by ${esc(PODCAST.presenter)}. Every edition as an episode, ready when the morning edition is. Subscribe once and each day's episode downloads to your phone.</p></div></div>
-<div class="card">
-  ${Object.keys(PODCAST.listen || {}).length ? `<p><b>Listen on</b> ${Object.entries(PODCAST.listen).map(([n, u]) => `<a href="${esc(u)}" rel="noopener">${esc(n)}</a>`).join(' · ')}</p>` : ''}
-  <p><b>Feed URL</b> — paste into any other podcast app:</p>
-  <p><code class="feed">${esc(feed)}</code></p>
-  <p class="muted">Apple Podcasts: Library → ⋯ → <i>Follow a Show by URL</i>. Overcast: + → <i>Add URL</i>. Pocket Casts: search bar → paste the URL. Episodes are voiced by AI from the written edition; the two-host format is used only when the script passes every factual lock, otherwise the day is narrated straight from the edition text. Each episode page has the script with every claim linked to its source.</p>
-</div>
+<p class="lede">Presented by ${esc(PODCAST.presenter)}. Every edition as an episode, ready when the morning edition is.</p>
+<div class="listen"><span class="listen-label">You can also listen here</span>${badges}</div></div></div>
 <div class="card">
   <p><b>Episode covers are coloured by the news.</b> Each section has a fixed colour; a day's cover mixes them in proportion to how many items fell in each section, with the exact shares shown as a bar along the bottom.</p>
   <div class="spectrum-legend">${legend}</div>
 </div>
 ${eps || '<p class="muted">No episodes yet.</p>'}`;
-  return layout({ title: `${PODCAST.title} — Podcast — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/podcast/` });
+  return layout({ title: `${PODCAST.title} — Podcast — ${SITE_NAME}`, description: `${PODCAST.title}, presented by ${PODCAST.presenter}: every edition of ${SITE_NAME} as a daily episode.`, base, body, canonical: `${SITE_URL}/podcast/`,
+    og: { title: `${PODCAST.title} — daily podcast`, image: `${SITE_URL}/cover.png`, imageAlt: `${PODCAST.title} cover` },
+    ld: { '@context': 'https://schema.org', '@type': 'PodcastSeries', name: PODCAST.title, url: `${SITE_URL}/podcast/`, webFeed: feed, image: `${SITE_URL}/cover.png`, description: `${PODCAST.tagline}. Presented by ${PODCAST.presenter}.`, author: ORG, sameAs: Object.values(PODCAST.listen || {}).map((v) => v.url) } });
 }
 
 function renderPodcastFeed(editions, audio) {
@@ -676,6 +719,9 @@ function main() {
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
     ed.hasTrace = !!trace;
+    const localCover = path.join(ROOT, 'audio', `${ed.date}.png`);
+    if (fs.existsSync(localCover)) { fs.mkdirSync(path.join(OUT_DIR, ed.date), { recursive: true }); fs.copyFileSync(localCover, path.join(OUT_DIR, ed.date, 'cover.png')); ed.coverUrl = `${SITE_URL}/${ed.date}/cover.png`; }
+    else if (ed.audio && ed.audio.image) ed.coverUrl = ed.audio.image;
     write(`${ed.date}/index.html`, renderEditionPage(ed, editions, i));
     const sc = loadScript(ed.date);
     if (ed.audio || sc) write(`${ed.date}/script/index.html`, renderScriptPage(ed, sc, ed.audio));
@@ -689,6 +735,13 @@ function main() {
     write(`email/${ed.date}.txt`, em.text);
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
   });
+  const urls = [`${SITE_URL}/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`,
+    ...editions.flatMap((ed) => [`${SITE_URL}/${ed.date}/`, ...(ed.audio || loadScript(ed.date) ? [`${SITE_URL}/${ed.date}/script/`] : []), ...(ed.hasTrace ? [`${SITE_URL}/${ed.date}/trace/`] : [])]),
+    ...[...topics.keys()].map((t) => `${SITE_URL}/trends/${t}/`)];
+  const lastmod = editions[0] ? editions[0].date : new Date().toISOString().slice(0, 10);
+  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc><lastmod>${/\/(\d{4}-\d{2}-\d{2})\//.exec(u) ? RegExp.$1 : lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+  write('robots.txt', `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  write('site.webmanifest', JSON.stringify({ name: SITE_NAME, short_name: PODCAST.title, start_url: './', display: 'standalone', background_color: '#121212', theme_color: '#121212', icons: [{ src: 'favicon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
   write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, lastSeen: t.lastSeen })), null, 2));
   console.log(`Built ${editions.length} edition(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
 }

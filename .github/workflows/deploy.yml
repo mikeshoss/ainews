@@ -47,8 +47,14 @@ jobs:
         run: node scripts/podcast.js
       - name: Build site
         run: node scripts/build.js
-      - name: Show cover
-        run: node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
+      - name: Site assets (cover, favicon, share image)
+        run: |
+          node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
+          node scripts/cover.js --favicon site/favicon.svg
+          scripts/rasterize.sh site/favicon.svg site/favicon-32.png 32
+          scripts/rasterize.sh site/favicon.svg site/favicon-192.png 192
+          scripts/rasterize.sh site/favicon.svg site/apple-touch-icon.png 180
+          node scripts/cover.js --og site/og.svg && scripts/rasterize.sh site/og.svg site/og.png 1200 630
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

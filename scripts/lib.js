@@ -32,7 +32,10 @@ const SECTION_COLORS = {
   'Compute, chips & infrastructure':        { hex: '#06B6D4', name: 'cyan',          short: 'Compute' },
   'Deployment & impact':                    { hex: '#EC4899', name: 'magenta',       short: 'Deployment' },
 };
-const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue (Mike Shoss)', email: 'mike@epiloguelabs.com', tagline: 'Daily, fact-first frontier AI news', listen: { Spotify: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU' } };
+const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue (Mike Shoss)', email: 'mike@epiloguelabs.com', tagline: 'Daily, fact-first frontier AI news', presenterUrl: 'https://epiloguelabs.com/',
+  // Where the show can be followed. Add a platform here (and an icon in build.js PLATFORM_ICONS if it's new) as directories approve it.
+  listen: { Spotify: { url: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU', label: 'Spotify' } } };
+const CREDITS = { name: 'Mike Shoss', url: 'https://www.linkedin.com/in/mikeshoss' };
 
 // Share of the day's items per section (daily sections only; the Monday week-in-review is not counted).
 function sectionWeights(ed) {
@@ -41,4 +44,4 @@ function sectionWeights(ed) {
   return counts.map(([name, n]) => ({ name, count: n, share: n / total, ...(SECTION_COLORS[name] || { hex: '#9a9a9a', name: 'grey', short: name }) })).sort((a, b) => b.share - a.share);
 }
 
-module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, sectionWeights };
+module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights };

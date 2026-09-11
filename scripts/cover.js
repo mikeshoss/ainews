@@ -5,6 +5,7 @@
 // reproducible from the JSON. Text on top: show title, presenter, the date, and a proportional "spectrum bar".
 // Usage: node scripts/cover.js data/DATE.json out.svg      (episode cover)
 //        node scripts/cover.js --show [--variant prism|edge|line|aurora] out.svg   (show-level cover)
+//        node scripts/cover.js --favicon out.svg | --og out.svg                    (site icon, social share image)
 // Rasterise with scripts/rasterize.sh (librsvg).
 
 const fs = require('fs');
@@ -153,6 +154,31 @@ ${sub(M, 2780, 84, PODCAST.tagline, 'start', 0.55)}
   },
 };
 
+// Favicon: dark rounded square with the spectrum rule — reads at 16px.
+function faviconSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs><linearGradient id="r" x1="0" y1="0" x2="1" y2="0">${ALL.map((c, i) => `<stop offset="${(i / 7).toFixed(3)}" stop-color="${c.hex}"/>`).join('')}</linearGradient></defs>
+<rect width="256" height="256" rx="56" fill="#121212"/>
+<rect x="40" y="108" width="176" height="40" rx="20" fill="url(#r)"/>
+</svg>
+`;
+}
+
+// Open Graph image (1200×630): the "line" design, wide.
+function ogSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+<defs><linearGradient id="r" x1="0" y1="0" x2="1" y2="0">${ALL.map((c, i) => `<stop offset="${(i / 7).toFixed(3)}" stop-color="${c.hex}"/>`).join('')}</linearGradient>
+<filter id="g" x="-20%" y="-300%" width="140%" height="700%"><feGaussianBlur stdDeviation="18"/></filter></defs>
+<rect width="1200" height="630" fill="#0f0f10"/>
+<text x="80" y="300" font-family="${FONT}" font-size="118" font-weight="800" fill="#ffffff" letter-spacing="5">${esc(PODCAST.title.toUpperCase())}</text>
+<rect x="80" y="338" width="1040" height="26" rx="13" fill="url(#r)" filter="url(#g)" opacity="0.9"/>
+<rect x="80" y="341" width="1040" height="20" rx="10" fill="url(#r)"/>
+<text x="80" y="428" font-family="${FONT}" font-size="40" font-weight="500" fill="#ffffff" fill-opacity="0.72">presented by ${esc(PODCAST.presenter)}</text>
+<text x="80" y="560" font-family="${FONT}" font-size="30" font-weight="500" fill="#ffffff" fill-opacity="0.5">${esc(PODCAST.tagline)}</text>
+</svg>
+`;
+}
+
 const DEFAULT_SHOW_VARIANT = 'line';
 function showCoverSvg(variant = DEFAULT_SHOW_VARIANT) {
   const fn = SHOW_VARIANTS[variant];
@@ -160,13 +186,15 @@ function showCoverSvg(variant = DEFAULT_SHOW_VARIANT) {
   return fn();
 }
 
-module.exports = { coverSvg, showCoverSvg, SHOW_VARIANTS };
+module.exports = { coverSvg, showCoverSvg, faviconSvg, ogSvg, SHOW_VARIANTS };
 
 if (require.main === module) {
   const a = process.argv.slice(2);
   const show = a.includes('--show');
   const out = a[a.length - 1];
-  if (show) {
+  if (a.includes('--favicon')) fs.writeFileSync(out, faviconSvg());
+  else if (a.includes('--og')) fs.writeFileSync(out, ogSvg());
+  else if (show) {
     const vi = a.indexOf('--variant');
     fs.writeFileSync(out, showCoverSvg(vi >= 0 ? a[vi + 1] : undefined));
   } else {
