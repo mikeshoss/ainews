@@ -28,6 +28,8 @@ const SECTION_ORDER = [
   'Deployment & impact',
 ];
 
+const FLAG_LABELS = { 'company-claim': 'Company claim', 'single-source': 'Single source', preprint: 'Preprint', update: 'Update' };
+
 const TOKEN_LABELS = {
   ai: 'AI', eu: 'EU', us: 'US', uk: 'UK', un: 'UN', gpu: 'GPU', gpus: 'GPUs', llm: 'LLM', llms: 'LLMs',
   api: 'API', fda: 'FDA', nist: 'NIST', darpa: 'DARPA', dod: 'DoD', cisa: 'CISA', nato: 'NATO', ftc: 'FTC',
@@ -143,11 +145,12 @@ function renderSources(sources) {
 function renderItem(item, base, opts = {}) {
   const first = (item.sources || [])[0];
   const impact = item.impact ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
+  const flags = (item.flags || []).map((f) => `<span class="flag flag-${esc(f)}">${esc(FLAG_LABELS[f] || f)}</span>`).join('');
   const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   const dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
   return `<article class="item">
   ${dateLine}
-  <h3>${first ? `<a href="${esc(first.url)}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}</h3>
+  <h3>${first ? `<a href="${esc(first.url)}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}${flags}</h3>
   <div class="sources">${renderSources(item.sources)}</div>
   <ul>${(item.bullets || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
   ${topics ? `<div class="topics">${topics}</div>` : ''}
@@ -172,6 +175,8 @@ function renderEditionPage(ed, editions, idx) {
   <p class="muted">What mattered over the last seven days${w.period ? ` (${esc(w.period)})` : ''}.</p>
   ${paragraphs(w.summary).map((p) => `<p>${esc(p)}</p>`).join('')}
   ${w.items.map((it) => renderItem(it, base)).join('\n')}
+  ${(w.figures || []).length ? `<h3 class="sub">By the numbers</h3><dl class="figures">${w.figures.map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <a class="src" href="${esc(f.url)}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl>` : ''}
+  ${(w.calendar || []).length ? `<h3 class="sub">On the calendar</h3><ul class="calendar">${w.calendar.map((c) => `<li><strong>${esc(c.date)}</strong> — ${esc(c.event)} <a class="src" href="${esc(c.url)}" rel="noopener">${esc(c.source || hostname(c.url))}</a></li>`).join('')}</ul>` : ''}
 </section>`;
   }
   const body = `<article class="edition">
@@ -267,7 +272,8 @@ function renderEmail(ed) {
     s.items.map((it) => {
       const first = (it.sources || [])[0];
       const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(x.url)}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
-      return `<p style="margin:0 0 12px"><a href="${esc(first ? first.url : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
+      const fl = (it.flags || []).map((f) => `<b style="color:#7a4b00;font-size:11px;text-transform:uppercase;letter-spacing:.04em">[${esc(FLAG_LABELS[f] || f)}]</b> `).join('');
+      return `<p style="margin:0 0 12px">${fl}<a href="${esc(first ? first.url : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
     }).join('');
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
 <p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}${monday ? ' · Monday edition' : ''}</p>
@@ -353,6 +359,13 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .topic{font-size:.75rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:1px 9px;background:var(--card)}
 .topic:hover{color:var(--accent);border-color:var(--accent)}
 .impact{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle;margin-left:6px;border-radius:3px;padding:1px 6px;border:1px solid currentColor}
+.flag{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle;margin-left:6px;border-radius:3px;padding:1px 6px;background:var(--accent-soft);color:var(--mixed)}
+.sub{margin-top:28px;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.figures{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin:0}
+.figures div{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.figures dt{font-size:1.4rem;font-weight:700;letter-spacing:-.02em}
+.figures dd{margin:2px 0 0;font-size:.85rem;color:var(--muted)}
+.calendar{padding-left:20px}.calendar li{margin:6px 0}
 .impact-beneficial{color:var(--good)}.impact-harmful{color:var(--bad)}.impact-mixed{color:var(--mixed)}.impact-neutral{color:var(--muted)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 16px}
 .card h2{margin:.2em 0 .4em}

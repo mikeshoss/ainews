@@ -7,26 +7,49 @@ The reader's standard: **every claim links to where it came from, every number i
 ## 0. Setup
 
 1. Work in the repo root. Determine today's date in **America/Toronto**: `TZ=America/Toronto date +%F`. That is the edition date, `DATE`.
-2. `ls data/` — the previous edition tells you the cutoff. The coverage window is from the previous edition's `generated_at` to now (if there is no previous edition, the last 24 hours). Read the previous edition so you do not repeat it; a story already covered goes in again **only if there is a new development**, and the bullet says what is new.
+2. `ls data/` — the previous edition tells you the cutoff. The coverage window (`WINDOW`) is from the previous edition's `generated_at` to now (if there is no previous edition, the 24 hours before now). Write it down as absolute timestamps in both UTC and ET; you will hand it to the subagents. Read the previous edition so you do not repeat it; a story already covered goes in again **only if there is a new development**, flagged `update`, and the bullets report only the new facts.
 3. `node scripts/build.js --topics` — the existing topic slugs. Reuse them; only coin a new slug when nothing fits.
 4. If `DATE` is a Monday, this is the **Monday edition**: everything below plus §5.
 
-## 1. Sweep the sources
+## 1. Sweep the sources — four beats in parallel
 
-Read `SOURCES.md`. Sweep it fully, in this order, using `WebFetch` (and `WebSearch` with `allowed_domains` for the sites that block fetches). Budget your effort by section: labs, research and security get the deepest sweep; do not stop at the first ten stories.
+Read `SOURCES.md`. Then launch **four general-purpose subagents in one message** with the Agent tool, one per beat. Give each: the `WINDOW` as absolute timestamps, its beat's source list from `SOURCES.md`, the **Sourcing rules** below verbatim, and the return format. Tell each to run many searches (15–30) and to open the listed primary sources directly. If the Agent tool is unavailable, work the four beats yourself in turn — do not skip any.
 
-- **Primary first**: lab news/research pages, arXiv new listings (cs.AI, cs.LG, cs.CL, cs.CR), government/regulator pages, security vendors' own research posts, court dockets.
-- **Then secondary** for discovery: the newsletters/aggregators in §9 of SOURCES.md, Techmeme, Hacker News, Google News. Use them to find stories, then go to the primary source.
-- **Then targeted searches** for the beats that are easy to miss: `WebSearch` for "AI" + military / Pentagon / drone / autonomous weapons; "AI" + FDA / clinical / hospital; "AI" + scam / deepfake / fraud / influence operation; "AI" + export controls / chips / data center power; "AI" + lawsuit / ruling / regulation. Restrict to the last day.
+- **Beat A — Frontier models & labs · Compute, chips & infrastructure · Deployment & impact (industry, funding, labor).** SOURCES.md §1, §7, §8.
+- **Beat B — Research & papers (incl. safety, alignment, evals).** SOURCES.md §2. arXiv new listings (cs.AI, cs.LG, cs.CL, cs.CR, cs.CV, cs.RO), Hugging Face papers, alphaXiv, Nature/Science, lab research blogs, Epoch, METR, AISI, CAISI, Apollo, Redwood, Alignment Forum. Prefer papers with a notable quantitative result, from major labs/universities, or drawing significant attention. Return arXiv IDs and author institutions.
+- **Beat C — Security, misuse & threat intelligence · Military, defense & geopolitics.** SOURCES.md §3, §4. AI-enabled intrusions and malware, fraud and scams, deepfakes, influence operations, surveillance, prompt injection and agent exploits, model theft / illicit distillation, bio/chem misuse reports; procurement, deployment, autonomous weapons, export controls, national strategies.
+- **Beat D — Health, science & medicine · Policy, regulation & law.** SOURCES.md §5, §6. Clinical results, FDA/Health Canada/WHO actions, drug discovery, AI for science, biosecurity; legislation, regulation, enforcement, court rulings and filings, government reports, standards — US federal and state, EU, UK, Canada, China, international bodies.
 
-Collect every candidate with its URL(s) before writing anything. Aim for 30–60 candidates; you will keep 12–30.
+**Subagent return format** — one block per item, then a short list of rejected candidates and why:
+
+```
+SECTION: <one of the eight section names>
+HEADLINE: <factual, specific, max 18 words, no hype>
+PUBLISHED: <date/time and timezone exactly as the source shows it>
+SOURCES: one per line — <publisher> | <exact URL> | primary or report   (only URLs actually opened or seen in search results; never constructed)
+FACTS: 2–5 bullets, each a verifiable fact from a linked source, numbers/units/baselines exactly as written, naming which source
+FLAGS: company-claim | single-source | preprint | update  (any that apply)
+```
+
+**Sourcing rules (give to subagents verbatim):**
+1. Only include facts that appear in a source you opened (WebFetch) or in the text of a search result. No inference, speculation, predictions or "this could mean". No hype adjectives.
+2. Every item links to the specific article, paper or document — never a homepage or index page. Link the primary source whenever one exists (paper, company post, government document, filing, court record) plus independent reporting. Aim for 2+ sources on significant items; if only one outlet has it, flag `single-source`.
+3. Confirm the publication date is inside the window. If the date cannot be determined, drop the item. Older stories qualify only if something new happened inside the window, and only the new facts are reported (flag `update`).
+4. Attribute claims: "OpenAI says…", "according to The Record…". Company-reported benchmarks, user counts, revenue and capability claims get `company-claim` unless independently verified. Research that is not peer reviewed gets `preprint`.
+5. Quote numbers exactly as the source writes them, with units and the comparison baseline. Do not round, convert or compute new figures.
+6. If WebFetch is blocked or a page is paywalled, do not try to get it another way (no curl, no python requests, no archive or cache sites). Use only what is visible in search results, or another source. Sites known to block the fetcher are marked in SOURCES.md.
+7. Skip consumer tips, "fun uses", prompt guides, listicles, opinion pieces without new facts, minor feature updates, unsourced rumours, and small funding rounds unless strategically notable (US$100M+, or a frontier lab / defense / health / security company).
+8. When in doubt, leave it out.
+
+After the beats return, run a few **gap-check searches** yourself for anything a beat may have missed (WebSearch: "AI" + Pentagon / drone; "AI" + FDA / hospital; "AI" + scam / deepfake / influence operation; "AI" + export controls / data center power; "AI" + lawsuit / ruling; plus Techmeme and Hacker News front page), restricted to the window.
 
 ## 2. Verify and select
 
-For each candidate:
+Merge the beats' returns. De-duplicate across beats and against previous editions. Then, for each candidate:
 - Open the primary source. Confirm the headline and every number/date/name you intend to use. A secondary report of a paper links the paper. A report of a court ruling links the ruling or docket where possible.
 - Prefer two independent sources for anything contested, surprising, or about a specific actor (a named threat group, a company's claim about a rival, a casualty figure).
 - Drop: opinion pieces without new facts, product marketing with no numbers, speculation, "could" / "may" stories, anything you cannot open, anything older than the window without a new development.
+- Spot-verify: WebFetch the key source for every item you will mention in the summary and for every figure in the summary; confirm date, numbers and URL yourself. Remove anything you cannot confirm.
 - Keep: model/system releases with benchmarks or capabilities; papers with a result (state the result); documented misuse and threat-intel reports (name actors, counts, dates); military and government procurement/deployment; clinical and scientific results; regulation, enforcement, court decisions; compute/chip/energy facts with figures; large-scale deployments and measured impacts, good or bad.
 
 ## 3. Write the edition — `data/DATE.json`
@@ -49,12 +72,19 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
           "sources": [{ "name": "Anthropic", "url": "https://..." }, { "name": "Reuters", "url": "https://..." }],
           "bullets": ["What was announced/found, with numbers.", "Why it matters / what it changes.", "Caveats, what is unverified, what to watch."],
           "topics": ["anthropic", "threat-intel", "cyber-offense"],
-          "impact": "beneficial" | "harmful" | "mixed" | "neutral"
+          "impact": "beneficial" | "harmful" | "mixed" | "neutral",
+          "flags": ["company-claim" | "single-source" | "preprint" | "update"]
         }
       ]
     }
   ],
-  "week_in_review": { "period": "1–7 Sep 2026", "summary": ["..."], "items": [ /* same item shape */ ] }
+  "week_in_review": {
+    "period": "1–7 Sep 2026",
+    "summary": ["..."],
+    "items": [ /* same item shape */ ],
+    "figures": [{ "value": "$664B", "label": "Oracle remaining performance obligations, Q1 FY2027", "source": "Oracle", "url": "https://..." }],
+    "calendar": [{ "date": "17 Sep", "event": "EU AI Office GPAI code — comment deadline", "source": "EU AI Office", "url": "https://..." }]
+  }
 }
 ```
 
@@ -80,12 +110,17 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
 
 **Impact** (optional but encouraged): `beneficial`, `harmful`, `mixed`, or `neutral` — the demonstrated effect in the story, not your prediction.
 
+**Flags** (include every one that applies; omit the key if none): `company-claim` — a company-reported benchmark, user count, revenue or capability claim not independently verified; `single-source` — only one outlet has it; `preprint` — research not peer reviewed; `update` — a story covered in an earlier edition, with new facts only.
+
 **Style**: plain, declarative, numbers over adjectives. Attribute claims ("Anthropic says", "the paper reports", "according to the filing"). No hype, no hedging language beyond what the sources support. British or American spelling — either, consistently.
 
 **Absolute rules**:
 - Never invent a URL, a number, a quote, a name, or a date. If unsure, open the source again.
 - Never write a bullet you could not point to a sentence in the source for.
 - Never link a URL you did not open in this session.
+- Quote numbers exactly as the source writes them, with units and baseline. Never round, convert, or compute new figures.
+- Link the specific article, paper or document — never a homepage or index page (the validator rejects these).
+- If a page is blocked or paywalled, do not fetch it another way (no curl, no archive/cache sites). Use another source or leave the item out.
 - Do not editorialise beyond stating why something matters.
 
 ## 4. Validate, build, publish
@@ -111,7 +146,10 @@ On Mondays, after the daily sections, add `week_in_review`:
 - `period`: the seven days ending yesterday (Sunday), e.g. `"1–7 Sep 2026"`.
 - Read every `data/*.json` from those seven days (plus today's items). Identify the 6–12 threads that mattered most across the week — the storylines that recurred or the single biggest events. Prefer threads that appear as topics on multiple days (`node scripts/build.js --topics`).
 - `summary`: 2–3 paragraphs on the shape of the week.
-- `items`: one item per thread, same shape as daily items. The headline names the thread; bullets trace what happened across the week with dates; sources link the key primary documents (they may be reused from earlier editions).
+- `items`: one item per thread, same shape as daily items, ranked by significance (capability change, real-world deployment or harm at scale, binding legal/regulatory effect, security impact, money/compute scale). The headline names the thread; bullets trace what happened across the week with dates, including facts that emerged later in the week; sources link the key primary documents (they may be reused from earlier editions).
+- Run gap-check searches for major developments that week not already in `data/` — the earlier editions may not hold everything.
+- `figures`: 5–10 key numbers from the week — `value`, what it measures (`label`), `source`, `url`. Exactly as written in the source.
+- `calendar`: dated events in the next 7 days confirmed by a source (deadlines, hearings, votes, scheduled releases, earnings, major conferences) — `date`, `event`, `source`, `url`. Omit the key if none.
 - Set `"edition": "monday"`.
 
 ## 6. Send the email

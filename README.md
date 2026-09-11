@@ -17,7 +17,7 @@ PROMPT.md                the editorial playbook the routine follows
 SOURCES.md               the source list it sweeps
 ```
 
-The routine reads `PROMPT.md`, sweeps `SOURCES.md`, writes the edition, validates it, pushes to `main`, then emails the built email body. To change what gets covered or how, edit `PROMPT.md` or `SOURCES.md` — the routine picks up the change on its next run.
+The routine reads `PROMPT.md`, fans out four research subagents across `SOURCES.md` (labs/compute, research, security/military, health/policy), verifies, writes the edition, validates it, pushes to `main`, then emails the built email body. To change what gets covered or how, edit `PROMPT.md` or `SOURCES.md` — the routine picks up the change on its next run.
 
 ## Local
 

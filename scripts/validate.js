@@ -13,6 +13,7 @@ const SECTIONS = new Set([
   'Compute, chips & infrastructure', 'Deployment & impact',
 ]);
 const IMPACTS = new Set(['beneficial', 'harmful', 'mixed', 'neutral']);
+const FLAGS = new Set(['company-claim', 'single-source', 'preprint', 'update']);
 
 const file = process.argv[2];
 const checkLinks = process.argv.includes('--check-links');
@@ -49,7 +50,11 @@ function checkItem(it, where) {
   if (!Array.isArray(it.sources) || !it.sources.length) err(`${where}: needs at least one source`);
   for (const [i, s] of (it.sources || []).entries()) {
     if (!s || !/^https?:\/\/\S+$/.test(s.url || '')) err(`${where}: source[${i}] has no valid http(s) url`);
-    else if (!urls.has(s.url)) urls.set(s.url, where);
+    else {
+      if (/^https?:\/\/[^/]+\/?$/.test(s.url)) err(`${where}: source[${i}] is a homepage (${s.url}) — link the specific article, paper or document`);
+      if (/example\.com|\.\.\./.test(s.url)) err(`${where}: source[${i}] looks like a placeholder url`);
+      if (!urls.has(s.url)) urls.set(s.url, where);
+    }
     if (!s.name) warn(`${where}: source[${i}] has no "name" (will fall back to hostname)`);
   }
   if (!Array.isArray(it.bullets) || !it.bullets.length) err(`${where}: needs at least one bullet`);
@@ -57,6 +62,7 @@ function checkItem(it, where) {
   if (!Array.isArray(it.topics) || !it.topics.length) err(`${where}: needs at least one topic slug`);
   for (const t of it.topics || []) if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(t)) err(`${where}: topic "${t}" must be a lowercase-hyphen slug`);
   if (it.impact && !IMPACTS.has(it.impact)) err(`${where}: impact must be one of ${[...IMPACTS].join('|')}`);
+  for (const f of it.flags || []) if (!FLAGS.has(f)) err(`${where}: flag "${f}" must be one of ${[...FLAGS].join('|')}`);
 }
 
 for (const [si, sec] of (ed.sections || []).entries()) {
@@ -69,9 +75,18 @@ if (ed.edition === 'monday') {
   const w = ed.week_in_review;
   if (!w || !Array.isArray(w.items) || !w.items.length) err(`Monday edition must include week_in_review with items`);
   else {
+    headlines.clear(); // a week-in-review thread may share a headline with a daily item
     const ws = Array.isArray(w.summary) ? w.summary.join(' ') : String(w.summary || '');
     if (ws.trim().length < 200) err(`week_in_review.summary too short`);
     for (const [ii, it] of w.items.entries()) checkItem(it, `week_in_review item[${ii}]`);
+    for (const [fi, f] of (w.figures || []).entries()) {
+      if (!f.value || !f.label || !/^https?:\/\/\S+$/.test(f.url || '')) err(`week_in_review.figures[${fi}] needs value, label and url`);
+      else if (!urls.has(f.url)) urls.set(f.url, `week_in_review.figures[${fi}]`);
+    }
+    for (const [ci, c] of (w.calendar || []).entries()) {
+      if (!c.date || !c.event || !/^https?:\/\/\S+$/.test(c.url || '')) err(`week_in_review.calendar[${ci}] needs date, event and url`);
+      else if (!urls.has(c.url)) urls.set(c.url, `week_in_review.calendar[${ci}]`);
+    }
   }
 }
 if (itemTotal < 5) warn(`only ${itemTotal} items — a normal day has 10–25`);
