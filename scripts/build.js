@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS } = require('./lib.js');
+const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, sectionWeights } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -159,7 +159,7 @@ function renderEditionPage(ed, editions, idx) {
   const summary = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
   const toc = ed.sections.map((s) => `<a href="#${esc(slugify(s.name))}">${esc(s.name)} <span class="count">${s.items.length}</span></a>`).join('');
   const sections = ed.sections.map((s) => `<section class="section" id="${esc(slugify(s.name))}">
-  <h2>${esc(s.name)}</h2>
+  <h2><i class="dot" style="background:${(SECTION_COLORS[s.name] || {}).hex || '#9a9a9a'}"></i>${esc(s.name)}</h2>
   ${s.items.map((it) => renderItem(it, base)).join('\n')}
 </section>`).join('\n');
   let week = '';
@@ -178,6 +178,7 @@ function renderEditionPage(ed, editions, idx) {
   <header class="edition-header">
     <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">run trace</a>` : ''}</div>
     <h1>${esc(longDate(ed.date))}</h1>
+    ${renderSpectrum(ed, true)}
     ${renderPlayer(ed.audio, base, ed, false)}
     <div class="summary">${summary}</div>
     <nav class="toc">${toc}${week ? `<a href="#week-in-review">The week in review</a>` : ''}</nav>
@@ -201,6 +202,7 @@ function renderHome(editions, trending) {
     return `<article class="card">
   <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily'} · ${ed.itemCount} items · ${ed.sections.map((s) => esc(s.name)).join(' / ')}</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  ${renderSpectrum(ed, false)}
   <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
   ${renderPlayer(ed.audio, base, ed, true)}
   <div class="topics">${topTopics}</div>
@@ -395,7 +397,11 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .tr-prompt pre{max-height:240px}
 .tr details{margin-top:4px}.tr summary{cursor:pointer;font-size:.8rem;color:var(--muted)}
 .tr pre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:4px 0 0;max-height:420px;overflow:auto}
-.player{margin:14px 0 6px}.player audio{width:100%;max-width:560px;display:block}
+.player{margin:14px 0 6px;display:flex;gap:14px;align-items:flex-start}.player .art{width:140px;height:140px;border-radius:8px;flex:0 0 auto}.player-body{min-width:0;flex:1}.player audio{width:100%;max-width:560px;display:block}
+.spectrum{display:flex;gap:3px;height:8px;margin:10px 0 6px;max-width:560px}.spectrum span{display:block;border-radius:4px;min-width:4px}
+.spectrum-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);margin-bottom:8px}.spectrum-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:1px}
+.podcast-hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}
 .player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
@@ -414,13 +420,21 @@ function loadAudio() {
 const mmss = (sec) => { const m = Math.floor(sec / 60), s2 = sec % 60; return `${m}:${String(s2).padStart(2, '0')}`; };
 const hhmmss = (sec) => `${String(Math.floor(sec / 3600)).padStart(2, '0')}:${String(Math.floor((sec % 3600) / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 
+function renderSpectrum(ed, withLegend) {
+  const w = sectionWeights(ed);
+  if (!w.length) return '';
+  const bar = `<div class="spectrum" role="img" aria-label="${esc(w.map((x) => `${x.short} ${Math.round(x.share * 100)}%`).join(', '))}">${w.map((x) => `<span style="flex:${x.share.toFixed(4)};background:${x.hex}" title="${esc(x.name)}: ${x.count}"></span>`).join('')}</div>`;
+  return withLegend ? `${bar}<div class="spectrum-legend">${w.map((x) => `<span><i style="background:${x.hex}"></i>${esc(x.short)} ${Math.round(x.share * 100)}%</span>`).join('')}</div>` : bar;
+}
+
 function renderPlayer(ep, base, ed, compact) {
   if (!ep) return '';
   const label = `${ep.format === 'dialogue' ? 'Two-host episode' : 'Narrated edition'} · ${mmss(ep.seconds)}`;
-  return `<div class="player${compact ? ' compact' : ''}">
+  const art = ep.image && !compact ? `<img class="art" src="${esc(ep.image)}" alt="Episode cover" width="140" height="140" loading="lazy">` : '';
+  return `<div class="player${compact ? ' compact' : ''}">${art}<div class="player-body">
   <audio controls preload="none" src="${esc(ep.url)}"></audio>
-  <div class="player-meta">${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">${ep.format === 'dialogue' ? 'read the script' : 'read the narration'}</a> · <a href="${base}podcast/">subscribe</a>` : ''}</div>
-</div>`;
+  <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">${ep.format === 'dialogue' ? 'read the script' : 'read the narration'}</a> · <a href="${base}podcast/">subscribe</a>` : ''}</div>
+</div></div>`;
 }
 
 function loadScript(date) {
@@ -459,17 +473,24 @@ function renderPodcastPage(editions, audio) {
   const eps = editions.filter((ed) => audio[ed.date]).map((ed) => `<article class="card">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${audio[ed.date].format === 'dialogue' ? 'two hosts' : 'narrated'} · ${mmss(audio[ed.date].seconds)}</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
 </article>`).join('\n');
-  const body = `<h1>Podcast</h1>
-<p class="lede">Every edition as an episode, ready when the morning edition is. Subscribe once and each day's episode downloads to your phone.</p>
+  const legend = Object.entries(SECTION_COLORS).map(([name, c]) => `<span><i style="background:${c.hex}"></i>${esc(name)} <span class="muted">${esc(c.name)}</span></span>`).join('');
+  const body = `<div class="podcast-hero"><img src="${base}cover.png" alt="${esc(PODCAST.title)} cover" width="180" height="180"><div>
+<h1>${esc(PODCAST.title)}</h1>
+<p class="lede">Presented by ${esc(PODCAST.presenter)}. Every edition as an episode, ready when the morning edition is. Subscribe once and each day's episode downloads to your phone.</p></div></div>
 <div class="card">
   <p><b>Feed URL</b> — paste into your podcast app:</p>
   <p><code class="feed">${esc(feed)}</code></p>
   <p class="muted">Apple Podcasts: Library → ⋯ → <i>Follow a Show by URL</i>. Overcast: + → <i>Add URL</i>. Pocket Casts: search bar → paste the URL. Episodes are voiced by AI from the written edition; the two-host format is used only when the script passes every factual lock, otherwise the day is narrated straight from the edition text. Each episode page has the script with every claim linked to its source.</p>
 </div>
+<div class="card">
+  <p><b>Episode covers are coloured by the news.</b> Each section has a fixed colour; a day's cover mixes them in proportion to how many items fell in each section, with the exact shares shown as a bar along the bottom.</p>
+  <div class="spectrum-legend">${legend}</div>
+</div>
 ${eps || '<p class="muted">No episodes yet.</p>'}`;
-  return layout({ title: `Podcast — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/podcast/` });
+  return layout({ title: `${PODCAST.title} — Podcast — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/podcast/` });
 }
 
 function renderPodcastFeed(editions, audio) {
@@ -484,6 +505,7 @@ function renderPodcastFeed(editions, audio) {
 <description>${esc(desc)}</description>
 <itunes:summary>${esc(desc)}</itunes:summary>
 <itunes:duration>${hhmmss(ep.seconds)}</itunes:duration>
+${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <itunes:explicit>false</itunes:explicit>
 <enclosure url="${esc(ep.url)}" length="${ep.bytes}" type="audio/mpeg"/>
 </item>`;
@@ -491,14 +513,15 @@ function renderPodcastFeed(editions, audio) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-<title>${esc(SITE_NAME)}</title>
-<link>${SITE_URL}/</link>
+<title>${esc(PODCAST.title)}</title>
+<link>${SITE_URL}/podcast/</link>
 <atom:link href="${SITE_URL}/podcast.xml" rel="self" type="application/rss+xml"/>
 <language>en</language>
-<description>${esc(SITE_TAGLINE)} Each episode is voiced by AI from the written edition; every claim links to its source on the site.</description>
-<itunes:author>${esc(SITE_NAME)}</itunes:author>
+<description>${esc(PODCAST.title)}, presented by ${esc(PODCAST.presenter)}. ${esc(SITE_TAGLINE)} Each episode is voiced by AI from the written edition; every claim links to its source on the site.</description>
+<itunes:author>${esc(PODCAST.presenter)}</itunes:author>
+<itunes:subtitle>${esc(PODCAST.tagline)}</itunes:subtitle>
 <itunes:image href="${SITE_URL}/cover.png"/>
-<image><url>${SITE_URL}/cover.png</url><title>${esc(SITE_NAME)}</title><link>${SITE_URL}/</link></image>
+<image><url>${SITE_URL}/cover.png</url><title>${esc(PODCAST.title)}</title><link>${SITE_URL}/podcast/</link></image>
 <itunes:explicit>false</itunes:explicit>
 <itunes:category text="Technology"/>
 <itunes:category text="News"><itunes:category text="Tech News"/></itunes:category>

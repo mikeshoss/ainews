@@ -3,7 +3,8 @@
 // Turns editions into podcast episodes. Runs in GitHub Actions (needs OPENAI_API_KEY, GH_TOKEN, ffmpeg, gh).
 // For each edition in the last LOOKBACK_DAYS without audio: use the dialogue script if it exists AND passes
 // validate-script.js, otherwise the code-generated narration (narrate.js). Synthesizes with OpenAI TTS,
-// concatenates with ffmpeg, uploads DATE.mp3 to the rolling GitHub Release "audio", and maintains index.json
+// concatenates with ffmpeg, renders the episode cover (cover.js → librsvg) and embeds it, uploads DATE.mp3 + DATE.png
+// to the rolling GitHub Release "audio", and maintains index.json
 // (also written to audio/index.json for build.js). Idempotent; the index is updated last.
 // Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE]
 
@@ -12,8 +13,9 @@ const path = require('path');
 const os = require('os');
 const { execFileSync, spawnSync } = require('child_process');
 const { loadEditions } = require('./build.js');
-const { longDate } = require('./lib.js');
+const { longDate, PODCAST } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
+const { coverSvg } = require('./cover.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const AUDIO_DIR = path.join(ROOT, 'audio');
@@ -118,6 +120,23 @@ async function tts(req, instructions, outFile) {
   }
 }
 
+// Episode cover: SVG from the edition → PNG (librsvg). Returns the png path or null if rasterising is unavailable.
+function makeCover(ed) {
+  const svg = path.join(AUDIO_DIR, `${ed.date}.svg`);
+  const png = path.join(AUDIO_DIR, `${ed.date}.png`);
+  fs.writeFileSync(svg, coverSvg(ed));
+  const r = spawnSync(path.join(__dirname, 'rasterize.sh'), [svg, png, '3000'], { encoding: 'utf8' });
+  return r.status === 0 && fs.existsSync(png) ? png : null;
+}
+
+// Embed the cover as ID3 attached picture so players show it even without the feed's <itunes:image>.
+function embedCover(mp3, png) {
+  const tmp = mp3 + '.tmp.mp3';
+  sh('ffmpeg', ['-y', '-loglevel', 'error', '-i', mp3, '-i', png, '-map', '0:a', '-map', '1:v', '-c', 'copy', '-id3v2_version', '3',
+    '-metadata:s:v', 'title=Album cover', '-metadata:s:v', 'comment=Cover (front)', '-disposition:v', 'attached_pic', tmp]);
+  fs.renameSync(tmp, mp3);
+}
+
 function silence(seconds, outFile) {
   sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono', '-t', String(seconds), '-c:a', 'libmp3lame', '-b:a', '64k', outFile]);
 }
@@ -137,10 +156,12 @@ async function synthesize(ed, seg) {
   const out = path.join(AUDIO_DIR, `${ed.date}.mp3`);
   // Re-encode on concat so segments with different encoder settings join cleanly; mono 64k is plenty for speech.
   sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
-    '-metadata', `title=AI Edge Briefing — ${longDate(ed.date)}`, '-metadata', 'artist=AI Edge Briefing', '-metadata', `album=AI Edge Briefing`, out]);
+    '-metadata', `title=${PODCAST.title} — ${longDate(ed.date)}`, '-metadata', `artist=${PODCAST.title}`, '-metadata', `album=${PODCAST.title}`, '-metadata', `album_artist=${PODCAST.presenter}`, out]);
+  const png = makeCover(ed);
+  if (png) embedCover(out, png);
   const seconds = Math.round(parseFloat(sh('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', out])));
   fs.rmSync(tmp, { recursive: true, force: true });
-  return { file: out, seconds, bytes: fs.statSync(out).size };
+  return { file: out, png, seconds, bytes: fs.statSync(out).size };
 }
 
 // ---------- main ----------
@@ -157,6 +178,20 @@ async function synthesize(ed, seg) {
   index.episodes = index.episodes || {};
 
   const cutoff = new Date(Date.parse(latest.date + 'T12:00:00Z') - LOOKBACK_DAYS * 86400000);
+
+  // Backfill covers for episodes that already have audio but no image (cheap: no TTS).
+  for (const ed of editions) {
+    const ep = index.episodes[ed.date];
+    if (!ep || ep.image || DRY) continue;
+    try {
+      const png = makeCover(ed);
+      if (!png) break;
+      sh('gh', ['release', 'upload', RELEASE_TAG, png, '-R', REPO, '--clobber']);
+      ep.image = `${DOWNLOAD_BASE}/${ed.date}.png`;
+      saveIndex(index);
+      console.log(`${ed.date}: cover backfilled`);
+    } catch (e) { console.log(`${ed.date}: cover backfill failed: ${e.message}`); }
+  }
   const todo = editions.filter((ed) => Date.parse(ed.date + 'T12:00:00Z') >= cutoff && (!index.episodes[ed.date] || FORCE === ed.date)).slice(0, MAX);
   if (!todo.length) { console.log('all recent editions already have audio'); return; }
 
@@ -169,8 +204,8 @@ async function synthesize(ed, seg) {
     if (DRY) continue;
     try {
       const a = await synthesize(ed, seg);
-      sh('gh', ['release', 'upload', RELEASE_TAG, a.file, '-R', REPO, '--clobber']);
-      index.episodes[ed.date] = { url: `${DOWNLOAD_BASE}/${ed.date}.mp3`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString() };
+      sh('gh', ['release', 'upload', RELEASE_TAG, a.file, ...(a.png ? [a.png] : []), '-R', REPO, '--clobber']);
+      index.episodes[ed.date] = { url: `${DOWNLOAD_BASE}/${ed.date}.mp3`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}) };
       saveIndex(index); // after each episode so a later failure keeps earlier work
       console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded`);
     } catch (e) {

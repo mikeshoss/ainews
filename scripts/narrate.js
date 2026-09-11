@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { longDate, paragraphs } = require('./lib.js');
+const { longDate, paragraphs, PODCAST } = require('./lib.js');
 
 const NARRATOR_VOICE = 'cedar';
 
@@ -35,7 +35,7 @@ function narrationFor(ed, opts = {}) {
   const say = (text, extra) => { const t = spoken(text); if (t) lines.push({ host: 'N', text: t, ...(extra || {}) }); };
   const monday = ed.edition === 'monday';
 
-  say(`Good morning. This is the AI Edge Briefing for ${longDate(ed.date)}${monday ? ', the Monday edition' : ''}. This episode is voiced by AI, read directly from the written edition.`);
+  say(`Good morning. It's ${longDate(ed.date)}. This is ${PODCAST.title}, presented by ${PODCAST.presenter}${monday ? ' — the Monday edition' : ''}. This episode is voiced by AI, read directly from the written edition.`);
   for (const p of paragraphs(ed.summary)) say(p);
 
   for (const sec of ed.sections) {
@@ -68,7 +68,7 @@ function narrationFor(ed, opts = {}) {
     }
   }
 
-  say("That's the briefing. The full edition, with a link to every source, is on the site. Have a good day.");
+  say(`That's ${PODCAST.title} for today. The full edition, with a link to every source, is on the site. Listen in tomorrow for the next edition. Have a good day.`);
   return { date: ed.date, format: 'narration', hosts: { N: { name: 'Narrator', voice: NARRATOR_VOICE } }, lines };
 }
 

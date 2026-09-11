@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { longDate } = require('./lib.js');
+const { longDate, PODCAST } = require('./lib.js');
 
 const VOICES = new Set(['alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer', 'verse', 'marin', 'cedar']);
 const BLOCK_TYPES = new Set(['intro', 'item', 'transition', 'week', 'figures', 'outro']);
@@ -143,10 +143,27 @@ let prevHost = null, run = 0;
       warn(`${where}: the item's bullets carry a caveat ("${BULLET_CAVEAT_TRIGGERS.find((t) => bulletsLower.includes(t))}") but the block does not voice one`);
     }
   }
-  if (b.type === 'intro' && !/voiced by ai|synthetic voice|ai[- ]generated voice|ai voices/i.test(blockText)) err(`${where}: intro must disclose that the episode is voiced by AI`);
+  if (b.type === 'intro') {
+    if (!/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: intro must disclose that the episode is voiced by AI`);
+    if (!blockText.includes(longDate(date))) err(`${where}: intro must say the date exactly as "${longDate(date)}"`);
+    if (!blockText.includes(PODCAST.title)) err(`${where}: intro must name the show: "${PODCAST.title}"`);
+    if (!blockText.includes(PODCAST.presenter)) err(`${where}: intro must say "presented by ${PODCAST.presenter}"`);
+    for (const k of hostKeys) {
+      const name = (hosts[k] || {}).name;
+      if (!name) continue;
+      const self = b.lines.some((l) => l.host === k && new RegExp(`\\b${name}\\b`).test(l.text || ''));
+      if (!self) err(`${where}: host ${k} (${name}) must introduce themselves by name in the intro, in their own line`);
+    }
+  }
+  if (b.type === 'outro' && !/\btomorrow\b/i.test(blockText)) err(`${where}: outro must remind listeners to listen in tomorrow`);
 });
 
 // ---------- whole-script locks ----------
+{
+  const all = (sc.blocks || []).flatMap((b) => (b.lines || []).map((l) => l.text || '')).join(' ');
+  const mentions = (all.match(new RegExp(PODCAST.presenter, 'g')) || []).length;
+  if (mentions > 1) err(`"${PODCAST.presenter}" is mentioned ${mentions} times — once, in the intro, is the limit (no plugging)`);
+}
 if (!introSeen) err('no intro block');
 if (!outroSeen) err('no outro block');
 for (const sec of ed.sections) if (!sectionsCovered.has(sec.name)) err(`section "${sec.name}" has no item block — every section must be represented`);

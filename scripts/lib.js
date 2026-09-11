@@ -8,4 +8,24 @@ const shortDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()].s
 const isMonday = (d) => dateObj(d).getUTCDay() === 1;
 const paragraphs = (s) => (Array.isArray(s) ? s : String(s || '').split(/\n\s*\n/)).map((p) => p.trim()).filter(Boolean);
 const FLAG_LABELS = { 'company-claim': 'Company claim', 'single-source': 'Single source', preprint: 'Preprint', update: 'Update' };
-module.exports = { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS };
+// Section colours — the documented palette used for podcast covers and site accents. Keep README.md in sync.
+const SECTION_COLORS = {
+  'Frontier models & labs':                 { hex: '#3B82F6', name: 'electric blue', short: 'Frontier' },
+  'Research & papers':                      { hex: '#8B5CF6', name: 'violet',        short: 'Research' },
+  'Security, misuse & threat intelligence': { hex: '#EF4444', name: 'red',           short: 'Security' },
+  'Military, defense & geopolitics':        { hex: '#F97316', name: 'orange',        short: 'Military' },
+  'Health, science & medicine':             { hex: '#10B981', name: 'green',         short: 'Health' },
+  'Policy, regulation & law':               { hex: '#EAB308', name: 'gold',          short: 'Policy' },
+  'Compute, chips & infrastructure':        { hex: '#06B6D4', name: 'cyan',          short: 'Compute' },
+  'Deployment & impact':                    { hex: '#EC4899', name: 'magenta',       short: 'Deployment' },
+};
+const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', tagline: 'Daily, fact-first frontier AI news' };
+
+// Share of the day's items per section (daily sections only; the Monday week-in-review is not counted).
+function sectionWeights(ed) {
+  const counts = (ed.sections || []).map((s) => [s.name, (s.items || []).length]).filter(([, n]) => n > 0);
+  const total = counts.reduce((a, [, n]) => a + n, 0) || 1;
+  return counts.map(([name, n]) => ({ name, count: n, share: n / total, ...(SECTION_COLORS[name] || { hex: '#9a9a9a', name: 'grey', short: name }) })).sort((a, b) => b.share - a.share);
+}
+
+module.exports = { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, sectionWeights };
