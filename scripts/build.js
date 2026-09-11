@@ -401,6 +401,7 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .spectrum{display:flex;gap:3px;height:8px;margin:10px 0 6px;max-width:560px}.spectrum span{display:block;border-radius:4px;min-width:4px}
 .spectrum-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);margin-bottom:8px}.spectrum-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:1px}
+.versions{margin-top:10px}.versions summary{cursor:pointer;font-size:.85rem;color:var(--muted)}.version{padding:10px 0;border-top:1px solid var(--line)}.version audio{width:100%;max-width:560px;display:block;margin-top:4px}
 .podcast-hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}
 .player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
@@ -414,8 +415,9 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 
 // ---------- podcast ----------
 const AUDIO_INDEX = path.join(ROOT, 'audio', 'index.json');
+let AUDIO_VERSIONS = {};
 function loadAudio() {
-  try { return JSON.parse(fs.readFileSync(AUDIO_INDEX, 'utf8')).episodes || {}; } catch { return {}; }
+  try { const idx = JSON.parse(fs.readFileSync(AUDIO_INDEX, 'utf8')); AUDIO_VERSIONS = idx.versions || {}; return idx.episodes || {}; } catch { return {}; }
 }
 const mmss = (sec) => { const m = Math.floor(sec / 60), s2 = sec % 60; return `${m}:${String(s2).padStart(2, '0')}`; };
 const hhmmss = (sec) => `${String(Math.floor(sec / 3600)).padStart(2, '0')}:${String(Math.floor((sec % 3600) / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
@@ -470,12 +472,17 @@ ${body}`;
 function renderPodcastPage(editions, audio) {
   const base = '../';
   const feed = `${SITE_URL}/podcast.xml`;
-  const eps = editions.filter((ed) => audio[ed.date]).map((ed) => `<article class="card">
+  const eps = editions.filter((ed) => audio[ed.date]).map((ed) => {
+    const versions = AUDIO_VERSIONS[ed.date] || [];
+    const older = versions.length > 1 ? `<details class="versions"><summary>${versions.length} versions — earlier ones kept for comparison</summary>${[...versions].reverse().map((v) => `<div class="version"><div class="eyebrow">${esc(v.label)} · ${v.format === 'dialogue' ? 'two hosts' : 'narrated'} · ${mmss(v.seconds)} · ${esc(new Date(v.generated_at).toUTCString().slice(0, 22))}${v.url === audio[ed.date].url ? ' · <b>in the feed</b>' : ''}</div><audio controls preload="none" src="${esc(v.url)}"></audio></div>`).join('')}</details>` : '';
+    return `<article class="card">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${audio[ed.date].format === 'dialogue' ? 'two hosts' : 'narrated'} · ${mmss(audio[ed.date].seconds)}</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
   ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
-</article>`).join('\n');
+  ${older}
+</article>`;
+  }).join('\n');
   const legend = Object.entries(SECTION_COLORS).map(([name, c]) => `<span><i style="background:${c.hex}"></i>${esc(name)} <span class="muted">${esc(c.name)}</span></span>`).join('');
   const body = `<div class="podcast-hero"><img src="${base}cover.png" alt="${esc(PODCAST.title)} cover" width="180" height="180"><div>
 <h1>${esc(PODCAST.title)}</h1>

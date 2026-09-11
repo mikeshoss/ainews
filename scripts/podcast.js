@@ -6,7 +6,8 @@
 // concatenates with ffmpeg, renders the episode cover (cover.js → librsvg) and embeds it, uploads DATE.mp3 + DATE.png
 // to the rolling GitHub Release "audio", and maintains index.json
 // (also written to audio/index.json for build.js). Idempotent; the index is updated last.
-// Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE]
+// Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE --label vN]
+// Re-running a date with --force keeps every earlier version (index.versions) and makes the new one current.
 
 const fs = require('fs');
 const path = require('path');
@@ -34,7 +35,9 @@ const INSTRUCTIONS = {
 const args = process.argv.slice(2);
 const DRY = args.includes('--dry-run');
 const MAX = Number((args[args.indexOf('--max') + 1]) || MAX_PER_RUN) || MAX_PER_RUN;
-const FORCE = args.includes('--force') ? args[args.indexOf('--force') + 1] : null;
+const FORCE = args.includes('--force') ? args[args.indexOf('--force') + 1] : (process.env.FORCE_DATE || null);
+const LABEL = args.includes('--label') ? args[args.indexOf('--label') + 1] : (process.env.FORCE_LABEL || null);
+const PAUSE_INTRO = 1.4;           // longer breath after the intro before the news starts
 const KEY = process.env.OPENAI_API_KEY;
 const REPO = process.env.GITHUB_REPOSITORY || 'mikeshoss/ainews';
 const DOWNLOAD_BASE = `https://github.com/${REPO}/releases/download/${RELEASE_TAG}`;
@@ -73,14 +76,14 @@ function segmentsFor(ed) {
     if (v.status === 0) {
       const sc = JSON.parse(fs.readFileSync(scriptPath, 'utf8'));
       const lines = [];
-      sc.blocks.forEach((b, i) => { b.lines.forEach((l) => lines.push({ voice: sc.hosts[l.host].voice, text: l.text })); if (i < sc.blocks.length - 1) lines.push({ pause: PAUSE_PARA }); });
+      sc.blocks.forEach((b, i) => { b.lines.forEach((l) => lines.push({ voice: sc.hosts[l.host].voice, text: l.text })); if (i < sc.blocks.length - 1) lines.push({ pause: b.pause_after || (b.type === 'intro' ? PAUSE_INTRO : PAUSE_PARA) }); });
       return { format: 'dialogue', voices: Object.fromEntries(Object.entries(sc.hosts).map(([k, h]) => [k, `${h.name} (${h.voice})`])), lines, instructions: INSTRUCTIONS.dialogue };
     }
     console.log(`  script for ${ed.date} FAILED validation — falling back to narration:\n${v.stdout.split('\n').filter((l) => l.startsWith('ERROR')).slice(0, 5).map((l) => '    ' + l).join('\n')}`);
   }
   const n = narrationFor(ed);
   const lines = [];
-  n.lines.forEach((l) => { if (l.section && lines.length) lines.push({ pause: PAUSE_PARA }); lines.push({ voice: n.hosts.N.voice, text: l.text }); });
+  n.lines.forEach((l) => { if (l.section && lines.length) lines.push({ pause: PAUSE_PARA }); lines.push({ voice: n.hosts.N.voice, text: l.text }); if (l.pause) lines.push({ pause: l.pause }); });
   return { format: 'narration', voices: { N: `Narrator (${n.hosts.N.voice})` }, lines, instructions: INSTRUCTIONS.narration };
 }
 
@@ -141,7 +144,13 @@ function silence(seconds, outFile) {
   sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono', '-t', String(seconds), '-c:a', 'libmp3lame', '-b:a', '64k', outFile]);
 }
 
-async function synthesize(ed, seg) {
+function versionsFor(index, date) {
+  index.versions = index.versions || {};
+  if (!index.versions[date] && index.episodes[date]) index.versions[date] = [{ label: 'v1', ...index.episodes[date] }];
+  return (index.versions[date] = index.versions[date] || []);
+}
+
+async function synthesize(ed, seg, label) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `ep-${ed.date}-`));
   const reqs = requestsFor(seg);
   const list = [];
@@ -153,7 +162,7 @@ async function synthesize(ed, seg) {
   }
   const listFile = path.join(tmp, 'list.txt');
   fs.writeFileSync(listFile, list.join('\n'));
-  const out = path.join(AUDIO_DIR, `${ed.date}.mp3`);
+  const out = path.join(AUDIO_DIR, `${ed.date}${label && label !== 'v1' ? '-' + label : ''}.mp3`);
   // Re-encode on concat so segments with different encoder settings join cleanly; mono 64k is plenty for speech.
   sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
     '-metadata', `title=${PODCAST.title} — ${longDate(ed.date)}`, '-metadata', `artist=${PODCAST.title}`, '-metadata', `album=${PODCAST.title}`, '-metadata', `album_artist=${PODCAST.presenter}`, out]);
@@ -193,6 +202,7 @@ async function synthesize(ed, seg) {
     } catch (e) { console.log(`${ed.date}: cover backfill failed: ${e.message}`); }
   }
   const todo = editions.filter((ed) => Date.parse(ed.date + 'T12:00:00Z') >= cutoff && (!index.episodes[ed.date] || FORCE === ed.date)).slice(0, MAX);
+  if (FORCE && !LABEL) { console.log('--force needs --label (e.g. v2) so the earlier version is kept'); process.exit(2); }
   if (!todo.length) { console.log('all recent editions already have audio'); return; }
 
   let failures = 0;
@@ -203,9 +213,14 @@ async function synthesize(ed, seg) {
     console.log(`${ed.date}: ${seg.format}, ${reqs.filter((r) => r.text).length} TTS requests, ${chars.toLocaleString()} chars${DRY ? ' (dry run)' : ''}`);
     if (DRY) continue;
     try {
-      const a = await synthesize(ed, seg);
+      const versions = versionsFor(index, ed.date);
+      const label = FORCE === ed.date ? LABEL : 'v1';
+      if (versions.some((v) => v.label === label)) throw new Error(`version "${label}" already exists for ${ed.date}; pick another label`);
+      const a = await synthesize(ed, seg, label);
       sh('gh', ['release', 'upload', RELEASE_TAG, a.file, ...(a.png ? [a.png] : []), '-R', REPO, '--clobber']);
-      index.episodes[ed.date] = { url: `${DOWNLOAD_BASE}/${ed.date}.mp3`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}) };
+      const entry = { url: `${DOWNLOAD_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}) };
+      versions.push({ label, ...entry });
+      index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the release and on /podcast/
       saveIndex(index); // after each episode so a later failure keeps earlier work
       console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded`);
     } catch (e) {

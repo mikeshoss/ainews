@@ -6,13 +6,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { longDate, paragraphs, PODCAST } = require('./lib.js');
+const { spokenDate, spokenDates, paragraphs, PODCAST } = require('./lib.js');
 
 const NARRATOR_VOICE = 'cedar';
 
 // Make written text read well aloud without changing any fact.
 function spoken(s) {
-  return String(s)
+  return spokenDates(String(s))
     .replace(/\s&\s/g, ' and ')
     .replace(/→/g, ' to ')
     .replace(/\be\.g\.\s?/g, 'for example, ')
@@ -35,7 +35,8 @@ function narrationFor(ed, opts = {}) {
   const say = (text, extra) => { const t = spoken(text); if (t) lines.push({ host: 'N', text: t, ...(extra || {}) }); };
   const monday = ed.edition === 'monday';
 
-  say(`Good morning. It's ${longDate(ed.date)}. This is ${PODCAST.title}, presented by ${PODCAST.presenter}${monday ? ' — the Monday edition' : ''}. This episode is voiced by AI, read directly from the written edition.`);
+  say(`Good morning. It's ${spokenDate(ed.date)}, and this is ${PODCAST.title}, presented by ${PODCAST.presenter}${monday ? ' — the Monday edition' : ''}.`);
+  say(`This episode is voiced by AI, read directly from the written edition. What you're about to hear is the last 24 hours in frontier AI: the advances, the research, and how it's being used, for good and for harm. Every claim comes from a source you can check on the site.`, { pause: 1.4 });
   for (const p of paragraphs(ed.summary)) say(p);
 
   for (const sec of ed.sections) {

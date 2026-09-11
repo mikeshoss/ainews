@@ -7,7 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { longDate, PODCAST } = require('./lib.js');
+const { longDate, spokenDate, ordinal, dateObj, PODCAST } = require('./lib.js');
 
 const VOICES = new Set(['alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer', 'verse', 'marin', 'cedar']);
 const BLOCK_TYPES = new Set(['intro', 'item', 'transition', 'week', 'figures', 'outro']);
@@ -20,7 +20,7 @@ const CAVEAT_PHRASES = {
   update: ['update', 'follow-up', 'follow up', 'we covered', 'covered before', 'earlier edition'],
 };
 const BULLET_CAVEAT_TRIGGERS = ['unverified', 'not independently', 'did not say', 'does not say', 'could not confirm', "couldn't confirm", 'caveat', 'has not confirmed', 'not yet confirmed'];
-const SCRIPT_CAVEAT_WORDS = ['unverified', 'not verified', "hasn't verified", "hasn't confirmed", 'has not confirmed', "haven't confirmed", 'caveat', 'not independently', "didn't say", 'did not say', "doesn't say", "couldn't confirm", 'could not confirm', 'only ', 'not yet'];
+const SCRIPT_CAVEAT_WORDS = ['unverified', 'not verified', 'does not say', 'not independently verified', 'not an independent', "hasn't verified", "hasn't confirmed", 'has not confirmed', "haven't confirmed", 'caveat', 'not independently', "didn't say", 'did not say', "doesn't say", "couldn't confirm", 'could not confirm', 'only ', 'not yet'];
 const NUMBER_WORDS = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|a couple of|a few|several|dozens of|hundreds of|thousands of|millions of|billions of)\s+(hundred|thousand|million|billion|trillion|percent|per cent)\b/i;
 const NUM_RE = /\d[\d,]*(?:\.\d+)?/g;
 
@@ -53,7 +53,8 @@ if (hostKeys.length === 2 && hosts[hostKeys[0]].voice === hosts[hostKeys[1]].voi
 if (!Array.isArray(sc.blocks) || !sc.blocks.length) err(`"blocks" must be a non-empty array`);
 
 // ---------- edition lookups ----------
-const digitsOf = (text) => new Set((String(text).replace(/,/g, '').match(/\d+(?:\.\d+)?/g) || []));
+const normNum = (n) => n.replace(/,/g, '').replace(/\.0+$/, '');
+const digitsOf = (text) => new Set((String(text).replace(/,/g, '').match(/\d+(?:\.\d+)?/g) || []).map(normNum));
 const itemByHeadline = new Map();
 for (const sec of ed.sections) for (const it of sec.items) itemByHeadline.set(it.headline, { item: it, section: sec.name });
 const weekByHeadline = new Map();
@@ -61,7 +62,7 @@ for (const it of (ed.week_in_review && ed.week_in_review.items) || []) weekByHea
 const itemText = (it) => [it.headline, ...(it.bullets || [])].join(' ');
 const summaryText = Array.isArray(ed.summary) ? ed.summary.join(' ') : String(ed.summary || '');
 const summaryDigits = digitsOf(summaryText);
-const dateDigits = digitsOf(`${longDate(date)} ${date}`);
+const dateDigits = new Set([...digitsOf(`${longDate(date)} ${date}`), '24']); // "the last 24 hours" is always allowed
 const figuresText = ((ed.week_in_review && ed.week_in_review.figures) || []).map((f) => `${f.value} ${f.label}`).join(' ');
 const figuresDigits = digitsOf(figuresText);
 
@@ -113,9 +114,11 @@ let prevHost = null, run = 0;
     if (text.length > 600) err(`${lw}: line is ${text.length} chars (max 600) — split it`);
     if (/https?:\/\/|www\./i.test(text)) err(`${lw}: URLs must not be read aloud`);
     if (NUMBER_WORDS.test(text)) err(`${lw}: numbers must be written as digits, not words ("${text.match(NUMBER_WORDS)[0]}")`);
+    const dbm = text.match(/\b\d{1,2}(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b/);
+    if (dbm) err(`${lw}: dates are spoken month-first with an ordinal ("September 10th"), not "${dbm[0]}"`);
     // Numeric lock
     for (const raw of text.match(NUM_RE) || []) {
-      const core = raw.replace(/,/g, '');
+      const core = normNum(raw);
       if (!allowedDigits.has(core)) {
         if (b.type === 'transition' || b.type === 'outro') err(`${lw}: number "${raw}" — transitions and outros may not contain numbers`);
         else err(`${lw}: number "${raw}" does not appear in the ${b.type === 'intro' ? 'edition summary' : b.type === 'figures' ? 'week figures' : 'item'} — remove it or fix the item`);
@@ -132,7 +135,8 @@ let prevHost = null, run = 0;
   // Item-specific locks
   if (b.type === 'item' && ref) {
     const it = ref.item;
-    const names = (it.sources || []).map((s) => (s.name || '').toLowerCase()).filter(Boolean);
+    // A source counts as named if its name (minus any parenthetical) or any slash/comma-separated part of it appears.
+    const names = (it.sources || []).flatMap((s) => { const n = (s.name || '').replace(/\s*\(.*?\)\s*/g, ' ').trim().toLowerCase(); return [n, ...n.split(/\s*[/,]\s*/)]; }).filter((n) => n.length >= 3);
     if (names.length && !names.some((n) => lower.includes(n))) err(`${where}: must name a source (${(it.sources || []).map((s) => s.name).join(' / ')})`);
     for (const f of it.flags || []) {
       const phrases = CAVEAT_PHRASES[f] || [];
@@ -145,7 +149,8 @@ let prevHost = null, run = 0;
   }
   if (b.type === 'intro') {
     if (!/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: intro must disclose that the episode is voiced by AI`);
-    if (!blockText.includes(longDate(date))) err(`${where}: intro must say the date exactly as "${longDate(date)}"`);
+    const o = dateObj(date), weekday = spokenDate(date).split(',')[0], alt = `${weekday} the ${ordinal(o.getUTCDate())} of ${spokenDate(date).split(', ')[1].split(' ')[0]}`;
+    if (!blockText.includes(spokenDate(date)) && !blockText.includes(alt)) err(`${where}: intro must say the date the way it is spoken: "${spokenDate(date)}" or "${alt}"`);
     if (!blockText.includes(PODCAST.title)) err(`${where}: intro must name the show: "${PODCAST.title}"`);
     if (!blockText.includes(PODCAST.presenter)) err(`${where}: intro must say "presented by ${PODCAST.presenter}"`);
     for (const k of hostKeys) {

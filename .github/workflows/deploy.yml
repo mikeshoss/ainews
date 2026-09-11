@@ -6,6 +6,13 @@ on:
   schedule:
     - cron: '0 12 * * *'   # safety net: fill any missing episode at 08:00 ET
   workflow_dispatch:
+    inputs:
+      force_date:
+        description: 'Regenerate this edition''s episode (YYYY-MM-DD)'
+        required: false
+      label:
+        description: 'Version label for the regenerated episode (e.g. v2); earlier versions are kept'
+        required: false
 
 permissions:
   contents: write   # upload podcast MP3s to the "audio" release
@@ -35,6 +42,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          FORCE_DATE: ${{ github.event.inputs.force_date }}
+          FORCE_LABEL: ${{ github.event.inputs.label }}
         run: node scripts/podcast.js
       - name: Build site
         run: node scripts/build.js

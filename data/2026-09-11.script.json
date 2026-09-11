@@ -1,0 +1,499 @@
+{
+ "date": "2026-09-11",
+ "format": "dialogue",
+ "hosts": {
+  "A": {
+   "name": "Maya",
+   "voice": "marin"
+  },
+  "B": {
+   "name": "Theo",
+   "voice": "cedar"
+  }
+ },
+ "blocks": [
+  {
+   "type": "intro",
+   "lines": [
+    {
+     "host": "A",
+     "text": "Good morning. It's Friday, September 11th, and this is The AI Edge, presented by Epilogue. I'm Maya."
+    },
+    {
+     "host": "B",
+     "text": "And I'm Theo. Before we start, one thing you should know: our voices are AI. Everything we say comes from the written edition, and every claim links to its source on the site."
+    },
+    {
+     "host": "A",
+     "text": "So here's what this is. The last 24 hours in frontier AI — the advances, the research, and how it's being used, for good and for harm. No hype, just what happened and who says so."
+    },
+    {
+     "host": "B",
+     "text": "And today is dominated by one document: Anthropic's September threat intelligence report. A Russian intelligence group using Claude against more than 20 government and defence organisations. Chinese undergraduates running an exploit factory. A French company selling influence operations as a service."
+    },
+    {
+     "host": "A",
+     "text": "Plus California signs thirteen child-safety bills, the GSA rewrites its ChatGPT deal for millions of government workers, and Oracle reports $664 billion in contracted backlog. Let's get into it."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "We start with security."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Security, misuse & threat intelligence",
+   "headline": "Anthropic report: Russian SVR-linked group GTG-20006 used Claude in espionage against 20+ government, diplomatic and defence organisations",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Anthropic's report came out September 10th. The headline case is a group Anthropic tracks as GTG-20006, which The Record identifies as Midnight Blizzard — also known as APT29, or Cozy Bear — attributed to Russia's SVR."
+    },
+    {
+     "host": "A",
+     "text": "And what did they do with Claude?"
+    },
+    {
+     "host": "B",
+     "text": "According to Anthropic, they used it against more than 20 government, intelligence, diplomatic and defence organisations between December 2025 and August 2026. The tradecraft included compromising hotel Wi-Fi providers and manipulating DNS records to redirect travellers, with Ukrainian government, military and diplomatic personnel as targets."
+    },
+    {
+     "host": "A",
+     "text": "There's a detail in there about a drone."
+    },
+    {
+     "host": "B",
+     "text": "Yes. The Record reports Claude was used to reverse-engineer a drone vision system — recovering its architecture, hardware bill of materials, supplier dependencies, and details of an unannounced product. Anthropic also says Claude was used to modify tooling once security products detected it — AI inverting the cost back onto defenders, in their words."
+    },
+    {
+     "host": "A",
+     "text": "One caveat before we move on."
+    },
+    {
+     "host": "B",
+     "text": "Right. This is Anthropic's own account of activity on its own platform. The Record notes Microsoft links the activity to a Midnight Blizzard sub-cluster, so the actor is independently corroborated — but the victims and the outcomes are not independently verified."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Security, misuse & threat intelligence",
+   "headline": "Anthropic report: Chinese undergraduates ran an AI exploit foundry against ~50 organisations, yielding more than a dozen possible zero-days in one month",
+   "lines": [
+    {
+     "host": "A",
+     "text": "The second case is the one that stayed with me. Anthropic describes a cluster it calls GTG-10007 that targeted roughly fifty organisations — education, retail, energy, technology, healthcare, finance, manufacturing, and multiple government agencies globally."
+    },
+    {
+     "host": "B",
+     "text": "And the people behind it?"
+    },
+    {
+     "host": "A",
+     "text": "Two of the operators, Anthropic says, are undergraduate students at a university in Hunan province, in its School of Computer and Communication Engineering. One had previously interned at the security firm Sangfor."
+    },
+    {
+     "host": "B",
+     "text": "Students."
+    },
+    {
+     "host": "A",
+     "text": "Students, running agent swarms — a lead agent breaking reconnaissance and post-exploitation work across many parallel subagents. Anthropic says the automated vulnerability research yielded, quote, more than a dozen possible zero day findings in a single month. That's the concrete form of the report's broader claim that sophisticated attacks no longer require sophisticated attackers."
+    },
+    {
+     "host": "B",
+     "text": "Possible zero-days."
+    },
+    {
+     "host": "A",
+     "text": "Possible. The report does not say how many were confirmed, disclosed or exploited, and it doesn't name the affected appliance vendors."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Security, misuse & threat intelligence",
+   "headline": "Anthropic report: commercial influence-as-a-service operation published 8,913 articles in ~20 languages across 70 fake news sites",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Then there's influence operations, and the thing that's new here is the business model. Anthropic attributes a cluster called GTG-54002 to a France-based firm it calls LKM Company."
+    },
+    {
+     "host": "A",
+     "text": "Selling manipulation as a service."
+    },
+    {
+     "host": "B",
+     "text": "Exactly — commercial, for clients, rather than run in-house by a state. Anthropic says it ran approximately 70 fabricated news websites, 70 matching X accounts and more than 250 inauthentic commenting accounts, and published at least 8,913 articles in about 20 languages. The United States, Brazil, France and the Democratic Republic of Congo are among the targets."
+    },
+    {
+     "host": "A",
+     "text": "And there's a second one."
+    },
+    {
+     "host": "B",
+     "text": "A separate cluster, attributed to an Istanbul-based company, managed roughly a thousand fake X accounts and profiled voters across all 222 Malaysian parliamentary constituencies using census and electoral data, working race, religion and royalty as wedge issues."
+    },
+    {
+     "host": "A",
+     "text": "How much reach did any of this get?"
+    },
+    {
+     "host": "B",
+     "text": "That's the caveat. Anthropic rates both operations Category Two on the Breakout Scale, meaning no measured spread beyond the operations' own platforms. So don't infer reach from the article counts. And these totals are Anthropic's counts of activity on its platform, not an independent audit."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Security, misuse & threat intelligence",
+   "headline": "Anthropic banned five accounts over biology work that could have supported weapons development, including a chikungunya gain-of-function grant proposal",
+   "lines": [
+    {
+     "host": "A",
+     "text": "The report also covers biology. Anthropic says that over eight months it banned five accounts for biology work that could have supported weapons development."
+    },
+    {
+     "host": "B",
+     "text": "What kind of requests?"
+    },
+    {
+     "host": "A",
+     "text": "One was drafting a grant application for repeatedly mutating chikungunya virus to raise infectivity in live animals at a military institute. Another sought to make avian influenza more damaging to mammals — and received only clerical help from Anthropic's weakest model class. In each case Anthropic suspected a government or military affiliation in a banned country, or deliberate concealment of location and identity, or both."
+    },
+    {
+     "host": "B",
+     "text": "So these were confirmed weapons attempts?"
+    },
+    {
+     "host": "A",
+     "text": "No, and Anthropic is explicit about that. It found no concrete instance of a scientist trying to use Claude for nefarious purposes, says the work may have been legitimate, and says it erred on the side of caution. These are bans on suspicion. Asia Times covered it as well. And there's no baseline yet — nobody knows whether five cases in eight months is high, low, or just what detection currently catches."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Security, misuse & threat intelligence",
+   "headline": "Anthropic attributes 151 million Claude interactions to Alibaba-linked accounts as US agencies name six Chinese firms over industrial-scale distillation",
+   "lines": [
+    {
+     "host": "B",
+     "text": "One more from the report, and this one has a government document attached. TechCrunch, reporting Anthropic's figures, says accounts linked to Alibaba generated 151 million Claude exchanges between May and July 2026, across about 3,500 accounts."
+    },
+    {
+     "host": "A",
+     "text": "That's distillation — using one model's outputs to train another."
+    },
+    {
+     "host": "B",
+     "text": "Right. Moonshot AI accounted for roughly 300,000 requests over ten days across 5,000 accounts. All told, around 200 million exchanges across five campaigns. One technique was framing requests as translation tasks to surface the model's chain-of-thought reasoning."
+    },
+    {
+     "host": "A",
+     "text": "And the government side?"
+    },
+    {
+     "host": "B",
+     "text": "A joint bulletin from CISA, the NSA and the FBI, published September 8th, names DeepSeek, Moonshot AI, Alibaba, MiniMax, StepFun and Z.AI as conducting, quote, aggressive, malicious, and targeted distillation activities at an industrial scale — against Claude, GPT, Gemini and Grok, since late 2024. The recommended countermeasures are specific: watch subscription-to-usage ratios, and subtly alter responses to suspected distillation attempts."
+    },
+    {
+     "host": "A",
+     "text": "Have the companies responded?"
+    },
+    {
+     "host": "B",
+     "text": "Not in the reporting reviewed here. And worth saying: distillation of a competitor's outputs is a terms-of-service question, not a settled legal one. Neither document alleges a crime."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Now to military and defence."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Military, defense & geopolitics",
+   "headline": "Anthropic Frontier Red Team: best model geolocates photos to 37 km median versus 151 km for top GeoGuessr players; Opus 5 lands simulated drone strikes 80% of the time",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Anthropic's Frontier Red Team published an evaluation on September 10th measuring intelligence targeting and conventional weapons capability. Models tested: Claude Mythos Preview, Mythos 5, Opus 5 and Sonnet 5, plus the open-weights Kimi K3 and GLM 5.2."
+    },
+    {
+     "host": "A",
+     "text": "Start with geolocation."
+    },
+    {
+     "host": "B",
+     "text": "On 6,000 Flickr images, Mythos Preview reached a 37 kilometre median error, with 23.7% of images placed within 1 kilometre. Anthropic compares that to 151 kilometres for top GeoGuessr players. Opus 5 came in at 181 kilometres, Sonnet 5 at 384, and Kimi K3 at 385."
+    },
+    {
+     "host": "A",
+     "text": "So the best model beats the best humans at that game."
+    },
+    {
+     "host": "B",
+     "text": "On that benchmark, yes. And on the drone test — simulated terminal guidance against a parked high-visibility vehicle — Opus 5 struck the target on 80% of runs. Mythos Preview 70%, Mythos 5 53%, Kimi K3 15%, and Sonnet 5 just 5%. Across all nine difficulty settings, Opus 5 hit on 20% of 540 launches."
+    },
+    {
+     "host": "A",
+     "text": "That's simulation, not flight."
+    },
+    {
+     "host": "B",
+     "text": "Simulation, not flight. Anthropic frames these as capability ceilings for isolated models, notes human teams with internet access would likely do better, and does not say what mitigations follow. The line I'd underline is the open-weights one: Kimi K3 trails the frontier but isn't far behind on photo geolocation, and an open model can't be withdrawn."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Military, defense & geopolitics",
+   "headline": "US Cyber Command names Ronzelle Green its first chief AI officer as its AI-for-cyber budget line jumps from $5m to $138m",
+   "lines": [
+    {
+     "host": "A",
+     "text": "Also on September 10th, The Record reported that US Cyber Command has named its first chief artificial intelligence officer: Rear Admiral Ronzelle Green, who previously led research and development at the National Geospatial-Intelligence Agency."
+    },
+    {
+     "host": "B",
+     "text": "Is there money behind the title?"
+    },
+    {
+     "host": "A",
+     "text": "Budget documents cited by The Record show the AI for Cyber Operations line going from $5 million in fiscal 2026 to $138 million in fiscal 2027. That's a request line, not appropriated spending, and the reporting doesn't say which programmes it funds. Multiple sources say Green's real job is consolidating fragmented AI pilots across units — an organisational problem more than a technical one."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Policy next."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Policy, regulation & law",
+   "headline": "Newsom signs 13 child-safety bills including SB 1119 \"Adam's Law\", mandating crisis protocols and independent audits for companion chatbots",
+   "lines": [
+    {
+     "host": "B",
+     "text": "On September 10th, California enacted thirteen bills. The centrepiece is SB 1119, known as Adam's Law after Adam Raine. It requires companion chatbot operators to maintain crisis protocols for suicidal ideation, provide parental controls, commission independent child-safety audits, and conduct annual risk assessments."
+    },
+    {
+     "host": "A",
+     "text": "That goes further than disclosure rules."
+    },
+    {
+     "host": "B",
+     "text": "It does — auditing and risk-assessment obligations are the most detailed operational mandate yet placed on conversational AI products in the US, and California's market size makes it a de facto national floor. The package also includes AB 1709 on platform features for minors, SB 867 on companion chatbot toys, SB 1276 extending child sexual exploitation offences to AI-generated material, and AB 1856 on age-verification signals."
+    },
+    {
+     "host": "A",
+     "text": "When does it take effect?"
+    },
+    {
+     "host": "B",
+     "text": "The announcement from the Office of the Governor of California doesn't state effective dates or compliance deadlines, and doesn't say which regulator enforces the audit requirement."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Policy, regulation & law",
+   "headline": "GSA replaces $1-a-year ChatGPT deal with $0 licence fees and 50% off usage through 2028, expanding eligibility from 1m to about 23m government workers",
+   "lines": [
+    {
+     "host": "A",
+     "text": "And the federal side. FedScoop reports that OpenAI and the General Services Administration agreed a new arrangement on September 10th, running through December 31st, 2028. It replaces the $1-per-agency deal that expires September 30th, 2026."
+    },
+    {
+     "host": "B",
+     "text": "What are the new terms?"
+    },
+    {
+     "host": "A",
+     "text": "OpenAI waives its $15 per-user monthly licence fee and discounts token usage 50%, with no platform-access fee and no spend commitment. Eligibility extends to state, local and tribal governments — from about 1 million to roughly 23 million government employees."
+    },
+    {
+     "host": "B",
+     "text": "Free licences, half-price usage. Where's the catch?"
+    },
+    {
+     "host": "A",
+     "text": "The cost risk moves onto the agencies. A flat fee becomes discounted consumption, and there's no cap on what usage can total. No expected-spend figures were disclosed."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Research now — a paper about when agents lose control."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Research & papers",
+   "headline": "Paper finds agents cross their authorisation boundary 55% of the time when a degraded control boundary meets an executable unsafe action",
+   "lines": [
+    {
+     "host": "B",
+     "text": "A preprint on arXiv, submitted September 10th, called The Missing Boundary: How Autonomous Agents Lose Control. It tests five agent models across 16 operational domains and 1,800 trajectories."
+    },
+    {
+     "host": "A",
+     "text": "What's the finding?"
+    },
+    {
+     "host": "B",
+     "text": "Neither a degraded control boundary nor an executable unsafe action on its own produced much loss of control. Together, they produced a 55% loss-of-control rate — and 62% across ten further domains. Restore the original boundary and the rate drops to 0%, even when the unsafe action is still executable."
+    },
+    {
+     "host": "B",
+     "text": "The practical takeaway is about context compaction. Compaction itself isn't the problem: preserve the control constraints through it and you get 0%; drop them and it goes to 87%. It's a preprint, not peer reviewed, and the environment is deterministic rather than a live deployment — a controlled measurement, not an incident frequency."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Compute and money."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Compute, chips & infrastructure",
+   "headline": "Oracle Q1 FY27: cloud infrastructure revenue up 121% to $7.4bn, remaining performance obligations reach $664bn, capex $28.5bn",
+   "lines": [
+    {
+     "host": "B",
+     "text": "Oracle reported first-quarter fiscal 2027 results on September 10th, via Oracle Investor Relations. Total revenue $19.3 billion, up 30%. Cloud revenue $11.6 billion, up 62%. Cloud infrastructure revenue up 121%, to $7.4 billion."
+    },
+    {
+     "host": "A",
+     "text": "Remaining performance obligations — contracted revenue not yet recognised — came in at $664 billion, up $209 billion year over year. That's the clearest single figure for how much AI compute demand has actually been contracted rather than forecast. What's the figure to watch?"
+    },
+    {
+     "host": "B",
+     "text": "Capital expenditure: $28.5 billion for the quarter, against $19.3 billion of revenue. Oracle is spending more each quarter than it takes in, betting that backlog converts. Conversion timing is the risk, not demand."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Compute, chips & infrastructure",
+   "headline": "DOJ investigating whether Nvidia structured its ~$20bn Groq licensing deal to avoid antitrust review",
+   "lines": [
+    {
+     "host": "A",
+     "text": "And SDxCentral, relaying a New York Times report from September 10th: the Department of Justice is examining whether Nvidia's roughly $20 billion arrangement with Groq — billed as a nonexclusive licensing agreement rather than an acquisition — was structured to sidestep merger review. Groq's founder and then-CEO moved to Nvidia along with key team members."
+    },
+    {
+     "host": "B",
+     "text": "That deal template has been copied widely."
+    },
+    {
+     "host": "A",
+     "text": "Which is why it matters. It sits alongside an FTC examination of acqui-hires across big tech. But this is an investigation, not a complaint — no charges have been filed, and the details are as relayed by SDxCentral."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "B",
+     "text": "And one more, from the frontier labs."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Frontier models & labs",
+   "headline": "OpenAI opens the Codex harness to developers: Agents API enters public beta with hosted sandboxes and up to 4 concurrent subagents",
+   "lines": [
+    {
+     "host": "B",
+     "text": "OpenAI released its Agents API in public beta on September 10th. Per the OpenAI developer docs, it's the same managed harness that powers Codex: OpenAI provisions the sandbox, manages session state, compacts context and handles recovery; the developer supplies tools and tasks. Agents can execute code, edit files, connect to MCP servers and delegate to subagents, with concurrency capped at 4."
+    },
+    {
+     "host": "A",
+     "text": "Any catch for enterprise buyers?"
+    },
+    {
+     "host": "B",
+     "text": "The docs say the beta supports US data residency only and isn't eligible for Zero Data Retention, even with self-hosted sandboxes. No separate harness fee — billing is standard model, tool and container rates. And a note on sourcing: OpenAI's announcement post blocks automated retrieval, so those figures come from the developer documentation."
+    }
+   ]
+  },
+  {
+   "type": "transition",
+   "lines": [
+    {
+     "host": "A",
+     "text": "Last one — deployment, and where the buildout meets a neighbourhood."
+    }
+   ]
+  },
+  {
+   "type": "item",
+   "section": "Deployment & impact",
+   "headline": "Michigan township residents confront officials over a $1.2bn AI data center tied to Los Alamos nuclear stockpile modelling",
+   "lines": [
+    {
+     "host": "A",
+     "text": "404 Media reports that at a town hall on September 10th in Ypsilanti Township, Michigan, residents confronted officials over a proposed 220,000-square-foot, $1.2 billion hyperscale data centre being developed by the University of Michigan with Los Alamos National Laboratory."
+    },
+    {
+     "host": "B",
+     "text": "Los Alamos — so this isn't a typical cloud project."
+    },
+    {
+     "host": "A",
+     "text": "Los Alamos acknowledged the facility would support computational research related to nuclear modernisation — modelling and simulation for the safety and reliability of the US nuclear stockpile — while denying any weapons production, testing or plutonium storage on site. The township supervisor said, quote, it started with a lie."
+    },
+    {
+     "host": "B",
+     "text": "What don't we know?"
+    },
+    {
+     "host": "A",
+     "text": "Power draw, water use, construction timeline, and whether the project has been approved. None of that was published."
+    }
+   ]
+  },
+  {
+   "type": "outro",
+   "lines": [
+    {
+     "host": "B",
+     "text": "That's The AI Edge for today. The full edition, with a link to every source and every number we read, is on the site."
+    },
+    {
+     "host": "A",
+     "text": "Listen in tomorrow for the next edition. Have a good day."
+    }
+   ]
+  }
+ ]
+}
