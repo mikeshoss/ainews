@@ -2,7 +2,9 @@
 
 The sweep list for every edition. **Primary** sources (labs, papers, governments, court filings, security vendors' own reports) are always preferred for the link beside a headline; **secondary** sources (press, newsletters, aggregators) are used to discover stories and as corroboration. Wherever a secondary source reports on a primary document, link the primary document too.
 
-Fetch hints: `WebFetch` works on most pages below. Sites that block bots (Reuters, Bloomberg, FT, WSJ, The Information) are searched with `WebSearch` using `allowed_domains`. RSS/Atom URLs are listed where they exist because they are the most reliable "what changed in the last 24h" signal.
+Fetch hints: `WebFetch` works on most pages below. RSS/Atom URLs are listed where they exist because they are the most reliable "what changed in the last 24h" signal.
+
+**Known to block the fetcher** (confirmed 11 Sep 2026 — do not retry with curl/archives; use `WebSearch` result text, RSS feeds where listed, or an alternative openable source, and say in the bullet where the figures came from): Reuters, Bloomberg, WSJ, NYT, FT, The Information, Wired, The Verge, Ars Technica, AP, The Guardian, CNBC, Axios article pages, BleepingComputer, `openai.com/index/*` article pages (the RSS feed `openai.com/news/rss.xml` and `developers.openai.com` docs work), Data Center Dynamics article pages (index pages work), Oracle newsroom (investor.oracle.com works), x.ai, Nature (auth redirect), smol.ai (402), FDA newsroom index (401 — search for the specific press release URL instead). `WebSearch` with `allowed_domains` also rejects reuters.com, wsj.com, nytimes.com, wired.com, theverge.com, arstechnica.com, businessinsider.com — search without the domain filter and use whatever result text is visible.
 
 ## 1. Frontier labs (primary)
 
