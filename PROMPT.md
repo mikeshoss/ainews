@@ -177,7 +177,7 @@ git push origin main
 ```
 
 `trace/DATE.jsonl` and `trace/DATE.transcript.jsonl` are written automatically by a Claude Code hook (`scripts/trace-hook.js`, wired in `.claude/settings.json`) — every tool call you and your subagents make is recorded there and published at `/DATE/trace/`. Do not edit those files. Always `git add trace/` with the edition.
-GitHub Actions builds and deploys the site to https://mikeshoss.github.io/ainews/ within a few minutes, and synthesizes the podcast episode (`scripts/podcast.js`) from your script — or from the code-generated narration if the script is missing or fails validation. The page for this edition will be `https://mikeshoss.github.io/ainews/DATE/`; the episode script at `/DATE/script/`.
+GitHub Actions builds and deploys the site to https://aiedgebriefing.com/ within a few minutes, and synthesizes the podcast episode (`scripts/podcast.js`) from your script — or from the code-generated narration if the script is missing or fails validation. The page for this edition will be `https://aiedgebriefing.com/DATE/`; the episode script at `/DATE/script/`.
 
 If the push is rejected, `git pull --rebase origin main` and push again. Do not open a pull request; the edition must land on `main`.
 

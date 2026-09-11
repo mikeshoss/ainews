@@ -2,9 +2,9 @@
 
 A daily, fact-first briefing on frontier AI — the advances, the research, and how AI is being used for good and for harm. Every headline links to its source. Nothing is written without one.
 
-- **Site**: https://mikeshoss.github.io/ainews/ — one page per edition (`/YYYY-MM-DD/`), plus `/trends/` for topics that keep recurring.
+- **Site**: https://aiedgebriefing.com/ — one page per edition (`/YYYY-MM-DD/`), plus `/trends/` for topics that keep recurring.
 - **Email**: each edition is sent to the reader's Gmail with a link and the key points.
-- **Podcast — The AI Edge, presented by Epilogue**: every edition is an episode — feed at https://mikeshoss.github.io/ainews/podcast.xml, player on each page. Each episode has its own generated cover, coloured by that day's news (see *Section colours*). Two AI hosts when the script passes every factual lock (`scripts/validate-script.js`), otherwise a code-generated narration of the edition. Script with every claim linked to its item at `/YYYY-MM-DD/script/`.
+- **Podcast — The AI Edge, presented by Epilogue**: every edition is an episode — feed at https://aiedgebriefing.com/podcast.xml, player on each page. Each episode has its own generated cover, coloured by that day's news (see *Section colours*). Two AI hosts when the script passes every factual lock (`scripts/validate-script.js`), otherwise a code-generated narration of the edition. Script with every claim linked to its item at `/YYYY-MM-DD/script/`.
 - **Trace**: every edition has `/YYYY-MM-DD/trace/` — the complete record of the run that produced it (every tool call, input and response), captured by a harness hook rather than written by the model.
 - **Schedule**: generated every morning at 07:00 America/Toronto (11:00 UTC) by a Claude Code cloud routine. Mondays include a week-in-review section.
 

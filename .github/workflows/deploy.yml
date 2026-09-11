@@ -46,6 +46,8 @@ jobs:
           FORCE_LABEL: ${{ github.event.inputs.label }}
         run: node scripts/podcast.js
       - name: Build site
+        env:
+          SITE_URL: https://aiedgebriefing.com
         run: node scripts/build.js
       - name: Site assets (cover, favicon, share image)
         run: |
