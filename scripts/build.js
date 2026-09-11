@@ -16,7 +16,20 @@ const SITE_NAME = 'AI Edge Briefing';
 const SITE_TAGLINE = 'Daily, fact-first coverage of frontier AI — the advances, the research, and how it is being used for good and for harm.';
 const SITE_URL = (process.env.SITE_URL || 'https://aiedgebriefing.com').replace(/\/$/, '');
 const REPO_URL = 'https://github.com/mikeshoss/ainews';
-const GA_ID = process.env.GA_MEASUREMENT_ID || ''; // Google Analytics 4 measurement id (G-XXXXXXXXXX); empty = no analytics
+const GA_ID = process.env.GA_MEASUREMENT_ID || '';
+const UTM_SOURCE = 'aiedgebriefing';
+// Tag an outbound link so the destination can see it came from us: utm_source=aiedgebriefing, utm_medium=web|email,
+// utm_campaign=<edition date>. Data files keep the clean URL; tags are added only when rendering.
+function utm(url, medium, campaign) {
+  try {
+    const u = new URL(url);
+    if (!/^https?:$/.test(u.protocol) || u.searchParams.has('utm_source')) return url;
+    u.searchParams.set('utm_source', UTM_SOURCE);
+    u.searchParams.set('utm_medium', medium);
+    if (campaign) u.searchParams.set('utm_campaign', campaign);
+    return u.toString();
+  } catch { return url; }
+} // Google Analytics 4 measurement id (G-XXXXXXXXXX); empty = no analytics
 const TREND_WINDOW_DAYS = 7;   // look-back window for "trending"
 const TREND_MIN_DAYS = 2;      // a topic must appear on at least this many editions in the window
 
@@ -153,15 +166,15 @@ ${body}
 </main>
 <footer class="site-footer"><div class="wrap">
   <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source.</p>
-  <p>Presented by <a href="${esc(PODCAST.presenterUrl)}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(CREDITS.url)}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
+  <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
 </div></footer>
 </body>
 </html>
 `;
 }
 
-function renderSources(sources) {
-  return (sources || []).map((s, i) => `<a class="src" href="${esc(s.url)}" rel="noopener" title="${esc(s.url)}">${esc(s.name || hostname(s.url))}</a>`).join('<span class="sep">·</span>');
+function renderSources(sources, campaign) {
+  return (sources || []).map((s, i) => `<a class="src" href="${esc(utm(s.url, 'web', campaign))}" rel="noopener" title="${esc(s.url)}">${esc(s.name || hostname(s.url))}</a>`).join('<span class="sep">·</span>');
 }
 
 function renderItem(item, base, opts = {}) {
@@ -172,8 +185,8 @@ function renderItem(item, base, opts = {}) {
   const dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
   return `<article class="item">
   ${dateLine}
-  <h3>${first ? `<a href="${esc(first.url)}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}${flags}</h3>
-  <div class="sources">${renderSources(item.sources)}</div>
+  <h3>${first ? `<a href="${esc(utm(first.url, 'web', opts.campaign))}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}${flags}</h3>
+  <div class="sources">${renderSources(item.sources, opts.campaign)}</div>
   <ul>${(item.bullets || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
   ${topics ? `<div class="topics">${topics}</div>` : ''}
 </article>`;
@@ -187,7 +200,7 @@ function renderEditionPage(ed, editions, idx) {
   const toc = ed.sections.map((s) => `<a href="#${esc(slugify(s.name))}">${esc(s.name)} <span class="count">${s.items.length}</span></a>`).join('');
   const sections = ed.sections.map((s) => `<section class="section" id="${esc(slugify(s.name))}">
   <h2><i class="dot" style="background:${(SECTION_COLORS[s.name] || {}).hex || '#9a9a9a'}"></i>${esc(s.name)}</h2>
-  ${s.items.map((it) => renderItem(it, base)).join('\n')}
+  ${s.items.map((it) => renderItem(it, base, { campaign: ed.date })).join('\n')}
 </section>`).join('\n');
   let week = '';
   if (ed.week_in_review && (ed.week_in_review.items || []).length) {
@@ -196,9 +209,9 @@ function renderEditionPage(ed, editions, idx) {
   <h2>The week in review</h2>
   <p class="muted">What mattered over the last seven days${w.period ? ` (${esc(w.period)})` : ''}.</p>
   ${paragraphs(w.summary).map((p) => `<p>${esc(p)}</p>`).join('')}
-  ${w.items.map((it) => renderItem(it, base)).join('\n')}
-  ${(w.figures || []).length ? `<h3 class="sub">By the numbers</h3><dl class="figures">${w.figures.map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <a class="src" href="${esc(f.url)}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl>` : ''}
-  ${(w.calendar || []).length ? `<h3 class="sub">On the calendar</h3><ul class="calendar">${w.calendar.map((c) => `<li><strong>${esc(c.date)}</strong> — ${esc(c.event)} <a class="src" href="${esc(c.url)}" rel="noopener">${esc(c.source || hostname(c.url))}</a></li>`).join('')}</ul>` : ''}
+  ${w.items.map((it) => renderItem(it, base, { campaign: ed.date })).join('\n')}
+  ${(w.figures || []).length ? `<h3 class="sub">By the numbers</h3><dl class="figures">${w.figures.map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <a class="src" href="${esc(utm(f.url, 'web', ed.date))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl>` : ''}
+  ${(w.calendar || []).length ? `<h3 class="sub">On the calendar</h3><ul class="calendar">${w.calendar.map((c) => `<li><strong>${esc(c.date)}</strong> — ${esc(c.event)} <a class="src" href="${esc(utm(c.url, 'web', ed.date))}" rel="noopener">${esc(c.source || hostname(c.url))}</a></li>`).join('')}</ul>` : ''}
 </section>`;
   }
   const body = `<article class="edition">
@@ -273,7 +286,7 @@ function renderTrendsIndex(topics, trending, editions) {
     return `<article class="card trend-card">
   <div class="eyebrow">${t.streak > 1 ? `${t.streak}-edition streak · ` : ''}${t.daysInWindow} of the last ${TREND_WINDOW_DAYS} days · ${t.entries.length} items total</div>
   <h2><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></h2>
-  <p class="muted">Latest: <a href="${esc((latest.item.sources || [{}])[0].url || '#')}" rel="noopener">${esc(latest.item.headline)}</a> <span class="count">${esc(shortDate(latest.date))}</span></p>
+  <p class="muted">Latest: <a href="${esc(utm((latest.item.sources || [{}])[0].url || '#', 'web', latest.date))}" rel="noopener">${esc(latest.item.headline)}</a> <span class="count">${esc(shortDate(latest.date))}</span></p>
 </article>`;
   }).join('\n');
   const all = [...topics.values()].sort((a, b) => b.dates.size - a.dates.size || b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
@@ -295,7 +308,7 @@ function renderTopicPage(t) {
   for (const e of t.entries) { if (!byDate.has(e.date)) byDate.set(e.date, []); byDate.get(e.date).push(e); }
   const groups = [...byDate.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([date, entries]) => `<section class="section">
   <h2><a href="${base}${date}/">${esc(longDate(date))}</a></h2>
-  ${entries.map((e) => renderItem(e.item, base, { section: e.section })).join('\n')}
+  ${entries.map((e) => renderItem(e.item, base, { section: e.section, campaign: e.date })).join('\n')}
 </section>`).join('\n');
   const body = `<div class="eyebrow"><a href="${base}trends/">Trends</a> / topic</div>
 <h1>${esc(t.label)}</h1>
@@ -311,9 +324,9 @@ function renderEmail(ed) {
   const sec = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</h2>` +
     s.items.map((it) => {
       const first = (it.sources || [])[0];
-      const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(x.url)}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
+      const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(utm(x.url, 'email', ed.date))}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
       const fl = (it.flags || []).map((f) => `<b style="color:#7a4b00;font-size:11px;text-transform:uppercase;letter-spacing:.04em">[${esc(FLAG_LABELS[f] || f)}]</b> `).join('');
-      return `<p style="margin:0 0 12px">${fl}<a href="${esc(first ? first.url : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
+      return `<p style="margin:0 0 12px">${fl}<a href="${esc(first ? utm(first.url, 'email', ed.date) : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
     }).join('');
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
 <p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}${monday ? ' · Monday edition' : ''}</p>
@@ -328,7 +341,7 @@ ${ed.week_in_review && (ed.week_in_review.items || []).length ? `<h2 style="font
   const text = [
     `${SITE_NAME}${monday ? ' - Monday edition' : ''}`, longDate(ed.date), '', `Full edition: ${url}`, '',
     ...summary, '',
-    ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${x.url}`)]), '']),
+    ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${utm(x.url, 'email', ed.date)}`)]), '']),
   ].join('\n');
   return { html, text, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}${monday ? ' (Monday edition, with the week in review)' : ''}` };
 }
