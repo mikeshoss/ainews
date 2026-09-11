@@ -16,6 +16,7 @@ const SITE_NAME = 'AI Edge Briefing';
 const SITE_TAGLINE = 'Daily, fact-first coverage of frontier AI — the advances, the research, and how it is being used for good and for harm.';
 const SITE_URL = (process.env.SITE_URL || 'https://aiedgebriefing.com').replace(/\/$/, '');
 const REPO_URL = 'https://github.com/mikeshoss/ainews';
+const GA_ID = process.env.GA_MEASUREMENT_ID || ''; // Google Analytics 4 measurement id (G-XXXXXXXXXX); empty = no analytics
 const TREND_WINDOW_DAYS = 7;   // look-back window for "trending"
 const TREND_MIN_DAYS = 2;      // a topic must appear on at least this many editions in the window
 
@@ -132,6 +133,8 @@ ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
 <link rel="alternate" type="application/rss+xml" title="${esc(PODCAST.title)} — Podcast" href="${base}podcast.xml">
 <link rel="stylesheet" href="${base}style.css">
 ${jsonld(ld)}
+${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(GA_ID)}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${esc(GA_ID)}',{anonymize_ip:true});</script>` : ''}
 </head>
 <body>
 <header class="site-header">

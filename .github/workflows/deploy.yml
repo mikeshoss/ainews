@@ -48,6 +48,7 @@ jobs:
       - name: Build site
         env:
           SITE_URL: https://aiedgebriefing.com
+          GA_MEASUREMENT_ID: ''   # Google Analytics 4 id (G-XXXXXXXXXX); leave empty to disable
         run: node scripts/build.js
       - name: Site assets (cover, favicon, share image)
         run: |
