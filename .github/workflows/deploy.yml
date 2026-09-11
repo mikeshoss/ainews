@@ -37,7 +37,9 @@ jobs:
       - name: Build site
         run: node scripts/build.js
       - name: Podcast cover
-        run: scripts/cover.sh site/cover.png
+        run: |
+          sudo apt-get install -y -qq imagemagick fonts-dejavu-core >/dev/null 2>&1 || true
+          scripts/cover.sh site/cover.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
