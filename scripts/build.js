@@ -514,6 +514,8 @@ function renderPodcastFeed(editions, audio) {
 <itunes:duration>${hhmmss(ep.seconds)}</itunes:duration>
 ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <itunes:explicit>false</itunes:explicit>
+<itunes:episodeType>full</itunes:episodeType>
+<itunes:author>${esc(PODCAST.author)}</itunes:author>
 <enclosure url="${esc(ep.url)}" length="${ep.bytes}" type="audio/mpeg"/>
 </item>`;
   }).join('\n');
@@ -525,8 +527,13 @@ ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <atom:link href="${SITE_URL}/podcast.xml" rel="self" type="application/rss+xml"/>
 <language>en</language>
 <description>${esc(PODCAST.title)}, presented by ${esc(PODCAST.presenter)}. ${esc(SITE_TAGLINE)} Each episode is voiced by AI from the written edition; every claim links to its source on the site.</description>
-<itunes:author>${esc(PODCAST.presenter)}</itunes:author>
+<itunes:author>${esc(PODCAST.author)}</itunes:author>
+<itunes:owner><itunes:name>${esc(PODCAST.author)}</itunes:name><itunes:email>${esc(PODCAST.email)}</itunes:email></itunes:owner>
+<managingEditor>${esc(PODCAST.email)} (${esc(PODCAST.author)})</managingEditor>
 <itunes:subtitle>${esc(PODCAST.tagline)}</itunes:subtitle>
+<itunes:type>episodic</itunes:type>
+<copyright>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}</copyright>
+<lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 <itunes:image href="${SITE_URL}/cover.png"/>
 <image><url>${SITE_URL}/cover.png</url><title>${esc(PODCAST.title)}</title><link>${SITE_URL}/podcast/</link></image>
 <itunes:explicit>false</itunes:explicit>

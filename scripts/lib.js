@@ -32,7 +32,7 @@ const SECTION_COLORS = {
   'Compute, chips & infrastructure':        { hex: '#06B6D4', name: 'cyan',          short: 'Compute' },
   'Deployment & impact':                    { hex: '#EC4899', name: 'magenta',       short: 'Deployment' },
 };
-const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', tagline: 'Daily, fact-first frontier AI news' };
+const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue (Mike Shoss)', email: 'mike@epiloguelabs.com', tagline: 'Daily, fact-first frontier AI news' };
 
 // Share of the day's items per section (daily sections only; the Monday week-in-review is not counted).
 function sectionWeights(ed) {
