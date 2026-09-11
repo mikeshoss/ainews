@@ -6,6 +6,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS } = require('./lib.js');
+const { narrationFor } = require('./narrate.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const DATA_DIR = path.join(ROOT, 'data');
@@ -28,8 +30,6 @@ const SECTION_ORDER = [
   'Deployment & impact',
 ];
 
-const FLAG_LABELS = { 'company-claim': 'Company claim', 'single-source': 'Single source', preprint: 'Preprint', update: 'Update' };
-
 const TOKEN_LABELS = {
   ai: 'AI', eu: 'EU', us: 'US', uk: 'UK', un: 'UN', gpu: 'GPU', gpus: 'GPUs', llm: 'LLM', llms: 'LLMs',
   api: 'API', fda: 'FDA', nist: 'NIST', darpa: 'DARPA', dod: 'DoD', cisa: 'CISA', nato: 'NATO', ftc: 'FTC',
@@ -41,15 +41,8 @@ const TOKEN_LABELS = {
 
 // ---------- helpers ----------
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const dateObj = (d) => new Date(d + 'T12:00:00Z');
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const longDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()]}, ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()]} ${o.getUTCFullYear()}`; };
-const shortDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()].slice(0, 3)} ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()].slice(0, 3)}`; };
-const isMonday = (d) => dateObj(d).getUTCDay() === 1;
 const daysBetween = (a, b) => Math.round((dateObj(a) - dateObj(b)) / 86400000);
 const topicLabel = (slug) => slug.split('-').map((t) => TOKEN_LABELS[t] || (t.charAt(0).toUpperCase() + t.slice(1))).join(' ');
-const paragraphs = (s) => (Array.isArray(s) ? s : String(s || '').split(/\n\s*\n/)).map((p) => p.trim()).filter(Boolean);
 const hostname = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
 const write = (rel, content) => { const p = path.join(OUT_DIR, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, content); };
 
@@ -113,6 +106,7 @@ function layout({ title, description, base, body, canonical }) {
 <meta name="description" content="${esc(description || SITE_TAGLINE)}">
 ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
 <link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
+<link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)} — Podcast" href="${base}podcast.xml">
 <link rel="stylesheet" href="${base}style.css">
 </head>
 <body>
@@ -122,6 +116,7 @@ ${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
     <nav>
       <a href="${base}">Editions</a>
       <a href="${base}trends/">Trends</a>
+      <a href="${base}podcast/">Podcast</a>
       <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
       <a href="${base}feed.xml">RSS</a>
     </nav>
@@ -183,6 +178,7 @@ function renderEditionPage(ed, editions, idx) {
   <header class="edition-header">
     <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">run trace</a>` : ''}</div>
     <h1>${esc(longDate(ed.date))}</h1>
+    ${renderPlayer(ed.audio, base, ed, false)}
     <div class="summary">${summary}</div>
     <nav class="toc">${toc}${week ? `<a href="#week-in-review">The week in review</a>` : ''}</nav>
   </header>
@@ -206,6 +202,7 @@ function renderHome(editions, trending) {
   <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily'} · ${ed.itemCount} items · ${ed.sections.map((s) => esc(s.name)).join(' / ')}</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
   <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
+  ${renderPlayer(ed.audio, base, ed, true)}
   <div class="topics">${topTopics}</div>
 </article>`;
   }).join('\n');
@@ -398,10 +395,118 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .tr-prompt pre{max-height:240px}
 .tr details{margin-top:4px}.tr summary{cursor:pointer;font-size:.8rem;color:var(--muted)}
 .tr pre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:4px 0 0;max-height:420px;overflow:auto}
+.player{margin:14px 0 6px}.player audio{width:100%;max-width:560px;display:block}
+.player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
+.feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
+.script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+.line{display:flex;gap:12px;margin:6px 0}.line .who{flex:0 0 64px;font-weight:600;font-size:.85rem;color:var(--accent)}
+.script-section{font-weight:600;margin-top:1.4em}
 .site-footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding-block:20px}
 @media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}}
 `;
 
+
+// ---------- podcast ----------
+const AUDIO_INDEX = path.join(ROOT, 'audio', 'index.json');
+function loadAudio() {
+  try { return JSON.parse(fs.readFileSync(AUDIO_INDEX, 'utf8')).episodes || {}; } catch { return {}; }
+}
+const mmss = (sec) => { const m = Math.floor(sec / 60), s2 = sec % 60; return `${m}:${String(s2).padStart(2, '0')}`; };
+const hhmmss = (sec) => `${String(Math.floor(sec / 3600)).padStart(2, '0')}:${String(Math.floor((sec % 3600) / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+
+function renderPlayer(ep, base, ed, compact) {
+  if (!ep) return '';
+  const label = `${ep.format === 'dialogue' ? 'Two-host episode' : 'Narrated edition'} · ${mmss(ep.seconds)}`;
+  return `<div class="player${compact ? ' compact' : ''}">
+  <audio controls preload="none" src="${esc(ep.url)}"></audio>
+  <div class="player-meta">${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">${ep.format === 'dialogue' ? 'read the script' : 'read the narration'}</a> · <a href="${base}podcast/">subscribe</a>` : ''}</div>
+</div>`;
+}
+
+function loadScript(date) {
+  const p = path.join(DATA_DIR, `${date}.script.json`);
+  if (!fs.existsSync(p)) return null;
+  try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; }
+}
+
+function renderScriptPage(ed, sc, ep) {
+  const base = '../../';
+  const usedDialogue = ep ? ep.format === 'dialogue' : !!sc;
+  let body;
+  if (usedDialogue && sc) {
+    const hosts = sc.hosts;
+    const blocks = sc.blocks.map((b) => {
+      const ref = b.type === 'item' || b.type === 'week' ? `<div class="script-ref">${b.type === 'week' ? 'Week in review' : esc(b.section || '')} — <a href="${base}${ed.date}/#${esc(slugify(b.section || 'week-in-review'))}">${esc(b.headline)}</a></div>` : `<div class="script-ref muted">${esc(b.type)}</div>`;
+      const lines = b.lines.map((l) => `<div class="line"><span class="who">${esc((hosts[l.host] || {}).name || l.host)}</span><span>${esc(l.text)}</span></div>`).join('');
+      return `<section class="script-block">${ref}${lines}</section>`;
+    }).join('\n');
+    body = `<p class="lede">Two hosts, ${Object.values(hosts).map((h) => esc(h.name)).join(' and ')} — synthetic voices. Every block below is pinned to one item of the written edition (linked); a validator checks that every number in a block appears in that item, that flagged items voice their caveat, that a source is named, and that no speculative or hype language is used.</p>${blocks}`;
+  } else {
+    const n = narrationFor(ed);
+    body = `<p class="lede">Single narrator (synthetic voice). This text is generated by code directly from the written edition — summary, then each item's headline, key fact and caveats — so it cannot say anything the edition does not.</p>` +
+      n.lines.map((l) => `<p${l.section ? ' class="script-section"' : ''}>${esc(l.text)}</p>`).join('');
+  }
+  const page = `<div class="eyebrow"><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> / script</div>
+<h1>Episode script — ${esc(shortDate(ed.date))}</h1>
+${renderPlayer(ep, base, ed, false)}
+${body}`;
+  return layout({ title: `Script — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/script/` });
+}
+
+function renderPodcastPage(editions, audio) {
+  const base = '../';
+  const feed = `${SITE_URL}/podcast.xml`;
+  const eps = editions.filter((ed) => audio[ed.date]).map((ed) => `<article class="card">
+  <div class="eyebrow">${esc(shortDate(ed.date))} · ${audio[ed.date].format === 'dialogue' ? 'two hosts' : 'narrated'} · ${mmss(audio[ed.date].seconds)}</div>
+  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  ${renderPlayer(audio[ed.date], base, ed, false)}
+</article>`).join('\n');
+  const body = `<h1>Podcast</h1>
+<p class="lede">Every edition as an episode, ready when the morning edition is. Subscribe once and each day's episode downloads to your phone.</p>
+<div class="card">
+  <p><b>Feed URL</b> — paste into your podcast app:</p>
+  <p><code class="feed">${esc(feed)}</code></p>
+  <p class="muted">Apple Podcasts: Library → ⋯ → <i>Follow a Show by URL</i>. Overcast: + → <i>Add URL</i>. Pocket Casts: search bar → paste the URL. Episodes are voiced by AI from the written edition; the two-host format is used only when the script passes every factual lock, otherwise the day is narrated straight from the edition text. Each episode page has the script with every claim linked to its source.</p>
+</div>
+${eps || '<p class="muted">No episodes yet.</p>'}`;
+  return layout({ title: `Podcast — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/podcast/` });
+}
+
+function renderPodcastFeed(editions, audio) {
+  const items = editions.filter((ed) => audio[ed.date]).slice(0, 60).map((ed) => {
+    const ep = audio[ed.date];
+    const desc = paragraphs(ed.summary).join('\n\n');
+    return `<item>
+<title>${esc(longDate(ed.date))}${ed.edition === 'monday' ? ' — Monday edition' : ''}</title>
+<link>${SITE_URL}/${ed.date}/</link>
+<guid isPermaLink="false">ainews-${ed.date}</guid>
+<pubDate>${new Date(ep.generated_at || ed.date + 'T12:00:00Z').toUTCString()}</pubDate>
+<description>${esc(desc)}</description>
+<itunes:summary>${esc(desc)}</itunes:summary>
+<itunes:duration>${hhmmss(ep.seconds)}</itunes:duration>
+<itunes:explicit>false</itunes:explicit>
+<enclosure url="${esc(ep.url)}" length="${ep.bytes}" type="audio/mpeg"/>
+</item>`;
+  }).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>${esc(SITE_NAME)}</title>
+<link>${SITE_URL}/</link>
+<atom:link href="${SITE_URL}/podcast.xml" rel="self" type="application/rss+xml"/>
+<language>en</language>
+<description>${esc(SITE_TAGLINE)} Each episode is voiced by AI from the written edition; every claim links to its source on the site.</description>
+<itunes:author>${esc(SITE_NAME)}</itunes:author>
+<itunes:image href="${SITE_URL}/cover.png"/>
+<image><url>${SITE_URL}/cover.png</url><title>${esc(SITE_NAME)}</title><link>${SITE_URL}/</link></image>
+<itunes:explicit>false</itunes:explicit>
+<itunes:category text="Technology"/>
+<itunes:category text="News"><itunes:category text="Tech News"/></itunes:category>
+${items}
+</channel>
+</rss>
+`;
+}
 
 // ---------- trace (end-to-end run record) ----------
 const TRACE_DIR = path.join(ROOT, 'trace');
@@ -511,6 +616,8 @@ ${stats}
 function main() {
   const editions = loadEditions();
   const { topics, trending } = buildTopicIndex(editions);
+  const audio = loadAudio();
+  for (const ed of editions) ed.audio = audio[ed.date] || null;
 
   if (process.argv.includes('--topics')) {
     const all = [...topics.values()].sort((a, b) => b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
@@ -525,11 +632,15 @@ function main() {
   write('index.html', renderHome(editions, trending));
   write('feed.xml', renderFeed(editions));
   write('trends/index.html', renderTrendsIndex(topics, trending, editions));
+  write('podcast/index.html', renderPodcastPage(editions, audio));
+  write('podcast.xml', renderPodcastFeed(editions, audio));
   for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderTopicPage(t));
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
     ed.hasTrace = !!trace;
     write(`${ed.date}/index.html`, renderEditionPage(ed, editions, i));
+    const sc = loadScript(ed.date);
+    if (ed.audio || sc) write(`${ed.date}/script/index.html`, renderScriptPage(ed, sc, ed.audio));
     if (trace) {
       write(`${ed.date}/trace/index.html`, renderTracePage(ed, trace));
       fs.copyFileSync(path.join(TRACE_DIR, `${ed.date}.jsonl`), path.join(OUT_DIR, ed.date, 'trace', 'events.jsonl'));
@@ -541,7 +652,9 @@ function main() {
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
   });
   write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, lastSeen: t.lastSeen })), null, 2));
-  console.log(`Built ${editions.length} edition(s), ${topics.size} topic(s), ${trending.length} trending → ${path.relative(ROOT, OUT_DIR)}/`);
+  console.log(`Built ${editions.length} edition(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { longDate, shortDate, paragraphs, isMonday, loadEditions, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };

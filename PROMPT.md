@@ -123,6 +123,41 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
 - If a page is blocked or paywalled, do not fetch it another way (no curl, no archive/cache sites). Use another source or leave the item out.
 - Do not editorialise beyond stating why something matters.
 
+## 3b. Write the podcast script — `data/DATE.script.json`
+
+Each edition is also a podcast episode. Two hosts discuss the edition; the audio is synthesized later by GitHub Actions. The script is allowed only if it is **locked to the edition** — `scripts/validate-script.js` enforces it, and if the script does not pass, the episode is narrated by code straight from the JSON instead. So: nothing in the script may go beyond what `data/DATE.json` says.
+
+Schema:
+
+```json
+{
+  "date": "DATE", "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Theo", "voice": "cedar" } },
+  "blocks": [
+    { "type": "intro", "lines": [ { "host": "A", "text": "..." }, { "host": "B", "text": "..." } ] },
+    { "type": "transition", "lines": [ { "host": "B", "text": "..." } ] },
+    { "type": "item", "section": "<section name>", "headline": "<exact headline from the edition>", "lines": [ { "host": "A", "text": "..." }, { "host": "B", "text": "..." } ] },
+    { "type": "week", "headline": "<exact week_in_review item headline>", "lines": [ ... ] },
+    { "type": "figures", "lines": [ ... ] },
+    { "type": "outro", "lines": [ ... ] }
+  ]
+}
+```
+
+How to write it:
+- **Input is only the edition JSON.** Never add a fact, number, name, date, comparison or interpretation that is not in the item's headline or bullets. If the hosts want context, it must be context the item already contains.
+- **Write for the ear.** Contractions, short sentences, one idea per line. One host asks the natural question, the other answers with the number and the caveat. Say who reported it, by the source `name` in the item ("Anthropic says…", "The Record reports…"). Alternate hosts; no host speaks more than 4 lines in a row; no line over 600 characters.
+- **Numbers as digits**, exactly as in the item ("$664 billion", "8,913 articles", "37.0 km"). Never as words. Transitions and outros contain no numbers at all. The intro may use numbers only from the edition summary.
+- **Caveats are mandatory.** An item flagged `company-claim` must be said as a company claim / not independently verified; `single-source` → "a single source" / "only one outlet"; `preprint` → "preprint" / "not peer reviewed"; `update` → say it is an update. If the bullets carry a caveat ("unverified", "did not say", "could not confirm"), the hosts voice it.
+- **No speculation or hype.** Banned: "I think", "probably", "could mean", "imagine if", "huge", "massive", "insane", "crazy", "wild", "scary", "exciting", "incredible", "game-changer", "revolutionary", and the like. State what happened and why it matters as the item states it.
+- **Structure**: intro (date, one line disclosing that the voices are AI, the three things that matter most from the summary) → every section in edition order, each with ≥1 item block, ≥8 item blocks in total → Monday: `week` blocks (≥5) and a `figures` block reading the week's numbers verbatim → outro ("the full edition, with a link to every source, is on the site" — never read a URL).
+- **Length**: daily 1,300–2,300 words (~10–15 min); Monday 1,800–3,400.
+
+Then:
+1. `node scripts/validate-script.js data/DATE.script.json` — fix every ERROR until it exits 0.
+2. Launch one general-purpose subagent as an adversarial fact-checker. Give it the full contents of `data/DATE.json` and `data/DATE.script.json` and this instruction: *"For every statement in the script, find the sentence in the edition that supports it. List every statement that is not supported, adds a detail, changes a number, softens or drops a caveat, or characterises something the edition does not — quote the script line and the closest edition text. If everything is supported, reply exactly: NO UNSUPPORTED STATEMENTS."* Fix everything it lists, re-run the validator, and repeat — up to 3 rounds.
+3. If it still cannot be made clean, delete `data/DATE.script.json` and say so in your report; the episode will be narrated from the edition text instead. A missing script is acceptable; an unlocked script is not.
+
 ## 4. Validate, build, publish
 
 ```
@@ -131,14 +166,15 @@ node scripts/validate.js data/DATE.json --check-links
 Fix every ERROR (a 404/410 means you must find the real URL or remove the item). For every WARN about a link that could not be verified, confirm it with `WebFetch`; if it does not open, replace or remove it. Then:
 
 ```
+node scripts/validate-script.js data/DATE.script.json   # if the script exists
 node scripts/build.js
-git add data/DATE.json trace/
+git add data/DATE.json data/DATE.script.json trace/
 git commit -m "Edition DATE"
 git push origin main
 ```
 
 `trace/DATE.jsonl` and `trace/DATE.transcript.jsonl` are written automatically by a Claude Code hook (`scripts/trace-hook.js`, wired in `.claude/settings.json`) — every tool call you and your subagents make is recorded there and published at `/DATE/trace/`. Do not edit those files. Always `git add trace/` with the edition.
-GitHub Actions builds and deploys the site to https://mikeshoss.github.io/ainews/ within a few minutes. The page for this edition will be `https://mikeshoss.github.io/ainews/DATE/`.
+GitHub Actions builds and deploys the site to https://mikeshoss.github.io/ainews/ within a few minutes, and synthesizes the podcast episode (`scripts/podcast.js`) from your script — or from the code-generated narration if the script is missing or fails validation. The page for this edition will be `https://mikeshoss.github.io/ainews/DATE/`; the episode script at `/DATE/script/`.
 
 If the push is rejected, `git pull --rebase origin main` and push again. Do not open a pull request; the edition must land on `main`.
 
@@ -172,4 +208,4 @@ The email step above is also recorded in the trace. Commit it so the published t
 git add trace/ && git commit -m "Trace DATE" && git push origin main
 ```
 
-Finish with a short report: number of items, sections used, any sources you could not reach, any items you dropped for lack of verification, and the commit hash. If anything failed (push, email), say exactly what and why.
+Finish with a short report: number of items, sections used, any sources you could not reach, any items you dropped for lack of verification, whether the podcast script passed the validator and the fact-check (or was deleted), and the commit hash. If anything failed (push, email), say exactly what and why.
