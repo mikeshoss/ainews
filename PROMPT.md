@@ -132,10 +132,12 @@ Fix every ERROR (a 404/410 means you must find the real URL or remove the item).
 
 ```
 node scripts/build.js
-git add data/DATE.json
+git add data/DATE.json trace/
 git commit -m "Edition DATE"
 git push origin main
 ```
+
+`trace/DATE.jsonl` and `trace/DATE.transcript.jsonl` are written automatically by a Claude Code hook (`scripts/trace-hook.js`, wired in `.claude/settings.json`) — every tool call you and your subagents make is recorded there and published at `/DATE/trace/`. Do not edit those files. Always `git add trace/` with the edition.
 GitHub Actions builds and deploys the site to https://mikeshoss.github.io/ainews/ within a few minutes. The page for this edition will be `https://mikeshoss.github.io/ainews/DATE/`.
 
 If the push is rejected, `git pull --rebase origin main` and push again. Do not open a pull request; the edition must land on `main`.
@@ -162,6 +164,12 @@ After the push, send one email via the Gmail tool:
 
 Read those files after `node scripts/build.js` and pass their contents verbatim. Do not rewrite the email by hand; the built files are the email.
 
-## 7. Done
+## 7. Commit the rest of the trace, then report
+
+The email step above is also recorded in the trace. Commit it so the published trace is complete:
+
+```
+git add trace/ && git commit -m "Trace DATE" && git push origin main
+```
 
 Finish with a short report: number of items, sections used, any sources you could not reach, any items you dropped for lack of verification, and the commit hash. If anything failed (push, email), say exactly what and why.

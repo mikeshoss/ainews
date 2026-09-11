@@ -181,7 +181,7 @@ function renderEditionPage(ed, editions, idx) {
   }
   const body = `<article class="edition">
   <header class="edition-header">
-    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}</div>
+    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">run trace</a>` : ''}</div>
     <h1>${esc(longDate(ed.date))}</h1>
     <div class="summary">${summary}</div>
     <nav class="toc">${toc}${week ? `<a href="#week-in-review">The week in review</a>` : ''}</nav>
@@ -385,9 +385,127 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 table{border-collapse:collapse;width:100%;font-size:.92rem}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
 th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.trace-stats{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin:0 0 16px}
+.tool{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.8rem;background:var(--accent-soft);color:var(--accent);border-radius:4px;padding:1px 6px}
+.trace{border-left:2px solid var(--line);margin-top:20px}
+.tr{display:flex;gap:12px;padding:10px 0 10px 14px;border-bottom:1px solid var(--line);font-size:.92rem}
+.tr .tt{flex:0 0 64px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.78rem;color:var(--muted);padding-top:2px}
+.tr>div{min-width:0;flex:1}
+.tl{word-break:break-all}
+.tx{white-space:pre-wrap;margin-top:4px}
+.tr-assistant .tx{border-left:3px solid var(--accent);padding-left:10px}
+.tr-sub{opacity:.85}.tr-sub .tt::after{content:"↳";margin-left:4px}
+.tr-prompt pre{max-height:240px}
+.tr details{margin-top:4px}.tr summary{cursor:pointer;font-size:.8rem;color:var(--muted)}
+.tr pre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:4px 0 0;max-height:420px;overflow:auto}
 .site-footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding-block:20px}
 @media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}}
 `;
+
+
+// ---------- trace (end-to-end run record) ----------
+const TRACE_DIR = path.join(ROOT, 'trace');
+const TRACE_MAX_SHOWN = 6000; // characters of a response shown inline on the trace page (full text in the jsonl)
+
+function loadTrace(date) {
+  const evPath = path.join(TRACE_DIR, `${date}.jsonl`);
+  if (!fs.existsSync(evPath)) return null;
+  const events = fs.readFileSync(evPath, 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+  // Assistant narration (text blocks, not thinking) and user prompts from the raw transcript, if present.
+  const trPath = path.join(TRACE_DIR, `${date}.transcript.jsonl`);
+  const narration = [];
+  if (fs.existsSync(trPath)) {
+    for (const line of fs.readFileSync(trPath, 'utf8').split('\n')) {
+      if (!line) continue;
+      let d; try { d = JSON.parse(line); } catch { continue; }
+      const c = d.message && d.message.content;
+      if (d.type === 'assistant' && Array.isArray(c)) {
+        for (const b of c) if (b.type === 'text' && b.text && b.text.trim()) narration.push({ t: d.timestamp, kind: 'assistant', text: b.text, sidechain: !!d.isSidechain });
+      } else if (d.type === 'user' && typeof c === 'string' && c.trim() && !d.isSidechain) {
+        narration.push({ t: d.timestamp, kind: 'prompt', text: c });
+      }
+    }
+  }
+  return { events, narration, hasTranscript: fs.existsSync(trPath) };
+}
+
+function toolSummary(e) {
+  const i = e.input || {};
+  switch (e.tool_name) {
+    case 'WebFetch': return i.url || '';
+    case 'WebSearch': return `“${i.query || ''}”${i.allowed_domains ? ` in ${i.allowed_domains.join(', ')}` : ''}`;
+    case 'Bash': return i.description || i.command || '';
+    case 'Read': case 'Write': case 'Edit': case 'Glob': case 'Grep': return i.file_path || i.pattern || i.path || '';
+    case 'Agent': case 'Task': return `${i.description || ''}${i.subagent_type ? ` (${i.subagent_type})` : ''}`;
+    case 'ToolSearch': return i.query || '';
+    default:
+      if (/send_message/.test(e.tool_name || '')) return `to ${(i.to || []).join(', ')} — “${i.subject || ''}”`;
+      return Object.keys(i).slice(0, 3).map((k) => `${k}=${typeof i[k] === 'string' ? i[k].slice(0, 80) : JSON.stringify(i[k]).slice(0, 80)}`).join(' ');
+  }
+}
+
+function prettyResponse(r) {
+  if (r == null) return '';
+  if (typeof r === 'object' && r.truncated) return `${r.head}\n… [truncated: ${r.length} characters total; full text in transcript.jsonl]`;
+  if (typeof r === 'string') return r;
+  return JSON.stringify(r, null, 2);
+}
+
+function renderTracePage(ed, trace) {
+  const base = '../../';
+  const { events, narration } = trace;
+  const start = events.find((e) => e.event === 'SessionStart');
+  const stop = [...events].reverse().find((e) => e.event === 'Stop');
+  const calls = events.filter((e) => e.event === 'PostToolUse');
+  const byTool = new Map();
+  for (const c of calls) byTool.set(c.tool_name, (byTool.get(c.tool_name) || 0) + 1);
+  const urls = new Set(calls.filter((c) => c.tool_name === 'WebFetch').map((c) => (c.input || {}).url));
+  const t0 = events.length ? Date.parse(events[0].t) : 0;
+  const t1 = events.length ? Date.parse(events[events.length - 1].t) : 0;
+  const dur = t0 && t1 ? Math.round((t1 - t0) / 60000) : null;
+  const sessionId = start && start.session_id;
+  const agents = new Set(calls.map((c) => c.agent_id).filter(Boolean));
+
+  // Merge narration and events into one timeline by timestamp.
+  const rows = [
+    ...events.map((e) => ({ t: Date.parse(e.t), kind: e.event, e })),
+    ...narration.map((n) => ({ t: Date.parse(n.t) || 0, kind: n.kind, n })),
+  ].sort((a, b) => a.t - b.t);
+
+  const hhmmss = (ms) => new Date(ms).toISOString().slice(11, 19);
+  const body = rows.map((r) => {
+    if (r.kind === 'prompt') return `<div class="tr tr-prompt"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">Prompt</div><pre>${esc(r.n.text)}</pre></div></div>`;
+    if (r.kind === 'assistant') return `<div class="tr tr-assistant${r.n.sidechain ? ' tr-sub' : ''}"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">${r.n.sidechain ? 'Subagent' : 'Claude'}</div><div class="tx">${esc(r.n.text)}</div></div></div>`;
+    const e = r.e;
+    if (r.kind === 'SessionStart') return `<div class="tr tr-sys"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">Session start</div><div class="tx muted">${esc(e.session_id || '')}${e.model ? ` · ${esc(e.model)}` : ''}${e.cwd ? ` · ${esc(e.cwd)}` : ''}</div></div></div>`;
+    if (r.kind === 'Stop' || r.kind === 'SubagentStop') return `<div class="tr tr-sys"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">${r.kind === 'Stop' ? 'Session end' : 'Subagent finished'}</div>${e.last_message ? `<details><summary>final message</summary><pre>${esc(prettyResponse(e.last_message))}</pre></details>` : ''}</div></div>`;
+    if (r.kind === 'PostToolUse') {
+      const resp = prettyResponse(e.response);
+      const shown = resp.length > TRACE_MAX_SHOWN ? resp.slice(0, TRACE_MAX_SHOWN) + `\n… [${resp.length - TRACE_MAX_SHOWN} more characters in events.jsonl]` : resp;
+      return `<div class="tr tr-tool${e.agent_id ? ' tr-sub' : ''}"><span class="tt">${hhmmss(r.t)}</span><div>
+  <div class="tl"><span class="tool">${esc(e.tool_name)}</span> ${esc(toolSummary(e))}${e.duration_ms != null ? ` <span class="muted">${e.duration_ms} ms</span>` : ''}${e.agent_id ? ` <span class="muted">· subagent</span>` : ''}</div>
+  <details><summary>input</summary><pre>${esc(JSON.stringify(e.input, null, 2))}</pre></details>
+  <details><summary>response${resp ? ` (${resp.length.toLocaleString()} chars)` : ''}</summary><pre>${esc(shown)}</pre></details>
+</div></div>`;
+    }
+    return '';
+  }).join('\n');
+
+  const stats = `<div class="trace-stats">
+  <div><b>${calls.length}</b> tool calls</div>
+  <div><b>${urls.size}</b> pages fetched</div>
+  ${dur != null ? `<div><b>${dur}</b> min</div>` : ''}
+  ${agents.size ? `<div><b>${agents.size}</b> subagents</div>` : ''}
+  ${[...byTool.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div><span class="tool">${esc(k)}</span> ${v}</div>`).join('')}
+</div>`;
+  const page = `<div class="eyebrow"><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> / trace</div>
+<h1>Run trace — ${esc(shortDate(ed.date))}</h1>
+<p class="lede">The end-to-end record of the run that produced this edition: every tool call the agent made, its input, and its response, captured automatically by the harness (Claude Code hooks) — not written by the model. ${sessionId ? `Provisioning steps and the full session are on <a href="https://claude.ai/code/session_${esc(sessionId)}">claude.ai</a>.` : ''}</p>
+${stats}
+<p class="muted">Raw files: <a href="events.jsonl">events.jsonl</a>${trace.hasTranscript ? ` · <a href="transcript.jsonl">transcript.jsonl</a> (complete session, untruncated)` : ''}. Times are UTC. Responses longer than ${TRACE_MAX_SHOWN.toLocaleString()} characters are cut on this page but complete in the raw files.</p>
+<div class="trace">${body}</div>`;
+  return layout({ title: `Trace — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/trace/` });
+}
 
 // ---------- main ----------
 function main() {
@@ -409,7 +527,14 @@ function main() {
   write('trends/index.html', renderTrendsIndex(topics, trending, editions));
   for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderTopicPage(t));
   editions.forEach((ed, i) => {
+    const trace = loadTrace(ed.date);
+    ed.hasTrace = !!trace;
     write(`${ed.date}/index.html`, renderEditionPage(ed, editions, i));
+    if (trace) {
+      write(`${ed.date}/trace/index.html`, renderTracePage(ed, trace));
+      fs.copyFileSync(path.join(TRACE_DIR, `${ed.date}.jsonl`), path.join(OUT_DIR, ed.date, 'trace', 'events.jsonl'));
+      if (trace.hasTranscript) fs.copyFileSync(path.join(TRACE_DIR, `${ed.date}.transcript.jsonl`), path.join(OUT_DIR, ed.date, 'trace', 'transcript.jsonl'));
+    }
     const em = renderEmail(ed);
     write(`email/${ed.date}.html`, em.html);
     write(`email/${ed.date}.txt`, em.text);
