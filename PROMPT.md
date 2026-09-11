@@ -196,7 +196,7 @@ On Mondays, after the daily sections, add `week_in_review`:
 ## 6. Send the email
 
 After the push, send one email via the Gmail tool:
-- **to**: `mike@epiloguelabs.com`
+- **to**: the reader's address given in the routine prompt (never write it into this repo — the repo and the trace are public)
 - **subject**: the contents of `site/email/DATE.subject.txt`
 - **htmlBody**: the contents of `site/email/DATE.html`
 - **body** (plain-text alternative): the contents of `site/email/DATE.txt`

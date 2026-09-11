@@ -13,6 +13,16 @@ const ENABLED = process.env.AINEWS_TRACE === '1' || (process.env.HOME || '').sta
 if (!ENABLED) process.exit(0);
 const MAX_RESPONSE = 16000; // characters kept per tool response in the jsonl (full text stays in the transcript copy)
 
+// The trace is published. Redact anything that should never be public: email addresses and token-shaped strings.
+const REDACT = [
+  [/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[email redacted]'],
+  [/\b(?:gh[pousr]|github_pat)_[A-Za-z0-9_]{16,}\b/g, '[token redacted]'],
+  [/\bsk-[A-Za-z0-9_-]{16,}\b/g, '[token redacted]'],
+  [/\b(?:xox[abp]|AIza|AKIA)[A-Za-z0-9_-]{12,}\b/g, '[token redacted]'],
+  [/Bearer\s+[A-Za-z0-9._-]{16,}/g, 'Bearer [token redacted]'],
+];
+const redact = (s) => REDACT.reduce((acc, [re, rep]) => acc.replace(re, rep), s);
+
 let raw = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', (d) => { raw += d; });
@@ -34,11 +44,11 @@ process.stdin.on('end', () => {
     if (tool_input !== undefined) rec.input = tool_input;
     if (tool_response !== undefined) rec.response = clip(tool_response);
     if (last_assistant_message !== undefined) rec.last_message = clip(last_assistant_message);
-    fs.appendFileSync(path.join(dir, `${date}.jsonl`), JSON.stringify(rec) + '\n');
+    fs.appendFileSync(path.join(dir, `${date}.jsonl`), redact(JSON.stringify(rec)) + '\n');
 
     // Keep the raw transcript of the main session (not subagent sidechains) next to the events.
     if (transcript_path && !ev.agent_id && fs.existsSync(transcript_path)) {
-      try { fs.copyFileSync(transcript_path, path.join(dir, `${date}.transcript.jsonl`)); } catch { /* best effort */ }
+      try { fs.writeFileSync(path.join(dir, `${date}.transcript.jsonl`), redact(fs.readFileSync(transcript_path, 'utf8'))); } catch { /* best effort */ }
     }
   } catch { /* never block the harness */ }
   process.exit(0);
