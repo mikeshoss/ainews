@@ -441,7 +441,7 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .versions{margin-top:10px}.versions summary{cursor:pointer;font-size:.85rem;color:var(--muted)}.version{padding:10px 0;border-top:1px solid var(--line)}.version audio{width:100%;max-width:560px;display:block;margin-top:4px}
 .listen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}.listen-label{font-size:.85rem;color:var(--muted);margin-right:4px}
 .badge-listen{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--card);border-radius:20px;padding:4px 12px 4px 6px;font-size:.88rem}.badge-listen:hover{border-color:var(--accent)}
-.podcast-hero{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}
+.podcast-hero{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}.podcast-hero>div{flex:1 1 300px;min-width:0}.podcast-hero h1{margin-top:0}
 .player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
