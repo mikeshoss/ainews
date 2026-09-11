@@ -237,9 +237,9 @@ function renderHome(editions, trending) {
   const list = editions.map((ed) => {
     const monday = ed.edition === 'monday' || isMonday(ed.date);
     const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
-    return `<article class="card">
+    return `<article class="card card-link">
   <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily'} · ${ed.itemCount} items · ${ed.sections.map((s) => esc(s.name)).join(' / ')}</div>
-  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  <h2><a href="${base}${ed.date}/" class="stretch">${esc(longDate(ed.date))}</a></h2>
   ${renderSpectrum(ed, false)}
   <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
   ${renderPlayer(ed.audio, base, ed, true)}
@@ -254,7 +254,7 @@ function renderHome(editions, trending) {
 <section class="editions">
 ${list || '<p class="muted">No editions yet.</p>'}
 </section>`;
-  return layout({ title: `${SITE_NAME} — ${SITE_TAGLINE.split(' — ')[0].replace(/\.$/, '')}`, base, body, canonical: `${SITE_URL}/`, nav: 'editions', og: { title: `${SITE_NAME} — daily, fact-first frontier AI news` }, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
+  return layout({ title: `${SITE_NAME} — ${PODCAST.tagline}`, base, body, canonical: `${SITE_URL}/`, nav: 'editions', og: { title: `${SITE_NAME} — daily, fact-first frontier AI news` }, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
 }
 
 function topTopicsFor(ed) {
@@ -409,6 +409,9 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .card h2{margin:.2em 0 .4em}
 .card h2 a{color:var(--fg);text-decoration:none}
 .card h2 a:hover{color:var(--accent)}
+.card-link{position:relative;cursor:pointer;transition:border-color .15s}.card-link:hover{border-color:var(--accent)}.card-link:hover h2 a{color:var(--accent)}
+.card-link .stretch::after{content:"";position:absolute;inset:0;border-radius:10px}
+.card-link .player,.card-link .topics{position:relative;z-index:1}
 .card p{margin:0 0 .6em}
 .hero{margin-bottom:28px}
 .trend-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px}
