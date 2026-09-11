@@ -1,0 +1,409 @@
+#!/usr/bin/env node
+'use strict';
+// Static site generator for AI Edge Briefing.
+// Reads data/YYYY-MM-DD.json editions, writes a complete static site to site/.
+// No dependencies. Run: node scripts/build.js   (or --topics to list known topic slugs)
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const DATA_DIR = path.join(ROOT, 'data');
+const OUT_DIR = path.join(ROOT, 'site');
+const SITE_NAME = 'AI Edge Briefing';
+const SITE_TAGLINE = 'Daily, fact-first coverage of frontier AI — the advances, the research, and how it is being used for good and for harm.';
+const SITE_URL = (process.env.SITE_URL || 'https://mikeshoss.github.io/ainews').replace(/\/$/, '');
+const REPO_URL = 'https://github.com/mikeshoss/ainews';
+const TREND_WINDOW_DAYS = 7;   // look-back window for "trending"
+const TREND_MIN_DAYS = 2;      // a topic must appear on at least this many editions in the window
+
+const SECTION_ORDER = [
+  'Frontier models & labs',
+  'Research & papers',
+  'Security, misuse & threat intelligence',
+  'Military, defense & geopolitics',
+  'Health, science & medicine',
+  'Policy, regulation & law',
+  'Compute, chips & infrastructure',
+  'Deployment & impact',
+];
+
+const TOKEN_LABELS = {
+  ai: 'AI', eu: 'EU', us: 'US', uk: 'UK', un: 'UN', gpu: 'GPU', gpus: 'GPUs', llm: 'LLM', llms: 'LLMs',
+  api: 'API', fda: 'FDA', nist: 'NIST', darpa: 'DARPA', dod: 'DoD', cisa: 'CISA', nato: 'NATO', ftc: 'FTC',
+  sec: 'SEC', doj: 'DOJ', nih: 'NIH', who: 'WHO', openai: 'OpenAI', xai: 'xAI', deepseek: 'DeepSeek',
+  deepmind: 'DeepMind', nvidia: 'NVIDIA', tsmc: 'TSMC', amd: 'AMD', aisi: 'AISI', caisi: 'CAISI', cac: 'CAC',
+  rl: 'RL', rlhf: 'RLHF', ml: 'ML', iot: 'IoT', cve: 'CVE', cves: 'CVEs', ceo: 'CEO', ipo: 'IPO', m2: 'M2',
+  gpt: 'GPT', o3: 'o3', o4: 'o4', ai2: 'AI2', hf: 'HF', ucla: 'UCLA', mit: 'MIT', ipc: 'IPC', ucsd: 'UCSD',
+};
+
+// ---------- helpers ----------
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const dateObj = (d) => new Date(d + 'T12:00:00Z');
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const longDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()]}, ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()]} ${o.getUTCFullYear()}`; };
+const shortDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()].slice(0, 3)} ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()].slice(0, 3)}`; };
+const isMonday = (d) => dateObj(d).getUTCDay() === 1;
+const daysBetween = (a, b) => Math.round((dateObj(a) - dateObj(b)) / 86400000);
+const topicLabel = (slug) => slug.split('-').map((t) => TOKEN_LABELS[t] || (t.charAt(0).toUpperCase() + t.slice(1))).join(' ');
+const paragraphs = (s) => (Array.isArray(s) ? s : String(s || '').split(/\n\s*\n/)).map((p) => p.trim()).filter(Boolean);
+const hostname = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } };
+const write = (rel, content) => { const p = path.join(OUT_DIR, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, content); };
+
+// ---------- load ----------
+function loadEditions() {
+  if (!fs.existsSync(DATA_DIR)) return [];
+  return fs.readdirSync(DATA_DIR)
+    .filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f))
+    .map((f) => {
+      const ed = JSON.parse(fs.readFileSync(path.join(DATA_DIR, f), 'utf8'));
+      ed.date = ed.date || f.slice(0, 10);
+      ed.sections = (ed.sections || []).filter((s) => s.items && s.items.length);
+      ed.sections.sort((a, b) => {
+        const ia = SECTION_ORDER.indexOf(a.name), ib = SECTION_ORDER.indexOf(b.name);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+      });
+      ed.itemCount = ed.sections.reduce((n, s) => n + s.items.length, 0);
+      return ed;
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
+}
+
+function buildTopicIndex(editions) {
+  const topics = new Map();
+  for (const ed of editions) {
+    for (const sec of ed.sections) {
+      for (const item of sec.items) {
+        for (const slug of item.topics || []) {
+          if (!topics.has(slug)) topics.set(slug, { slug, label: topicLabel(slug), dates: new Set(), entries: [] });
+          const t = topics.get(slug);
+          t.dates.add(ed.date);
+          t.entries.push({ date: ed.date, section: sec.name, item });
+        }
+      }
+    }
+  }
+  if (!editions.length) return { topics, trending: [] };
+  const latest = editions[0].date;
+  const editionDates = editions.map((e) => e.date); // newest first
+  for (const t of topics.values()) {
+    t.daysInWindow = [...t.dates].filter((d) => daysBetween(latest, d) < TREND_WINDOW_DAYS).length;
+    t.streak = 0;
+    for (const d of editionDates) { if (t.dates.has(d)) t.streak++; else break; }
+    t.lastSeen = [...t.dates].sort().pop();
+    t.firstSeen = [...t.dates].sort()[0];
+  }
+  const trending = [...topics.values()]
+    .filter((t) => t.daysInWindow >= TREND_MIN_DAYS)
+    .sort((a, b) => b.streak - a.streak || b.daysInWindow - a.daysInWindow || b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
+  return { topics, trending };
+}
+
+// ---------- rendering ----------
+function layout({ title, description, base, body, canonical }) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(title)}</title>
+<meta name="description" content="${esc(description || SITE_TAGLINE)}">
+${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
+<link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
+<link rel="stylesheet" href="${base}style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
+    <nav>
+      <a href="${base}">Editions</a>
+      <a href="${base}trends/">Trends</a>
+      <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
+      <a href="${base}feed.xml">RSS</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+${body}
+</main>
+<footer class="site-footer"><div class="wrap">
+  <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source. <a href="${REPO_URL}">Data &amp; code on GitHub</a>.</p>
+</div></footer>
+</body>
+</html>
+`;
+}
+
+function renderSources(sources) {
+  return (sources || []).map((s, i) => `<a class="src" href="${esc(s.url)}" rel="noopener" title="${esc(s.url)}">${esc(s.name || hostname(s.url))}</a>`).join('<span class="sep">·</span>');
+}
+
+function renderItem(item, base, opts = {}) {
+  const first = (item.sources || [])[0];
+  const impact = item.impact ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
+  const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
+  return `<article class="item">
+  ${dateLine}
+  <h3>${first ? `<a href="${esc(first.url)}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}</h3>
+  <div class="sources">${renderSources(item.sources)}</div>
+  <ul>${(item.bullets || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
+  ${topics ? `<div class="topics">${topics}</div>` : ''}
+</article>`;
+}
+
+function renderEditionPage(ed, editions, idx) {
+  const base = '../';
+  const newer = editions[idx - 1], older = editions[idx + 1];
+  const monday = ed.edition === 'monday' || isMonday(ed.date);
+  const summary = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
+  const toc = ed.sections.map((s) => `<a href="#${esc(slugify(s.name))}">${esc(s.name)} <span class="count">${s.items.length}</span></a>`).join('');
+  const sections = ed.sections.map((s) => `<section class="section" id="${esc(slugify(s.name))}">
+  <h2>${esc(s.name)}</h2>
+  ${s.items.map((it) => renderItem(it, base)).join('\n')}
+</section>`).join('\n');
+  let week = '';
+  if (ed.week_in_review && (ed.week_in_review.items || []).length) {
+    const w = ed.week_in_review;
+    week = `<section class="section week" id="week-in-review">
+  <h2>The week in review</h2>
+  <p class="muted">What mattered over the last seven days${w.period ? ` (${esc(w.period)})` : ''}.</p>
+  ${paragraphs(w.summary).map((p) => `<p>${esc(p)}</p>`).join('')}
+  ${w.items.map((it) => renderItem(it, base)).join('\n')}
+</section>`;
+  }
+  const body = `<article class="edition">
+  <header class="edition-header">
+    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}</div>
+    <h1>${esc(longDate(ed.date))}</h1>
+    <div class="summary">${summary}</div>
+    <nav class="toc">${toc}${week ? `<a href="#week-in-review">The week in review</a>` : ''}</nav>
+  </header>
+  ${sections}
+  ${week}
+  <nav class="pager">
+    ${older ? `<a href="${base}${older.date}/">← ${esc(shortDate(older.date))}</a>` : '<span></span>'}
+    ${newer ? `<a href="${base}${newer.date}/">${esc(shortDate(newer.date))} →</a>` : '<span></span>'}
+  </nav>
+</article>`;
+  return layout({ title: `${longDate(ed.date)} — ${SITE_NAME}`, description: paragraphs(ed.summary)[0], base, body, canonical: `${SITE_URL}/${ed.date}/` });
+}
+
+function renderHome(editions, trending) {
+  const base = './';
+  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow}d</span></a>`).join('');
+  const list = editions.map((ed) => {
+    const monday = ed.edition === 'monday' || isMonday(ed.date);
+    const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+    return `<article class="card">
+  <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily'} · ${ed.itemCount} items · ${ed.sections.map((s) => esc(s.name)).join(' / ')}</div>
+  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
+  <div class="topics">${topTopics}</div>
+</article>`;
+  }).join('\n');
+  const body = `<section class="hero">
+  <h1>${esc(SITE_NAME)}</h1>
+  <p class="lede">${esc(SITE_TAGLINE)}</p>
+  ${trending.length ? `<div class="trend-strip"><span class="label">Trending</span>${trend}<a class="more" href="${base}trends/">all trends →</a></div>` : ''}
+</section>
+<section class="editions">
+${list || '<p class="muted">No editions yet.</p>'}
+</section>`;
+  return layout({ title: SITE_NAME, base, body, canonical: `${SITE_URL}/` });
+}
+
+function topTopicsFor(ed) {
+  const counts = new Map();
+  for (const s of ed.sections) for (const it of s.items) for (const t of it.topics || []) counts.set(t, (counts.get(t) || 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map((e) => e[0]);
+}
+
+function renderTrendsIndex(topics, trending, editions) {
+  const base = '../';
+  const cards = trending.map((t) => {
+    const latest = t.entries[0];
+    return `<article class="card trend-card">
+  <div class="eyebrow">${t.streak > 1 ? `${t.streak}-edition streak · ` : ''}${t.daysInWindow} of the last ${TREND_WINDOW_DAYS} days · ${t.entries.length} items total</div>
+  <h2><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></h2>
+  <p class="muted">Latest: <a href="${esc((latest.item.sources || [{}])[0].url || '#')}" rel="noopener">${esc(latest.item.headline)}</a> <span class="count">${esc(shortDate(latest.date))}</span></p>
+</article>`;
+  }).join('\n');
+  const all = [...topics.values()].sort((a, b) => b.dates.size - a.dates.size || b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
+  const rows = all.map((t) => `<tr><td><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></td><td>${t.dates.size}</td><td>${t.entries.length}</td><td>${esc(shortDate(t.lastSeen))}</td><td>${esc(shortDate(t.firstSeen))}</td></tr>`).join('');
+  const body = `<h1>Trends</h1>
+<p class="lede">Topics that keep showing up. A topic is trending when it appears in at least ${TREND_MIN_DAYS} editions within the last ${TREND_WINDOW_DAYS} days. Each topic page collects every item ever filed under it, newest first.</p>
+<section>${cards || '<p class="muted">Nothing is trending yet — it takes at least two editions.</p>'}</section>
+<h2>All topics</h2>
+<div class="table-wrap"><table>
+<thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Last seen</th><th>First seen</th></tr></thead>
+<tbody>${rows}</tbody>
+</table></div>`;
+  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/` });
+}
+
+function renderTopicPage(t) {
+  const base = '../../';
+  const byDate = new Map();
+  for (const e of t.entries) { if (!byDate.has(e.date)) byDate.set(e.date, []); byDate.get(e.date).push(e); }
+  const groups = [...byDate.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([date, entries]) => `<section class="section">
+  <h2><a href="${base}${date}/">${esc(longDate(date))}</a></h2>
+  ${entries.map((e) => renderItem(e.item, base, { section: e.section })).join('\n')}
+</section>`).join('\n');
+  const body = `<div class="eyebrow"><a href="${base}trends/">Trends</a> / topic</div>
+<h1>${esc(t.label)}</h1>
+<p class="lede">${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.</p>
+${groups}`;
+  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/` });
+}
+
+function renderEmail(ed) {
+  const url = `${SITE_URL}/${ed.date}/`;
+  const monday = ed.edition === 'monday' || isMonday(ed.date);
+  const summary = paragraphs(ed.summary);
+  const sec = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</h2>` +
+    s.items.map((it) => {
+      const first = (it.sources || [])[0];
+      const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(x.url)}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
+      return `<p style="margin:0 0 12px"><a href="${esc(first ? first.url : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
+    }).join('');
+  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
+<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}${monday ? ' · Monday edition' : ''}</p>
+<h1 style="font-size:22px;margin:0 0 10px">${esc(longDate(ed.date))}</h1>
+<p style="margin:0 0 16px"><a href="${url}" style="color:#0b57d0;font-weight:600">Read the full edition (${ed.itemCount} items) →</a></p>
+${summary.map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
+${ed.sections.map(sec).join('')}
+${ed.week_in_review && (ed.week_in_review.items || []).length ? `<h2 style="font-size:15px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.04em">The week in review</h2>${paragraphs(ed.week_in_review.summary).map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}<p><a href="${url}#week-in-review" style="color:#0b57d0">Read the full week in review →</a></p>` : ''}
+<hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
+<p style="color:#777;font-size:12px">Every headline links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
+</div>`;
+  const text = [
+    `${SITE_NAME}${monday ? ' - Monday edition' : ''}`, longDate(ed.date), '', `Full edition: ${url}`, '',
+    ...summary, '',
+    ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${x.url}`)]), '']),
+  ].join('\n');
+  return { html, text, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}${monday ? ' (Monday edition, with the week in review)' : ''}` };
+}
+
+function renderFeed(editions) {
+  const items = editions.slice(0, 30).map((ed) => `<item>
+<title>${esc(longDate(ed.date))}</title>
+<link>${SITE_URL}/${ed.date}/</link>
+<guid>${SITE_URL}/${ed.date}/</guid>
+<pubDate>${dateObj(ed.date).toUTCString()}</pubDate>
+<description>${esc(paragraphs(ed.summary).join('\n\n'))}</description>
+</item>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>${esc(SITE_NAME)}</title>
+<link>${SITE_URL}/</link>
+<description>${esc(SITE_TAGLINE)}</description>
+${items}
+</channel></rss>
+`;
+}
+
+const slugify = (s) => String(s).toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const CSS = `
+:root{--bg:#f7f6f2;--fg:#1a1a1a;--muted:#6b6b6b;--line:#e2e0d8;--card:#ffffff;--accent:#0b57d0;--accent-soft:#e8f0fe;--badge:#b3261e;--good:#146c2e;--bad:#8a1c1c;--mixed:#7a4b00;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#121212;--fg:#ebebeb;--muted:#9a9a9a;--line:#2a2a2a;--card:#1b1b1b;--accent:#8ab4f8;--accent-soft:#1e2a3d;--badge:#f28b82;--good:#81c995;--bad:#f28b82;--mixed:#fdd663}}
+*{box-sizing:border-box}
+html{font-size:16px}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+a{color:var(--accent)}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+.site-header{border-bottom:1px solid var(--line);background:var(--card)}
+.site-header .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:14px;flex-wrap:wrap}
+.brand{font-weight:700;text-decoration:none;color:var(--fg);letter-spacing:-.01em}
+.site-header nav{display:flex;gap:18px;flex-wrap:wrap}
+.site-header nav a{color:var(--muted);text-decoration:none;font-size:.92rem}
+.site-header nav a:hover{color:var(--accent)}
+main{padding-block:32px 48px}
+h1{font-size:2rem;line-height:1.15;letter-spacing:-.02em;margin:.2em 0 .5em}
+h2{font-size:1.25rem;margin:0 0 .6em}
+h3{font-size:1.05rem;margin:0 0 .35em;line-height:1.35}
+h3 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
+h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
+.lede{font-size:1.1rem;color:var(--muted);margin:0 0 1.2em}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.4em}
+.badge{display:inline-block;background:var(--badge);color:#fff;border-radius:4px;padding:1px 7px;font-weight:600;letter-spacing:.04em}
+.summary{font-size:1.08rem;border-left:3px solid var(--accent);padding-left:16px;margin:18px 0}
+.summary p{margin:0 0 .8em}
+.toc{display:flex;flex-wrap:wrap;gap:8px 14px;margin:14px 0 8px;font-size:.9rem}
+.toc a{text-decoration:none;color:var(--muted)}
+.toc a:hover{color:var(--accent)}
+.count{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:0 7px;font-size:.75rem;font-weight:600;vertical-align:middle}
+.section{margin:40px 0}
+.section>h2{padding-bottom:8px;border-bottom:2px solid var(--fg);text-transform:uppercase;letter-spacing:.06em;font-size:.95rem}
+.item{padding:18px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item ul{margin:8px 0 6px;padding-left:20px}
+.item li{margin:4px 0}
+.item-meta{font-size:.8rem;color:var(--muted);margin-bottom:4px}
+.item-meta a{color:var(--muted)}
+.sources{font-size:.82rem;color:var(--muted)}
+.sources .src{color:var(--accent);text-decoration:none}
+.sources .src:hover{text-decoration:underline}
+.sources .sep{margin:0 6px}
+.topics{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.topic{font-size:.75rem;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:1px 9px;background:var(--card)}
+.topic:hover{color:var(--accent);border-color:var(--accent)}
+.impact{font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;vertical-align:middle;margin-left:6px;border-radius:3px;padding:1px 6px;border:1px solid currentColor}
+.impact-beneficial{color:var(--good)}.impact-harmful{color:var(--bad)}.impact-mixed{color:var(--mixed)}.impact-neutral{color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 16px}
+.card h2{margin:.2em 0 .4em}
+.card h2 a{color:var(--fg);text-decoration:none}
+.card h2 a:hover{color:var(--accent)}
+.card p{margin:0 0 .6em}
+.hero{margin-bottom:28px}
+.trend-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.trend-strip .label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:4px}
+.trend-chip{text-decoration:none;color:var(--fg);font-size:.88rem;border:1px solid var(--line);border-radius:14px;padding:2px 10px}
+.trend-chip:hover{border-color:var(--accent);color:var(--accent)}
+.trend-strip .more{margin-left:auto;font-size:.85rem;text-decoration:none}
+.pager{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid var(--line)}
+.pager a{text-decoration:none}
+.week{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 22px 14px}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.site-footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding-block:20px}
+@media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}}
+`;
+
+// ---------- main ----------
+function main() {
+  const editions = loadEditions();
+  const { topics, trending } = buildTopicIndex(editions);
+
+  if (process.argv.includes('--topics')) {
+    const all = [...topics.values()].sort((a, b) => b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
+    for (const t of all) console.log(`${t.slug}\t${t.entries.length} items\t${t.dates.size} editions\tlast ${t.lastSeen}`);
+    return;
+  }
+
+  fs.rmSync(OUT_DIR, { recursive: true, force: true });
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  write('.nojekyll', '');
+  write('style.css', CSS.trim() + '\n');
+  write('index.html', renderHome(editions, trending));
+  write('feed.xml', renderFeed(editions));
+  write('trends/index.html', renderTrendsIndex(topics, trending, editions));
+  for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderTopicPage(t));
+  editions.forEach((ed, i) => {
+    write(`${ed.date}/index.html`, renderEditionPage(ed, editions, i));
+    const em = renderEmail(ed);
+    write(`email/${ed.date}.html`, em.html);
+    write(`email/${ed.date}.txt`, em.text);
+    write(`email/${ed.date}.subject.txt`, em.subject + '\n');
+  });
+  write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, lastSeen: t.lastSeen })), null, 2));
+  console.log(`Built ${editions.length} edition(s), ${topics.size} topic(s), ${trending.length} trending → ${path.relative(ROOT, OUT_DIR)}/`);
+}
+
+main();
