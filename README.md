@@ -62,3 +62,7 @@ node scripts/build.js && npx -y serve site
 ## Licence
 
 Code is [MIT](LICENSE). The editions (`data/`, `trace/`, and everything built from them) are [CC BY 4.0](LICENSE-EDITIONS.md) — reuse with credit to AI Edge Briefing and a link to https://aiedgebriefing.com/.
+
+## Private stats
+
+`node scripts/stats.js` prints a per-day snapshot — items, run time, tool calls, what the run cost (Claude tokens at API list price + TTS), podcast downloads from GitHub Releases, and site traffic if Google Analytics credentials are present — and writes `stats/index.html`. `stats/` is gitignored; nothing in it is published. Run it daily from one machine so per-day download deltas accumulate.
