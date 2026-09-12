@@ -179,7 +179,7 @@ function renderSources(sources, campaign) {
 
 function renderItem(item, base, opts = {}) {
   const first = (item.sources || [])[0];
-  const impact = item.impact ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
+  const impact = item.impact && item.impact !== 'neutral' ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
   const flags = (item.flags || []).map((f) => `<span class="flag flag-${esc(f)}">${esc(FLAG_LABELS[f] || f)}</span>`).join('');
   const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   const dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
@@ -216,7 +216,7 @@ function renderEditionPage(ed, editions, idx) {
   }
   const body = `<article class="edition">
   <header class="edition-header">
-    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · ${esc(ed.window)}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">run trace</a>` : ''}</div>
+    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · covers ${esc(ed.window.replace(/\s*\(.*?\)\s*/g, ''))}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">how this edition was made</a>` : ''}</div>
     <h1>${esc(longDate(ed.date))}</h1>
     ${renderSpectrum(ed, true)}
     ${renderPlayer(ed.audio, base, ed, false)}
@@ -249,12 +249,12 @@ function renderEditionPage(ed, editions, idx) {
 
 function renderHome(editions, trending) {
   const base = './';
-  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow}d</span></a>`).join('');
+  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow} day${t.daysInWindow === 1 ? '' : 's'}</span></a>`).join('');
   const list = editions.map((ed) => {
     const monday = ed.edition === 'monday' || isMonday(ed.date);
     const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
     return `<article class="card card-link">
-  <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily'} · ${ed.itemCount} items · ${ed.sections.map((s) => esc(s.name)).join(' / ')}</div>
+  <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items</div>
   <h2><a href="${base}${ed.date}/" class="stretch">${esc(longDate(ed.date))}</a></h2>
   ${renderSpectrum(ed, false)}
   <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
@@ -520,14 +520,14 @@ function renderScriptPage(ed, sc, ep) {
   if (usedDialogue && sc) {
     const hosts = sc.hosts;
     const blocks = sc.blocks.map((b) => {
-      const ref = b.type === 'item' || b.type === 'week' ? `<div class="script-ref">${b.type === 'week' ? 'Week in review' : esc(b.section || '')} — <a href="${base}${ed.date}/#${esc(slugify(b.section || 'week-in-review'))}">${esc(b.headline)}</a></div>` : `<div class="script-ref muted">${esc(b.type)}</div>`;
+      const ref = b.type === 'item' || b.type === 'week' ? `<div class="script-ref">${b.type === 'week' ? 'Week in review' : esc(b.section || '')} — <a href="${base}${ed.date}/#${esc(slugify(b.section || 'week-in-review'))}">${esc(b.headline)}</a></div>` : `<div class="script-ref muted">${esc(b.type.charAt(0).toUpperCase() + b.type.slice(1))}</div>`;
       const lines = b.lines.map((l) => `<div class="line"><span class="who">${esc((hosts[l.host] || {}).name || l.host)}</span><span>${esc(l.text)}</span></div>`).join('');
       return `<section class="script-block">${ref}${lines}</section>`;
     }).join('\n');
-    body = `<p class="lede">Two hosts, ${Object.values(hosts).map((h) => esc(h.name)).join(' and ')} — synthetic voices. Every block below is pinned to one item of the written edition (linked); a validator checks that every number in a block appears in that item, that flagged items voice their caveat, that a source is named, and that no speculative or hype language is used.</p>${blocks}`;
+    body = `<p class="lede">${Object.values(hosts).map((h) => esc(h.name)).join(' and ')} are AI voices. Each part of the conversation below comes from one item in the written edition — linked above it — and is checked automatically before publishing: every number must appear in that item, every caveat the edition raises must be said aloud, the source must be named, and speculative or hyped language is rejected.</p>${blocks}`;
   } else {
     const n = narrationFor(ed);
-    body = `<p class="lede">Single narrator (synthetic voice). This text is generated by code directly from the written edition — summary, then each item's headline, key fact and caveats — so it cannot say anything the edition does not.</p>` +
+    body = `<p class="lede">A single AI narrator reads this edition. The text is assembled directly from the written edition — the summary, then each item's headline, key fact and caveats — so it cannot say anything the edition does not.</p>` +
       n.lines.map((l) => `<p${l.section ? ' class="script-section"' : ''}>${esc(l.text)}</p>`).join('');
   }
   const page = `<div class="eyebrow"><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> / transcript</div>
@@ -542,7 +542,7 @@ function renderPodcastPage(editions, audio) {
   const feed = `${SITE_URL}/podcast.xml`;
   const eps = editions.filter((ed) => audio[ed.date]).map((ed) => {
     const versions = AUDIO_VERSIONS[ed.date] || [];
-    const older = versions.length > 1 ? `<details class="versions"><summary>${versions.length} versions — earlier ones kept for comparison</summary>${[...versions].reverse().map((v) => `<div class="version"><div class="eyebrow">${esc(v.label)} · ${esc(hostsLabel(v))} · ${mmss(v.seconds)} · ${esc(new Date(v.generated_at).toUTCString().slice(0, 22))}${v.url === audio[ed.date].url ? ' · <b>in the feed</b>' : ''}</div><audio controls preload="none" src="${esc(v.url)}"></audio></div>`).join('')}</details>` : '';
+    const older = versions.length > 1 && process.env.SHOW_VERSIONS ? `<details class="versions"><summary>${versions.length} versions — earlier ones kept for comparison</summary>${[...versions].reverse().map((v) => `<div class="version"><div class="eyebrow">${esc(v.label)} · ${esc(hostsLabel(v))} · ${mmss(v.seconds)} · ${esc(new Date(v.generated_at).toUTCString().slice(0, 22))}${v.url === audio[ed.date].url ? ' · <b>in the feed</b>' : ''}</div><audio controls preload="none" src="${esc(v.url)}"></audio></div>`).join('')}</details>` : '';
     return `<article class="card">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)}</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
@@ -687,7 +687,7 @@ function renderTracePage(ed, trace) {
     if (r.kind === 'prompt') return `<div class="tr tr-prompt"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">Prompt</div><pre>${esc(r.n.text)}</pre></div></div>`;
     if (r.kind === 'assistant') return `<div class="tr tr-assistant${r.n.sidechain ? ' tr-sub' : ''}"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">${r.n.sidechain ? 'Subagent' : 'Claude'}</div><div class="tx">${esc(r.n.text)}</div></div></div>`;
     const e = r.e;
-    if (r.kind === 'SessionStart') return `<div class="tr tr-sys"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">Session start</div><div class="tx muted">${esc(e.session_id || '')}${e.model ? ` · ${esc(e.model)}` : ''}${e.cwd ? ` · ${esc(e.cwd)}` : ''}</div></div></div>`;
+    if (r.kind === 'SessionStart') return `<div class="tr tr-sys"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">Session start</div><div class="tx muted">${e.model ? esc(e.model) : 'Claude'}</div></div></div>`;
     if (r.kind === 'Stop' || r.kind === 'SubagentStop') return `<div class="tr tr-sys"><span class="tt">${hhmmss(r.t)}</span><div><div class="tl">${r.kind === 'Stop' ? 'Session end' : 'Subagent finished'}</div>${e.last_message ? `<details><summary>final message</summary><pre>${esc(prettyResponse(e.last_message))}</pre></details>` : ''}</div></div>`;
     if (r.kind === 'PostToolUse') {
       const resp = prettyResponse(e.response);
@@ -710,9 +710,9 @@ function renderTracePage(ed, trace) {
 </div>`;
   const page = `<div class="eyebrow"><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> / trace</div>
 <h1>Run trace — ${esc(shortDate(ed.date))}</h1>
-<p class="lede">The end-to-end record of the run that produced this edition: every tool call the agent made, its input, and its response, captured automatically by the harness (Claude Code hooks) — not written by the model. ${sessionId ? `Provisioning steps and the full session are on <a href="https://claude.ai/code/session_${esc(sessionId)}">claude.ai</a>.` : ''}</p>
+<p class="lede">How this edition was made, step by step: every page the AI fetched, every search it ran, every file it wrote and every check it passed, with the responses it got back. This log is recorded automatically by the tooling around the AI — it is not written by the AI — so it is a faithful record, not a summary.</p>
 ${stats}
-<p class="muted">Raw files: <a href="events.jsonl">events.jsonl</a>${trace.hasTranscript ? ` · <a href="transcript.jsonl">transcript.jsonl</a> (complete session, untruncated)` : ''}. Times are UTC. Responses longer than ${TRACE_MAX_SHOWN.toLocaleString()} characters are cut on this page but complete in the raw files.</p>
+<p class="muted">Raw files: <a href="events.jsonl">events.jsonl</a>${trace.hasTranscript ? ` · <a href="transcript.jsonl">transcript.jsonl</a> (the complete session)` : ''}. Times are UTC. Long responses are shortened on this page but complete in the raw files.</p>
 <div class="trace">${body}</div>`;
   return layout({ title: `Trace — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/trace/`, nav: 'editions' });
 }
