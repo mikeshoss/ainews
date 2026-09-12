@@ -14,14 +14,13 @@
 //   data/DATE.json, data/DATE.script.json       items, sections, whether the podcast script passed
 //   GitHub release "audio" (public API)          per-asset download counts; snapshotted daily so per-day deltas can be
 //                                                computed → the closest thing to "plays" (Spotify has no stats API)
-//   audio/index.json (from the release)          episode length → TTS cost estimate
+//   index.json from that release                 episode length → TTS cost estimate
 //   GA4 Data API (optional)                       users, page views, outbound clicks per day. Needs GA4_PROPERTY_ID and
 //                                                GA4_SERVICE_ACCOUNT (path to a service-account JSON that has Viewer
 //                                                access on the property); read from the environment or stats/.env.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'stats');
@@ -100,9 +99,11 @@ function editionFor(date) {
 }
 
 // ---------- podcast downloads ----------
-function fetchRelease() {
-  const out = execFileSync('gh', ['api', `repos/${REPO}/releases/tags/audio`], { encoding: 'utf8' });
-  const assets = JSON.parse(out).assets.map((a) => ({ name: a.name, downloads: a.download_count, bytes: a.size }));
+const GH_HEADERS = { accept: 'application/vnd.github+json', 'user-agent': 'ainews-stats', ...(process.env.GITHUB_TOKEN || process.env.GH_TOKEN ? { authorization: `Bearer ${process.env.GITHUB_TOKEN || process.env.GH_TOKEN}` } : {}) };
+async function fetchRelease() {
+  const res = await fetch(`https://api.github.com/repos/${REPO}/releases/tags/audio`, { headers: GH_HEADERS });
+  if (!res.ok) throw new Error(`GitHub ${res.status}`);
+  const assets = (await res.json()).assets.map((a) => ({ name: a.name, downloads: a.download_count, bytes: a.size }));
   const snap = { taken_at: new Date().toISOString(), assets };
   fs.writeFileSync(path.join(OUT, 'downloads', `${today()}.json`), JSON.stringify(snap, null, 2));
   return snap;
@@ -114,10 +115,13 @@ function loadSnapshots() {
 const mp3Total = (snap) => snap.assets.filter((a) => a.name.endsWith('.mp3')).reduce((a, x) => a + x.downloads, 0);
 const episodeOf = (name) => (name.match(/^(\d{4}-\d{2}-\d{2})/) || [])[1];
 
-function loadAudioIndex() {
-  const local = path.join(ROOT, 'audio', 'index.json');
+async function loadAudioIndex() {
+  const local = path.join(OUT, 'audio-index.json');
   if (FETCH) {
-    try { fs.mkdirSync(path.dirname(local), { recursive: true }); execFileSync('gh', ['release', 'download', 'audio', '-R', REPO, '-p', 'index.json', '-O', local, '--clobber'], { stdio: 'ignore' }); } catch { /* keep local copy */ }
+    try {
+      const res = await fetch(`https://github.com/${REPO}/releases/download/audio/index.json`, { headers: { 'user-agent': 'ainews-stats' } });
+      if (res.ok) fs.writeFileSync(local, await res.text());
+    } catch { /* keep local copy */ }
   }
   try { return JSON.parse(fs.readFileSync(local, 'utf8')); } catch { return {}; }
 }
@@ -177,9 +181,9 @@ async function main() {
   let ga = null, gaError = null;
   if (FETCH) { try { ga = await fetchGA(Math.max(DAYS, 30)); } catch (e) { gaError = e.message; ga = null; } }
   if (!ga) { const c = path.join(OUT, 'ga.json'); if (fs.existsSync(c)) ga = JSON.parse(fs.readFileSync(c, 'utf8')); }
-  if (FETCH) { try { fetchRelease(); } catch (e) { console.error(`downloads: ${e.message}`); } }
+  if (FETCH) { try { await fetchRelease(); } catch (e) { console.error(`downloads: ${e.message}`); } }
   const snaps = loadSnapshots();
-  const audio = loadAudioIndex();
+  const audio = await loadAudioIndex();
 
   const dates = new Set([...fs.readdirSync(path.join(ROOT, 'data')).map((f) => (f.match(/^(\d{4}-\d{2}-\d{2})\.json$/) || [])[1]).filter(Boolean), ...snaps.map((s) => s.date)]);
   const days = [...dates].sort().slice(-DAYS);
