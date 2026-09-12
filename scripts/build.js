@@ -115,7 +115,7 @@ const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringi
 
 function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
   const desc = description || SITE_TAGLINE;
-  // Current-section treatment: nav = 'editions' | 'trends' | 'podcast'
+  // Current-section treatment: nav = 'editions' | 'trends' | 'podcast' | 'about'
   const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
   const image = og.image || `${SITE_URL}/og.png`;
   return `<!doctype html>
@@ -158,6 +158,7 @@ ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(
       <a href="${base}trends/"${cur('trends')}>Trends</a>
       <a href="${base}podcast/"${cur('podcast')}>Podcast</a>
       <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
+      <a href="${base}about/"${cur('about')}>About</a>
     </nav>
   </div>
 </header>
@@ -166,7 +167,8 @@ ${body}
 </main>
 <footer class="site-footer"><div class="wrap">
   <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source.</p>
-  <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
+  <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${base}about/">About</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
+  <p>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}. Editions <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> · Code <a href="${REPO_URL}/blob/main/LICENSE" rel="license">MIT</a></p>
 </div></footer>
 </body>
 </html>
@@ -317,6 +319,64 @@ ${groups}`;
   return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
 }
 
+// Source count for the About page: rows of the SOURCES.md tables (header/divider rows excluded), rounded down to a ten.
+function sourceCount() {
+  try {
+    const n = fs.readFileSync(path.join(ROOT, 'SOURCES.md'), 'utf8').split('\n').filter((l) => /^\| [^-|]/.test(l) && !/^\| Source /.test(l)).length;
+    return Math.floor(n / 10) * 10;
+  } catch { return 100; }
+}
+
+function renderAbout(editions) {
+  const base = '../';
+  const latest = editions[0];
+  const traceLink = latest && latest.hasTrace ? `${base}${latest.date}/trace/` : `${base}`;
+  const body = `<h1>About</h1>
+<div class="prose">
+<p class="lede">${esc(SITE_NAME)} is a daily, fact-first briefing on frontier AI — the advances, the research, and how the technology is being used, for good and for harm. Cyber operations and influence campaigns, military and defence, health and science, policy and the courts, chips and compute. Every headline links to its source. Nothing is written without one.</p>
+
+<h2>Why this exists</h2>
+<p>I'm Mike Shoss. I lead <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'about'))}" rel="noopener">Epilogue</a>, an AI consulting and product studio in Toronto. Part of that job is knowing, every morning, where this technology actually is — so I've long started the day the same way: the lab announcements, the new papers, the threat-intelligence reports, what's landing in defence, health and policy.</p>
+<p>It's a job requirement, but it's also a fascination. This is the most powerful technology we've ever had, and every day it's being used to do remarkable good and real harm — often in the same report. What pushed me to publish was <a href="https://www.anthropic.com/threat-intelligence-report-september-2026" rel="noopener">Anthropic's September 2026 threat-intelligence report</a> and the realisation that most people who should know what's in documents like that never will. Not everyone can keep up, or wants to, or has the time. I can, and I felt it was on me to share it where I could.</p>
+<p>So this is the briefing I was already making for myself, made public.</p>
+
+<h2>How an edition is made</h2>
+<p>Every morning:</p>
+<ul>
+<li><strong>The sweep.</strong> About ${sourceCount()} sources — labs and their research blogs, arXiv, security vendors' own threat reports, government and regulator sites, court dockets, defence and health press, and the trade and mainstream outlets that cover them. <a href="${REPO_URL}/blob/main/SOURCES.md">The full list is public.</a></li>
+<li><strong>The rules.</strong> Primary sources first. Every number quoted exactly as the source wrote it, with its baseline. Every caveat the source raises is stated — company claims, single-source stories, preprints — and flagged as such. If a claim can't be traced to a document that can be opened, it's left out. Opinion without new facts, marketing without numbers, and rumour don't make the cut. <a href="${REPO_URL}/blob/main/PROMPT.md">The editorial rules are public too.</a></li>
+<li><strong>The check.</strong> Every link is tested live before publishing; a dead link fails the build.</li>
+</ul>
+<p>Mondays add a week in review: the threads that mattered, the week's key figures, and what's on the calendar.</p>
+
+<h2>The role of AI — read this part</h2>
+<p>The research, the writing and the voices are produced by AI. Claude does the morning sweep, verifies items against their primary sources and writes each edition; OpenAI's speech models voice the podcast. No person reviews an edition before it goes out.</p>
+<p>What makes that trustworthy isn't the model — it's the checks around it, and the fact that you can see everything:</p>
+<ul>
+<li><strong>Every edition publishes its complete build log</strong> — every page fetched, every search run, every check passed — recorded automatically by the tooling, not written by the AI. Open any edition and click <em>how this edition was made</em>${latest && latest.hasTrace ? ` (<a href="${traceLink}">here's the latest</a>)` : ''}.</li>
+<li><strong>The podcast script is mechanically locked to the edition.</strong> Before an episode can be made, a validator rejects any number that doesn't appear in the source item, any missing caveat, any unnamed source, and any speculative or hyped language. If a day's script can't pass, that day is narrated straight from the edition text instead.</li>
+<li><strong>Every claim links to its source</strong>, so you never have to take the briefing's word for it.</li>
+</ul>
+<p>It will still get things wrong sometimes. When it does, tell me: <a href="mailto:${esc(PODCAST.email)}">${esc(PODCAST.email)}</a>. Corrections are made in the open.</p>
+
+<h2>The podcast</h2>
+<p><a href="${base}podcast/">${esc(PODCAST.title)}, presented by ${esc(PODCAST.presenter)}</a>, is each day's edition as a 10–15 minute conversation between two hosts, Maya and Alex. They're AI voices, and they say so at the top of every episode. Each episode has a transcript showing exactly which item every part of the conversation came from. Listen on <a href="${esc(PODCAST.listen.Spotify.url)}" rel="noopener">Spotify</a> or add <a href="${base}podcast.xml">the RSS feed</a> to any podcast app.</p>
+<p>Each episode's cover is generated from that day's news: every section has a colour — security is red, research violet, military orange, and so on — and the cover mixes them in proportion to how much of the day fell in each.</p>
+
+<h2>Trends</h2>
+<p>A topic is trending when it keeps appearing across editions. <a href="${base}trends/">The Trends page</a> shows what's recurring right now, and every topic has a page collecting every item ever filed under it — the easiest way to follow one storyline over weeks.</p>
+
+<h2>Who's behind it</h2>
+<p><a href="${esc(utm(PODCAST.presenterUrl, 'web', 'about'))}" rel="noopener">Epilogue</a> is an AI consulting and product studio based in Toronto, focused on turning complex business problems into practical, high-impact AI products — built end to end.</p>
+<p>Mike Shoss is Epilogue's founder and principal. He ships AI products in industries where being wrong is expensive, advises and mentors AI startups at <a href="https://theforge.mcmaster.ca/" rel="noopener">The Forge</a> and <a href="https://dmz.torontomu.ca/" rel="noopener">DMZ</a>, and is an angel investor in early-stage Canadian AI. He lives in Milton, Ontario. <a href="${esc(CREDITS.url)}" rel="noopener">LinkedIn</a></p>
+
+<h2>Open</h2>
+<p>The editions, the source list, and all the code are <a href="${REPO_URL}">on GitHub</a>. The editions are published under <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener">CC BY 4.0</a> — reuse them with a link back. The code is <a href="${REPO_URL}/blob/main/LICENSE">MIT</a>. <a href="${REPO_URL}/blob/main/LICENSE-EDITIONS.md">Full terms.</a></p>
+</div>`;
+  return layout({ title: `About — ${SITE_NAME}`, description: `Who makes ${SITE_NAME}, how each edition is produced, and what the AI does and doesn't do.`, base, body, canonical: `${SITE_URL}/about/`, nav: 'about',
+    ld: { '@context': 'https://schema.org', '@type': 'AboutPage', name: `About — ${SITE_NAME}`, url: `${SITE_URL}/about/`, publisher: ORG, author: { '@type': 'Person', name: CREDITS.name, url: CREDITS.url } } });
+}
+
 function renderEmail(ed) {
   const url = `${SITE_URL}/${ed.date}/`;
   const monday = ed.edition === 'monday' || isMonday(ed.date);
@@ -388,6 +448,7 @@ h3{font-size:1.05rem;margin:0 0 .35em;line-height:1.35}
 h3 a{color:var(--fg);text-decoration:none;border-bottom:1px solid transparent}
 h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .lede{font-size:1.1rem;color:var(--muted);margin:0 0 1.2em}
+.prose{max-width:46rem;line-height:1.6}.prose h2{margin-top:1.8em}.prose li{margin-bottom:.5em}
 .muted{color:var(--muted)}
 .eyebrow{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.4em}
 .badge{display:inline-block;background:var(--badge);color:#fff;border-radius:4px;padding:1px 7px;font-weight:600;letter-spacing:.04em}
@@ -762,7 +823,8 @@ function main() {
     write(`email/${ed.date}.txt`, em.text);
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
   });
-  const urls = [`${SITE_URL}/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`,
+  write('about/index.html', renderAbout(editions));
+  const urls = [`${SITE_URL}/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
     ...editions.flatMap((ed) => [`${SITE_URL}/${ed.date}/`, ...(ed.audio || loadScript(ed.date) ? [`${SITE_URL}/${ed.date}/script/`] : []), ...(ed.hasTrace ? [`${SITE_URL}/${ed.date}/trace/`] : [])]),
     ...[...topics.keys()].map((t) => `${SITE_URL}/trends/${t}/`)];
   const lastmod = editions[0] ? editions[0].date : new Date().toISOString().slice(0, 10);

@@ -58,3 +58,7 @@ node scripts/validate-script.js data/2026-09-11.script.json
 node scripts/podcast.js --dry-run                      # planned TTS requests, no API calls
 node scripts/build.js && npx -y serve site
 ```
+
+## Licence
+
+Code is [MIT](LICENSE). The editions (`data/`, `trace/`, and everything built from them) are [CC BY 4.0](LICENSE-EDITIONS.md) — reuse with credit to AI Edge Briefing and a link to https://aiedgebriefing.com/.
