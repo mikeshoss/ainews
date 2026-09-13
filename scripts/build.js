@@ -528,9 +528,31 @@ function renderAbout(editions) {
     ld: { '@context': 'https://schema.org', '@type': 'AboutPage', name: `About — ${SITE_NAME}`, url: `${SITE_URL}/about/`, publisher: ORG, author: { '@type': 'Person', name: CREDITS.name, url: CREDITS.url } } });
 }
 
+// A LinkedIn-ready post for the day, generated from the edition so it can say nothing the edition does not:
+// one hook sentence from the summary, the lead item of each section as a bullet, the count, and a clean link
+// (no UTM — LinkedIn attributes the referral itself and the preview card wants the canonical URL).
+function renderLinkedIn(ed) {
+  const url = `${SITE_URL}/${ed.date}/`;
+  const first = paragraphs(ed.summary)[0] || '';
+  const hook = (first.match(/^.*?[.!?](?=\s|$)/) || [first])[0].trim();
+  const leads = ed.sections.map((s) => s.items[0]).filter(Boolean).slice(0, 7).map((it) => `• ${it.headline.replace(/\.?$/, '')}`);
+  const minutes = ed.audio ? `, plus a ${Math.round(ed.audio.seconds / 60)}-minute podcast episode` : '';
+  return [
+    `What happened in frontier AI — ${longDate(ed.date)}`,
+    '',
+    hook,
+    '',
+    ...leads,
+    '',
+    `${ed.itemCount} items today, every one linked to its source${minutes}:`,
+    url,
+  ].join('\n');
+}
+
 function renderEmail(ed) {
   const url = `${SITE_URL}/${ed.date}/`;
   const summary = paragraphs(ed.summary);
+  const post = renderLinkedIn(ed);
   const sec = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</h2>` +
     s.items.map((it) => {
       const first = (it.sources || [])[0];
@@ -541,6 +563,8 @@ function renderEmail(ed) {
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
 <p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}</p>
 <h1 style="font-size:22px;margin:0 0 10px">${esc(longDate(ed.date))}</h1>
+<p style="color:#777;font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em">Ready to post — select, copy, paste into LinkedIn</p>
+<div style="white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:14px 16px;margin:0 0 20px;background:#fafafa;color:#222">${esc(post)}</div>
 <p style="margin:0 0 16px"><a href="${url}" style="color:#0b57d0;font-weight:600">Read the full edition (${ed.itemCount} items) →</a></p>
 ${summary.map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
 ${ed.sections.map(sec).join('')}
@@ -548,11 +572,11 @@ ${ed.sections.map(sec).join('')}
 <p style="color:#777;font-size:12px">Every headline links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
 </div>`;
   const text = [
-    SITE_NAME, longDate(ed.date), '', `Full edition: ${url}`, '',
+    SITE_NAME, longDate(ed.date), '', '--- Ready to post on LinkedIn ---', post, '--- end of post ---', '', `Full edition: ${url}`, '',
     ...summary, '',
     ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${utm(x.url, 'email', ed.date)}`)]), '']),
   ].join('\n');
-  return { html, text, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
+  return { html, text, post, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
 }
 
 function renderWeekEmail(wk) {
@@ -1035,6 +1059,7 @@ function main() {
     write(`email/${ed.date}.html`, em.html);
     write(`email/${ed.date}.txt`, em.text);
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
+    write(`email/${ed.date}.linkedin.txt`, em.post + '\n');
   });
   weeks.forEach((wk, i) => {
     const trace = loadTrace(`${wk.date}.week`);
