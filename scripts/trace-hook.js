@@ -92,7 +92,8 @@ process.stdin.on('end', () => {
     if (tool_response !== undefined) rec.response = clip(tool_response);
     if (last_assistant_message !== undefined) rec.last_message = clip(last_assistant_message);
     const line = redact(JSON.stringify(rec)) + '\n';
-    const key = resolveKey(ev, date, dir);
+    // If the prompt could not be read by the time the session ends, the run is almost certainly the daily.
+    const key = resolveKey(ev, date, dir) || (ev.hook_event_name === 'Stop' ? date : null);
     const pending = ev.session_id ? path.join(dir, `.pending-${ev.session_id}.jsonl`) : null;
     if (!key) { fs.appendFileSync(pending || path.join(dir, `${date}.jsonl`), line); process.exit(0); }
     if (pending && fs.existsSync(pending)) { fs.appendFileSync(path.join(dir, `${key}.jsonl`), fs.readFileSync(pending, 'utf8')); fs.unlinkSync(pending); }
