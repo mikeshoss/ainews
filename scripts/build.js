@@ -549,34 +549,14 @@ function renderLinkedIn(ed) {
   ].join('\n');
 }
 
+// The daily email is the LinkedIn post and nothing else: the reader consumes the edition on the site and the
+// podcast; the email's job is to make sharing a copy-paste. The post is generated from the edition (renderLinkedIn).
 function renderEmail(ed) {
-  const url = `${SITE_URL}/${ed.date}/`;
-  const summary = paragraphs(ed.summary);
   const post = renderLinkedIn(ed);
-  const sec = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</h2>` +
-    s.items.map((it) => {
-      const first = (it.sources || [])[0];
-      const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(utm(x.url, 'email', ed.date))}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
-      const fl = (it.flags || []).map((f) => `<b style="color:#7a4b00;font-size:11px;text-transform:uppercase;letter-spacing:.04em">[${esc(FLAG_LABELS[f] || f)}]</b> `).join('');
-      return `<p style="margin:0 0 12px">${fl}<a href="${esc(first ? utm(first.url, 'email', ed.date) : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
-    }).join('');
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
-<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}</p>
-<h1 style="font-size:22px;margin:0 0 10px">${esc(longDate(ed.date))}</h1>
-<p style="color:#777;font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em">Ready to post — select, copy, paste into LinkedIn</p>
-<div style="white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:14px 16px;margin:0 0 20px;background:#fafafa;color:#222">${esc(post)}</div>
-<p style="margin:0 0 16px"><a href="${url}" style="color:#0b57d0;font-weight:600">Read the full edition (${ed.itemCount} items) →</a></p>
-${summary.map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
-${ed.sections.map(sec).join('')}
-<hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
-<p style="color:#777;font-size:12px">Every headline links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
+<div style="white-space:pre-wrap">${esc(post)}</div>
 </div>`;
-  const text = [
-    SITE_NAME, longDate(ed.date), '', '--- Ready to post on LinkedIn ---', post, '--- end of post ---', '', `Full edition: ${url}`, '',
-    ...summary, '',
-    ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${utm(x.url, 'email', ed.date)}`)]), '']),
-  ].join('\n');
-  return { html, text, post, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
+  return { html, text: post, post, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
 }
 
 function renderWeekEmail(wk) {
