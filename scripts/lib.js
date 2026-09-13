@@ -6,6 +6,15 @@ const dateObj = (d) => new Date(d + 'T12:00:00Z');
 const longDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()]}, ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()]} ${o.getUTCFullYear()}`; };
 const shortDate = (d) => { const o = dateObj(d); return `${DAYS[o.getUTCDay()].slice(0, 3)} ${o.getUTCDate()} ${MONTHS[o.getUTCMonth()].slice(0, 3)}`; };
 const isMonday = (d) => dateObj(d).getUTCDay() === 1;
+const addDays = (d, n) => { const o = dateObj(d); o.setUTCDate(o.getUTCDate() + n); return o.toISOString().slice(0, 10); };
+// "7–13 September 2026" / "28 September – 4 October 2026" / "29 December 2025 – 4 January 2026"
+const periodLabel = ({ from, to }) => {
+  const a = dateObj(from), b = dateObj(to);
+  if (a.getUTCFullYear() !== b.getUTCFullYear()) return `${a.getUTCDate()} ${MONTHS[a.getUTCMonth()]} ${a.getUTCFullYear()} – ${b.getUTCDate()} ${MONTHS[b.getUTCMonth()]} ${b.getUTCFullYear()}`;
+  if (a.getUTCMonth() !== b.getUTCMonth()) return `${a.getUTCDate()} ${MONTHS[a.getUTCMonth()]} – ${b.getUTCDate()} ${MONTHS[b.getUTCMonth()]} ${b.getUTCFullYear()}`;
+  return `${a.getUTCDate()}–${b.getUTCDate()} ${MONTHS[a.getUTCMonth()]} ${a.getUTCFullYear()}`;
+};
+const shortPeriodLabel = ({ from, to }) => periodLabel({ from, to }).replace(/(January|February|March|April|May|June|July|August|September|October|November|December)/g, (m) => m.slice(0, 3));
 const paragraphs = (s) => (Array.isArray(s) ? s : String(s || '').split(/\n\s*\n/)).map((p) => p.trim()).filter(Boolean);
 // Spoken forms: "Friday, September 11th" — how a person says a date, not how it is written.
 const ordinal = (n) => { const v = n % 100; return n + (v >= 11 && v <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][Math.min(n % 10, 4)] || 'th'); };
@@ -37,11 +46,11 @@ const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue
   listen: { Spotify: { url: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU', label: 'Spotify' } } };
 const CREDITS = { name: 'Mike Shoss', url: 'https://www.linkedin.com/in/mikeshoss' };
 
-// Share of the day's items per section (daily sections only; the Monday week-in-review is not counted).
+// Share of the day's items per section.
 function sectionWeights(ed) {
   const counts = (ed.sections || []).map((s) => [s.name, (s.items || []).length]).filter(([, n]) => n > 0);
   const total = counts.reduce((a, [, n]) => a + n, 0) || 1;
   return counts.map(([name, n]) => ({ name, count: n, share: n / total, ...(SECTION_COLORS[name] || { hex: '#9a9a9a', name: 'grey', short: name }) })).sort((a, b) => b.share - a.share);
 }
 
-module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights };
+module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, addDays, periodLabel, shortPeriodLabel, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights };

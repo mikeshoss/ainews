@@ -55,7 +55,6 @@ function coverSvg(ed) {
     : sectionWeights(ed);
   const seed = show ? 'the-ai-edge-show' : ed.date;
   const field = colourField(weights, seed);
-  const monday = !show && ed.edition === 'monday';
   const total = show ? 0 : weights.reduce((a, w) => a + w.count, 0);
   const legend = show ? PODCAST.tagline : weights.slice(0, 4).map((w) => `${w.short} ${Math.round(w.share * 100)}%`).join('  ·  ');
 
@@ -67,7 +66,7 @@ function coverSvg(ed) {
     dateBlock = `
   <text x="${M}" y="1930" font-family="${FONT}" font-size="170" font-weight="500" fill="#ffffff" fill-opacity="0.82">${esc(weekday)}</text>
   <text x="${M}" y="2200" font-family="${FONT}" font-size="250" font-weight="700" fill="#ffffff" letter-spacing="-6">${esc(rest)}</text>
-  <text x="${M}" y="2340" font-family="${FONT}" font-size="96" font-weight="500" fill="#ffffff" fill-opacity="0.62">${esc(monday ? 'Monday edition · with the week in review' : 'Daily edition')}${total ? esc(` · ${total} items`) : ''}</text>`;
+  <text x="${M}" y="2340" font-family="${FONT}" font-size="96" font-weight="500" fill="#ffffff" fill-opacity="0.62">${esc('Daily edition')}${total ? esc(` · ${total} items`) : ''}</text>`;
     void d;
   } else {
     dateBlock = `
@@ -98,7 +97,6 @@ function wideCoverSvg(ed) {
   const W = 1200, H = 630, m = 70;
   const weights = sectionWeights(ed);
   const field = colourField(weights, ed.date + ':wide');
-  const monday = ed.edition === 'monday';
   const total = weights.reduce((a, w) => a + w.count, 0);
   const weekday = longDate(ed.date).split(',')[0], rest = longDate(ed.date).split(', ')[1];
   const legend = weights.slice(0, 4).map((w) => `${w.short} ${Math.round(w.share * 100)}%`).join('  ·  ');
@@ -116,7 +114,7 @@ function wideCoverSvg(ed) {
 <text x="${m}" y="156" font-family="${FONT}" font-size="26" font-weight="500" fill="#ffffff" fill-opacity="0.72">presented by ${esc(PODCAST.presenter)}</text>
 <text x="${m}" y="340" font-family="${FONT}" font-size="46" font-weight="500" fill="#ffffff" fill-opacity="0.82">${esc(weekday)}</text>
 <text x="${m}" y="418" font-family="${FONT}" font-size="76" font-weight="700" fill="#ffffff" letter-spacing="-1">${esc(rest)}</text>
-<text x="${m}" y="462" font-family="${FONT}" font-size="26" font-weight="500" fill="#ffffff" fill-opacity="0.62">${esc(monday ? 'Monday edition · with the week in review' : 'Daily edition')}${total ? esc(` · ${total} items`) : ''}</text>
+<text x="${m}" y="462" font-family="${FONT}" font-size="26" font-weight="500" fill="#ffffff" fill-opacity="0.62">${esc('Daily edition')}${total ? esc(` · ${total} items`) : ''}</text>
 ${bar}
 <text x="${m}" y="${H - 42}" font-family="${FONT}" font-size="20" font-weight="500" fill="#ffffff" fill-opacity="0.7">${esc(legend)}</text>
 </svg>

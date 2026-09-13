@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { dateObj, longDate, shortDate, isMonday, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights } = require('./lib.js');
+const { dateObj, longDate, shortDate, periodLabel, shortPeriodLabel, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -79,14 +79,39 @@ function loadEditions() {
     .sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
 }
 
-function buildTopicIndex(editions) {
+// Week-in-review files: data/YYYY-MM-DD.week.json, dated by the Monday they publish. Newest first.
+function loadWeeks() {
+  if (!fs.existsSync(DATA_DIR)) return [];
+  return fs.readdirSync(DATA_DIR)
+    .filter((f) => /^\d{4}-\d{2}-\d{2}\.week\.json$/.test(f))
+    .map((f) => {
+      const wk = JSON.parse(fs.readFileSync(path.join(DATA_DIR, f), 'utf8'));
+      wk.date = wk.date || f.slice(0, 10);
+      wk.happened = wk.happened || []; wk.connects = wk.connects || []; wk.unknowns = wk.unknowns || [];
+      wk.byId = new Map([...wk.happened, ...wk.connects, ...wk.unknowns].map((o) => [o.id, o]));
+      wk.label = periodLabel(wk.period);
+      wk.shortLabel = shortPeriodLabel(wk.period);
+      wk.itemCount = wk.happened.length;
+      return wk;
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+}
+
+function buildTopicIndex(editions, weeks = []) {
   const topics = new Map();
+  const topicFor = (slug) => { if (!topics.has(slug)) topics.set(slug, { slug, label: topicLabel(slug), dates: new Set(), entries: [], weekly: [], weeks: new Set(), threads: 0 }); return topics.get(slug); };
+  // Weekly threads: every development, connection and open question carrying the slug. These are the "how this story has evolved" timeline.
+  for (const wk of weeks) {
+    const add = (kind, ref) => { for (const slug of ref.topics || []) { const t = topicFor(slug); t.weekly.push({ kind, ref, week: wk }); t.weeks.add(wk.date); if (kind === 'connect') t.threads++; } };
+    wk.connects.forEach((c) => add('connect', c));
+    wk.happened.forEach((h) => add('happened', h));
+    wk.unknowns.forEach((u) => add('unknown', u));
+  }
   for (const ed of editions) {
     for (const sec of ed.sections) {
       for (const item of sec.items) {
         for (const slug of item.topics || []) {
-          if (!topics.has(slug)) topics.set(slug, { slug, label: topicLabel(slug), dates: new Set(), entries: [] });
-          const t = topics.get(slug);
+          const t = topicFor(slug);
           t.dates.add(ed.date);
           t.entries.push({ date: ed.date, section: sec.name, item });
         }
@@ -100,8 +125,9 @@ function buildTopicIndex(editions) {
     t.daysInWindow = [...t.dates].filter((d) => daysBetween(latest, d) < TREND_WINDOW_DAYS).length;
     t.streak = 0;
     for (const d of editionDates) { if (t.dates.has(d)) t.streak++; else break; }
-    t.lastSeen = [...t.dates].sort().pop();
-    t.firstSeen = [...t.dates].sort()[0];
+    const seen = [...t.dates].sort();
+    t.lastSeen = seen[seen.length - 1] || null;
+    t.firstSeen = seen[0] || null;
   }
   const trending = [...topics.values()]
     .filter((t) => t.daysInWindow >= TREND_MIN_DAYS)
@@ -115,7 +141,7 @@ const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringi
 
 function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
   const desc = description || SITE_TAGLINE;
-  // Current-section treatment: nav = 'editions' | 'trends' | 'podcast' | 'about'
+  // Current-section treatment: nav = 'home' | 'editions' | 'week' | 'trends' | 'podcast' | 'about'
   const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
   const image = og.image || `${SITE_URL}/og.png`;
   return `<!doctype html>
@@ -154,7 +180,9 @@ ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(
   <div class="wrap">
     <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
     <nav>
-      <a href="${base}"${cur('editions')}>Editions</a>
+      <a href="${base}"${cur('home')}>Home</a>
+      <a href="${base}editions/"${cur('editions')}>Editions</a>
+      <a href="${base}week/"${cur('week')}>Weekly</a>
       <a href="${base}trends/"${cur('trends')}>Trends</a>
       <a href="${base}podcast/"${cur('podcast')}>Podcast</a>
       <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
@@ -184,8 +212,14 @@ function renderItem(item, base, opts = {}) {
   const impact = item.impact && item.impact !== 'neutral' ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
   const flags = (item.flags || []).map((f) => `<span class="flag flag-${esc(f)}">${esc(FLAG_LABELS[f] || f)}</span>`).join('');
   const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
-  const dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
-  return `<article class="item">
+  let dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
+  // Week-in-review items: when it happened and which daily editions carried it.
+  if (opts.week) {
+    const when = (item.dates || []).map((d) => esc(shortDate(d))).join(', ');
+    const covered = (item.editions || []).map((d) => `<a href="${base}${d}/">${esc(shortDate(d))}</a>`).join(' · ');
+    dateLine = `<div class="item-meta">${when}${covered ? ` · covered in ${covered}` : ' · not in a daily edition'}</div>`;
+  }
+  return `<article class="item"${opts.anchorId ? ` id="${esc(opts.anchorId)}"` : ''}>
   ${dateLine}
   <h3>${first ? `<a href="${esc(utm(first.url, 'web', opts.campaign))}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}${flags}</h3>
   <div class="sources">${renderSources(item.sources, opts.campaign)}</div>
@@ -194,39 +228,34 @@ function renderItem(item, base, opts = {}) {
 </article>`;
 }
 
+function renderFigures(figures, campaign) {
+  if (!(figures || []).length) return '';
+  return `<h3 class="sub" id="figures">By the numbers</h3><dl class="figures">${figures.map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <a class="src" href="${esc(utm(f.url, 'web', campaign))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl>`;
+}
+function renderCalendar(calendar, campaign) {
+  if (!(calendar || []).length) return '';
+  return `<h3 class="sub" id="calendar">On the calendar</h3><ul class="calendar">${calendar.map((c) => `<li><strong>${esc(c.date)}</strong> — ${esc(c.event)} <a class="src" href="${esc(utm(c.url, 'web', campaign))}" rel="noopener">${esc(c.source || hostname(c.url))}</a></li>`).join('')}</ul>`;
+}
+
 function renderEditionPage(ed, editions, idx) {
   const base = '../';
   const newer = editions[idx - 1], older = editions[idx + 1];
-  const monday = ed.edition === 'monday' || isMonday(ed.date);
   const summary = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
   const toc = ed.sections.map((s) => `<a href="#${esc(slugify(s.name))}">${esc(s.name)} <span class="count">${s.items.length}</span></a>`).join('');
   const sections = ed.sections.map((s) => `<section class="section" id="${esc(slugify(s.name))}">
   <h2><i class="dot" style="background:${(SECTION_COLORS[s.name] || {}).hex || '#9a9a9a'}"></i>${esc(s.name)}</h2>
   ${s.items.map((it) => renderItem(it, base, { campaign: ed.date })).join('\n')}
 </section>`).join('\n');
-  let week = '';
-  if (ed.week_in_review && (ed.week_in_review.items || []).length) {
-    const w = ed.week_in_review;
-    week = `<section class="section week" id="week-in-review">
-  <h2>The week in review</h2>
-  <p class="muted">What mattered over the last seven days${w.period ? ` (${esc(w.period)})` : ''}.</p>
-  ${paragraphs(w.summary).map((p) => `<p>${esc(p)}</p>`).join('')}
-  ${w.items.map((it) => renderItem(it, base, { campaign: ed.date })).join('\n')}
-  ${(w.figures || []).length ? `<h3 class="sub">By the numbers</h3><dl class="figures">${w.figures.map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <a class="src" href="${esc(utm(f.url, 'web', ed.date))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl>` : ''}
-  ${(w.calendar || []).length ? `<h3 class="sub">On the calendar</h3><ul class="calendar">${w.calendar.map((c) => `<li><strong>${esc(c.date)}</strong> — ${esc(c.event)} <a class="src" href="${esc(utm(c.url, 'web', ed.date))}" rel="noopener">${esc(c.source || hostname(c.url))}</a></li>`).join('')}</ul>` : ''}
-</section>`;
-  }
   const body = `<article class="edition">
   <header class="edition-header">
-    <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items${ed.window ? ` · covers ${esc(ed.window.replace(/\s*\(.*?\)\s*/g, ''))}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">how this edition was made</a>` : ''}</div>
+    <div class="eyebrow">Daily edition · ${ed.itemCount} items${ed.window ? ` · covers ${esc(ed.window.replace(/\s*\(.*?\)\s*/g, ''))}` : ''}${ed.hasTrace ? ` · <a href="${base}${ed.date}/trace/">how this edition was made</a>` : ''}</div>
     <h1>${esc(longDate(ed.date))}</h1>
     ${renderSpectrum(ed, true)}
     ${renderPlayer(ed.audio, base, ed, false)}
     <div class="summary">${summary}</div>
-    <nav class="toc">${toc}${week ? `<a href="#week-in-review">The week in review</a>` : ''}</nav>
+    <nav class="toc">${toc}</nav>
   </header>
   ${sections}
-  ${week}
   <nav class="pager">
     ${older ? `<a href="${base}${older.date}/">← ${esc(shortDate(older.date))}</a>` : '<span></span>'}
     ${newer ? `<a href="${base}${newer.date}/">${esc(shortDate(newer.date))} →</a>` : '<span></span>'}
@@ -249,30 +278,130 @@ function renderEditionPage(ed, editions, idx) {
     og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.ogUrl, imageAlt: `${PODCAST.title} — ${longDate(ed.date)}` }, ld });
 }
 
-function renderHome(editions, trending) {
-  const base = './';
-  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow} day${t.daysInWindow === 1 ? '' : 's'}</span></a>`).join('');
-  const list = editions.map((ed) => {
-    const monday = ed.edition === 'monday' || isMonday(ed.date);
-    const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
-    return `<article class="card card-link">
-  <div class="eyebrow">${monday ? '<span class="badge">Monday edition</span>' : 'Daily edition'} · ${ed.itemCount} items</div>
+function renderEditionCard(ed, base) {
+  const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  return `<article class="card card-link">
+  <div class="eyebrow">Daily edition · ${ed.itemCount} items</div>
   <h2><a href="${base}${ed.date}/" class="stretch">${esc(longDate(ed.date))}</a></h2>
   ${renderSpectrum(ed, false)}
   <p>${esc(paragraphs(ed.summary)[0] || '')}</p>
   ${renderPlayer(ed.audio, base, ed, true)}
   <div class="topics">${topTopics}</div>
 </article>`;
-  }).join('\n');
+}
+function weekTopTopics(wk) {
+  const counts = new Map();
+  for (const o of [...wk.connects, ...wk.happened]) for (const t of o.topics || []) counts.set(t, (counts.get(t) || 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map((e) => e[0]);
+}
+function renderWeekCard(wk, base) {
+  const topTopics = weekTopTopics(wk).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  return `<article class="card card-link week-card">
+  <div class="eyebrow"><span class="badge">Week in review</span> · ${wk.happened.length} developments · ${wk.connects.length} connection${wk.connects.length === 1 ? '' : 's'} · ${wk.unknowns.length} open question${wk.unknowns.length === 1 ? '' : 's'}</div>
+  <h2><a href="${base}week/${wk.date}/" class="stretch">${esc(wk.label)}</a></h2>
+  <p>${esc(paragraphs(wk.summary)[0] || '')}</p>
+  <ul class="connect-list">${wk.connects.map((c) => `<li><a href="${base}week/${wk.date}/#c-${esc(c.id)}">${esc(c.title)}</a></li>`).join('')}</ul>
+  <div class="topics">${topTopics}</div>
+</article>`;
+}
+
+// Home: one feed, dailies and weekly reviews interleaved newest-first (a week sorts before the daily of the same date).
+function renderHome(editions, trending, weeks) {
+  const base = './';
+  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow} day${t.daysInWindow === 1 ? '' : 's'}</span></a>`).join('');
+  const feed = [...editions.map((ed) => ({ key: `${ed.date}-0`, html: renderEditionCard(ed, base) })), ...weeks.map((wk) => ({ key: `${wk.date}-1`, html: renderWeekCard(wk, base) }))]
+    .sort((a, b) => (a.key < b.key ? 1 : -1)).map((x) => x.html).join('\n');
   const body = `<section class="hero">
   <h1>${esc(SITE_NAME)}</h1>
   <p class="lede">${esc(SITE_TAGLINE)}</p>
   ${trending.length ? `<div class="trend-strip"><span class="label">Trending</span>${trend}<a class="more" href="${base}trends/">all trends →</a></div>` : ''}
 </section>
 <section class="editions">
-${list || '<p class="muted">No editions yet.</p>'}
+${feed || '<p class="muted">No editions yet.</p>'}
 </section>`;
-  return layout({ title: `${SITE_NAME} — ${PODCAST.tagline}`, base, body, canonical: `${SITE_URL}/`, nav: 'editions', og: { title: `${SITE_NAME} — daily, fact-first frontier AI news` }, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
+  return layout({ title: `${SITE_NAME} — ${PODCAST.tagline}`, base, body, canonical: `${SITE_URL}/`, nav: 'home', og: { title: `${SITE_NAME} — daily, fact-first frontier AI news` }, ld: { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE_NAME, url: `${SITE_URL}/`, description: SITE_TAGLINE, publisher: ORG } });
+}
+
+function renderEditionsIndex(editions) {
+  const base = '../';
+  const body = `<h1>Editions</h1>
+<p class="lede">Every daily edition, newest first. Each is the last 24 hours in frontier AI, with a source behind every claim.</p>
+<section class="editions">${editions.map((ed) => renderEditionCard(ed, base)).join('\n') || '<p class="muted">No editions yet.</p>'}</section>`;
+  return layout({ title: `Editions — ${SITE_NAME}`, description: `Every daily edition of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/editions/`, nav: 'editions', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Editions — ${SITE_NAME}`, url: `${SITE_URL}/editions/`, publisher: ORG } });
+}
+
+const WEEK_LEDE = 'Every Monday: what happened, what connects, and what we don\'t know — facts first, connections without opinion, then the open questions.';
+
+function renderWeekIndex(weeks) {
+  const base = '../';
+  const body = `<h1>Week in review</h1>
+<p class="lede">${esc(WEEK_LEDE)}</p>
+<section class="editions">${weeks.map((wk) => renderWeekCard(wk, base)).join('\n') || '<p class="muted">First week in review: Monday 14 September 2026.</p>'}</section>`;
+  return layout({ title: `Week in review — ${SITE_NAME}`, description: WEEK_LEDE, base, body, canonical: `${SITE_URL}/week/`, nav: 'week', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Week in review — ${SITE_NAME}`, url: `${SITE_URL}/week/`, publisher: ORG } });
+}
+
+function renderConnect(c, wk, base, opts = {}) {
+  const campaign = `week-${wk.date}`;
+  const linked = (c.items || []).map((id) => { const h = wk.byId.get(id); return h ? `<li><a href="${opts.pageHref || ''}#h-${esc(id)}">${esc(h.headline)}</a></li>` : ''; }).join('');
+  const topics = (c.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  return `<article class="item connect" id="c-${esc(c.id)}">
+  <h3>${esc(c.title)}</h3>
+  <ul class="linked">${linked}</ul>
+  ${paragraphs(c.explanation).map((p) => `<p>${esc(p)}</p>`).join('')}
+  ${(c.sources || []).length ? `<div class="sources"><span class="muted">Attributed to</span> ${renderSources(c.sources, campaign)}</div>` : ''}
+  ${topics ? `<div class="topics">${topics}</div>` : ''}
+</article>`;
+}
+function renderUnknown(u, wk, base, opts = {}) {
+  const rel = (u.relates_to || []).map((id) => { const o = wk.byId.get(id); if (!o) return ''; const prefix = o.headline ? 'h' : 'c'; return `<a href="${opts.pageHref || ''}#${prefix}-${esc(id)}">${esc(o.headline || o.title)}</a>`; }).filter(Boolean).join(' · ');
+  const topics = (u.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const row = (k, v) => (v ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : '');
+  return `<article class="item unknown" id="u-${esc(u.id)}">
+  <h3>${esc(u.question)}</h3>
+  <dl>${row('Where the evidence ends', u.evidence_ends)}${row('Where sources disagree', u.disagreement)}${row('What would confirm it', u.would_confirm)}${row('What would invalidate it', u.would_invalidate)}${rel ? `<dt>Relates to</dt><dd>${rel}</dd>` : ''}</dl>
+  ${topics ? `<div class="topics">${topics}</div>` : ''}
+</article>`;
+}
+
+function renderWeekPage(wk, weeks, idx) {
+  const base = '../../';
+  const campaign = `week-${wk.date}`;
+  const newer = weeks[idx - 1], older = weeks[idx + 1];
+  const summary = paragraphs(wk.summary).map((p) => `<p>${esc(p)}</p>`).join('');
+  const body = `<article class="edition week-review">
+  <header class="edition-header">
+    <div class="eyebrow"><span class="badge">Week in review</span> · ${wk.happened.length} developments · ${wk.connects.length} connection${wk.connects.length === 1 ? '' : 's'} · ${wk.unknowns.length} open question${wk.unknowns.length === 1 ? '' : 's'}${wk.hasTrace ? ` · <a href="${base}week/${wk.date}/trace/">how this edition was made</a>` : ''}</div>
+    <h1>The week of ${esc(wk.label)}</h1>
+    <div class="summary">${summary}</div>
+    <nav class="toc"><a href="#happened">1 · What happened <span class="count">${wk.happened.length}</span></a><a href="#connects">2 · What connects <span class="count">${wk.connects.length}</span></a><a href="#unknowns">3 · What we don't know <span class="count">${wk.unknowns.length}</span></a>${(wk.figures || []).length ? '<a href="#figures">By the numbers</a>' : ''}${(wk.calendar || []).length ? '<a href="#calendar">Calendar</a>' : ''}</nav>
+  </header>
+  <section class="section" id="happened">
+    <h2><span class="num">1</span>What happened</h2>
+    <p class="muted">The developments that mattered, ${esc(wk.label)}. Same rules as the daily: every claim links to its source, every number is the source's number.</p>
+    ${wk.happened.map((it) => renderItem(it, base, { campaign, week: true, anchorId: `h-${it.id}` })).join('\n')}
+  </section>
+  <section class="section week" id="connects">
+    <h2><span class="num">2</span>What connects</h2>
+    <p class="muted">Developments that appear to be part of the same larger shift. Only what the record supports: shared actors, sequence, and causes attributed to whoever stated them — never our own.</p>
+    ${wk.connects.map((c) => renderConnect(c, wk, base)).join('\n')}
+  </section>
+  <section class="section" id="unknowns">
+    <h2><span class="num">3</span>What we don't know</h2>
+    <p class="muted">Where the evidence ends, where sources disagree, and what would confirm or invalidate the emerging picture.</p>
+    ${wk.unknowns.map((u) => renderUnknown(u, wk, base)).join('\n')}
+  </section>
+  ${renderFigures(wk.figures, campaign)}
+  ${renderCalendar(wk.calendar, campaign)}
+  <nav class="pager">
+    ${older ? `<a href="${base}week/${older.date}/">← ${esc(older.shortLabel)}</a>` : '<span></span>'}
+    ${newer ? `<a href="${base}week/${newer.date}/">${esc(newer.shortLabel)} →</a>` : '<span></span>'}
+  </nav>
+</article>`;
+  const url = `${SITE_URL}/week/${wk.date}/`;
+  const ld = { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: `Week in review — ${wk.label} — ${PODCAST.title}`, description: paragraphs(wk.summary)[0],
+    datePublished: wk.generated_at || `${wk.date}T13:00:00Z`, dateModified: wk.generated_at || `${wk.date}T13:00:00Z`, author: ORG, publisher: { ...ORG, logo: { '@type': 'ImageObject', url: `${SITE_URL}/cover.png` } }, image: [`${SITE_URL}/og.png`], mainEntityOfPage: url, isAccessibleForFree: true };
+  return layout({ title: `Week in review — ${wk.label} — ${SITE_NAME}`, description: paragraphs(wk.summary)[0], base, body, canonical: url, nav: 'week',
+    og: { type: 'article', title: `${PODCAST.title} — week in review, ${wk.label}` }, ld });
 }
 
 function topTopicsFor(ed) {
@@ -286,19 +415,19 @@ function renderTrendsIndex(topics, trending, editions) {
   const cards = trending.map((t) => {
     const latest = t.entries[0];
     return `<article class="card trend-card">
-  <div class="eyebrow">${t.streak > 1 ? `${t.streak}-edition streak · ` : ''}${t.daysInWindow} of the last ${TREND_WINDOW_DAYS} days · ${t.entries.length} items total</div>
+  <div class="eyebrow">${t.streak > 1 ? `${t.streak}-edition streak · ` : ''}${t.daysInWindow} of the last ${TREND_WINDOW_DAYS} days · ${t.entries.length} items total${t.threads ? ` · ${t.threads} weekly thread${t.threads === 1 ? '' : 's'}` : ''}</div>
   <h2><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></h2>
   <p class="muted">Latest: <a href="${esc(utm((latest.item.sources || [{}])[0].url || '#', 'web', latest.date))}" rel="noopener">${esc(latest.item.headline)}</a> <span class="count">${esc(shortDate(latest.date))}</span></p>
 </article>`;
   }).join('\n');
   const all = [...topics.values()].sort((a, b) => b.dates.size - a.dates.size || b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
-  const rows = all.map((t) => `<tr><td><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></td><td>${t.dates.size}</td><td>${t.entries.length}</td><td>${esc(shortDate(t.lastSeen))}</td><td>${esc(shortDate(t.firstSeen))}</td></tr>`).join('');
+  const rows = all.map((t) => `<tr><td><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></td><td>${t.dates.size}</td><td>${t.entries.length}</td><td>${t.threads || ''}</td><td>${t.lastSeen ? esc(shortDate(t.lastSeen)) : ''}</td><td>${t.firstSeen ? esc(shortDate(t.firstSeen)) : ''}</td></tr>`).join('');
   const body = `<h1>Trends</h1>
-<p class="lede">Topics that keep showing up. A topic is trending when it appears in at least ${TREND_MIN_DAYS} editions within the last ${TREND_WINDOW_DAYS} days. Each topic page collects every item ever filed under it, newest first.</p>
+<p class="lede">Topics that keep showing up. A topic is trending when it appears in at least ${TREND_MIN_DAYS} editions within the last ${TREND_WINDOW_DAYS} days. Each topic page collects every item ever filed under it, newest first — and, where the <a href="${base}week/">week in review</a> has connected it to other developments, how that story has evolved week by week.</p>
 <section>${cards || '<p class="muted">Nothing is trending yet — it takes at least two editions.</p>'}</section>
 <h2>All topics</h2>
 <div class="table-wrap"><table>
-<thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Last seen</th><th>First seen</th></tr></thead>
+<thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Weekly threads</th><th>Last seen</th><th>First seen</th></tr></thead>
 <tbody>${rows}</tbody>
 </table></div>`;
   return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Trends — ${SITE_NAME}`, url: `${SITE_URL}/trends/`, publisher: ORG } });
@@ -312,9 +441,31 @@ function renderTopicPage(t) {
   <h2><a href="${base}${date}/">${esc(longDate(date))}</a></h2>
   ${entries.map((e) => renderItem(e.item, base, { section: e.section, campaign: e.date })).join('\n')}
 </section>`).join('\n');
+  // How this story has evolved: the weekly reviews' connections, developments and open questions carrying this topic, by week.
+  let evolution = '';
+  if (t.weekly.length) {
+    const byWeek = new Map();
+    for (const w of t.weekly) { if (!byWeek.has(w.week.date)) byWeek.set(w.week.date, { week: w.week, connect: [], happened: [], unknown: [] }); byWeek.get(w.week.date)[w.kind].push(w.ref); }
+    const weeksHtml = [...byWeek.values()].sort((a, b) => (a.week.date < b.week.date ? 1 : -1)).map(({ week, connect, happened, unknown }) => {
+      const href = `${base}week/${week.date}/`;
+      return `<section class="evo-week">
+  <h3><a href="${href}">Week of ${esc(week.label)}</a></h3>
+  ${connect.map((c) => `<div class="evo evo-connect"><div class="evo-kind">Connection</div><a class="evo-title" href="${href}#c-${esc(c.id)}">${esc(c.title)}</a><p>${esc(paragraphs(c.explanation)[0] || '')}</p><ul class="linked">${(c.items || []).map((id) => { const h = week.byId.get(id); return h ? `<li><a href="${href}#h-${esc(id)}">${esc(h.headline)}</a></li>` : ''; }).join('')}</ul></div>`).join('')}
+  ${happened.map((h) => `<div class="evo evo-happened"><div class="evo-kind">Development · ${esc((h.dates || []).map(shortDate).join(', '))}</div><a class="evo-title" href="${href}#h-${esc(h.id)}">${esc(h.headline)}</a><p>${esc((h.bullets || [])[0] || '')}</p></div>`).join('')}
+  ${unknown.map((u) => `<div class="evo evo-unknown"><div class="evo-kind">Open question</div><a class="evo-title" href="${href}#u-${esc(u.id)}">${esc(u.question)}</a><p>${esc(u.evidence_ends || '')}</p></div>`).join('')}
+</section>`;
+    }).join('\n');
+    evolution = `<section class="section evolution" id="evolution">
+  <h2>How this story has evolved</h2>
+  <p class="muted">From the <a href="${base}week/">week in review</a>: the connections, developments and open questions filed under ${esc(t.label)}, newest week first.</p>
+  ${weeksHtml}
+</section>`;
+  }
+  const dailyLine = t.entries.length ? `${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.` : 'Not yet filed in a daily edition.';
   const body = `<div class="eyebrow"><a href="${base}trends/">Trends</a> / topic</div>
 <h1>${esc(t.label)}</h1>
-<p class="lede">${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.</p>
+<p class="lede">${dailyLine}${t.weeks.size ? ` Traced across ${t.weeks.size} weekly review${t.weeks.size === 1 ? '' : 's'}.` : ''}</p>
+${evolution}
 ${groups}`;
   return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
 }
@@ -347,7 +498,7 @@ function renderAbout(editions) {
 <li><strong>The rules.</strong> Primary sources first. Every number quoted exactly as the source wrote it, with its baseline. Every caveat the source raises is stated — company claims, single-source stories, preprints — and flagged as such. If a claim can't be traced to a document that can be opened, it's left out. Opinion without new facts, marketing without numbers, and rumour don't make the cut. <a href="${REPO_URL}/blob/main/PROMPT.md">The editorial rules are public too.</a></li>
 <li><strong>The check.</strong> Every link is tested live before publishing; a dead link fails the build.</li>
 </ul>
-<p>Mondays add a week in review: the threads that mattered, the week's key figures, and what's on the calendar.</p>
+<p>Every Monday a separate <a href="${base}week/">Week in Review</a> steps back: what happened across the week, which developments appear to be part of the same larger shift, and — stated just as carefully — what we don't yet know and what would settle it.</p>
 
 <h2>The role of AI — read this part</h2>
 <p>The research, the writing and the voices are produced by AI. Claude does the morning sweep, verifies items against their primary sources and writes each edition; OpenAI's speech models voice the podcast. No person reviews an edition before it goes out.</p>
@@ -379,7 +530,6 @@ function renderAbout(editions) {
 
 function renderEmail(ed) {
   const url = `${SITE_URL}/${ed.date}/`;
-  const monday = ed.edition === 'monday' || isMonday(ed.date);
   const summary = paragraphs(ed.summary);
   const sec = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</h2>` +
     s.items.map((it) => {
@@ -389,30 +539,73 @@ function renderEmail(ed) {
       return `<p style="margin:0 0 12px">${fl}<a href="${esc(first ? utm(first.url, 'email', ed.date) : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a>${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
     }).join('');
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
-<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}${monday ? ' · Monday edition' : ''}</p>
+<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)}</p>
 <h1 style="font-size:22px;margin:0 0 10px">${esc(longDate(ed.date))}</h1>
 <p style="margin:0 0 16px"><a href="${url}" style="color:#0b57d0;font-weight:600">Read the full edition (${ed.itemCount} items) →</a></p>
 ${summary.map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
 ${ed.sections.map(sec).join('')}
-${ed.week_in_review && (ed.week_in_review.items || []).length ? `<h2 style="font-size:15px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.04em">The week in review</h2>${paragraphs(ed.week_in_review.summary).map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}<p><a href="${url}#week-in-review" style="color:#0b57d0">Read the full week in review →</a></p>` : ''}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
 <p style="color:#777;font-size:12px">Every headline links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
 </div>`;
   const text = [
-    `${SITE_NAME}${monday ? ' - Monday edition' : ''}`, longDate(ed.date), '', `Full edition: ${url}`, '',
+    SITE_NAME, longDate(ed.date), '', `Full edition: ${url}`, '',
     ...summary, '',
     ...ed.sections.flatMap((s) => [`## ${s.name}`, ...s.items.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${utm(x.url, 'email', ed.date)}`)]), '']),
   ].join('\n');
-  return { html, text, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}${monday ? ' (Monday edition, with the week in review)' : ''}` };
+  return { html, text, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
 }
 
-function renderFeed(editions) {
-  const items = editions.slice(0, 30).map((ed) => `<item>
-<title>${esc(longDate(ed.date))}</title>
-<link>${SITE_URL}/${ed.date}/</link>
-<guid>${SITE_URL}/${ed.date}/</guid>
-<pubDate>${dateObj(ed.date).toUTCString()}</pubDate>
-<description>${esc(paragraphs(ed.summary).join('\n\n'))}</description>
+function renderWeekEmail(wk) {
+  const url = `${SITE_URL}/week/${wk.date}/`;
+  const campaign = `week-${wk.date}`;
+  const h2 = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s)}</h2>`;
+  const link = (href, text, bold) => `<a href="${esc(href)}" style="color:#0b57d0;${bold ? 'font-weight:600;' : ''}text-decoration:none">${esc(text)}</a>`;
+  const happened = wk.happened.map((it) => {
+    const first = (it.sources || [])[0];
+    const extra = (it.sources || []).slice(1).map((x) => `<a href="${esc(utm(x.url, 'email', campaign))}" style="color:#555">${esc(x.name || hostname(x.url))}</a>`).join(', ');
+    const fl = (it.flags || []).map((f) => `<b style="color:#7a4b00;font-size:11px;text-transform:uppercase;letter-spacing:.04em">[${esc(FLAG_LABELS[f] || f)}]</b> `).join('');
+    return `<p style="margin:0 0 12px">${fl}${link(first ? utm(first.url, 'email', campaign) : `${url}#h-${it.id}`, it.headline, true)}${extra ? ` <span style="color:#777;font-size:12px">(also: ${extra})</span>` : ''}<br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span></p>`;
+  }).join('');
+  const connects = wk.connects.map((c) => `<p style="margin:0 0 12px">${link(`${url}#c-${c.id}`, c.title, true)}<br><span style="color:#333">${esc(paragraphs(c.explanation)[0] || '')}</span><br><span style="color:#777;font-size:12px">Joins: ${(c.items || []).map((id) => { const h = wk.byId.get(id); return h ? esc(h.headline) : ''; }).filter(Boolean).join(' · ')}</span></p>`).join('');
+  const unknowns = wk.unknowns.map((u) => `<p style="margin:0 0 12px">${link(`${url}#u-${u.id}`, u.question, true)}<br><span style="color:#333">${esc(u.evidence_ends)}</span><br><span style="color:#555;font-size:13px"><b>Would confirm:</b> ${esc(u.would_confirm)} <b>Would invalidate:</b> ${esc(u.would_invalidate)}</span></p>`).join('');
+  const figures = (wk.figures || []).map((f) => `<p style="margin:0 0 8px"><b>${esc(f.value)}</b> — ${esc(f.label)} <a href="${esc(utm(f.url, 'email', campaign))}" style="color:#555;font-size:12px">${esc(f.source || hostname(f.url))}</a></p>`).join('');
+  const calendar = (wk.calendar || []).map((c) => `<p style="margin:0 0 8px"><b>${esc(c.date)}</b> — ${esc(c.event)} <a href="${esc(utm(c.url, 'email', campaign))}" style="color:#555;font-size:12px">${esc(c.source || hostname(c.url))}</a></p>`).join('');
+  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
+<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)} · Week in review</p>
+<h1 style="font-size:22px;margin:0 0 10px">The week of ${esc(wk.label)}</h1>
+<p style="margin:0 0 16px"><a href="${url}" style="color:#0b57d0;font-weight:600">Read the full week in review →</a></p>
+${paragraphs(wk.summary).map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
+${h2('1 · What happened')}${happened}
+${h2('2 · What connects')}${connects}
+${h2("3 · What we don't know")}${unknowns}
+${figures ? h2('By the numbers') + figures : ''}
+${calendar ? h2('On the calendar') + calendar : ''}
+<hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
+<p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
+</div>`;
+  const text = [
+    `${SITE_NAME} - Week in review`, `The week of ${wk.label}`, '', `Full week in review: ${url}`, '',
+    ...paragraphs(wk.summary), '',
+    '## 1. What happened', ...wk.happened.flatMap((it) => [`- ${it.headline}`, `  ${(it.bullets || [])[0] || ''}`, ...(it.sources || []).map((x) => `  ${utm(x.url, 'email', campaign)}`)]), '',
+    '## 2. What connects', ...wk.connects.flatMap((c) => [`- ${c.title}`, `  ${paragraphs(c.explanation)[0] || ''}`, `  ${url}#c-${c.id}`]), '',
+    "## 3. What we don't know", ...wk.unknowns.flatMap((u) => [`- ${u.question}`, `  ${u.evidence_ends}`, `  Would confirm: ${u.would_confirm}`, `  Would invalidate: ${u.would_invalidate}`]), '',
+    ...((wk.figures || []).length ? ['## By the numbers', ...wk.figures.map((f) => `- ${f.value} — ${f.label} (${f.source || hostname(f.url)})`), ''] : []),
+    ...((wk.calendar || []).length ? ['## On the calendar', ...wk.calendar.map((c) => `- ${c.date} — ${c.event} (${c.source || hostname(c.url)})`), ''] : []),
+  ].join('\n');
+  return { html, text, subject: `${SITE_NAME} — Week in review, ${wk.shortLabel}` };
+}
+
+function renderFeed(editions, weeks) {
+  const entries = [
+    ...editions.map((ed) => ({ key: `${ed.date}-0`, title: longDate(ed.date), link: `${SITE_URL}/${ed.date}/`, pub: dateObj(ed.date), summary: ed.summary })),
+    ...weeks.map((wk) => ({ key: `${wk.date}-1`, title: `Week in review — ${wk.label}`, link: `${SITE_URL}/week/${wk.date}/`, pub: new Date(wk.generated_at || `${wk.date}T13:00:00Z`), summary: wk.summary })),
+  ].sort((a, b) => (a.key < b.key ? 1 : -1)).slice(0, 30);
+  const items = entries.map((e) => `<item>
+<title>${esc(e.title)}</title>
+<link>${e.link}</link>
+<guid>${e.link}</guid>
+<pubDate>${e.pub.toUTCString()}</pubDate>
+<description>${esc(paragraphs(e.summary).join('\n\n'))}</description>
 </item>`).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
@@ -499,6 +692,22 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .pager{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid var(--line)}
 .pager a{text-decoration:none}
 .week{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 22px 14px}
+.week-review h2 .num{display:inline-block;min-width:1.6em;height:1.6em;line-height:1.6em;text-align:center;border-radius:50%;background:var(--accent);color:#fff;font-size:.7em;margin-right:.6em;vertical-align:middle}
+.connect-list{margin:.2em 0 .6em;padding-left:18px;font-size:.92rem}.connect-list li{margin:3px 0}.connect-list a{text-decoration:none}.connect-list a:hover{text-decoration:underline}
+.linked{list-style:none;padding:0;margin:0 0 10px;display:flex;flex-wrap:wrap;gap:6px}
+.linked li a{display:inline-block;font-size:.8rem;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:3px 9px;background:var(--bg)}
+.linked li a:hover{border-color:var(--accent);color:var(--accent)}
+.connect p{margin:.4em 0}
+.unknown dl{display:grid;grid-template-columns:minmax(150px,max-content) 1fr;gap:6px 14px;margin:.4em 0 0;font-size:.95rem}
+.unknown dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}.unknown dd{margin:0}
+@media (max-width:560px){.unknown dl{grid-template-columns:1fr}.unknown dd{margin-bottom:6px}}
+.week-card{border-left:4px solid var(--accent)}
+.evolution{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 22px 14px}
+.evo-week h3{margin:1.2em 0 .4em;font-size:1rem}.evo-week h3 a{color:var(--fg);text-decoration:none}.evo-week h3 a:hover{color:var(--accent)}
+.evo{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:10px 0}.evo-connect{border-left-color:var(--accent)}.evo-unknown{border-left-color:var(--mixed)}
+.evo-kind{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.evo-title{font-weight:600;color:var(--fg);text-decoration:none}.evo-title:hover{color:var(--accent)}
+.evo p{margin:.3em 0;font-size:.92rem;color:var(--muted)}
 .table-wrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:.92rem}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
@@ -581,7 +790,7 @@ function renderScriptPage(ed, sc, ep) {
   if (usedDialogue && sc) {
     const hosts = sc.hosts;
     const blocks = sc.blocks.map((b) => {
-      const ref = b.type === 'item' || b.type === 'week' ? `<div class="script-ref">${b.type === 'week' ? 'Week in review' : esc(b.section || '')} — <a href="${base}${ed.date}/#${esc(slugify(b.section || 'week-in-review'))}">${esc(b.headline)}</a></div>` : `<div class="script-ref muted">${esc(b.type.charAt(0).toUpperCase() + b.type.slice(1))}</div>`;
+      const ref = b.type === 'item' ? `<div class="script-ref">${esc(b.section || '')} — <a href="${base}${ed.date}/#${esc(slugify(b.section || ''))}">${esc(b.headline)}</a></div>` : `<div class="script-ref muted">${esc(b.type.charAt(0).toUpperCase() + b.type.slice(1))}</div>`;
       const lines = b.lines.map((l) => `<div class="line"><span class="who">${esc((hosts[l.host] || {}).name || l.host)}</span><span>${esc(l.text)}</span></div>`).join('');
       return `<section class="script-block">${ref}${lines}</section>`;
     }).join('\n');
@@ -634,7 +843,7 @@ function renderPodcastFeed(editions, audio) {
     const ep = audio[ed.date];
     const desc = paragraphs(ed.summary).join('\n\n');
     return `<item>
-<title>${esc(longDate(ed.date))}${ed.edition === 'monday' ? ' — Monday edition' : ''}</title>
+<title>${esc(longDate(ed.date))}</title>
 <link>${SITE_URL}/${ed.date}/</link>
 <guid isPermaLink="false">ainews-${ed.date}</guid>
 <pubDate>${new Date(ep.generated_at || ed.date + 'T12:00:00Z').toUTCString()}</pubDate>
@@ -722,8 +931,9 @@ function prettyResponse(r) {
   return JSON.stringify(r, null, 2);
 }
 
-function renderTracePage(ed, trace) {
-  const base = '../../';
+// page = { base, backHref, backLabel, title, canonical, nav }
+function renderTracePage(page, trace) {
+  const base = page.base;
   const { events, narration } = trace;
   const start = events.find((e) => e.event === 'SessionStart');
   const stop = [...events].reverse().find((e) => e.event === 'Stop');
@@ -769,25 +979,26 @@ function renderTracePage(ed, trace) {
   ${agents.size ? `<div><b>${agents.size}</b> subagents</div>` : ''}
   ${[...byTool.entries()].sort((a, b) => b[1] - a[1]).map(([k, v]) => `<div><span class="tool">${esc(k)}</span> ${v}</div>`).join('')}
 </div>`;
-  const page = `<div class="eyebrow"><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> / trace</div>
-<h1>Run trace — ${esc(shortDate(ed.date))}</h1>
+  const html = `<div class="eyebrow"><a href="${page.backHref}">${esc(page.backLabel)}</a> / trace</div>
+<h1>Run trace — ${esc(page.title)}</h1>
 <p class="lede">How this edition was made, step by step: every page the AI fetched, every search it ran, every file it wrote and every check it passed, with the responses it got back. This log is recorded automatically by the tooling around the AI — it is not written by the AI — so it is a faithful record, not a summary.</p>
 ${stats}
 <p class="muted">Raw files: <a href="events.jsonl">events.jsonl</a>${trace.hasTranscript ? ` · <a href="transcript.jsonl">transcript.jsonl</a> (the complete session)` : ''}. Times are UTC. Long responses are shortened on this page but complete in the raw files.</p>
 <div class="trace">${body}</div>`;
-  return layout({ title: `Trace — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/trace/`, nav: 'editions' });
+  return layout({ title: `Trace — ${page.title} — ${SITE_NAME}`, base, body: html, canonical: page.canonical, nav: page.nav });
 }
 
 // ---------- main ----------
 function main() {
   const editions = loadEditions();
-  const { topics, trending } = buildTopicIndex(editions);
+  const weeks = loadWeeks();
+  const { topics, trending } = buildTopicIndex(editions, weeks);
   const audio = loadAudio();
   for (const ed of editions) ed.audio = audio[ed.date] || null;
 
   if (process.argv.includes('--topics')) {
     const all = [...topics.values()].sort((a, b) => b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
-    for (const t of all) console.log(`${t.slug}\t${t.entries.length} items\t${t.dates.size} editions\tlast ${t.lastSeen}`);
+    for (const t of all) console.log(`${t.slug}\t${t.entries.length} items\t${t.dates.size} editions\t${t.threads} weekly threads\tlast ${t.lastSeen || '—'}`);
     return;
   }
 
@@ -795,8 +1006,10 @@ function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   write('.nojekyll', '');
   write('style.css', CSS.trim() + '\n');
-  write('index.html', renderHome(editions, trending));
-  write('feed.xml', renderFeed(editions));
+  write('index.html', renderHome(editions, trending, weeks));
+  write('editions/index.html', renderEditionsIndex(editions));
+  write('week/index.html', renderWeekIndex(weeks));
+  write('feed.xml', renderFeed(editions, weeks));
   write('trends/index.html', renderTrendsIndex(topics, trending, editions));
   write('podcast/index.html', renderPodcastPage(editions, audio));
   write('podcast.xml', renderPodcastFeed(editions, audio));
@@ -814,7 +1027,7 @@ function main() {
     const sc = loadScript(ed.date);
     if (ed.audio || sc) write(`${ed.date}/script/index.html`, renderScriptPage(ed, sc, ed.audio));
     if (trace) {
-      write(`${ed.date}/trace/index.html`, renderTracePage(ed, trace));
+      write(`${ed.date}/trace/index.html`, renderTracePage({ base: '../../', backHref: `../../${ed.date}/`, backLabel: longDate(ed.date), title: shortDate(ed.date), canonical: `${SITE_URL}/${ed.date}/trace/`, nav: 'editions' }, trace));
       fs.copyFileSync(path.join(TRACE_DIR, `${ed.date}.jsonl`), path.join(OUT_DIR, ed.date, 'trace', 'events.jsonl'));
       if (trace.hasTranscript) fs.copyFileSync(path.join(TRACE_DIR, `${ed.date}.transcript.jsonl`), path.join(OUT_DIR, ed.date, 'trace', 'transcript.jsonl'));
     }
@@ -823,18 +1036,33 @@ function main() {
     write(`email/${ed.date}.txt`, em.text);
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
   });
+  weeks.forEach((wk, i) => {
+    const trace = loadTrace(`${wk.date}.week`);
+    wk.hasTrace = !!trace;
+    write(`week/${wk.date}/index.html`, renderWeekPage(wk, weeks, i));
+    if (trace) {
+      write(`week/${wk.date}/trace/index.html`, renderTracePage({ base: '../../../', backHref: `../../../week/${wk.date}/`, backLabel: `Week in review — ${wk.label}`, title: `week of ${wk.shortLabel}`, canonical: `${SITE_URL}/week/${wk.date}/trace/`, nav: 'week' }, trace));
+      fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'events.jsonl'));
+      if (trace.hasTranscript) fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.transcript.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'transcript.jsonl'));
+    }
+    const em = renderWeekEmail(wk);
+    write(`email/${wk.date}.week.html`, em.html);
+    write(`email/${wk.date}.week.txt`, em.text);
+    write(`email/${wk.date}.week.subject.txt`, em.subject + '\n');
+  });
   write('about/index.html', renderAbout(editions));
-  const urls = [`${SITE_URL}/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
+  const urls = [`${SITE_URL}/`, `${SITE_URL}/editions/`, `${SITE_URL}/week/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
     ...editions.flatMap((ed) => [`${SITE_URL}/${ed.date}/`, ...(ed.audio || loadScript(ed.date) ? [`${SITE_URL}/${ed.date}/script/`] : []), ...(ed.hasTrace ? [`${SITE_URL}/${ed.date}/trace/`] : [])]),
+    ...weeks.flatMap((wk) => [`${SITE_URL}/week/${wk.date}/`, ...(wk.hasTrace ? [`${SITE_URL}/week/${wk.date}/trace/`] : [])]),
     ...[...topics.keys()].map((t) => `${SITE_URL}/trends/${t}/`)];
   const lastmod = editions[0] ? editions[0].date : new Date().toISOString().slice(0, 10);
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc><lastmod>${/\/(\d{4}-\d{2}-\d{2})\//.exec(u) ? RegExp.$1 : lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   write('robots.txt', `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   write('site.webmanifest', JSON.stringify({ name: SITE_NAME, short_name: PODCAST.title, start_url: './', display: 'standalone', background_color: '#121212', theme_color: '#121212', icons: [{ src: 'favicon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
-  write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, lastSeen: t.lastSeen })), null, 2));
-  console.log(`Built ${editions.length} edition(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
+  write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, weeks: t.weeks.size, threads: t.threads, lastSeen: t.lastSeen })), null, 2));
+  console.log(`Built ${editions.length} edition(s), ${weeks.length} week(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
 }
 
 if (require.main === module) main();
 
-module.exports = { longDate, shortDate, paragraphs, isMonday, loadEditions, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };
+module.exports = { longDate, shortDate, paragraphs, loadEditions, loadWeeks, buildTopicIndex, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };

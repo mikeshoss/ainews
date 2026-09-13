@@ -9,7 +9,7 @@ The reader's standard: **every claim links to where it came from, every number i
 1. Work in the repo root. Determine today's date in **America/Toronto**: `TZ=America/Toronto date +%F`. That is the edition date, `DATE`.
 2. `ls data/` — the previous edition tells you the cutoff. The coverage window (`WINDOW`) is from the previous edition's `generated_at` to now (if there is no previous edition, the 24 hours before now). Write it down as absolute timestamps in both UTC and ET; you will hand it to the subagents. Read the previous edition so you do not repeat it; a story already covered goes in again **only if there is a new development**, flagged `update`, and the bullets report only the new facts.
 3. `node scripts/build.js --topics` — the existing topic slugs. Reuse them; only coin a new slug when nothing fits.
-4. If `DATE` is a Monday, this is the **Monday edition**: everything below plus §5.
+4. Every day is a daily edition, Mondays included. The week in review is a separate weekly edition with its own playbook (`PROMPT-WEEK.md`) and its own routine — never part of the daily file.
 
 ## 1. Sweep the sources — four beats in parallel
 
@@ -37,7 +37,7 @@ FLAGS: company-claim | single-source | preprint | update  (any that apply)
 3. Confirm the publication date is inside the window. If the date cannot be determined, drop the item. Older stories qualify only if something new happened inside the window, and only the new facts are reported (flag `update`).
 4. Attribute claims: "OpenAI says…", "according to The Record…". Company-reported benchmarks, user counts, revenue and capability claims get `company-claim` unless independently verified. Research that is not peer reviewed gets `preprint`.
 5. Quote numbers exactly as the source writes them, with units and the comparison baseline. Do not round, convert or compute new figures.
-6. If WebFetch is blocked or a page is paywalled, do not try to get it another way (no curl, no python requests, no archive or cache sites). Use only what is visible in search results, or another source. Sites known to block the fetcher are marked in SOURCES.md.
+6. If `WebFetch` refuses a page, fetch it directly with `node scripts/fetch.js <url>` — the sites we read have given permission for direct reads, and the fetcher identifies itself. Use only what the returned text actually says; if it comes back as a paywall stub, a login page or nothing usable, fall back to search-result text or another source and say in the bullet where the figures came from. Never use archive or cache sites, and never cite a URL whose content you did not see. Sites that refuse `WebFetch` are listed in SOURCES.md.
 7. Skip consumer tips, "fun uses", prompt guides, listicles, opinion pieces without new facts, minor feature updates, unsourced rumours, and small funding rounds unless strategically notable (US$100M+, or a frontier lab / defense / health / security company).
 8. When in doubt, leave it out.
 
@@ -49,7 +49,7 @@ Merge the beats' returns. De-duplicate across beats and against previous edition
 - Open the primary source. Confirm the headline and every number/date/name you intend to use. A secondary report of a paper links the paper. A report of a court ruling links the ruling or docket where possible.
 - Prefer two independent sources for anything contested, surprising, or about a specific actor (a named threat group, a company's claim about a rival, a casualty figure).
 - Drop: opinion pieces without new facts, product marketing with no numbers, speculation, "could" / "may" stories, anything you cannot open, anything older than the window without a new development.
-- Spot-verify: WebFetch the key source for every item you will mention in the summary and for every figure in the summary; confirm date, numbers and URL yourself. Remove anything you cannot confirm.
+- Spot-verify: open (WebFetch, or `node scripts/fetch.js` if it refuses) the key source for every item you will mention in the summary and for every figure in the summary; confirm date, numbers and URL yourself. Remove anything you cannot confirm.
 - Keep: model/system releases with benchmarks or capabilities; papers with a result (state the result); documented misuse and threat-intel reports (name actors, counts, dates); military and government procurement/deployment; clinical and scientific results; regulation, enforcement, court decisions; compute/chip/energy facts with figures; large-scale deployments and measured impacts, good or bad.
 
 ## 3. Write the edition — `data/DATE.json`
@@ -59,7 +59,7 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
 ```json
 {
   "date": "YYYY-MM-DD",
-  "edition": "daily" | "monday",
+  "edition": "daily",
   "generated_at": "<ISO-8601 UTC timestamp>",
   "window": "e.g. 10 Sep 11:00 → 11 Sep 11:00 UTC",
   "summary": ["paragraph 1", "paragraph 2"],
@@ -77,14 +77,7 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
         }
       ]
     }
-  ],
-  "week_in_review": {
-    "period": "1–7 Sep 2026",
-    "summary": ["..."],
-    "items": [ /* same item shape */ ],
-    "figures": [{ "value": "$664B", "label": "Oracle remaining performance obligations, Q1 FY2027", "source": "Oracle", "url": "https://..." }],
-    "calendar": [{ "date": "17 Sep", "event": "EU AI Office GPAI code — comment deadline", "source": "EU AI Office", "url": "https://..." }]
-  }
+  ]
 }
 ```
 
@@ -120,7 +113,7 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
 - Never link a URL you did not open in this session.
 - Quote numbers exactly as the source writes them, with units and baseline. Never round, convert, or compute new figures.
 - Link the specific article, paper or document — never a homepage or index page (the validator rejects these).
-- If a page is blocked or paywalled, do not fetch it another way (no curl, no archive/cache sites). Use another source or leave the item out.
+- If `WebFetch` refuses a page, `node scripts/fetch.js <url>` is the only other way to read it — never archive or cache sites. If that returns nothing usable, use another source or leave the item out.
 - Do not editorialise beyond stating why something matters.
 
 ## 3b. Write the podcast script — `data/DATE.script.json`
@@ -137,8 +130,6 @@ Schema:
     { "type": "intro", "lines": [ { "host": "A", "text": "..." }, { "host": "B", "text": "..." } ] },
     { "type": "transition", "lines": [ { "host": "B", "text": "..." } ] },
     { "type": "item", "section": "<section name>", "headline": "<exact headline from the edition>", "lines": [ { "host": "A", "text": "..." }, { "host": "B", "text": "..." } ] },
-    { "type": "week", "headline": "<exact week_in_review item headline>", "lines": [ ... ] },
-    { "type": "figures", "lines": [ ... ] },
     { "type": "outro", "lines": [ ... ] }
   ]
 }
@@ -152,9 +143,9 @@ How to write it:
 - **No speculation or hype.** Banned: "I think", "probably", "could mean", "imagine if", "huge", "massive", "insane", "crazy", "wild", "scary", "exciting", "incredible", "game-changer", "revolutionary", and the like. State what happened and why it matters as the item states it.
 - **Intro (required, checked by the validator)**, in this order: (1) the date **the way it is spoken** — `Friday, September 11th` (or "Friday the 11th of September"), never "11 September"; (2) the show name and presenter exactly once: "this is The AI Edge, presented by Epilogue"; (3) each host introduces themselves by name in their own line ("I'm Maya." / "And I'm Alex."); (4) one line disclosing the voices are AI; (5) one or two lines of context in plain speech — that this is the last 24 hours in frontier AI, the advances, the research, and how it's being used for good and for harm, with every claim sourced — vary the wording, don't recite a tagline; (6) the three things that matter most, from the summary. The audio inserts a pause after the intro before the news. **"Epilogue" must not appear anywhere else in the script** — no plugs, no sign-off mention.
 - **Every date is spoken, month first with an ordinal**: "September 10th", "August 3rd and 5th", "December 31st, 2028". Never "10 September". The validator rejects day-first dates.
-- **Structure**: intro → every section in edition order, each with ≥1 item block, ≥8 item blocks in total → Monday: `week` blocks (≥5) and a `figures` block reading the week's numbers verbatim → outro.
+- **Structure**: intro → every section in edition order, each with ≥1 item block, ≥8 item blocks in total → outro.
 - **Outro (required)**: wrap up in a line or two, say the full edition with a link to every source is on the site (never read a URL), and remind listeners to **listen in tomorrow** for the next edition. The show name may be repeated here ("That's The AI Edge for today").
-- **Length**: daily 1,300–2,300 words (~10–15 min); Monday 1,800–3,400.
+- **Length**: 1,300–2,300 words (~10–15 min).
 
 Then:
 1. `node scripts/validate-script.js data/DATE.script.json` — fix every ERROR until it exits 0.
@@ -166,7 +157,7 @@ Then:
 ```
 node scripts/validate.js data/DATE.json --check-links
 ```
-Fix every ERROR (a 404/410 means you must find the real URL or remove the item). For every WARN about a link that could not be verified, confirm it with `WebFetch`; if it does not open, replace or remove it. Then:
+Fix every ERROR (a 404/410 means you must find the real URL or remove the item). For every WARN about a link that could not be verified, confirm it with `WebFetch` or `node scripts/fetch.js`; if it does not open either way, replace or remove it. Then:
 
 ```
 node scripts/validate-script.js data/DATE.script.json   # if the script exists
@@ -181,17 +172,9 @@ GitHub Actions builds and deploys the site to https://aiedgebriefing.com/ within
 
 If the push is rejected, `git pull --rebase origin main` and push again. Do not open a pull request; the edition must land on `main`.
 
-## 5. Monday edition — the week in review
+## 5. The week in review is not part of the daily
 
-On Mondays, after the daily sections, add `week_in_review`:
-- `period`: the seven days ending yesterday (Sunday), e.g. `"1–7 Sep 2026"`.
-- Read every `data/*.json` from those seven days (plus today's items). Identify the 6–12 threads that mattered most across the week — the storylines that recurred or the single biggest events. Prefer threads that appear as topics on multiple days (`node scripts/build.js --topics`).
-- `summary`: 2–3 paragraphs on the shape of the week.
-- `items`: one item per thread, same shape as daily items, ranked by significance (capability change, real-world deployment or harm at scale, binding legal/regulatory effect, security impact, money/compute scale). The headline names the thread; bullets trace what happened across the week with dates, including facts that emerged later in the week; sources link the key primary documents (they may be reused from earlier editions).
-- Run gap-check searches for major developments that week not already in `data/` — the earlier editions may not hold everything.
-- `figures`: 5–10 key numbers from the week — `value`, what it measures (`label`), `source`, `url`. Exactly as written in the source.
-- `calendar`: dated events in the next 7 days confirmed by a source (deadlines, hearings, votes, scheduled releases, earnings, major conferences) — `date`, `event`, `source`, `url`. Omit the key if none.
-- Set `"edition": "monday"`.
+Every edition, Mondays included, is a daily edition: `"edition": "daily"`, no `week_in_review` key. The Week in Review — what happened across the week, what connects, what we don't know — is a separate weekly edition written by its own routine on Monday mornings from `PROMPT-WEEK.md` into `data/DATE.week.json`. Do not attempt it here.
 
 ## 6. Send the email
 

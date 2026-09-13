@@ -33,9 +33,8 @@ function narrationFor(ed, opts = {}) {
   const full = !!opts.full; // full: every bullet; default: headline + first bullet + caveats (~15 min)
   const lines = [];
   const say = (text, extra) => { const t = spoken(text); if (t) lines.push({ host: 'N', text: t, ...(extra || {}) }); };
-  const monday = ed.edition === 'monday';
 
-  say(`Good morning. It's ${spokenDate(ed.date)}, and this is ${PODCAST.title}, presented by ${PODCAST.presenter}${monday ? ' — the Monday edition' : ''}.`);
+  say(`Good morning. It's ${spokenDate(ed.date)}, and this is ${PODCAST.title}, presented by ${PODCAST.presenter}.`);
   say(`This episode is voiced by AI, read directly from the written edition. What you're about to hear is the last 24 hours in frontier AI: the advances, the research, and how it's being used, for good and for harm. Every claim comes from a source you can check on the site.`, { pause: 1.4 });
   for (const p of paragraphs(ed.summary)) say(p);
 
@@ -47,25 +46,6 @@ function narrationFor(ed, opts = {}) {
       for (const f of it.flags || []) if (CAVEAT_SENTENCE[f]) say(CAVEAT_SENTENCE[f]);
       const names = (it.sources || []).map((s) => s.name).filter(Boolean);
       if (names.length) say(`Reported by ${names.length === 1 ? names[0] : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1]}.`);
-    }
-  }
-
-  const w = ed.week_in_review;
-  if (monday && w && (w.items || []).length) {
-    say(`And now, the week in review${w.period ? `, covering ${w.period}` : ''}.`, { section: true });
-    for (const p of paragraphs(w.summary)) say(p);
-    for (const it of w.items) {
-      say(it.headline.replace(/\.?$/, '.'));
-      for (const b of full ? it.bullets : it.bullets.slice(0, 1)) say(b);
-      for (const f of it.flags || []) if (CAVEAT_SENTENCE[f]) say(CAVEAT_SENTENCE[f]);
-    }
-    if ((w.figures || []).length) {
-      say('By the numbers.');
-      for (const f of w.figures) say(`${f.value}: ${f.label}${f.source ? `, according to ${f.source}` : ''}.`);
-    }
-    if ((w.calendar || []).length) {
-      say('On the calendar this week.');
-      for (const c of w.calendar) say(`${c.date}: ${c.event}${c.source ? `, per ${c.source}` : ''}.`);
     }
   }
 

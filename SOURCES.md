@@ -4,7 +4,7 @@ The sweep list for every edition. **Primary** sources (labs, papers, governments
 
 Fetch hints: `WebFetch` works on most pages below. RSS/Atom URLs are listed where they exist because they are the most reliable "what changed in the last 24h" signal.
 
-**Known to block the fetcher** (confirmed 11 Sep 2026 — do not retry with curl/archives; use `WebSearch` result text, RSS feeds where listed, or an alternative openable source, and say in the bullet where the figures came from): Reuters, Bloomberg, WSJ, NYT, FT, The Information, Wired, The Verge, Ars Technica, AP, The Guardian, CNBC, Axios article pages, BleepingComputer, `openai.com/index/*` article pages (the RSS feed `openai.com/news/rss.xml` and `developers.openai.com` docs work), Data Center Dynamics article pages (index pages work), Oracle newsroom (investor.oracle.com works), x.ai, Nature (auth redirect), smol.ai (402), FDA newsroom index (401 — search for the specific press release URL instead). `WebSearch` with `allowed_domains` also rejects reuters.com, wsj.com, nytimes.com, wired.com, theverge.com, arstechnica.com, businessinsider.com — search without the domain filter and use whatever result text is visible.
+**Refuses `WebFetch` — read with `node scripts/fetch.js <url>` instead** (confirmed 11 Sep 2026; the sites have given permission for direct reads and the fetcher identifies itself. If the direct fetch returns a paywall stub or nothing usable, use `WebSearch` result text, RSS feeds where listed, or an alternative openable source, and say in the bullet where the figures came from. Never archive or cache sites): Reuters, Bloomberg, WSJ, NYT, FT, The Information, Wired, The Verge, Ars Technica, AP, The Guardian, CNBC, Axios article pages, BleepingComputer, `openai.com/index/*` article pages (the RSS feed `openai.com/news/rss.xml` and `developers.openai.com` docs work), Data Center Dynamics article pages (index pages work), Oracle newsroom (investor.oracle.com works), x.ai, Nature (auth redirect), smol.ai (402), FDA newsroom index (401 — search for the specific press release URL instead). `WebSearch` with `allowed_domains` also rejects reuters.com, wsj.com, nytimes.com, wired.com, theverge.com, arstechnica.com, businessinsider.com — search without the domain filter and use whatever result text is visible.
 
 ## 1. Frontier labs (primary)
 
@@ -172,10 +172,10 @@ Fetch hints: `WebFetch` works on most pages below. RSS/Atom URLs are listed wher
 
 | Source | URL | Notes |
 |---|---|---|
-| Reuters — AI | https://www.reuters.com/technology/artificial-intelligence/ | Use WebSearch `allowed_domains: ["reuters.com"]` |
-| Bloomberg — Technology | https://www.bloomberg.com/technology | WebSearch only |
-| Financial Times — AI | https://www.ft.com/artificial-intelligence | WebSearch only |
-| Wall Street Journal — Tech | https://www.wsj.com/tech/ai | WebSearch only |
+| Reuters — AI | https://www.reuters.com/technology/artificial-intelligence/ | Refuses WebFetch; `node scripts/fetch.js` works. WebSearch without a domain filter |
+| Bloomberg — Technology | https://www.bloomberg.com/technology | WebSearch, or `node scripts/fetch.js` (paywalled — expect a stub) |
+| Financial Times — AI | https://www.ft.com/artificial-intelligence | WebSearch, or `node scripts/fetch.js` (paywalled — expect a stub) |
+| Wall Street Journal — Tech | https://www.wsj.com/tech/ai | WebSearch, or `node scripts/fetch.js` (paywalled — expect a stub) |
 | The Information | https://www.theinformation.com/ | WebSearch only; headlines only |
 | CNBC — AI | https://www.cnbc.com/ai-artificial-intelligence/ | |
 | TechCrunch — AI | https://techcrunch.com/category/artificial-intelligence/ | https://techcrunch.com/category/artificial-intelligence/feed/ |

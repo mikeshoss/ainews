@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 // Claude Code hook. Wired in .claude/settings.json for SessionStart, PostToolUse, SubagentStop and Stop.
-// The harness pipes the hook event as JSON on stdin; we append a compact record to trace/YYYY-MM-DD.jsonl
-// (date in America/Toronto) and keep a copy of the raw session transcript alongside it.
+// The harness pipes the hook event as JSON on stdin; we append a compact record to trace/<key>.jsonl and keep a
+// copy of the raw session transcript alongside it. The key is the America/Toronto date — or DATE.week when the
+// session's prompt carries the AINEWS_RUN=week sentinel (the weekly routine), so the two Monday runs stay apart.
 // This is the end-to-end record of a run: every tool call, its input, its (clipped) response, and the final message.
 const fs = require('fs');
 const path = require('path');
@@ -43,6 +44,28 @@ function usageOf(file) {
   } catch { return null; }
 }
 
+// Which trace this session belongs to. Resolved once from the prompt in the transcript and cached per session;
+// events that arrive before the prompt exists (SessionStart) wait in a pending file and are drained on the first resolve.
+function resolveKey(ev, date, dir) {
+  if (process.env.AINEWS_TRACE_KEY) return process.env.AINEWS_TRACE_KEY;
+  const cache = ev.session_id ? path.join(dir, `.key-${ev.session_id}`) : null;
+  if (cache && fs.existsSync(cache)) return fs.readFileSync(cache, 'utf8').trim() || null;
+  const tp = ev.transcript_path;
+  if (!tp || !fs.existsSync(tp)) return null;
+  let prompt = null;
+  for (const line of fs.readFileSync(tp, 'utf8').split('\n')) {
+    if (!line) continue;
+    let d; try { d = JSON.parse(line); } catch { continue; }
+    if (d.type === 'queue-operation' && typeof d.content === 'string') { prompt = d.content; break; }
+    const c = d.message && d.message.content;
+    if (d.type === 'user' && !d.isSidechain && typeof c === 'string') { prompt = c; break; }
+  }
+  if (prompt == null) return null;
+  const key = /\bAINEWS_RUN=week\b/.test(prompt) ? `${date}.week` : date;
+  if (cache) { try { fs.writeFileSync(cache, key); } catch { /* best effort */ } }
+  return key;
+}
+
 let raw = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', (d) => { raw += d; });
@@ -68,11 +91,16 @@ process.stdin.on('end', () => {
     if (tool_input !== undefined) rec.input = tool_input;
     if (tool_response !== undefined) rec.response = clip(tool_response);
     if (last_assistant_message !== undefined) rec.last_message = clip(last_assistant_message);
-    fs.appendFileSync(path.join(dir, `${date}.jsonl`), redact(JSON.stringify(rec)) + '\n');
+    const line = redact(JSON.stringify(rec)) + '\n';
+    const key = resolveKey(ev, date, dir);
+    const pending = ev.session_id ? path.join(dir, `.pending-${ev.session_id}.jsonl`) : null;
+    if (!key) { fs.appendFileSync(pending || path.join(dir, `${date}.jsonl`), line); process.exit(0); }
+    if (pending && fs.existsSync(pending)) { fs.appendFileSync(path.join(dir, `${key}.jsonl`), fs.readFileSync(pending, 'utf8')); fs.unlinkSync(pending); }
+    fs.appendFileSync(path.join(dir, `${key}.jsonl`), line);
 
     // Keep the raw transcript of the main session (not subagent sidechains) next to the events.
     if (transcript_path && !ev.agent_id && fs.existsSync(transcript_path)) {
-      try { fs.writeFileSync(path.join(dir, `${date}.transcript.jsonl`), redact(fs.readFileSync(transcript_path, 'utf8'))); } catch { /* best effort */ }
+      try { fs.writeFileSync(path.join(dir, `${key}.transcript.jsonl`), redact(fs.readFileSync(transcript_path, 'utf8'))); } catch { /* best effort */ }
     }
   } catch { /* never block the harness */ }
   process.exit(0);

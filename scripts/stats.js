@@ -189,6 +189,8 @@ async function main() {
   const days = [...dates].sort().slice(-DAYS);
   const rows = days.map((date) => {
     const ed = editionFor(date), run = runFor(date);
+    // The Monday week in review is a second run on the same date; its cost is folded into the day's total.
+    const weekRun = fs.existsSync(path.join(ROOT, 'data', `${date}.week.json`)) ? runFor(`${date}.week`) : null;
     const a = (audio.episodes || {})[date] || null;
     // Every version generated that day was paid for, not just the one in the feed.
     const versions = (audio.versions || {})[date] || (a ? [a] : []);
@@ -206,7 +208,8 @@ async function main() {
       podcast: a ? { format: a.format, seconds: a.seconds, versions: versions.length, episode_downloads } : null,
       downloads_today,
       site: g || null,
-      cost: { claude_usd: run ? +run.claude_usd.toFixed(2) : 0, tts_usd: +tts_usd.toFixed(3), total_usd: +((run ? run.claude_usd : 0) + tts_usd).toFixed(2) },
+      week: weekRun ? { minutes: weekRun.minutes, tool_calls: weekRun.tool_calls, claude_usd: +weekRun.claude_usd.toFixed(2), usage_complete: weekRun.usage_complete, email_sent: weekRun.email_sent } : null,
+      cost: { claude_usd: +((run ? run.claude_usd : 0) + (weekRun ? weekRun.claude_usd : 0)).toFixed(2), tts_usd: +tts_usd.toFixed(3), total_usd: +((run ? run.claude_usd : 0) + (weekRun ? weekRun.claude_usd : 0) + tts_usd).toFixed(2) },
     };
   });
   fs.writeFileSync(path.join(OUT, 'daily.json'), JSON.stringify({ generated_at: new Date().toISOString(), days: rows }, null, 2));
@@ -228,6 +231,7 @@ function printTable(rows, snaps, ga, gaError) {
     if (r.edition && !r.edition.script) notes.push('no script (narrated)');
     if (r.run && !r.run.email_sent) notes.push('no email');
     if (r.run && r.run.subagents) notes.unshift(`${r.run.subagents} agents`);
+    if (r.week) notes.push(`+ week in review: ${r.week.minutes}m, $${r.week.claude_usd}${r.week.usage_complete ? '' : ' (main only)'}${r.week.email_sent ? '' : ', no email'}`);
     const v = [r.date, r.edition && r.edition.items, r.run && `${r.run.minutes}m`, r.run && r.run.tool_calls,
       r.run ? r.cost.claude_usd.toFixed(2) : null, r.podcast ? r.cost.tts_usd.toFixed(2) : null, r.run || r.podcast ? r.cost.total_usd.toFixed(2) : null,
       r.podcast && r.podcast.episode_downloads, r.downloads_today, r.site && r.site.users, r.site && r.site.views, r.site && r.site.clicks, notes.join('; ')];
@@ -246,14 +250,14 @@ function renderHtml(rows, snaps, ga, gaError) {
   const latest = snaps[snaps.length - 1];
   const episodes = latest ? latest.assets.filter((a) => a.name.endsWith('.mp3')).sort((a, b) => b.name.localeCompare(a.name)) : [];
   const tr = rows.slice().reverse().map((r) => `<tr>
-<td><a href="https://aiedgebriefing.com/${r.date}/">${r.date}</a>${r.edition && r.edition.edition === 'monday' ? ' <small>Mon</small>' : ''}</td>
+<td><a href="https://aiedgebriefing.com/${r.date}/">${r.date}</a></td>
 <td class="r">${n(r.edition && r.edition.items)}</td><td class="r">${n(r.edition && r.edition.links)}</td>
 <td class="r">${r.run ? `${r.run.minutes} min` : n(null)}</td><td class="r">${n(r.run && r.run.tool_calls)}</td><td class="r">${n(r.run && r.run.subagents)}</td>
 <td class="r">${r.run ? '$' + n(r.cost.claude_usd, 2) + (r.run.usage_complete ? '' : '<sup title="main session only; subagent usage was not traced for this run">*</sup>') : n(null)}</td>
 <td class="r">${r.podcast ? '$' + n(r.cost.tts_usd, 2) : n(null)}</td><td class="r"><strong>${r.run || r.podcast ? '$' + n(r.cost.total_usd, 2) : n(null)}</strong></td>
 <td class="r">${r.podcast ? `${Math.round(r.podcast.seconds / 60)} min` : n(null)}</td><td class="r">${n(r.podcast && r.podcast.episode_downloads)}</td><td class="r">${n(r.downloads_today)}</td>
 <td class="r">${n(r.site && r.site.users)}</td><td class="r">${n(r.site && r.site.views)}</td><td class="r">${n(r.site && r.site.clicks)}</td>
-<td>${[r.run && !r.run.email_sent && r.edition ? 'no email' : '', r.edition && !r.edition.script ? 'narrated' : ''].filter(Boolean).join(', ')}</td></tr>`).join('\n');
+<td>${[r.run && !r.run.email_sent && r.edition ? 'no email' : '', r.edition && !r.edition.script ? 'narrated' : '', r.week ? `+ week in review (${r.week.minutes} min, $${n(r.week.claude_usd, 2)})` : ''].filter(Boolean).join(', ')}</td></tr>`).join('\n');
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Edge Briefing — private stats</title>
 <style>
 :root{color-scheme:light dark;--fg:#1a1a1a;--bg:#fff;--muted:#6b6b6b;--line:#e4e4e4;--accent:#0b5fff}

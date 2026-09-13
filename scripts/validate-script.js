@@ -8,11 +8,10 @@
 const fs = require('fs');
 const path = require('path');
 const { longDate, spokenDate, ordinal, dateObj, PODCAST } = require('./lib.js');
+const { BANNED, WARN_WORDS, NUM_RE, normNum, digitsOf, bannedHits } = require('./validate-lib.js');
 
 const VOICES = new Set(['alloy', 'ash', 'ballad', 'coral', 'echo', 'fable', 'nova', 'onyx', 'sage', 'shimmer', 'verse', 'marin', 'cedar']);
-const BLOCK_TYPES = new Set(['intro', 'item', 'transition', 'week', 'figures', 'outro']);
-const BANNED = ['i think', 'i bet', 'i guess', 'probably', 'could mean', 'might mean', 'imagine if', 'game-changer', 'game changer', 'huge', 'massive', 'insane', 'crazy', 'wild', 'mind-blowing', 'mind blowing', 'scary', 'terrifying', 'exciting', 'incredible', 'unbelievable', 'revolutionary', 'blew my mind', 'jaw-dropping'];
-const WARN_WORDS = ['interesting', 'fascinating'];
+const BLOCK_TYPES = new Set(['intro', 'item', 'transition', 'outro']);
 const CAVEAT_PHRASES = {
   'company-claim': ['company claim', 'company says', 'company-reported', 'not independently verified', "hasn't been independently verified", 'has not been independently verified', 'their own numbers', 'its own numbers'],
   'single-source': ['single source', 'only one outlet', 'one outlet', 'only source', 'no one else has confirmed', 'nobody else has confirmed'],
@@ -22,7 +21,6 @@ const CAVEAT_PHRASES = {
 const BULLET_CAVEAT_TRIGGERS = ['unverified', 'not independently', 'did not say', 'does not say', 'could not confirm', "couldn't confirm", 'caveat', 'has not confirmed', 'not yet confirmed'];
 const SCRIPT_CAVEAT_WORDS = ['unverified', 'not verified', 'does not say', 'not independently verified', 'not an independent', "hasn't verified", "hasn't confirmed", 'has not confirmed', "haven't confirmed", 'caveat', 'not independently', "didn't say", 'did not say', "doesn't say", "couldn't confirm", 'could not confirm', 'only ', 'not yet'];
 const NUMBER_WORDS = /\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|a couple of|a few|several|dozens of|hundreds of|thousands of|millions of|billions of)\s+(hundred|thousand|million|billion|trillion|percent|per cent)\b/i;
-const NUM_RE = /\d[\d,]*(?:\.\d+)?/g;
 
 const file = process.argv[2];
 if (!file) { console.error('usage: validate-script.js data/YYYY-MM-DD.script.json'); process.exit(2); }
@@ -37,7 +35,6 @@ const edPath = path.join(path.dirname(file), `${date}.json`);
 if (!fs.existsSync(edPath)) { console.log(`ERROR no edition file ${edPath}`); process.exit(1); }
 const ed = JSON.parse(fs.readFileSync(edPath, 'utf8'));
 ed.sections = (ed.sections || []).filter((s) => s.items && s.items.length);
-const monday = ed.edition === 'monday';
 
 // ---------- schema ----------
 if (sc.date !== date) err(`"date" (${sc.date}) must be ${date}`);
@@ -53,21 +50,15 @@ if (hostKeys.length === 2 && hosts[hostKeys[0]].voice === hosts[hostKeys[1]].voi
 if (!Array.isArray(sc.blocks) || !sc.blocks.length) err(`"blocks" must be a non-empty array`);
 
 // ---------- edition lookups ----------
-const normNum = (n) => n.replace(/,/g, '').replace(/\.0+$/, '');
-const digitsOf = (text) => new Set((String(text).replace(/,/g, '').match(/\d+(?:\.\d+)?/g) || []).map(normNum));
 const itemByHeadline = new Map();
 for (const sec of ed.sections) for (const it of sec.items) itemByHeadline.set(it.headline, { item: it, section: sec.name });
-const weekByHeadline = new Map();
-for (const it of (ed.week_in_review && ed.week_in_review.items) || []) weekByHeadline.set(it.headline, it);
 const itemText = (it) => [it.headline, ...(it.bullets || [])].join(' ');
 const summaryText = Array.isArray(ed.summary) ? ed.summary.join(' ') : String(ed.summary || '');
 const summaryDigits = digitsOf(summaryText);
 const dateDigits = new Set([...digitsOf(`${longDate(date)} ${date}`), '24']); // "the last 24 hours" is always allowed
-const figuresText = ((ed.week_in_review && ed.week_in_review.figures) || []).map((f) => `${f.value} ${f.label}`).join(' ');
-const figuresDigits = digitsOf(figuresText);
 
 // ---------- walk blocks ----------
-const seenItems = new Set(), seenWeek = new Set();
+const seenItems = new Set();
 const sectionsCovered = new Set();
 let words = 0, lineCount = 0, itemBlocks = 0, introSeen = false, outroSeen = false;
 const warnWordCount = {};
@@ -91,13 +82,6 @@ let prevHost = null, run = 0;
       seenItems.add(b.headline); sectionsCovered.add(ref.section); itemBlocks++;
       allowedDigits = new Set([...digitsOf(itemText(ref.item)), ...dateDigits]);
     }
-  } else if (b.type === 'week') {
-    const it = weekByHeadline.get(b.headline);
-    if (!it) err(`${where}: headline does not exactly match any week_in_review item`);
-    else { if (seenWeek.has(b.headline)) err(`${where}: week item already has a block`); seenWeek.add(b.headline); allowedDigits = new Set([...digitsOf(itemText(it)), ...dateDigits]); }
-  } else if (b.type === 'figures') {
-    allowedDigits = new Set([...figuresDigits, ...dateDigits]);
-    if (!figuresText) err(`${where}: edition has no week_in_review.figures`);
   } else if (b.type === 'intro') {
     allowedDigits = new Set([...summaryDigits, ...dateDigits]);
   }
@@ -121,7 +105,7 @@ let prevHost = null, run = 0;
       const core = normNum(raw);
       if (!allowedDigits.has(core)) {
         if (b.type === 'transition' || b.type === 'outro') err(`${lw}: number "${raw}" — transitions and outros may not contain numbers`);
-        else err(`${lw}: number "${raw}" does not appear in the ${b.type === 'intro' ? 'edition summary' : b.type === 'figures' ? 'week figures' : 'item'} — remove it or fix the item`);
+        else err(`${lw}: number "${raw}" does not appear in the ${b.type === 'intro' ? 'edition summary' : 'item'} — remove it or fix the item`);
       }
     }
     // Host alternation
@@ -129,7 +113,7 @@ let prevHost = null, run = 0;
   });
 
   // Banned language
-  for (const w of BANNED) { const re = new RegExp(`\\b${w.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i'); if (re.test(blockText)) err(`${where}: banned phrase "${w}" — no speculation or hype`); }
+  for (const w of bannedHits(blockText, BANNED)) err(`${where}: banned phrase "${w}" — no speculation or hype`);
   for (const w of WARN_WORDS) { const n = (lower.match(new RegExp(`\\b${w}\\b`, 'g')) || []).length; warnWordCount[w] = (warnWordCount[w] || 0) + n; }
 
   // Item-specific locks
@@ -175,12 +159,8 @@ for (const sec of ed.sections) if (!sectionsCovered.has(sec.name)) err(`section 
 const totalItems = ed.sections.reduce((n, s) => n + s.items.length, 0);
 const minItems = Math.min(8, totalItems);
 if (itemBlocks < minItems) err(`only ${itemBlocks} item blocks; need at least ${minItems}`);
-if (monday) {
-  const wk = (ed.week_in_review && ed.week_in_review.items) || [];
-  if (wk.length && seenWeek.size < Math.min(5, wk.length)) err(`Monday: only ${seenWeek.size} week_in_review blocks; need at least ${Math.min(5, wk.length)}`);
-}
-const [minW, maxW] = monday ? [1800, 3400] : [1300, 2300];
-if (words < minW || words > maxW) err(`script is ${words} words; must be ${minW}–${maxW} for a ${monday ? 'Monday' : 'daily'} episode`);
+const [minW, maxW] = [1300, 2300];
+if (words < minW || words > maxW) err(`script is ${words} words; must be ${minW}–${maxW}`);
 for (const [w, n] of Object.entries(warnWordCount)) if (n > 3) warn(`"${w}" used ${n} times — keep it factual`);
 
 for (const w of warnings) console.log(`WARN  ${w}`);
