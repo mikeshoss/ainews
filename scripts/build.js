@@ -346,7 +346,7 @@ function renderWeekCard(wk, base) {
 function renderHome(editions, trending, weeks, storylines) {
   const base = './';
   const latest = editions[0] ? editions[0].date : null;
-  const live = storylines.filter((st) => st.status === 'live' || st.status === 'proposed');
+  const live = storylines.filter((st) => st.status === 'live');
   const trend = live.map((st) => `<a class="trend-chip${latest && movedRecently(st, latest) ? ' moved' : ''}" href="${base}storylines/${esc(st.id)}/">${esc(st.name)}${latest && movedRecently(st, latest) ? ' <span class="count">moved</span>' : ''}</a>`).join('');
   const feed = [...editions.map((ed) => ({ key: `${ed.date}-0`, html: renderEditionCard(ed, base) })), ...weeks.map((wk) => ({ key: `${wk.date}-1`, html: renderWeekCard(wk, base) }))]
     .sort((a, b) => (a.key < b.key ? 1 : -1)).map((x) => x.html).join('\n');
@@ -459,7 +459,7 @@ function renderStorylineCard(st, base, latest) {
 function renderStorylinesIndex(storylines, editions) {
   const base = '../';
   const latest = editions[0] ? editions[0].date : null;
-  const open = storylines.filter((st) => st.status === 'live' || st.status === 'proposed');
+  const open = storylines.filter((st) => st.status === 'live');
   const rest = storylines.length - open.length;
   const body = `<h1>Storylines</h1>
 <p class="lede">${esc(STORY_LEDE)}</p>
@@ -470,7 +470,7 @@ function renderStorylinesIndex(storylines, editions) {
 function renderStorylinesHistory(storylines, editions) {
   const base = '../../';
   const latest = editions[0] ? editions[0].date : null;
-  const groups = ['live', 'proposed', 'dormant', 'resolved'].map((status) => {
+  const groups = ['live', 'dormant', 'resolved'].map((status) => {
     const list = storylines.filter((st) => st.status === status);
     return list.length ? `<h2>${esc(STATUS_LABEL[status])}</h2><section class="editions">${list.map((st) => renderStorylineCard(st, base, latest)).join('\n')}</section>` : '';
   }).join('');
@@ -503,7 +503,6 @@ function renderStorylinePage(st, storylines, editions) {
     <div class="eyebrow"><a href="${base}storylines/">Storylines</a> / <span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span> · opened ${esc(shortDate(st.opened))}${latest && movedRecently(st, latest) ? ' · <span class="moved">moved this week</span>' : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} · ${st.states.length} update${st.states.length === 1 ? '' : 's'}</div>
     <h1>${esc(st.name)}</h1>
     <p class="lede">${esc(st.frame)}</p>
-    ${st.status === 'proposed' && st.proposed_note ? `<p class="muted"><strong>Proposed.</strong> ${esc(st.proposed_note)}</p>` : ''}
     <div class="settle"><strong>What would settle it</strong><p>${esc(st.question)}</p></div>
     ${st.resolved ? `<div class="settle resolved-box"><strong>Resolved ${esc(shortDate(st.resolved.date))}</strong><p>${esc(st.resolved.text)}${st.resolved.url ? ` <a class="src" href="${esc(utm(st.resolved.url, 'web', campaign))}" rel="noopener">source</a>` : ''}</p></div>` : ''}
     <nav class="toc"><a href="#stands">Where this stands</a>${history.length ? `<a href="#changed">How it has changed <span class="count">${history.length}</span></a>` : ''}<a href="#timeline">Timeline <span class="count">${st.timeline.length}</span></a>${(st.figures || []).length ? `<a href="#figures">Figures</a>` : ''}${questions.length ? `<a href="#questions">Open questions <span class="count">${questions.length}</span></a>` : ''}</nav>
@@ -692,7 +691,7 @@ function renderEmail(ed) {
   return { html, text: post, post, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
 }
 
-function renderWeekEmail(wk) {
+function renderWeekEmail(wk, proposed = []) {
   const url = `${SITE_URL}/week/${wk.date}/`;
   const campaign = `week-${wk.date}`;
   const h2 = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s)}</h2>`;
@@ -717,6 +716,7 @@ ${h2('2 · What connects')}${connects}
 ${h2("3 · What we don't know")}${unknowns}
 ${figures ? h2('By the numbers') + figures : ''}
 ${calendar ? h2('On the calendar') + calendar : ''}
+${proposed.length ? `<div style="margin-top:24px;padding:12px 14px;border:1px solid #e0c36a;border-radius:8px;background:#fff9e6"><p style="margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#7a4b00">For the editor — not published</p>${proposed.map((st) => `<p style="margin:0 0 8px"><b>Proposed storyline: ${esc(st.name)}</b><br><span style="color:#333">${esc(st.frame)}</span><br><span style="color:#555;font-size:13px">${esc(st.proposed_note || '')} ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} already filed. Reply "promote ${esc(st.id)}", or rename/merge it, and it goes live.</span></p>`).join('')}</div>` : ''}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
 <p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/topics/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
 </div>`;
@@ -728,6 +728,7 @@ ${calendar ? h2('On the calendar') + calendar : ''}
     "## 3. What we don't know", ...wk.unknowns.flatMap((u) => [`- ${u.question}`, `  ${u.evidence_ends}`, `  Would confirm: ${u.would_confirm}`, `  Would invalidate: ${u.would_invalidate}`]), '',
     ...((wk.figures || []).length ? ['## By the numbers', ...wk.figures.map((f) => `- ${f.value} — ${f.label} (${f.source || hostname(f.url)})`), ''] : []),
     ...((wk.calendar || []).length ? ['## On the calendar', ...wk.calendar.map((c) => `- ${c.date} — ${c.event} (${c.source || hostname(c.url)})`), ''] : []),
+    ...(proposed.length ? ['## For the editor — not published', ...proposed.map((st) => `- Proposed storyline: ${st.name} — ${st.frame} (${st.timeline.length} items filed). Reply "promote ${st.id}" to publish it.`), ''] : []),
   ].join('\n');
   return { html, text, subject: `${SITE_NAME} — Week in review, ${wk.shortLabel}` };
 }
@@ -1189,12 +1190,16 @@ ${stats}
 function main() {
   const editions = loadEditions();
   const weeks = loadWeeks();
-  const storylines = loadStorylines(editions, weeks);
+  const allStorylines = loadStorylines(editions, weeks);
+  // Proposed storylines are an editorial state, not content: they never appear on the public site. They are surfaced
+  // to the editor in the Monday email and the private stats page until promoted to live (or renamed/merged).
+  const storylines = allStorylines.filter((st) => st.status !== 'proposed');
+  const proposed = allStorylines.filter((st) => st.status === 'proposed');
   STORY_BY_ID = new Map(storylines.map((st) => [st.id, st]));
   const { topics, trending } = buildTopicIndex(editions, weeks);
 
   if (process.argv.includes('--storylines')) {
-    for (const st of storylines) console.log(`${st.id}\t${st.status}\t${st.name}\t${st.frame}`);
+    for (const st of allStorylines) console.log(`${st.id}\t${st.status}\t${st.name}\t${st.frame}`);
     return;
   }
   const audio = loadAudio();
@@ -1258,7 +1263,7 @@ function main() {
       fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'events.jsonl'));
       if (trace.hasTranscript) fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.transcript.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'transcript.jsonl'));
     }
-    const em = renderWeekEmail(wk);
+    const em = renderWeekEmail(wk, proposed);
     write(`email/${wk.date}.week.html`, em.html);
     write(`email/${wk.date}.week.txt`, em.text);
     write(`email/${wk.date}.week.subject.txt`, em.subject + '\n');

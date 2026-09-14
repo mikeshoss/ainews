@@ -277,7 +277,12 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
   console.log(`snapshot page: ${path.join(OUT, 'index.html')}`);
 }
 
+// Editorial queue: storylines proposed by the weekly run, which never appear on the public site until promoted.
+function proposedStorylines() {
+  try { return require('./build.js').loadStorylines(require('./build.js').loadEditions(), require('./build.js').loadWeeks()).filter((st) => st.status === 'proposed'); } catch { return []; }
+}
 function renderHtml(rows, snaps, ga, gaError, op3Error) {
+  const proposed = proposedStorylines();
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const n = (x, d = 0) => (x == null ? '<span class="na">—</span>' : Number(x).toLocaleString('en-CA', { minimumFractionDigits: d, maximumFractionDigits: d }));
   const total = rows.reduce((a, r) => a + r.cost.total_usd, 0);
@@ -308,6 +313,7 @@ th.group{border-bottom:none;text-align:center;color:var(--fg)}small{color:var(--
 </style>
 <h1>AI Edge Briefing — private stats</h1>
 <p class="muted">Generated ${esc(new Date().toLocaleString('en-CA', { timeZone: TZ }))} (Toronto). Local only; nothing on this page is published.</p>
+${proposed.length ? `<h2>Editorial — proposed storylines (not published)</h2>${proposed.map((st) => `<p><b>${esc(st.name)}</b> <code>${esc(st.id)}</code> — ${esc(st.frame)}<br><span class="muted">${esc(st.proposed_note || '')} ${st.timeline.length} item(s) filed. To publish: set "status": "live" in storylines/${esc(st.id)}.json (or tell Claude "promote ${esc(st.id)}").</span></p>`).join('')}` : ''}
 <div class="tiles">
 <div class="tile"><b>$${n(total, 2)}</b><span>cost, ${rows.length} days shown</span></div>
 <div class="tile"><b>$${n(rows.length ? total / rows.filter((r) => r.run || r.podcast).length || 0 : 0, 2)}</b><span>per edition</span></div>
