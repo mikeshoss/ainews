@@ -228,6 +228,7 @@ ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(
 ${body}
 </main>
 <footer class="site-footer"><div class="wrap">
+  ${renderSubscribe(base, 'footer')}
   <p>${esc(SITE_NAME)} is generated daily from primary sources. Every claim links to where it came from. Nothing is written without a source.</p>
   <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${base}about/">About</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
   <p>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}. Editions <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> · Code <a href="${REPO_URL}/blob/main/LICENSE" rel="license">MIT</a></p>
@@ -293,6 +294,7 @@ function renderEditionPage(ed, editions, idx) {
     <nav class="toc">${toc}</nav>
   </header>
   ${sections}
+  ${renderSubscribe(base)}
   <nav class="pager">
     ${older ? `<a href="${base}${older.date}/">← ${esc(shortDate(older.date))}</a>` : '<span></span>'}
     ${newer ? `<a href="${base}${newer.date}/">${esc(shortDate(newer.date))} →</a>` : '<span></span>'}
@@ -315,6 +317,13 @@ function renderEditionPage(ed, editions, idx) {
     og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.ogUrl, imageAlt: `${PODCAST.title} — ${longDate(ed.date)}` }, ld });
 }
 
+function renderSubscribe(base, variant = 'inline') {
+  if (!SUBSCRIBE_URL) return '';
+  return `<form class="subscribe ${esc(variant)}" method="POST" action="${esc(SUBSCRIBE_URL)}" target="_blank">
+  <div class="subscribe-text"><strong>One email each morning.</strong> Every claim linked to its source. No opinion, no ads.</div>
+  <div class="subscribe-row"><input type="email" name="EMAIL" required placeholder="you@example.com" aria-label="Email address" autocomplete="email"><input type="hidden" name="email_address_check" value="" class="hp"><input type="hidden" name="locale" value="en"><button type="submit">Subscribe</button></div>
+</form>`;
+}
 function renderEditionCard(ed, base) {
   const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   return `<article class="card card-link">
@@ -354,6 +363,7 @@ function renderHome(editions, trending, weeks, storylines) {
   <h1>${esc(SITE_NAME)}</h1>
   <p class="lede">${esc(SITE_TAGLINE)}</p>
   ${live.length ? `<div class="trend-strip"><span class="label">Storylines</span>${trend}<a class="more" href="${base}storylines/">all storylines →</a></div>` : ''}
+  ${renderSubscribe(base, 'hero')}
 </section>
 <section class="editions">
 ${feed || '<p class="muted">No editions yet.</p>'}
@@ -432,6 +442,7 @@ function renderWeekPage(wk, weeks, idx) {
   </section>
   ${renderFigures(wk.figures, campaign)}
   ${renderCalendar(wk.calendar, campaign)}
+  ${renderSubscribe(base)}
   <nav class="pager">
     ${older ? `<a href="${base}week/${older.date}/">← ${esc(older.shortLabel)}</a>` : '<span></span>'}
     ${newer ? `<a href="${base}week/${newer.date}/">${esc(newer.shortLabel)} →</a>` : '<span></span>'}
@@ -525,6 +536,7 @@ function renderStorylinePage(st, storylines, editions) {
   ${(st.figures || []).length ? `<section class="section" id="figures"><h2>Tracked figures</h2><dl class="figures">${st.figures.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <span class="muted">${esc(shortDate(f.date))}</span> <a class="src" href="${esc(utm(f.url, 'web', campaign))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl></section>` : ''}
   ${questions.length ? `<section class="section" id="questions"><h2>Open questions</h2>${questions.map((q) => `<article class="item unknown${q.settled ? ' settled' : ''}"><h3>${esc(q.question)}</h3><dl><dt>${q.settled ? 'Settled' : 'What would settle it'}</dt><dd>${q.settled ? `${esc(shortDate(q.settled.date))} — ${esc(q.settled.text)}${q.settled.url ? ` <a class="src" href="${esc(utm(q.settled.url, 'web', campaign))}" rel="noopener">source</a>` : ''}` : esc(q.would_settle)}</dd><dt>Asked</dt><dd>${esc(shortDate(q.date))}</dd></dl></article>`).join('')}</section>` : ''}
   <section class="section"><div class="topics">${related}${topics}</div></section>
+  ${renderSubscribe(base)}
 </article>`;
   const url = `${SITE_URL}/storylines/${st.id}/`;
   return layout({ title: `${st.name} — Storylines — ${SITE_NAME}`, description: st.frame, base, body, canonical: url, nav: 'storylines',
@@ -689,6 +701,29 @@ function renderEmail(ed) {
 <div style="white-space:pre-wrap">${esc(post)}</div>
 </div>`;
   return { html, text: post, post, subject: `${SITE_NAME} — ${shortDate(ed.date)} ${ed.date.slice(0, 4)}` };
+}
+
+// The subscriber edition: fuller than the LinkedIn post, shorter than the page. Sent by scripts/mail.js.
+const SUBSCRIBE_URL = process.env.SUBSCRIBE_FORM_URL || '';
+function renderReaderEmail(ed) {
+  const url = `${SITE_URL}/${ed.date}/?utm_source=email&utm_medium=email&utm_campaign=${ed.date}`;
+  const h2 = (t) => `<h2 style="font-size:14px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(t)}</h2>`;
+  const sections = ed.sections.map((s) => {
+    const it = s.items[0];
+    const first = (it.sources || [])[0];
+    const more = s.items.length - 1;
+    return `<p style="margin:0 0 14px"><span style="color:#777;font-size:12px;text-transform:uppercase;letter-spacing:.04em">${esc(s.name)}</span><br><a href="${esc(first ? utm(first.url, 'email', ed.date) : url)}" style="color:#0b57d0;font-weight:600;text-decoration:none">${esc(it.headline)}</a><br><span style="color:#333">${esc((it.bullets || [])[0] || '')}</span>${more ? `<br><a href="${url}#${esc(slugify(s.name))}" style="color:#777;font-size:12px">+ ${more} more in this section</a>` : ''}</p>`;
+  }).join('');
+  const html = `<meta charset="utf-8"><div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:640px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
+<p style="color:#777;font-size:12px;margin:0 0 4px">${esc(SITE_NAME)} · every claim links to its source</p>
+<h1 style="font-size:22px;margin:0 0 10px">${esc(longDate(ed.date))}</h1>
+${paragraphs(ed.summary).map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).join('')}
+<p style="margin:12px 0 0"><a href="${url}" style="color:#0b57d0;font-weight:600">Read all ${ed.itemCount} items →</a>${ed.audio ? ` · <a href="${url}" style="color:#0b57d0">listen (${Math.round(ed.audio.seconds / 60)} min)</a>` : ''}</p>
+${h2('The lead item in each section')}${sections}
+<hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
+<p style="color:#777;font-size:12px">Written by AI from primary sources, checked mechanically, with the full run log published — <a href="${SITE_URL}/about/" style="color:#777">how it works</a>. <a href="${SITE_URL}/storylines/" style="color:#777">Storylines</a> · <a href="${SITE_URL}/week/" style="color:#777">Week in review</a> · <a href="${SITE_URL}/podcast/" style="color:#777">Podcast</a></p>
+</div>`;
+  return { html, subject: `${SITE_NAME}: ${paragraphs(ed.summary)[0].split(/(?<=[.!?])\s/)[0].slice(0, 110)}` };
 }
 
 function renderWeekEmail(wk, proposed = []) {
@@ -921,6 +956,13 @@ body.has-player{padding-bottom:84px}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
 .line{display:flex;gap:12px;margin:6px 0}.line .who{flex:0 0 64px;font-weight:600;font-size:.85rem;color:var(--accent)}
 .script-section{font-weight:600;margin-top:1.4em}
+.subscribe{margin:28px 0 8px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.subscribe.hero{margin:16px 0 0}.subscribe.footer{margin:0 0 22px}
+.subscribe-text{margin-bottom:10px;font-size:.95rem}.subscribe.footer .subscribe-text{font-size:.88rem}
+.subscribe-row{display:flex;gap:8px;flex-wrap:wrap}.subscribe input[type=email]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;font-size:.95rem}
+.subscribe input[type=email]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.subscribe button{padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}.subscribe button:hover{filter:brightness(1.1)}
+.hp{position:absolute;left:-9999px}
 .site-footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding-block:28px 36px;line-height:1.7}
 .site-footer p{margin:0 0 .6em}
 @media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}}
@@ -1253,6 +1295,9 @@ function main() {
     write(`email/${ed.date}.txt`, em.text);
     write(`email/${ed.date}.subject.txt`, em.subject + '\n');
     write(`email/${ed.date}.linkedin.txt`, em.post + '\n');
+    const rd = renderReaderEmail(ed);
+    write(`email/${ed.date}.reader.html`, rd.html);
+    write(`email/${ed.date}.reader.subject.txt`, rd.subject + '\n');
   });
   weeks.forEach((wk, i) => {
     const trace = loadTrace(`${wk.date}.week`);

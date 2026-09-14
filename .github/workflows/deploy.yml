@@ -60,7 +60,19 @@ jobs:
         env:
           SITE_URL: https://aiedgebriefing.com
           GA_MEASUREMENT_ID: G-WGF9BW5QXC
+          SUBSCRIBE_FORM_URL: ${{ vars.SUBSCRIBE_FORM_URL }}
         run: node scripts/build.js
+      - name: Send today's edition to subscribers
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_LIST_ID: ${{ vars.BREVO_LIST_ID }}
+          BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
+          BREVO_SENDER_NAME: ${{ vars.BREVO_SENDER_NAME }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+        run: node scripts/mail.js || true
       - name: Site assets (cover, favicon, share image)
         run: |
           node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
