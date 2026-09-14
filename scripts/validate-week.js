@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 const { isMonday, addDays } = require('./lib.js');
-const { SLUG_RE, isHttp, OPINION_ERROR, OPINION_WARN, CAUSAL_RE, ATTRIBUTION_RE, NUM_RE, normNum, digitsOf, bannedHits, stripQuotes, sentences, makeReporter, checkItem, checkLinks } = require('./validate-lib.js');
+const { STORYLINES, SLUG_RE, isHttp, OPINION_ERROR, OPINION_WARN, CAUSAL_RE, ATTRIBUTION_RE, NUM_RE, normNum, digitsOf, bannedHits, stripQuotes, sentences, makeReporter, checkItem, checkLinks } = require('./validate-lib.js');
 
 const file = process.argv[2];
 const doLinks = process.argv.includes('--check-links');
@@ -105,6 +105,7 @@ connects.forEach((c, i) => {
   if (text.trim().length < 120) err(`${where}: explanation too short — say what each development says, what they share, and the sequence with dates`);
   if (!Array.isArray(c.topics) || !c.topics.length) err(`${where}: needs topic slugs (these build the Trends timeline)`);
   for (const t of c.topics || []) if (!SLUG_RE.test(t)) err(`${where}: topic "${t}" must be a lowercase-hyphen slug`);
+  for (const id of c.storylines || []) if (!STORYLINES.has(id)) err(`${where}: storyline "${id}" does not exist`);
   const sources = Array.isArray(c.sources) ? c.sources : [];
   sources.forEach((s, si) => { if (!s || !isHttp(s.url)) err(`${where}: source[${si}] has no valid url`); else if (!ctx.urls.has(s.url)) ctx.urls.set(s.url, `${where} source[${si}]`); });
   // Attribution lock: a cause must be someone's stated cause.

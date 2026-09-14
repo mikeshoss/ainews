@@ -2,6 +2,8 @@
 // Shared checks for the three validators (edition, week in review, podcast script).
 // Keep network code here and out of lib.js, which build.js loads at build time.
 
+const fs = require('fs');
+const path = require('path');
 const IMPACTS = new Set(['beneficial', 'harmful', 'mixed', 'neutral']);
 const FLAGS = new Set(['company-claim', 'single-source', 'preprint', 'update']);
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -45,6 +47,16 @@ function makeReporter() {
   };
 }
 
+// Ids of the storylines an item may be filed under (storylines/*.json), with their status.
+function storylineIds() {
+  const dir = path.join(__dirname, '..', 'storylines');
+  const out = new Map();
+  if (!fs.existsSync(dir)) return out;
+  for (const f of fs.readdirSync(dir)) if (f.endsWith('.json')) { try { out.set(f.slice(0, -5), JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).status || 'live'); } catch { /* validate-storyline reports it */ } }
+  return out;
+}
+const STORYLINES = storylineIds();
+
 // The daily item shape. ctx = { err, warn, urls: Map(url -> where), headlines: Set }.
 function checkItem(it, where, ctx) {
   const { err, warn, urls, headlines } = ctx;
@@ -67,6 +79,13 @@ function checkItem(it, where, ctx) {
   for (const t of it.topics || []) if (!SLUG_RE.test(t)) err(`${where}: topic "${t}" must be a lowercase-hyphen slug`);
   if (it.impact && !IMPACTS.has(it.impact)) err(`${where}: impact must be one of ${[...IMPACTS].join('|')}`);
   for (const f of it.flags || []) if (!FLAGS.has(f)) err(`${where}: flag "${f}" must be one of ${[...FLAGS].join('|')}`);
+  // Storylines: only existing, open ones. The daily never creates a storyline; the weekly does.
+  if (it.storylines !== undefined && !Array.isArray(it.storylines)) err(`${where}: "storylines" must be an array of ids`);
+  for (const id of it.storylines || []) {
+    if (!STORYLINES.has(id)) err(`${where}: storyline "${id}" does not exist — use an id from \`node scripts/build.js --storylines\`, or none`);
+    else if (STORYLINES.get(id) === 'resolved') err(`${where}: storyline "${id}" is resolved — file the item elsewhere or leave it untagged`);
+  }
+  if ((it.storylines || []).length > 3) warn(`${where}: filed under ${it.storylines.length} storylines — usually one, at most two`);
 }
 
 async function checkUrl(url) {
@@ -93,4 +112,4 @@ async function checkLinks(urls, { err, warn }) {
   }
 }
 
-module.exports = { IMPACTS, FLAGS, SLUG_RE, isHttp, isHomepage, isPlaceholder, BANNED, WARN_WORDS, OPINION_ERROR, OPINION_WARN, CAUSAL_RE, ATTRIBUTION_RE, NUM_RE, normNum, digitsOf, bannedHits, stripQuotes, sentences, makeReporter, checkItem, checkUrl, checkLinks };
+module.exports = { STORYLINES, IMPACTS, FLAGS, SLUG_RE, isHttp, isHomepage, isPlaceholder, BANNED, WARN_WORDS, OPINION_ERROR, OPINION_WARN, CAUSAL_RE, ATTRIBUTION_RE, NUM_RE, normNum, digitsOf, bannedHits, stripQuotes, sentences, makeReporter, checkItem, checkUrl, checkLinks };

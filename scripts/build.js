@@ -97,6 +97,31 @@ function loadWeeks() {
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
+// Storylines: storylines/<id>.json — curated arcs with dated "where this stands" snapshots. The timeline is derived
+// from daily items filed under the id (item.storylines) and weekly connections that carry it.
+const STORY_DIR = path.join(ROOT, 'storylines');
+const STATUS_LABEL = { proposed: 'Proposed', live: 'Live', dormant: 'Dormant', resolved: 'Resolved' };
+const STATUS_ORDER = { live: 0, proposed: 1, dormant: 2, resolved: 3 };
+function loadStorylines(editions, weeks) {
+  if (!fs.existsSync(STORY_DIR)) return [];
+  const list = fs.readdirSync(STORY_DIR).filter((f) => f.endsWith('.json')).map((f) => {
+    const st = JSON.parse(fs.readFileSync(path.join(STORY_DIR, f), 'utf8'));
+    st.id = st.id || f.slice(0, -5);
+    st.states = (st.states || []).slice().sort((a, b) => (a.date < b.date ? -1 : 1));
+    st.current = st.states[st.states.length - 1] || null;
+    st.timeline = [];
+    for (const ed of editions) for (const sec of ed.sections) for (const item of sec.items) if ((item.storylines || []).includes(st.id)) st.timeline.push({ date: ed.date, section: sec.name, item });
+    st.connections = [];
+    for (const wk of weeks) for (const c of wk.connects) if ((c.storylines || []).includes(st.id)) st.connections.push({ week: wk, connect: c });
+    st.timeline.sort((a, b) => (a.date < b.date ? 1 : -1));
+    st.lastActivity = [st.timeline[0] && st.timeline[0].date, st.current && st.current.date, ...st.connections.map((c) => c.week.date)].filter(Boolean).sort().pop() || st.opened;
+    st.editions = new Set(st.timeline.map((t) => t.date));
+    return st;
+  });
+  return list.sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9) || (a.lastActivity < b.lastActivity ? 1 : -1) || a.name.localeCompare(b.name));
+}
+const movedRecently = (st, latestDate) => st.lastActivity && daysBetween(latestDate, st.lastActivity) < 7;
+
 function buildTopicIndex(editions, weeks = []) {
   const topics = new Map();
   const topicFor = (slug) => { if (!topics.has(slug)) topics.set(slug, { slug, label: topicLabel(slug), dates: new Set(), entries: [], weekly: [], weeks: new Set(), threads: 0 }); return topics.get(slug); };
@@ -141,7 +166,7 @@ const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringi
 
 function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
   const desc = description || SITE_TAGLINE;
-  // Current-section treatment: nav = 'home' | 'editions' | 'week' | 'trends' | 'podcast' | 'about'
+  // Current-section treatment: nav = 'home' | 'editions' (daily index) | 'week' | 'topics' | 'storylines' | 'podcast' | 'about'
   const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
   const image = og.image || `${SITE_URL}/og.png`;
   return `<!doctype html>
@@ -180,10 +205,14 @@ ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(
   <div class="wrap">
     <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
     <nav>
-      <a href="${base}"${cur('home')}>Home</a>
-      <a href="${base}editions/"${cur('editions')}>Editions</a>
-      <a href="${base}week/"${cur('week')}>Weekly</a>
-      <a href="${base}trends/"${cur('trends')}>Trends</a>
+      <div class="menu${['home', 'editions', 'week', 'topics'].includes(nav) ? ' current-group' : ''}">
+        <a href="${base}"${cur('home')}>Editions</a><details><summary aria-label="Editions menu">▾</summary><div class="menu-list">
+          <a href="${base}daily/"${cur('editions')}>Daily</a>
+          <a href="${base}week/"${cur('week')}>Weekly</a>
+          <a href="${base}topics/"${cur('topics')}>Topics</a>
+        </div></details>
+      </div>
+      <a href="${base}storylines/"${cur('storylines')}>Storylines</a>
       <a href="${base}podcast/"${cur('podcast')}>Podcast</a>
       <a href="${REPO_URL}/blob/main/SOURCES.md">Sources</a>
       <a href="${base}about/"${cur('about')}>About</a>
@@ -211,7 +240,8 @@ function renderItem(item, base, opts = {}) {
   const first = (item.sources || [])[0];
   const impact = item.impact && item.impact !== 'neutral' ? `<span class="impact impact-${esc(item.impact)}">${esc(item.impact)}</span>` : '';
   const flags = (item.flags || []).map((f) => `<span class="flag flag-${esc(f)}">${esc(FLAG_LABELS[f] || f)}</span>`).join('');
-  const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const topics = (item.topics || []).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const stories = (item.storylines || []).map((id) => { const st = STORY_BY_ID.get(id); return st ? `<a class="topic storyline-chip" href="${base}storylines/${esc(id)}/">${esc(st.name)}</a>` : ''; }).join('');
   let dateLine = opts.date ? `<div class="item-meta"><a href="${base}${opts.date}/">${esc(shortDate(opts.date))}</a> · ${esc(opts.section || '')}</div>` : '';
   // Week-in-review items: when it happened and which daily editions carried it.
   if (opts.week) {
@@ -224,9 +254,10 @@ function renderItem(item, base, opts = {}) {
   <h3>${first ? `<a href="${esc(utm(first.url, 'web', opts.campaign))}" rel="noopener">${esc(item.headline)}</a>` : esc(item.headline)} ${impact}${flags}</h3>
   <div class="sources">${renderSources(item.sources, opts.campaign)}</div>
   <ul>${(item.bullets || []).map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
-  ${topics ? `<div class="topics">${topics}</div>` : ''}
+  ${topics || stories ? `<div class="topics">${stories}${topics}</div>` : ''}
 </article>`;
 }
+let STORY_BY_ID = new Map();
 
 function renderFigures(figures, campaign) {
   if (!(figures || []).length) return '';
@@ -279,7 +310,7 @@ function renderEditionPage(ed, editions, idx) {
 }
 
 function renderEditionCard(ed, base) {
-  const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const topTopics = topTopicsFor(ed).slice(0, 6).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   return `<article class="card card-link">
   <div class="eyebrow">Daily edition · ${ed.itemCount} items</div>
   <h2><a href="${base}${ed.date}/" class="stretch">${esc(longDate(ed.date))}</a></h2>
@@ -295,7 +326,7 @@ function weekTopTopics(wk) {
   return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map((e) => e[0]);
 }
 function renderWeekCard(wk, base) {
-  const topTopics = weekTopTopics(wk).slice(0, 6).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const topTopics = weekTopTopics(wk).slice(0, 6).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   return `<article class="card card-link week-card">
   <div class="eyebrow"><span class="badge">Week in review</span> · ${wk.happened.length} developments · ${wk.connects.length} connection${wk.connects.length === 1 ? '' : 's'} · ${wk.unknowns.length} open question${wk.unknowns.length === 1 ? '' : 's'}</div>
   <h2><a href="${base}week/${wk.date}/" class="stretch">${esc(wk.label)}</a></h2>
@@ -306,15 +337,17 @@ function renderWeekCard(wk, base) {
 }
 
 // Home: one feed, dailies and weekly reviews interleaved newest-first (a week sorts before the daily of the same date).
-function renderHome(editions, trending, weeks) {
+function renderHome(editions, trending, weeks, storylines) {
   const base = './';
-  const trend = trending.slice(0, 10).map((t) => `<a class="trend-chip" href="${base}trends/${esc(t.slug)}/">${esc(t.label)} <span class="count">${t.daysInWindow} day${t.daysInWindow === 1 ? '' : 's'}</span></a>`).join('');
+  const latest = editions[0] ? editions[0].date : null;
+  const live = storylines.filter((st) => st.status === 'live' || st.status === 'proposed');
+  const trend = live.map((st) => `<a class="trend-chip${latest && movedRecently(st, latest) ? ' moved' : ''}" href="${base}storylines/${esc(st.id)}/">${esc(st.name)}${latest && movedRecently(st, latest) ? ' <span class="count">moved</span>' : ''}</a>`).join('');
   const feed = [...editions.map((ed) => ({ key: `${ed.date}-0`, html: renderEditionCard(ed, base) })), ...weeks.map((wk) => ({ key: `${wk.date}-1`, html: renderWeekCard(wk, base) }))]
     .sort((a, b) => (a.key < b.key ? 1 : -1)).map((x) => x.html).join('\n');
   const body = `<section class="hero">
   <h1>${esc(SITE_NAME)}</h1>
   <p class="lede">${esc(SITE_TAGLINE)}</p>
-  ${trending.length ? `<div class="trend-strip"><span class="label">Trending</span>${trend}<a class="more" href="${base}trends/">all trends →</a></div>` : ''}
+  ${live.length ? `<div class="trend-strip"><span class="label">Storylines</span>${trend}<a class="more" href="${base}storylines/">all storylines →</a></div>` : ''}
 </section>
 <section class="editions">
 ${feed || '<p class="muted">No editions yet.</p>'}
@@ -324,10 +357,10 @@ ${feed || '<p class="muted">No editions yet.</p>'}
 
 function renderEditionsIndex(editions) {
   const base = '../';
-  const body = `<h1>Editions</h1>
+  const body = `<h1>Daily editions</h1>
 <p class="lede">Every daily edition, newest first. Each is the last 24 hours in frontier AI, with a source behind every claim.</p>
 <section class="editions">${editions.map((ed) => renderEditionCard(ed, base)).join('\n') || '<p class="muted">No editions yet.</p>'}</section>`;
-  return layout({ title: `Editions — ${SITE_NAME}`, description: `Every daily edition of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/editions/`, nav: 'editions', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Editions — ${SITE_NAME}`, url: `${SITE_URL}/editions/`, publisher: ORG } });
+  return layout({ title: `Editions — ${SITE_NAME}`, description: `Every daily edition of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/daily/`, nav: 'editions', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Editions — ${SITE_NAME}`, url: `${SITE_URL}/daily/`, publisher: ORG } });
 }
 
 const WEEK_LEDE = 'Every Monday: what happened, what connects, and what we don\'t know — facts first, connections without opinion, then the open questions.';
@@ -343,18 +376,19 @@ function renderWeekIndex(weeks) {
 function renderConnect(c, wk, base, opts = {}) {
   const campaign = `week-${wk.date}`;
   const linked = (c.items || []).map((id) => { const h = wk.byId.get(id); return h ? `<li><a href="${opts.pageHref || ''}#h-${esc(id)}">${esc(h.headline)}</a></li>` : ''; }).join('');
-  const topics = (c.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const topics = (c.topics || []).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const stories = (c.storylines || []).map((id) => { const st = STORY_BY_ID.get(id); return st ? `<a class="topic storyline-chip" href="${base}storylines/${esc(id)}/">${esc(st.name)}</a>` : ''; }).join('');
   return `<article class="item connect" id="c-${esc(c.id)}">
   <h3>${esc(c.title)}</h3>
   <ul class="linked">${linked}</ul>
   ${paragraphs(c.explanation).map((p) => `<p>${esc(p)}</p>`).join('')}
   ${(c.sources || []).length ? `<div class="sources"><span class="muted">Attributed to</span> ${renderSources(c.sources, campaign)}</div>` : ''}
-  ${topics ? `<div class="topics">${topics}</div>` : ''}
+  ${topics || stories ? `<div class="topics">${stories}${topics}</div>` : ''}
 </article>`;
 }
 function renderUnknown(u, wk, base, opts = {}) {
   const rel = (u.relates_to || []).map((id) => { const o = wk.byId.get(id); if (!o) return ''; const prefix = o.headline ? 'h' : 'c'; return `<a href="${opts.pageHref || ''}#${prefix}-${esc(id)}">${esc(o.headline || o.title)}</a>`; }).filter(Boolean).join(' · ');
-  const topics = (u.topics || []).map((t) => `<a class="topic" href="${base}trends/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const topics = (u.topics || []).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
   const row = (k, v) => (v ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : '');
   return `<article class="item unknown" id="u-${esc(u.id)}">
   <h3>${esc(u.question)}</h3>
@@ -404,6 +438,99 @@ function renderWeekPage(wk, weeks, idx) {
     og: { type: 'article', title: `${PODCAST.title} — week in review, ${wk.label}` }, ld });
 }
 
+// ---------- storylines ----------
+const STORY_LEDE = 'The arcs that keep going: where each one stands as of its latest update, how that has changed, and what would settle it. Curated, capped at twelve, never deleted.';
+function renderStorylineCard(st, base, latest) {
+  const moved = latest && movedRecently(st, latest);
+  const first = st.current ? paragraphs(st.current.text)[0] : '';
+  return `<article class="card card-link story-card status-${esc(st.status)}">
+  <div class="eyebrow"><span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span>${moved ? ' · <span class="moved">moved this week</span>' : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} across ${st.editions.size} edition${st.editions.size === 1 ? '' : 's'}${st.current ? ` · updated ${esc(shortDate(st.current.date))}` : ''}</div>
+  <h2><a href="${base}storylines/${esc(st.id)}/" class="stretch">${esc(st.name)}</a></h2>
+  <p class="muted">${esc(st.frame)}</p>
+  ${st.current ? `<p>${esc(first)}</p>` : ''}
+</article>`;
+}
+function renderStorylinesIndex(storylines, editions) {
+  const base = '../';
+  const latest = editions[0] ? editions[0].date : null;
+  const open = storylines.filter((st) => st.status === 'live' || st.status === 'proposed');
+  const rest = storylines.length - open.length;
+  const body = `<h1>Storylines</h1>
+<p class="lede">${esc(STORY_LEDE)}</p>
+<section class="editions">${open.map((st) => renderStorylineCard(st, base, latest)).join('\n') || '<p class="muted">No storylines yet.</p>'}</section>
+<p class="muted">${rest ? `${rest} storyline${rest === 1 ? '' : 's'} dormant or resolved — ` : ''}<a href="${base}storylines/history/">${rest ? 'see the history' : 'History'}</a>: every storyline there has ever been, with its full record.</p>`;
+  return layout({ title: `Storylines — ${SITE_NAME}`, description: STORY_LEDE, base, body, canonical: `${SITE_URL}/storylines/`, nav: 'storylines', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Storylines — ${SITE_NAME}`, url: `${SITE_URL}/storylines/`, publisher: ORG } });
+}
+function renderStorylinesHistory(storylines, editions) {
+  const base = '../../';
+  const latest = editions[0] ? editions[0].date : null;
+  const groups = ['live', 'proposed', 'dormant', 'resolved'].map((status) => {
+    const list = storylines.filter((st) => st.status === status);
+    return list.length ? `<h2>${esc(STATUS_LABEL[status])}</h2><section class="editions">${list.map((st) => renderStorylineCard(st, base, latest)).join('\n')}</section>` : '';
+  }).join('');
+  const body = `<div class="eyebrow"><a href="${base}storylines/">Storylines</a> / history</div>
+<h1>Every storyline</h1>
+<p class="lede">Nothing is removed. A storyline goes dormant when nothing has been filed under it for a while and resolved when the question it was opened on has been settled; either way its record stays here in full.</p>
+${groups}`;
+  return layout({ title: `Storyline history — ${SITE_NAME}`, description: 'Every storyline ever opened, including dormant and resolved ones.', base, body, canonical: `${SITE_URL}/storylines/history/`, nav: 'storylines', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Storyline history — ${SITE_NAME}`, url: `${SITE_URL}/storylines/history/`, publisher: ORG } });
+}
+function renderStorylinePage(st, storylines, editions) {
+  const base = '../../';
+  const campaign = `storyline-${st.id}`;
+  const latest = editions[0] ? editions[0].date : null;
+  const current = st.current;
+  const history = st.states.slice(0, -1).reverse();
+  const timeline = (() => {
+    const byDate = new Map();
+    for (const t of st.timeline) { if (!byDate.has(t.date)) byDate.set(t.date, []); byDate.get(t.date).push(t); }
+    for (const c of st.connections) { if (!byDate.has(c.week.date)) byDate.set(c.week.date, []); byDate.get(c.week.date).push(c); }
+    return [...byDate.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).map(([date, entries]) => `<section class="section">
+  <h3>${esc(longDate(date))}</h3>
+  ${entries.map((e) => e.connect ? `<div class="evo evo-connect"><div class="evo-kind">Connection · <a href="${base}week/${e.week.date}/">week in review</a></div><a class="evo-title" href="${base}week/${e.week.date}/#c-${esc(e.connect.id)}">${esc(e.connect.title)}</a><p>${esc(paragraphs(e.connect.explanation)[0] || '')}</p></div>` : renderItem(e.item, base, { date: e.date, section: e.section, campaign })).join('\n')}
+</section>`).join('\n');
+  })();
+  const related = (st.related || []).map((id) => { const r = storylines.find((x) => x.id === id); return r ? `<a class="topic storyline-chip" href="${base}storylines/${esc(id)}/">${esc(r.name)}</a>` : ''; }).join('');
+  const topics = (st.topics || []).map((t) => `<a class="topic" href="${base}topics/${esc(t)}/">${esc(topicLabel(t))}</a>`).join('');
+  const questions = (st.questions || []).slice().reverse();
+  const body = `<article class="edition storyline">
+  <header class="edition-header">
+    <div class="eyebrow"><a href="${base}storylines/">Storylines</a> / <span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span> · opened ${esc(shortDate(st.opened))}${latest && movedRecently(st, latest) ? ' · <span class="moved">moved this week</span>' : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} · ${st.states.length} update${st.states.length === 1 ? '' : 's'}</div>
+    <h1>${esc(st.name)}</h1>
+    <p class="lede">${esc(st.frame)}</p>
+    ${st.status === 'proposed' && st.proposed_note ? `<p class="muted"><strong>Proposed.</strong> ${esc(st.proposed_note)}</p>` : ''}
+    <div class="settle"><strong>What would settle it</strong><p>${esc(st.question)}</p></div>
+    ${st.resolved ? `<div class="settle resolved-box"><strong>Resolved ${esc(shortDate(st.resolved.date))}</strong><p>${esc(st.resolved.text)}${st.resolved.url ? ` <a class="src" href="${esc(utm(st.resolved.url, 'web', campaign))}" rel="noopener">source</a>` : ''}</p></div>` : ''}
+    <nav class="toc"><a href="#stands">Where this stands</a>${history.length ? `<a href="#changed">How it has changed <span class="count">${history.length}</span></a>` : ''}<a href="#timeline">Timeline <span class="count">${st.timeline.length}</span></a>${(st.figures || []).length ? `<a href="#figures">Figures</a>` : ''}${questions.length ? `<a href="#questions">Open questions <span class="count">${questions.length}</span></a>` : ''}</nav>
+  </header>
+  <section class="section week" id="stands">
+    <h2>Where this stands <span class="muted asof">as of ${current ? esc(longDate(current.date)) : '—'}</span></h2>
+    ${current ? paragraphs(current.text).map((p) => `<p>${esc(p)}</p>`).join('') : '<p class="muted">No update yet.</p>'}
+    ${current && current.changed ? `<p class="changed"><strong>What changed:</strong> ${esc(current.changed)}</p>` : ''}
+  </section>
+  ${history.length ? `<section class="section" id="changed">
+    <h2>How it has changed</h2>
+    <p class="muted">Every earlier "where this stands", kept as written.</p>
+    ${history.map((h) => `<details class="snapshot"><summary><strong>${esc(longDate(h.date))}</strong>${h.changed ? ` — ${esc(h.changed)}` : ''}</summary>${paragraphs(h.text).map((p) => `<p>${esc(p)}</p>`).join('')}</details>`).join('')}
+  </section>` : ''}
+  <section class="section" id="timeline">
+    <h2>Timeline</h2>
+    <p class="muted">Every item filed under this storyline, newest first, with its sources.</p>
+    ${timeline || '<p class="muted">Nothing filed yet.</p>'}
+  </section>
+  ${(st.figures || []).length ? `<section class="section" id="figures"><h2>Tracked figures</h2><dl class="figures">${st.figures.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <span class="muted">${esc(shortDate(f.date))}</span> <a class="src" href="${esc(utm(f.url, 'web', campaign))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl></section>` : ''}
+  ${questions.length ? `<section class="section" id="questions"><h2>Open questions</h2>${questions.map((q) => `<article class="item unknown${q.settled ? ' settled' : ''}"><h3>${esc(q.question)}</h3><dl><dt>${q.settled ? 'Settled' : 'What would settle it'}</dt><dd>${q.settled ? `${esc(shortDate(q.settled.date))} — ${esc(q.settled.text)}${q.settled.url ? ` <a class="src" href="${esc(utm(q.settled.url, 'web', campaign))}" rel="noopener">source</a>` : ''}` : esc(q.would_settle)}</dd><dt>Asked</dt><dd>${esc(shortDate(q.date))}</dd></dl></article>`).join('')}</section>` : ''}
+  <section class="section"><div class="topics">${related}${topics}</div></section>
+</article>`;
+  const url = `${SITE_URL}/storylines/${st.id}/`;
+  return layout({ title: `${st.name} — Storylines — ${SITE_NAME}`, description: st.frame, base, body, canonical: url, nav: 'storylines',
+    og: { type: 'article', title: `${st.name} — ${SITE_NAME}` },
+    ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${st.name} — ${SITE_NAME}`, url, description: st.frame, publisher: ORG, dateModified: current ? current.date : st.opened } });
+}
+// A tiny page that sends old URLs to their new home (GitHub Pages cannot issue redirects).
+function renderRedirect(to) {
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Moved</title><link rel="canonical" href="${esc(to)}"><meta http-equiv="refresh" content="0; url=${esc(to)}"><meta name="robots" content="noindex"></head><body><p>This page has moved to <a href="${esc(to)}">${esc(to)}</a>.</p></body></html>\n`;
+}
+
 function topTopicsFor(ed) {
   const counts = new Map();
   for (const s of ed.sections) for (const it of s.items) for (const t of it.topics || []) counts.set(t, (counts.get(t) || 0) + 1);
@@ -416,21 +543,21 @@ function renderTrendsIndex(topics, trending, editions) {
     const latest = t.entries[0];
     return `<article class="card trend-card">
   <div class="eyebrow">${t.streak > 1 ? `${t.streak}-edition streak · ` : ''}${t.daysInWindow} of the last ${TREND_WINDOW_DAYS} days · ${t.entries.length} items total${t.threads ? ` · ${t.threads} weekly thread${t.threads === 1 ? '' : 's'}` : ''}</div>
-  <h2><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></h2>
+  <h2><a href="${base}topics/${esc(t.slug)}/">${esc(t.label)}</a></h2>
   <p class="muted">Latest: <a href="${esc(utm((latest.item.sources || [{}])[0].url || '#', 'web', latest.date))}" rel="noopener">${esc(latest.item.headline)}</a> <span class="count">${esc(shortDate(latest.date))}</span></p>
 </article>`;
   }).join('\n');
   const all = [...topics.values()].sort((a, b) => b.dates.size - a.dates.size || b.entries.length - a.entries.length || a.slug.localeCompare(b.slug));
-  const rows = all.map((t) => `<tr><td><a href="${base}trends/${esc(t.slug)}/">${esc(t.label)}</a></td><td>${t.dates.size}</td><td>${t.entries.length}</td><td>${t.threads || ''}</td><td>${t.lastSeen ? esc(shortDate(t.lastSeen)) : ''}</td><td>${t.firstSeen ? esc(shortDate(t.firstSeen)) : ''}</td></tr>`).join('');
-  const body = `<h1>Trends</h1>
-<p class="lede">Topics that keep showing up. A topic is trending when it appears in at least ${TREND_MIN_DAYS} editions within the last ${TREND_WINDOW_DAYS} days. Each topic page collects every item ever filed under it, newest first — and, where the <a href="${base}week/">week in review</a> has connected it to other developments, how that story has evolved week by week.</p>
+  const rows = all.map((t) => `<tr><td><a href="${base}topics/${esc(t.slug)}/">${esc(t.label)}</a></td><td>${t.dates.size}</td><td>${t.entries.length}</td><td>${t.threads || ''}</td><td>${t.lastSeen ? esc(shortDate(t.lastSeen)) : ''}</td><td>${t.firstSeen ? esc(shortDate(t.firstSeen)) : ''}</td></tr>`).join('');
+  const body = `<h1>Topics</h1>
+<p class="lede">Every tag, and what keeps showing up. A topic is trending when it appears in at least ${TREND_MIN_DAYS} editions within the last ${TREND_WINDOW_DAYS} days. Each topic page collects every item ever filed under it, newest first — and, where the <a href="${base}week/">week in review</a> has connected it to other developments, how that story has evolved week by week.</p>
 <section>${cards || '<p class="muted">Nothing is trending yet — it takes at least two editions.</p>'}</section>
 <h2>All topics</h2>
 <div class="table-wrap"><table>
 <thead><tr><th>Topic</th><th>Editions</th><th>Items</th><th>Weekly threads</th><th>Last seen</th><th>First seen</th></tr></thead>
 <tbody>${rows}</tbody>
 </table></div>`;
-  return layout({ title: `Trends — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/trends/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Trends — ${SITE_NAME}`, url: `${SITE_URL}/trends/`, publisher: ORG } });
+  return layout({ title: `Topics — ${SITE_NAME}`, base, body, canonical: `${SITE_URL}/topics/`, nav: 'topics', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `Topics — ${SITE_NAME}`, url: `${SITE_URL}/topics/`, publisher: ORG } });
 }
 
 function renderTopicPage(t) {
@@ -462,12 +589,12 @@ function renderTopicPage(t) {
 </section>`;
   }
   const dailyLine = t.entries.length ? `${t.entries.length} item${t.entries.length === 1 ? '' : 's'} across ${t.dates.size} edition${t.dates.size === 1 ? '' : 's'}${t.streak > 1 ? ` · appeared in the last ${t.streak} editions in a row` : ''}. First seen ${esc(shortDate(t.firstSeen))}, last seen ${esc(shortDate(t.lastSeen))}.` : 'Not yet filed in a daily edition.';
-  const body = `<div class="eyebrow"><a href="${base}trends/">Trends</a> / topic</div>
+  const body = `<div class="eyebrow"><a href="${base}topics/">Topics</a> / topic</div>
 <h1>${esc(t.label)}</h1>
 <p class="lede">${dailyLine}${t.weeks.size ? ` Traced across ${t.weeks.size} weekly review${t.weeks.size === 1 ? '' : 's'}.` : ''}</p>
 ${evolution}
 ${groups}`;
-  return layout({ title: `${t.label} — Trends — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/trends/${t.slug}/`, nav: 'trends', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/trends/${t.slug}/`, publisher: ORG } });
+  return layout({ title: `${t.label} — Topics — ${SITE_NAME}`, description: `${t.entries.length} sourced items about ${t.label} across ${t.dates.size} editions of ${SITE_NAME}.`, base, body, canonical: `${SITE_URL}/topics/${t.slug}/`, nav: 'topics', ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${t.label} — ${SITE_NAME}`, url: `${SITE_URL}/topics/${t.slug}/`, publisher: ORG } });
 }
 
 // Source count for the About page: rows of the SOURCES.md tables (header/divider rows excluded), rounded down to a ten.
@@ -515,7 +642,7 @@ function renderAbout(editions) {
 <p>Each episode's cover is generated from that day's news: every section has a colour — security is red, research violet, military orange, and so on — and the cover mixes them in proportion to how much of the day fell in each.</p>
 
 <h2>Trends</h2>
-<p>A topic is trending when it keeps appearing across editions. <a href="${base}trends/">The Trends page</a> shows what's recurring right now, and every topic has a page collecting every item ever filed under it — the easiest way to follow one storyline over weeks.</p>
+<p>Every item carries topic tags; <a href="${base}topics/">the Topics page</a> is the index of them, and a topic is marked trending when it keeps appearing across editions. Tags are literal, so the site also keeps <a href="${base}storylines/">Storylines</a>: a small, curated set of arcs — AI-enabled hacking, the push to regulate frontier AI, and so on — each with a dated "where this stands", a record of how that has changed, every item filed under it, and the open questions. The daily edition files items under existing storylines; the Monday Week in Review updates each storyline's state and may propose a new one. Nothing is ever deleted: dormant and resolved storylines move to a history page.</p>
 
 <h2>Who's behind it</h2>
 <p><a href="${esc(utm(PODCAST.presenterUrl, 'web', 'about'))}" rel="noopener">Epilogue</a> is an AI consulting and product studio based in Toronto, focused on turning complex business problems into practical, high-impact AI products — built end to end.</p>
@@ -585,7 +712,7 @@ ${h2("3 · What we don't know")}${unknowns}
 ${figures ? h2('By the numbers') + figures : ''}
 ${calendar ? h2('On the calendar') + calendar : ''}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
-<p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/trends/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
+<p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/topics/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
 </div>`;
   const text = [
     `${SITE_NAME} - Week in review`, `The week of ${wk.label}`, '', `Full week in review: ${url}`, '',
@@ -706,6 +833,19 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .unknown dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}.unknown dd{margin:0}
 @media (max-width:560px){.unknown dl{grid-template-columns:1fr}.unknown dd{margin-bottom:6px}}
 .week-card{border-left:4px solid var(--accent)}
+.menu{position:relative;display:inline-flex;align-items:center}.menu details{display:inline-block}.menu summary{list-style:none;cursor:pointer;padding:6px 4px;color:var(--muted);font-size:.8rem;user-select:none}.menu summary::-webkit-details-marker{display:none}
+.menu-list{position:absolute;top:100%;left:0;min-width:140px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;z-index:10;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.menu-list a{padding:6px 10px;border-radius:6px}.menu-list a:hover{background:var(--accent-soft)}
+.menu.current-group>a{color:var(--fg)}
+@media (max-width:640px){.menu-list{position:static;flex-direction:row;flex-wrap:wrap;box-shadow:none;border:0;padding:0 0 0 8px;background:transparent}}
+.storyline-chip{border-color:var(--accent);color:var(--accent);font-weight:600}.storyline-chip::before{content:"⟶ ";opacity:.7}
+.status-badge{background:var(--accent)}.status-proposed .status-badge{background:var(--mixed);color:#111}.status-dormant .status-badge{background:var(--muted)}.status-resolved .status-badge{background:var(--good);color:#111}
+.moved{color:var(--good);font-weight:600}.trend-chip.moved{border-color:var(--good)}
+.settle{border:1px solid var(--line);border-left:4px solid var(--mixed);border-radius:8px;padding:10px 14px;margin:14px 0}.settle p{margin:.3em 0 0}.resolved-box{border-left-color:var(--good)}
+.asof{font-size:.85rem;font-weight:400;text-transform:none;letter-spacing:0;margin-left:8px}
+.changed{border-top:1px solid var(--line);padding-top:10px;margin-top:14px}
+.snapshot{border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:10px 0}.snapshot summary{cursor:pointer}.snapshot p{margin:.6em 0}
+.unknown.settled h3{color:var(--muted)}
 .evolution{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 22px 14px}
 .evo-week h3{margin:1.2em 0 .4em;font-size:1rem}.evo-week h3 a{color:var(--fg);text-decoration:none}.evo-week h3 a:hover{color:var(--accent)}
 .evo{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:10px 0}.evo-connect{border-left-color:var(--accent)}.evo-unknown{border-left-color:var(--mixed)}
@@ -998,7 +1138,14 @@ ${stats}
 function main() {
   const editions = loadEditions();
   const weeks = loadWeeks();
+  const storylines = loadStorylines(editions, weeks);
+  STORY_BY_ID = new Map(storylines.map((st) => [st.id, st]));
   const { topics, trending } = buildTopicIndex(editions, weeks);
+
+  if (process.argv.includes('--storylines')) {
+    for (const st of storylines) console.log(`${st.id}\t${st.status}\t${st.name}\t${st.frame}`);
+    return;
+  }
   const audio = loadAudio();
   for (const ed of editions) ed.audio = audio[ed.date] || null;
 
@@ -1012,14 +1159,21 @@ function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   write('.nojekyll', '');
   write('style.css', CSS.trim() + '\n');
-  write('index.html', renderHome(editions, trending, weeks));
-  write('editions/index.html', renderEditionsIndex(editions));
+  write('index.html', renderHome(editions, trending, weeks, storylines));
+  write('daily/index.html', renderEditionsIndex(editions));
   write('week/index.html', renderWeekIndex(weeks));
+  write('storylines/index.html', renderStorylinesIndex(storylines, editions));
+  write('storylines/history/index.html', renderStorylinesHistory(storylines, editions));
+  for (const st of storylines) write(`storylines/${st.id}/index.html`, renderStorylinePage(st, storylines, editions));
+  // Old URLs: /trends/… became /topics/…, /editions/ became /daily/.
+  write('trends/index.html', renderRedirect(`${SITE_URL}/topics/`));
+  for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderRedirect(`${SITE_URL}/topics/${t.slug}/`));
+  write('editions/index.html', renderRedirect(`${SITE_URL}/daily/`));
   write('feed.xml', renderFeed(editions, weeks));
-  write('trends/index.html', renderTrendsIndex(topics, trending, editions));
+  write('topics/index.html', renderTrendsIndex(topics, trending, editions));
   write('podcast/index.html', renderPodcastPage(editions, audio));
   write('podcast.xml', renderPodcastFeed(editions, audio));
-  for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderTopicPage(t));
+  for (const t of topics.values()) write(`topics/${t.slug}/index.html`, renderTopicPage(t));
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
     ed.hasTrace = !!trace;
@@ -1058,18 +1212,19 @@ function main() {
     write(`email/${wk.date}.week.subject.txt`, em.subject + '\n');
   });
   write('about/index.html', renderAbout(editions));
-  const urls = [`${SITE_URL}/`, `${SITE_URL}/editions/`, `${SITE_URL}/week/`, `${SITE_URL}/trends/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
+  const urls = [`${SITE_URL}/`, `${SITE_URL}/daily/`, `${SITE_URL}/week/`, `${SITE_URL}/storylines/`, `${SITE_URL}/storylines/history/`, `${SITE_URL}/topics/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
     ...editions.flatMap((ed) => [`${SITE_URL}/${ed.date}/`, ...(ed.audio || loadScript(ed.date) ? [`${SITE_URL}/${ed.date}/script/`] : []), ...(ed.hasTrace ? [`${SITE_URL}/${ed.date}/trace/`] : [])]),
     ...weeks.flatMap((wk) => [`${SITE_URL}/week/${wk.date}/`, ...(wk.hasTrace ? [`${SITE_URL}/week/${wk.date}/trace/`] : [])]),
-    ...[...topics.keys()].map((t) => `${SITE_URL}/trends/${t}/`)];
+    ...storylines.map((st) => `${SITE_URL}/storylines/${st.id}/`),
+    ...[...topics.keys()].map((t) => `${SITE_URL}/topics/${t}/`)];
   const lastmod = editions[0] ? editions[0].date : new Date().toISOString().slice(0, 10);
   write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc><lastmod>${/\/(\d{4}-\d{2}-\d{2})\//.exec(u) ? RegExp.$1 : lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
   write('robots.txt', `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   write('site.webmanifest', JSON.stringify({ name: SITE_NAME, short_name: PODCAST.title, start_url: './', display: 'standalone', background_color: '#121212', theme_color: '#121212', icons: [{ src: 'favicon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
   write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, weeks: t.weeks.size, threads: t.threads, lastSeen: t.lastSeen })), null, 2));
-  console.log(`Built ${editions.length} edition(s), ${weeks.length} week(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
+  console.log(`Built ${editions.length} edition(s), ${weeks.length} week(s), ${storylines.length} storyline(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
 }
 
 if (require.main === module) main();
 
-module.exports = { longDate, shortDate, paragraphs, loadEditions, loadWeeks, buildTopicIndex, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };
+module.exports = { longDate, shortDate, paragraphs, loadEditions, loadWeeks, loadStorylines, buildTopicIndex, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };

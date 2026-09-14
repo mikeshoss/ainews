@@ -9,6 +9,7 @@ The reader's standard: **every claim links to where it came from, every number i
 1. Work in the repo root. Determine today's date in **America/Toronto**: `TZ=America/Toronto date +%F`. That is the edition date, `DATE`.
 2. `ls data/` — the previous edition tells you the cutoff. The coverage window (`WINDOW`) is from the previous edition's `generated_at` to now (if there is no previous edition, the 24 hours before now). Write it down as absolute timestamps in both UTC and ET; you will hand it to the subagents. Read the previous edition so you do not repeat it; a story already covered goes in again **only if there is a new development**, flagged `update`, and the bullets report only the new facts.
 3. `node scripts/build.js --topics` — the existing topic slugs. Reuse them; only coin a new slug when nothing fits.
+   `node scripts/build.js --storylines` — the open storylines (id, status, name, frame). An item that is a development in one of those arcs is **filed under it** (see §3, `storylines`). The daily never creates a storyline; the Monday Week in Review does.
 4. Every day is a daily edition, Mondays included. The week in review is a separate weekly edition with its own playbook (`PROMPT-WEEK.md`) and its own routine — never part of the daily file.
 
 ## 1. Sweep the sources — four beats in parallel
@@ -72,6 +73,7 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
           "sources": [{ "name": "Anthropic", "url": "https://..." }, { "name": "Reuters", "url": "https://..." }],
           "bullets": ["What was announced/found, with numbers.", "Why it matters / what it changes.", "Caveats, what is unverified, what to watch."],
           "topics": ["anthropic", "threat-intel", "cyber-offense"],
+          "storylines": ["ai-enabled-hacking"],
           "impact": "beneficial" | "harmful" | "mixed" | "neutral",
           "flags": ["company-claim" | "single-source" | "preprint" | "update"]
         }
@@ -100,6 +102,8 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
 **Sources**: 1–4 per item, primary first. `name` is the publisher (Anthropic, arXiv, Reuters, FDA, Court docket), not the article title.
 
 **Topics**: 1–4 lowercase-hyphen slugs per item. Reuse existing slugs (`node scripts/build.js --topics`). Canonical slugs to prefer: `anthropic`, `openai`, `google-deepmind`, `meta`, `xai`, `mistral`, `deepseek`, `qwen`, `nvidia`, `microsoft`, `amazon`, `apple`, `threat-intel`, `cyber-offense`, `cyber-defense`, `influence-ops`, `scams-fraud`, `deepfakes`, `prompt-injection`, `agents`, `agent-security`, `alignment`, `interpretability`, `evals`, `open-weights`, `reasoning-models`, `scaling`, `compute`, `chips`, `export-controls`, `energy`, `datacenters`, `china`, `eu-ai-act`, `us-federal-policy`, `us-state-policy`, `uk`, `copyright`, `privacy`, `military`, `autonomous-weapons`, `pentagon`, `healthcare`, `fda`, `drug-discovery`, `bio-risk`, `ai-for-science`, `robotics`, `labor`, `education`, `elections`, `surveillance`, `child-safety`, `incidents`, `funding`, `earnings`. Add an entity slug (company, agency, named group) when the story is about that entity.
+
+**Storylines** (optional; usually one, at most two): the ids from `node scripts/build.js --storylines` whose arc this item advances — a new development in *that story*, not merely the same topic. Only existing ids with status `live` or `proposed`; the validator rejects unknown or resolved ids. Omit the key when the item belongs to none. Never coin an id here.
 
 **Impact** (optional but encouraged): `beneficial`, `harmful`, `mixed`, or `neutral` — the demonstrated effect in the story, not your prediction.
 

@@ -16,6 +16,7 @@ You are producing this week's Week in Review for AI Edge Briefing. The daily edi
 4. `node scripts/build.js --topics` — the existing topic slugs, now with a "weekly threads" count. Reuse them; coin a new slug only when nothing fits.
 5. Read the previous `data/*.week.json` if one exists. A thread may continue from last week ("last week the Pentagon said X; this week Y"), but the bullets carry only this week's facts.
 6. Read `PROMPT.md` §1 (the four beats and the **Sourcing rules**) and §2. They apply here unchanged.
+7. `node scripts/build.js --storylines` and read every `storylines/*.json` — you will update them in §3f.
 
 ## 1. Research — the dailies are the inventory, not the ceiling
 
@@ -111,17 +112,28 @@ Plain, declarative, attributed. The validator rejects everywhere: the daily's ba
 - `figures`: 5–10 key numbers of the week, exactly as written in the source, with `value`, `label`, `source`, `url`.
 - `calendar`: dated events in the next 7 days confirmed by a source — deadlines, hearings, votes, scheduled releases, earnings. Omit if none.
 
+### 3f. Storylines — the running record of each arc
+
+Storylines are the curated arcs (`storylines/<id>.json`) that answer "what is actually changing?": a one-line `frame`, the `question` a future event would settle, dated `states` snapshots of where it stands, tracked `figures`, open `questions`, and a timeline built automatically from the daily items filed under the id. **Nothing is ever deleted** — a storyline goes `dormant` or `resolved` and stays on the history page with its full record. After part 3, for every storyline:
+
+- **Update the state** if anything was filed under it this week (items with `"storylines": [id]` in the period's dailies, or your own connects tagged with it): append `{ "date": DATE, "text": [...], "changed": "one or two sentences on what moved since the previous snapshot" }`. Never edit or remove an earlier snapshot. The text is *where this stands as of DATE*, written under the same rules as part 2: attributed causes only, no opinion, and **no number that is not in an item filed under the storyline or in its figures** (`scripts/validate-storyline.js` enforces this). Add to `figures` any number the arc will be tracked by; add to `questions` any open question from part 3 that belongs to it, and set `settled: {date, text, url}` on a question the week answered.
+- **Tag your connects**: each connect that advances an arc carries `"storylines": [id]`.
+- **Dormant**: no item filed and no update for four weeks → `"status": "dormant"` (say so in a final `changed`). **Resolved**: the `question` has been settled by a documented event → `"status": "resolved"` and `"resolved": { "date", "text", "url" }`. Resolved storylines can no longer be filed under.
+- **Propose at most one new storyline per week**, only if the admission test holds: it could plausibly be settled by a future event, and it has either 3+ developments across 2+ weeks or one development that clears the daily significance bar. Create `storylines/<id>.json` with `"status": "proposed"` and a `proposed_note` saying why; the reader promotes it to `live` (or renames/merges it). The cap is **12 live** — do not promote past it.
+- Validate: `node scripts/validate-storyline.js --check-links` must exit 0. Commit `storylines/` with the week file.
+
 ## 4. Validate, fact-check, build
 
 ```
 node scripts/validate-week.js data/DATE.week.json --check-links
+node scripts/validate-storyline.js --check-links
 ```
 
 Fix every ERROR. For every WARN about a link that could not be verified, confirm it with `WebFetch` or `node scripts/fetch.js`; if it does not open, replace or remove it. Then launch **one adversarial subagent** with the week file, the daily files and this instruction: *"List every sentence in `summary`, `connects` and `unknowns` that asserts a cause, a motive, a likelihood or a consequence without attributing it to a named source; every number in `connects` that is not in the joined items; and every development whose bullets go beyond what the linked sources say. Quote each sentence."* Fix everything it finds and re-run the validator. Then:
 
 ```
 node scripts/build.js
-git add data/DATE.week.json trace/
+git add data/DATE.week.json storylines/ trace/
 git commit -m "Week in review DATE"
 git push origin main
 ```
@@ -144,4 +156,4 @@ Read those files after `node scripts/build.js` and pass their contents verbatim.
 git add trace/ && git commit -m "Trace DATE (week)" && git push origin main
 ```
 
-Finish with a short report: number of developments, connections and open questions; days in the period with no daily file; sources you could not reach; developments dropped for lack of verification; what the validator and the fact-check subagent flagged and how it was fixed; the commit hash; and whether the push and the email succeeded. If anything failed, say exactly what and why.
+Finish with a short report: number of developments, connections and open questions; which storylines were updated, marked dormant or resolved, and any proposed; days in the period with no daily file; sources you could not reach; developments dropped for lack of verification; what the validator and the fact-check subagent flagged and how it was fixed; the commit hash; and whether the push and the email succeeded. If anything failed, say exactly what and why.

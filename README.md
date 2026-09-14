@@ -7,6 +7,7 @@ A daily, fact-first briefing on frontier AI — the advances, the research, and 
 - **Podcast — The AI Edge, presented by Epilogue**: every edition is an episode — feed at https://aiedgebriefing.com/podcast.xml, player on each page. Each episode has its own generated cover, coloured by that day's news (see *Section colours*). Two AI hosts when the script passes every factual lock (`scripts/validate-script.js`), otherwise a code-generated narration of the edition. Script with every claim linked to its item at `/YYYY-MM-DD/script/`.
 - **Trace**: every edition has `/YYYY-MM-DD/trace/` — the complete record of the run that produced it (every tool call, input and response), captured by a harness hook rather than written by the model.
 - **Schedule**: generated every morning at 07:00 America/Toronto (11:00 UTC) by a Claude Code cloud routine. A second routine writes the **Week in Review** (`data/DATE.week.json`, `/week/DATE/`) on Mondays at 09:00 Toronto from `PROMPT-WEEK.md`: what happened, what connects, what we don't know — validated by `scripts/validate-week.js`, which rejects unattributed causation, numbers not in the linked items, and opinion language.
+- **Storylines**: tags are literal, so the site also keeps a small curated set of arcs (AI-enabled hacking, the push to regulate frontier AI, …), each with a dated "where this stands", the record of how that changed, every item filed under it and the open questions. The daily routine files items under existing storylines only; the Monday routine writes the new state, marks dormant/resolved, and may propose one new storyline a week. Nothing is removed — `/storylines/history/` lists all of them.
 - **Fetching**: pages that refuse the harness's `WebFetch` are read with `scripts/fetch.js`, which identifies itself (`AIEdgeBriefing/1.0`, contact address in the User-Agent). The sites have given permission for direct reads. No archive or cache sites, ever.
 
 ## How it works
@@ -14,6 +15,8 @@ A daily, fact-first briefing on frontier AI — the advances, the research, and 
 ```
 data/YYYY-MM-DD.json     one file per daily edition — the only thing the daily routine writes
 data/YYYY-MM-DD.week.json  the week in review (dated by the Monday it publishes): happened → connects → unknowns, figures, calendar
+storylines/<id>.json     the curated arcs (/storylines/): frame, the question that would settle it, dated "where this stands" snapshots, figures, open questions; daily items are filed under them, the weekly updates them; capped at 12 live, never deleted
+scripts/validate-storyline.js  storyline locks: no opinion, attributed causes, numbers only from filed items or figures, ≤12 live
 scripts/validate.js      daily schema + live link check (404/410 fails the build)
 scripts/validate-week.js the week-in-review locks: connections join ≥2 developments, causes must be attributed, no new numbers, no opinion language
 scripts/validate-lib.js  shared checks (item shape, link check, banned-language lists)
