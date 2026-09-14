@@ -112,7 +112,11 @@ async function fetchOp3() {
   if (!process.env.OP3_API_KEY) throw new Error('no OP3_API_KEY in stats/.env (get one at https://op3.dev/api/keys)');
   const showFile = path.join(OUT, 'op3-show.json');
   let show = fs.existsSync(showFile) ? JSON.parse(fs.readFileSync(showFile, 'utf8')) : null;
-  if (!show || !show.showUuid) { show = await op3Get(`/shows/${podcastGuid()}`); fs.writeFileSync(showFile, JSON.stringify(show, null, 2)); }
+  if (!show || !show.showUuid) {
+    try { show = await op3Get(`/shows/${podcastGuid()}`); }
+    catch (e) { if (/HTTP 404/.test(e.message)) throw new Error('OP3 does not know the show yet — it appears once podcast apps have fetched episodes through the op3.dev prefix (and the feed is in the Podcast Index: podcastindex.org/add)'); throw e; }
+    fs.writeFileSync(showFile, JSON.stringify(show, null, 2));
+  }
   const uuid = show.showUuid;
   const [ep, sh, apps] = await Promise.all([
     op3Get(`/queries/episode-download-counts?showUuid=${uuid}`),
