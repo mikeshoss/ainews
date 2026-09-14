@@ -100,15 +100,43 @@ async function checkUrl(url) {
   finally { clearTimeout(timer); }
 }
 
-// 404/410 is an error (dead link); anything else that fails is a warning to verify by hand.
+// Bot-blocked or unreachable links can be confirmed through headless Chrome at the edge (Cloudflare Browser
+// Rendering) when CLOUDFLARE_BROWSER_TOKEN + CLOUDFLARE_ACCOUNT_ID exist. Sequential (the free tier allows one browser).
+(function loadDotenv(file) { try { for (const line of fs.readFileSync(file, 'utf8').split('\n')) { const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/); if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, ''); } } catch { /* none */ } })(path.join(__dirname, '..', 'stats', '.env'));
+const canRender = () => !!(process.env.CLOUDFLARE_BROWSER_TOKEN && process.env.CLOUDFLARE_ACCOUNT_ID);
+async function renderCheck(url) {
+  const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/browser-rendering/content`, { method: 'POST', headers: { authorization: `Bearer ${process.env.CLOUDFLARE_BROWSER_TOKEN}`, 'content-type': 'application/json' }, body: JSON.stringify({ url, rejectResourceTypes: ['image', 'media', 'font'], gotoOptions: { waitUntil: 'domcontentloaded', timeout: 20000 } }) });
+  const j = await res.json().catch(() => ({}));
+  if (!res.ok || !j.success) return { error: (j.errors || []).map((e) => e.message).join('; ') || `HTTP ${res.status}` };
+  const html = String(j.result || '');
+  const title = (html.match(/<title[^>]*>([^<]*)/i) || [])[1] || '';
+  if (/\b(404|not found|page doesn.t exist|page not found)\b/i.test(title)) return { status: 404, title };
+  return { status: 200, chars: html.length, title };
+}
+
+// 404/410 is an error (dead link); anything else that fails is a warning to verify by hand — or, with Browser
+// Rendering configured, a second check through a real browser that upgrades the warning to pass/fail.
 async function checkLinks(urls, { err, warn }) {
   const list = [...urls.entries()];
   console.log(`Checking ${list.length} links…`);
   const results = await Promise.all(list.map(async ([url, where]) => [url, where, await checkUrl(url)]));
+  const rendered = [];
   for (const [url, where, r] of results) {
     if (r.error) warn(`${where}: ${url} — ${r.error} (could not verify; verify manually via WebFetch)`);
     else if (r.status === 404 || r.status === 410) err(`${where}: ${url} — HTTP ${r.status} (dead link: fix or remove)`);
-    else if (r.status >= 400) warn(`${where}: ${url} — HTTP ${r.status} (bot-blocked? verify manually via WebFetch)`);
+    else if (r.status >= 400) {
+      if (!canRender()) warn(`${where}: ${url} — HTTP ${r.status} (bot-blocked? verify manually via WebFetch)`);
+      else rendered.push([url, where, r.status]);
+    }
+  }
+  if (rendered.length) {
+    console.log(`Re-checking ${rendered.length} blocked link(s) through headless Chrome…`);
+    for (const [url, where, status] of rendered) {
+      const c = await renderCheck(url);
+      if (c.error) warn(`${where}: ${url} — HTTP ${status}, and the browser check failed (${c.error}); verify manually via WebFetch`);
+      else if (c.status === 404) err(`${where}: ${url} — HTTP ${status}, and the browser sees a not-found page ("${c.title}"): fix or remove`);
+      else console.log(`ok    ${where}: ${url} — HTTP ${status} to a plain request but opens in a browser${c.title ? ` ("${c.title.slice(0, 60)}")` : ''}`);
+    }
   }
 }
 
