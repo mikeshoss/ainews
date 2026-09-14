@@ -6,7 +6,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { dateObj, longDate, shortDate, periodLabel, shortPeriodLabel, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights } = require('./lib.js');
+const { dateObj, longDate, shortDate, periodLabel, shortPeriodLabel, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights, podcastGuid, op3 } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -776,7 +776,7 @@ function renderPlayer(ep, base, ed, compact) {
   const label = `${hostsLabel(ep)} · ${mmss(ep.seconds)}`;
   const art = ep.image && !compact ? `<img class="art" src="${esc(ep.image)}" alt="Episode cover" width="140" height="140" loading="lazy">` : '';
   return `<div class="player${compact ? ' compact' : ''}">${art}<div class="player-body">
-  <audio controls preload="none" src="${esc(ep.url)}"></audio>
+  <audio controls preload="none" src="${esc(op3(ep.url))}"></audio>
   <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}</div>
 </div></div>`;
 }
@@ -858,15 +858,17 @@ ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <itunes:explicit>false</itunes:explicit>
 <itunes:episodeType>full</itunes:episodeType>
 <itunes:author>${esc(PODCAST.author)}</itunes:author>
-<enclosure url="${esc(ep.url)}" length="${ep.bytes}" type="audio/mpeg"/>
+<enclosure url="${esc(op3(ep.url))}" length="${ep.bytes}" type="audio/mpeg"/>
+<podcast:transcript url="${SITE_URL}/${ed.date}/script/" type="text/html"/>
 </item>`;
   }).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:podcast="https://podcastindex.org/namespace/1.0">
 <channel>
 <title>${esc(PODCAST.title)}</title>
 <link>${SITE_URL}/podcast/</link>
 <atom:link href="${SITE_URL}/podcast.xml" rel="self" type="application/rss+xml"/>
+<podcast:guid>${podcastGuid()}</podcast:guid>
 <language>en</language>
 <description>${esc(PODCAST.title)}, presented by ${esc(PODCAST.presenter)}. ${esc(SITE_TAGLINE)} Each episode is voiced by AI from the written edition; every claim links to its source on the site.</description>
 <itunes:author>${esc(PODCAST.author)}</itunes:author>

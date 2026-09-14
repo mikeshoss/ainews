@@ -45,6 +45,21 @@ const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue
   // Where the show can be followed. Add a platform here (and an icon in build.js PLATFORM_ICONS if it's new) as directories approve it.
   listen: { Spotify: { url: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU', label: 'Spotify' } } };
 const CREDITS = { name: 'Mike Shoss', url: 'https://www.linkedin.com/in/mikeshoss' };
+PODCAST.feedUrl = 'https://aiedgebriefing.com/podcast.xml';
+// The show's permanent identity (podcast:guid): UUIDv5 of the feed URL (scheme and trailing slash stripped) in the
+// Podcast Index namespace ead4c236-bf58-58c6-a2c6-a6b28d128cb6. Pinned as a literal — a guid must never change once
+// published, whatever happens to SITE_URL. Recompute with uuidv5(NS, 'aiedgebriefing.com/podcast.xml') to check.
+const PODCAST_GUID = 'ec6df0a8-eda9-50c5-b4f6-0d8faf9ae0ce';
+function uuidv5(ns, name) {
+  const crypto = require('crypto');
+  const h = crypto.createHash('sha1').update(Buffer.concat([Buffer.from(ns.replace(/-/g, ''), 'hex'), Buffer.from(name, 'utf8')])).digest().subarray(0, 16);
+  h[6] = (h[6] & 0x0f) | 0x50; h[8] = (h[8] & 0x3f) | 0x80;
+  const x = h.toString('hex');
+  return [x.slice(0, 8), x.slice(8, 12), x.slice(12, 16), x.slice(16, 20), x.slice(20)].join('-');
+}
+const podcastGuid = () => PODCAST_GUID;
+// OP3 (op3.dev): open, IAB-style download measurement via a redirect prefix on every enclosure URL.
+const op3 = (url) => `https://op3.dev/e,pg=${PODCAST_GUID}/${String(url).replace(/^https:\/\//, '')}`;
 
 // Share of the day's items per section.
 function sectionWeights(ed) {
@@ -53,4 +68,4 @@ function sectionWeights(ed) {
   return counts.map(([name, n]) => ({ name, count: n, share: n / total, ...(SECTION_COLORS[name] || { hex: '#9a9a9a', name: 'grey', short: name }) })).sort((a, b) => b.share - a.share);
 }
 
-module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, addDays, periodLabel, shortPeriodLabel, paragraphs, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights };
+module.exports = { dateObj, longDate, shortDate, spokenDate, spokenDates, ordinal, isMonday, addDays, periodLabel, shortPeriodLabel, paragraphs, uuidv5, podcastGuid, op3, FLAG_LABELS, SECTION_COLORS, PODCAST, CREDITS, sectionWeights };

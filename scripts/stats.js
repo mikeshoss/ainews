@@ -7,24 +7,27 @@
 // Usage: node scripts/stats.js [--days N] [--json] [--no-fetch]
 //   --days N     how many days to show (default 14)
 //   --json       print the per-day records as JSON instead of the table
-//   --no-fetch   don't call GitHub / Google; use the last stored snapshots
+//   --no-fetch   don't call OP3 / Google; use the last stored snapshots
 //
 // Sources
 //   trace/DATE.jsonl + DATE.transcript.jsonl   run time, tool calls, subagents, token usage → Claude cost (API list price)
 //   data/DATE.json, data/DATE.script.json       items, sections, whether the podcast script passed
-//   GitHub release "audio" (public API)          per-asset download counts; snapshotted daily so per-day deltas can be
-//                                                computed → the closest thing to "plays" (Spotify has no stats API)
-//   index.json from that release                 episode length → TTS cost estimate
+//   OP3 (op3.dev, optional)                      IAB-style download counts per episode, top apps; needs OP3_API_KEY in
+//                                                stats/.env. Snapshotted daily so per-day deltas can be computed.
+//                                                (Before 2026-09-14 the snapshots were GitHub release download counts —
+//                                                a different, cruder measure; deltas are never computed across the boundary.)
+//   index.json from the audio bucket              episode length → TTS cost estimate
 //   GA4 Data API (optional)                       users, page views, outbound clicks per day. Needs GA4_PROPERTY_ID and
 //                                                GA4_SERVICE_ACCOUNT (path to a service-account JSON that has Viewer
 //                                                access on the property); read from the environment or stats/.env.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { AUDIO_BASE } = require('./r2.js');
+const { podcastGuid } = require('./lib.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'stats');
-const REPO = 'mikeshoss/ainews';
 const TZ = 'America/Toronto';
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const args = process.argv.slice(2);
@@ -98,13 +101,31 @@ function editionFor(date) {
   return { edition: ed.edition || 'daily', items, sections: sections.length, links, script: fs.existsSync(path.join(ROOT, 'data', `${date}.script.json`)) };
 }
 
-// ---------- podcast downloads ----------
-const GH_HEADERS = { accept: 'application/vnd.github+json', 'user-agent': 'ainews-stats', ...(process.env.GITHUB_TOKEN || process.env.GH_TOKEN ? { authorization: `Bearer ${process.env.GITHUB_TOKEN || process.env.GH_TOKEN}` } : {}) };
-async function fetchRelease() {
-  const res = await fetch(`https://api.github.com/repos/${REPO}/releases/tags/audio`, { headers: GH_HEADERS });
-  if (!res.ok) throw new Error(`GitHub ${res.status}`);
-  const assets = (await res.json()).assets.map((a) => ({ name: a.name, downloads: a.download_count, bytes: a.size }));
-  const snap = { taken_at: new Date().toISOString(), assets };
+// ---------- podcast downloads (OP3) ----------
+const OP3 = 'https://op3.dev/api/1';
+async function op3Get(pathAndQuery) {
+  const res = await fetch(`${OP3}${pathAndQuery}`, { headers: { authorization: `Bearer ${process.env.OP3_API_KEY}`, 'user-agent': 'ainews-stats' } });
+  if (!res.ok) throw new Error(`OP3 ${pathAndQuery.split('?')[0]}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+  return res.json();
+}
+async function fetchOp3() {
+  if (!process.env.OP3_API_KEY) throw new Error('no OP3_API_KEY in stats/.env (get one at https://op3.dev/api/keys)');
+  const showFile = path.join(OUT, 'op3-show.json');
+  let show = fs.existsSync(showFile) ? JSON.parse(fs.readFileSync(showFile, 'utf8')) : null;
+  if (!show || !show.showUuid) { show = await op3Get(`/shows/${podcastGuid()}`); fs.writeFileSync(showFile, JSON.stringify(show, null, 2)); }
+  const uuid = show.showUuid;
+  const [ep, sh, apps] = await Promise.all([
+    op3Get(`/queries/episode-download-counts?showUuid=${uuid}`),
+    op3Get(`/queries/show-download-counts?showUuid=${uuid}`),
+    op3Get(`/queries/top-apps-for-show?showUuid=${uuid}`),
+  ]);
+  const episodes = {};
+  for (const e of ep.episodes || []) {
+    const date = (String(e.itemGuid || '').match(/(\d{4}-\d{2}-\d{2})/) || [])[1]; if (!date) continue;
+    episodes[date] = { d1: e.downloads1 ?? null, d3: e.downloads3 ?? null, d7: e.downloads7 ?? null, d30: e.downloads30 ?? null, all: e.downloadsAll ?? null, title: e.title || null };
+  }
+  const counts = (sh.showDownloadCounts || {})[uuid] || {};
+  const snap = { source: 'op3', taken_at: new Date().toISOString(), showUuid: uuid, episodes, show: { monthly: counts.monthlyDownloads ?? null, weekly: counts.weeklyDownloads || null, weeklyAvg: counts.weeklyAvgDownloads ?? null }, apps: apps.appDownloads || apps.downloads || {} };
   fs.writeFileSync(path.join(OUT, 'downloads', `${today()}.json`), JSON.stringify(snap, null, 2));
   return snap;
 }
@@ -112,14 +133,18 @@ function loadSnapshots() {
   return fs.readdirSync(path.join(OUT, 'downloads')).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort()
     .map((f) => ({ date: f.slice(0, 10), ...JSON.parse(fs.readFileSync(path.join(OUT, 'downloads', f), 'utf8')) }));
 }
-const mp3Total = (snap) => snap.assets.filter((a) => a.name.endsWith('.mp3')).reduce((a, x) => a + x.downloads, 0);
+// All-time mp3 downloads in a snapshot, whichever source wrote it.
+const snapSource = (snap) => snap.source || (snap.assets ? 'github' : 'unknown');
+const mp3Total = (snap) => snapSource(snap) === 'op3' ? Object.values(snap.episodes || {}).reduce((a, e) => a + (e.all || 0), 0) : (snap.assets || []).filter((a) => a.name.endsWith('.mp3')).reduce((a, x) => a + x.downloads, 0);
 const episodeOf = (name) => (name.match(/^(\d{4}-\d{2}-\d{2})/) || [])[1];
+// Per-episode all-time downloads from a snapshot (any source).
+const episodeTotal = (snap, date) => snapSource(snap) === 'op3' ? ((snap.episodes || {})[date] || {}).all ?? null : (snap.assets || []).filter((x) => x.name.endsWith('.mp3') && episodeOf(x.name) === date).reduce((s, x) => s + x.downloads, 0);
 
 async function loadAudioIndex() {
   const local = path.join(OUT, 'audio-index.json');
   if (FETCH) {
     try {
-      const res = await fetch(`https://github.com/${REPO}/releases/download/audio/index.json`, { headers: { 'user-agent': 'ainews-stats' } });
+      const res = await fetch(`${AUDIO_BASE}/index.json?t=${Date.now()}`, { headers: { 'user-agent': 'ainews-stats' } });
       if (res.ok) fs.writeFileSync(local, await res.text());
     } catch { /* keep local copy */ }
   }
@@ -181,7 +206,8 @@ async function main() {
   let ga = null, gaError = null;
   if (FETCH) { try { ga = await fetchGA(Math.max(DAYS, 30)); } catch (e) { gaError = e.message; ga = null; } }
   if (!ga) { const c = path.join(OUT, 'ga.json'); if (fs.existsSync(c)) ga = JSON.parse(fs.readFileSync(c, 'utf8')); }
-  if (FETCH) { try { await fetchRelease(); } catch (e) { console.error(`downloads: ${e.message}`); } }
+  let op3Error = null;
+  if (FETCH) { try { await fetchOp3(); } catch (e) { op3Error = e.message; } }
   const snaps = loadSnapshots();
   const audio = await loadAudioIndex();
 
@@ -199,13 +225,15 @@ async function main() {
     // Downloads: cumulative for this episode as of the latest snapshot, and site-wide new mp3 downloads on this day
     // (difference between this day's snapshot and the previous one).
     const latest = snaps[snaps.length - 1];
-    const episode_downloads = latest ? latest.assets.filter((x) => x.name.endsWith('.mp3') && episodeOf(x.name) === date).reduce((s, x) => s + x.downloads, 0) : null;
+    const episode_downloads = latest ? episodeTotal(latest, date) : null;
+    const episode_7d = latest && snapSource(latest) === 'op3' ? ((latest.episodes || {})[date] || {}).d7 ?? null : null;
     const i = snaps.findIndex((s) => s.date === date);
-    const downloads_today = i > 0 ? mp3Total(snaps[i]) - mp3Total(snaps[i - 1]) : null;
+    // A delta only makes sense between two snapshots from the same source (GitHub counts and OP3 counts are not comparable).
+    const downloads_today = i > 0 && snapSource(snaps[i]) === snapSource(snaps[i - 1]) ? mp3Total(snaps[i]) - mp3Total(snaps[i - 1]) : null;
     const g = ga && ga[date];
     return {
       date, edition: ed, run,
-      podcast: a ? { format: a.format, seconds: a.seconds, versions: versions.length, episode_downloads } : null,
+      podcast: a ? { format: a.format, seconds: a.seconds, versions: versions.length, episode_downloads, episode_7d } : null,
       downloads_today,
       site: g || null,
       week: weekRun ? { minutes: weekRun.minutes, tool_calls: weekRun.tool_calls, claude_usd: +weekRun.claude_usd.toFixed(2), usage_complete: weekRun.usage_complete, email_sent: weekRun.email_sent } : null,
@@ -213,15 +241,15 @@ async function main() {
     };
   });
   fs.writeFileSync(path.join(OUT, 'daily.json'), JSON.stringify({ generated_at: new Date().toISOString(), days: rows }, null, 2));
-  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, snaps, ga, gaError));
+  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, snaps, ga, gaError, op3Error));
 
   if (JSON_OUT) { console.log(JSON.stringify(rows, null, 2)); return; }
-  printTable(rows, snaps, ga, gaError);
+  printTable(rows, snaps, ga, gaError, op3Error);
 }
 
-function printTable(rows, snaps, ga, gaError) {
+function printTable(rows, snaps, ga, gaError, op3Error) {
   const pad = (s, n, right) => { s = String(s == null ? '—' : s); return right ? s.padStart(n) : s.padEnd(n); };
-  const cols = [['Date', 10], ['Items', 5, 1], ['Run', 5, 1], ['Tools', 5, 1], ['Claude $', 8, 1], ['TTS $', 6, 1], ['Total $', 7, 1], ['Ep dl', 5, 1], ['DL/day', 6, 1], ['Users', 5, 1], ['Views', 5, 1], ['Clicks', 6, 1], ['Notes', 0]];
+  const cols = [['Date', 10], ['Items', 5, 1], ['Run', 5, 1], ['Tools', 5, 1], ['Claude $', 8, 1], ['TTS $', 6, 1], ['Total $', 7, 1], ['Ep 7d', 5, 1], ['Ep all', 6, 1], ['New dl', 6, 1], ['Users', 5, 1], ['Views', 5, 1], ['Clicks', 6, 1], ['Notes', 0]];
   console.log(cols.map(([h, n, r]) => pad(h, n, r)).join('  '));
   let total = 0;
   for (const r of rows) {
@@ -234,28 +262,32 @@ function printTable(rows, snaps, ga, gaError) {
     if (r.week) notes.push(`+ week in review: ${r.week.minutes}m, $${r.week.claude_usd}${r.week.usage_complete ? '' : ' (main only)'}${r.week.email_sent ? '' : ', no email'}`);
     const v = [r.date, r.edition && r.edition.items, r.run && `${r.run.minutes}m`, r.run && r.run.tool_calls,
       r.run ? r.cost.claude_usd.toFixed(2) : null, r.podcast ? r.cost.tts_usd.toFixed(2) : null, r.run || r.podcast ? r.cost.total_usd.toFixed(2) : null,
-      r.podcast && r.podcast.episode_downloads, r.downloads_today, r.site && r.site.users, r.site && r.site.views, r.site && r.site.clicks, notes.join('; ')];
+      r.podcast && r.podcast.episode_7d, r.podcast && r.podcast.episode_downloads, r.downloads_today, r.site && r.site.users, r.site && r.site.views, r.site && r.site.clicks, notes.join('; ')];
     console.log(v.map((x, i) => pad(x, cols[i][1], cols[i][2])).join('  '));
   }
   console.log(`\n${rows.length} day(s) · total $${total.toFixed(2)} · Claude at API list price (${Object.keys(CLAUDE_PRICES)[0]} rates), TTS at $${TTS_USD_PER_MINUTE}/min`);
-  if (snaps.length) console.log(`podcast: ${mp3Total(snaps[snaps.length - 1])} mp3 downloads all-time (${snaps.length} daily snapshot${snaps.length === 1 ? '' : 's'}; per-day deltas start with the second)`);
+  const latest = snaps[snaps.length - 1];
+  if (latest) console.log(`podcast: ${mp3Total(latest)} downloads all-time per ${snapSource(latest)}${snapSource(latest) === 'op3' && latest.show ? ` · ${latest.show.monthly ?? '—'} this month` : ''} (${snaps.length} daily snapshot${snaps.length === 1 ? '' : 's'}) · https://op3.dev/show/${podcastGuid()}`);
+  if (op3Error) console.log(`podcast: OP3 not fetched — ${op3Error}`);
   if (!ga) console.log(gaError ? `site: GA4 error — ${gaError}` : 'site: no Google Analytics credentials (set GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT in stats/.env)');
   console.log(`snapshot page: ${path.join(OUT, 'index.html')}`);
 }
 
-function renderHtml(rows, snaps, ga, gaError) {
+function renderHtml(rows, snaps, ga, gaError, op3Error) {
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const n = (x, d = 0) => (x == null ? '<span class="na">—</span>' : Number(x).toLocaleString('en-CA', { minimumFractionDigits: d, maximumFractionDigits: d }));
   const total = rows.reduce((a, r) => a + r.cost.total_usd, 0);
   const latest = snaps[snaps.length - 1];
-  const episodes = latest ? latest.assets.filter((a) => a.name.endsWith('.mp3')).sort((a, b) => b.name.localeCompare(a.name)) : [];
+  const isOp3 = latest && snapSource(latest) === 'op3';
+  const episodes = !latest ? [] : isOp3 ? Object.entries(latest.episodes || {}).sort((a, b) => b[0].localeCompare(a[0])) : latest.assets.filter((a) => a.name.endsWith('.mp3')).sort((a, b) => b.name.localeCompare(a.name));
+  const apps = isOp3 ? Object.entries(latest.apps || {}).sort((a, b) => b[1] - a[1]) : [];
   const tr = rows.slice().reverse().map((r) => `<tr>
 <td><a href="https://aiedgebriefing.com/${r.date}/">${r.date}</a></td>
 <td class="r">${n(r.edition && r.edition.items)}</td><td class="r">${n(r.edition && r.edition.links)}</td>
 <td class="r">${r.run ? `${r.run.minutes} min` : n(null)}</td><td class="r">${n(r.run && r.run.tool_calls)}</td><td class="r">${n(r.run && r.run.subagents)}</td>
 <td class="r">${r.run ? '$' + n(r.cost.claude_usd, 2) + (r.run.usage_complete ? '' : '<sup title="main session only; subagent usage was not traced for this run">*</sup>') : n(null)}</td>
 <td class="r">${r.podcast ? '$' + n(r.cost.tts_usd, 2) : n(null)}</td><td class="r"><strong>${r.run || r.podcast ? '$' + n(r.cost.total_usd, 2) : n(null)}</strong></td>
-<td class="r">${r.podcast ? `${Math.round(r.podcast.seconds / 60)} min` : n(null)}</td><td class="r">${n(r.podcast && r.podcast.episode_downloads)}</td><td class="r">${n(r.downloads_today)}</td>
+<td class="r">${r.podcast ? `${Math.round(r.podcast.seconds / 60)} min` : n(null)}</td><td class="r">${n(r.podcast && r.podcast.episode_7d)}</td><td class="r">${n(r.podcast && r.podcast.episode_downloads)}</td><td class="r">${n(r.downloads_today)}</td>
 <td class="r">${n(r.site && r.site.users)}</td><td class="r">${n(r.site && r.site.views)}</td><td class="r">${n(r.site && r.site.clicks)}</td>
 <td>${[r.run && !r.run.email_sent && r.edition ? 'no email' : '', r.edition && !r.edition.script ? 'narrated' : '', r.week ? `+ week in review (${r.week.minutes} min, $${n(r.week.claude_usd, 2)})` : ''].filter(Boolean).join(', ')}</td></tr>`).join('\n');
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Edge Briefing — private stats</title>
@@ -275,19 +307,22 @@ th.group{border-bottom:none;text-align:center;color:var(--fg)}small{color:var(--
 <div class="tiles">
 <div class="tile"><b>$${n(total, 2)}</b><span>cost, ${rows.length} days shown</span></div>
 <div class="tile"><b>$${n(rows.length ? total / rows.filter((r) => r.run || r.podcast).length || 0 : 0, 2)}</b><span>per edition</span></div>
-<div class="tile"><b>${n(latest ? mp3Total(latest) : null)}</b><span>episode downloads, all-time</span></div>
+<div class="tile"><b>${n(latest ? mp3Total(latest) : null)}</b><span>episode downloads, all-time${isOp3 ? ' (OP3)' : ' (GitHub)'}</span></div>
+${isOp3 && latest.show ? `<div class="tile"><b>${n(latest.show.monthly)}</b><span>downloads this month</span></div>` : ''}
 <div class="tile"><b>${n(ga ? Object.values(ga).reduce((a, g) => a + g.users, 0) : null)}</b><span>site users, ${ga ? Object.keys(ga).length : 0} days of GA</span></div>
 </div>
 <div class="scroll"><table>
-<tr><th></th><th class="group" colspan="2">Edition</th><th class="group" colspan="3">Run</th><th class="group" colspan="3">Cost (USD)</th><th class="group" colspan="3">Podcast</th><th class="group" colspan="3">Site</th><th></th></tr>
-<tr><th>Date</th><th class="r">Items</th><th class="r">Links</th><th class="r">Time</th><th class="r">Tool calls</th><th class="r">Agents</th><th class="r">Claude</th><th class="r">TTS</th><th class="r">Total</th><th class="r">Length</th><th class="r">Episode dl</th><th class="r">New dl</th><th class="r">Users</th><th class="r">Views</th><th class="r">Clicks</th><th>Notes</th></tr>
+<tr><th></th><th class="group" colspan="2">Edition</th><th class="group" colspan="3">Run</th><th class="group" colspan="3">Cost (USD)</th><th class="group" colspan="4">Podcast</th><th class="group" colspan="3">Site</th><th></th></tr>
+<tr><th>Date</th><th class="r">Items</th><th class="r">Links</th><th class="r">Time</th><th class="r">Tool calls</th><th class="r">Agents</th><th class="r">Claude</th><th class="r">TTS</th><th class="r">Total</th><th class="r">Length</th><th class="r">7 days</th><th class="r">All time</th><th class="r">New dl</th><th class="r">Users</th><th class="r">Views</th><th class="r">Clicks</th><th>Notes</th></tr>
 ${tr}
 </table></div>
-<p class="muted">Claude cost is the run's token usage at Anthropic API list price (input $5, output $25, cache read $0.50, cache write $6.25/5m $10/1h per MTok for Opus 5). * = main session only; runs traced before subagent usage was recorded. TTS is episode length × $${TTS_USD_PER_MINUTE}/min (gpt-4o-mini-tts). Episode dl = cumulative downloads of that episode's MP3(s) from GitHub Releases, which is what every podcast app and Spotify fetch from; New dl = MP3 downloads site-wide since the previous day's snapshot. ${ga ? 'Site figures from Google Analytics 4; Clicks = GA "click" events (outbound links).' : gaError ? `Google Analytics: ${esc(gaError)}` : 'Site figures need Google Analytics credentials (GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT in stats/.env).'}</p>
+<p class="muted">Claude cost is the run's token usage at Anthropic API list price (input $5, output $25, cache read $0.50, cache write $6.25/5m $10/1h per MTok for Opus 5). * = main session only; runs traced before subagent usage was recorded. TTS is episode length × $${TTS_USD_PER_MINUTE}/min (gpt-4o-mini-tts). Podcast downloads via <a href="https://op3.dev/show/${podcastGuid()}">OP3</a> (open, IAB-style de-duplicated, bots excluded; the site's own player is counted too) — 7 days and all time per episode, New dl = all-time total minus the previous day's snapshot. Snapshots before 14 Sep 2026 were raw GitHub release download counts, a cruder measure; no delta is computed across that boundary.${op3Error ? ` <b>OP3 not fetched: ${esc(op3Error)}</b>` : ''} ${ga ? 'Site figures from Google Analytics 4; Clicks = GA "click" events (outbound links).' : gaError ? `Google Analytics: ${esc(gaError)}` : 'Site figures need Google Analytics credentials (GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT in stats/.env).'}</p>
 <h2>Episodes</h2>
-<div class="scroll"><table><tr><th>File</th><th class="r">Downloads</th><th class="r">Size</th></tr>
-${episodes.map((a) => `<tr><td>${esc(a.name)}</td><td class="r">${n(a.downloads)}</td><td class="r">${n(a.bytes / 1e6, 1)} MB</td></tr>`).join('\n')}
-</table></div>`;
+<div class="scroll"><table>${isOp3
+    ? `<tr><th>Episode</th><th class="r">1 day</th><th class="r">7 days</th><th class="r">30 days</th><th class="r">All time</th></tr>${episodes.map(([d, e]) => `<tr><td><a href="https://aiedgebriefing.com/${d}/">${d}</a></td><td class="r">${n(e.d1)}</td><td class="r">${n(e.d7)}</td><td class="r">${n(e.d30)}</td><td class="r">${n(e.all)}</td></tr>`).join('\n')}`
+    : `<tr><th>File</th><th class="r">Downloads</th><th class="r">Size</th></tr>${episodes.map((a) => `<tr><td>${esc(a.name)}</td><td class="r">${n(a.downloads)}</td><td class="r">${n(a.bytes / 1e6, 1)} MB</td></tr>`).join('\n')}`}
+</table></div>
+${apps.length ? `<h2>Apps</h2><div class="scroll"><table><tr><th>App</th><th class="r">Downloads (3 months)</th></tr>${apps.map(([a, c]) => `<tr><td>${esc(a)}</td><td class="r">${n(c)}</td></tr>`).join('\n')}</table></div>` : ''}`;
 }
 
 main().catch((e) => { console.error(e.stack || e.message); process.exit(1); });

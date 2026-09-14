@@ -21,7 +21,9 @@ scripts/fetch.js         identifiable direct fetch for pages that refuse WebFetc
 scripts/build.js         static site generator → site/ (pages, trends, RSS, email bodies, podcast feed + players)
 scripts/validate-script.js  the podcast-script locks: every number must be in the item, caveats voiced, sources named, no hype
 scripts/narrate.js       deterministic single-voice narration from the JSON (podcast fallback)
-scripts/podcast.js       runs in Actions: OpenAI TTS → MP3 → GitHub Release "audio" → audio/index.json for the build
+scripts/podcast.js       runs in Actions: OpenAI TTS → MP3 → Cloudflare R2 (audio.aiedgebriefing.com) → audio/index.json for the build
+scripts/r2.js            R2 client over Cloudflare's REST API (one token; no S3 keys, no dependencies); `setup` creates the bucket + custom domain
+scripts/migrate-r2.js    one-time move of the audio from the old GitHub Release to R2 (idempotent, verifies every URL)
 scripts/cover.js         cover generator (SVG): per-episode covers mixed from section colours by share of items; show cover (--show, variant "line")
 scripts/rasterize.sh     SVG → PNG via librsvg (rsvg-convert), used in CI and locally
 .github/workflows/       builds and deploys site/ to GitHub Pages on every push to main
@@ -53,7 +55,17 @@ A day's cover: one blurred colour blob per section, radius ∝ √(share of item
 
 ## Secrets
 
-One repo secret: `OPENAI_API_KEY` (set with `gh secret set OPENAI_API_KEY --repo mikeshoss/ainews`). Without it the workflow still builds and deploys the site; it just skips audio.
+Two repo secrets and three variables:
+
+```
+gh secret set OPENAI_API_KEY --repo mikeshoss/ainews          # TTS
+gh secret set CLOUDFLARE_API_TOKEN --repo mikeshoss/ainews    # Workers R2 Storage: Edit + Zone DNS: Edit + Zone: Read, scoped to the account/zone
+gh variable set CLOUDFLARE_ACCOUNT_ID --body <id> --repo mikeshoss/ainews
+gh variable set R2_BUCKET --body ainews-audio --repo mikeshoss/ainews
+gh variable set AUDIO_BASE --body https://audio.aiedgebriefing.com --repo mikeshoss/ainews
+```
+
+Without them the workflow still builds and deploys the site; it just skips audio. Episodes are served from the R2 custom domain; the feed's enclosure URLs go through [OP3](https://op3.dev) (`https://op3.dev/e,pg=<podcast:guid>/…`) for open, IAB-style download stats — public at `https://op3.dev/show/<guid>`. The show's `podcast:guid` is pinned in `scripts/lib.js`.
 
 ## Local
 
@@ -71,4 +83,4 @@ Code is [MIT](LICENSE). The editions (`data/`, `trace/`, and everything built fr
 
 ## Private stats
 
-`node scripts/stats.js` prints a per-day snapshot — items, run time, tool calls, what the run cost (Claude tokens at API list price + TTS), podcast downloads from GitHub Releases, and site traffic if Google Analytics credentials are present — and writes `stats/index.html`. `stats/` is gitignored; nothing in it is published. Run it daily from one machine so per-day download deltas accumulate.
+`node scripts/stats.js` prints a per-day snapshot — items, run time, tool calls, what the run cost (Claude tokens at API list price + TTS), podcast downloads from OP3 (`OP3_API_KEY` in `stats/.env`), and site traffic if Google Analytics credentials are present — and writes `stats/index.html`. `stats/` is gitignored; nothing in it is published. Run it daily from one machine so per-day download deltas accumulate.

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 'use strict';
-// Turns editions into podcast episodes. Runs in GitHub Actions (needs OPENAI_API_KEY, GH_TOKEN, ffmpeg, gh).
+// Turns editions into podcast episodes. Runs in GitHub Actions (needs OPENAI_API_KEY, CLOUDFLARE_API_TOKEN +
+// CLOUDFLARE_ACCOUNT_ID, ffmpeg).
 // For each edition in the last LOOKBACK_DAYS without audio: use the dialogue script if it exists AND passes
 // validate-script.js, otherwise the code-generated narration (narrate.js). Synthesizes with OpenAI TTS,
 // concatenates with ffmpeg, renders the episode cover (cover.js → librsvg) and embeds it, uploads DATE.mp3 + DATE.png
-// to the rolling GitHub Release "audio", and maintains index.json
+// to the R2 bucket behind AUDIO_BASE (scripts/r2.js), and maintains index.json there
 // (also written to audio/index.json for build.js). Idempotent; the index is updated last.
 // Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE --label vN]
 // Re-running a date with --force keeps every earlier version (index.versions) and makes the new one current.
@@ -17,10 +18,10 @@ const { loadEditions } = require('./build.js');
 const { longDate, PODCAST } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
 const { coverSvg, wideCoverSvg } = require('./cover.js');
+const r2 = require('./r2.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const AUDIO_DIR = path.join(ROOT, 'audio');
-const RELEASE_TAG = 'audio';
 const LOOKBACK_DAYS = 14;
 const MAX_PER_RUN = 3;             // cost cap
 const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
@@ -39,33 +40,32 @@ const FORCE = args.includes('--force') ? args[args.indexOf('--force') + 1] : (pr
 const LABEL = args.includes('--label') ? args[args.indexOf('--label') + 1] : (process.env.FORCE_LABEL || null);
 const PAUSE_INTRO = 1.4;           // longer breath after the intro before the news starts
 const KEY = process.env.OPENAI_API_KEY;
-const REPO = process.env.GITHUB_REPOSITORY || 'mikeshoss/ainews';
-const DOWNLOAD_BASE = `https://github.com/${REPO}/releases/download/${RELEASE_TAG}`;
+const AUDIO_BASE = r2.AUDIO_BASE;
 
 const sh = (cmd, a, opts = {}) => execFileSync(cmd, a, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...opts }).trim();
 const has = (cmd) => spawnSync('which', [cmd]).status === 0;
 
-// ---------- release + index ----------
-function ensureRelease() {
-  if (DRY) return;
-  if (spawnSync('gh', ['release', 'view', RELEASE_TAG, '-R', REPO], { stdio: 'ignore' }).status !== 0) {
-    sh('gh', ['release', 'create', RELEASE_TAG, '-R', REPO, '-t', 'Podcast audio', '-n', 'MP3 episodes referenced by podcast.xml. Managed by scripts/podcast.js.', '--latest=false']);
-    console.log(`created release ${RELEASE_TAG}`);
-  }
-}
-function loadIndex() {
+// ---------- index (lives in R2 next to the audio) ----------
+async function loadIndex() {
   fs.mkdirSync(AUDIO_DIR, { recursive: true });
   const local = path.join(AUDIO_DIR, 'index.json');
-  if (!DRY) {
-    const r = spawnSync('gh', ['release', 'download', RELEASE_TAG, '-R', REPO, '-p', 'index.json', '-O', local, '--clobber'], { stdio: 'ignore' });
-    if (r.status !== 0 && !fs.existsSync(local)) fs.writeFileSync(local, '{"episodes":{}}');
-  } else if (!fs.existsSync(local)) fs.writeFileSync(local, '{"episodes":{}}');
+  let text = null;
+  if (!DRY) { const b = await r2.get('index.json'); if (b) text = b.toString(); }
+  else { try { const r = await fetch(`${AUDIO_BASE}/index.json?t=${Date.now()}`); if (r.ok) text = await r.text(); } catch { /* offline: use the local copy */ } }
+  if (text) fs.writeFileSync(local, text);
+  else if (!fs.existsSync(local)) fs.writeFileSync(local, '{"episodes":{}}');
   return JSON.parse(fs.readFileSync(local, 'utf8'));
 }
-function saveIndex(index) {
+async function saveIndex(index) {
   const local = path.join(AUDIO_DIR, 'index.json');
-  fs.writeFileSync(local, JSON.stringify(index, null, 2));
-  if (!DRY) sh('gh', ['release', 'upload', RELEASE_TAG, local, '-R', REPO, '--clobber']);
+  const text = JSON.stringify(index, null, 2);
+  fs.writeFileSync(local, text);
+  if (!DRY) await r2.put('index.json', Buffer.from(text), 'application/json', r2.CACHE.index);
+}
+// Public GET of an object we already published (covers), so build.js can serve them same-origin.
+async function download(name, to) {
+  try { const r = await fetch(`${AUDIO_BASE}/${name}`); if (r.ok) { fs.writeFileSync(to, Buffer.from(await r.arrayBuffer())); return true; } } catch { /* best effort */ }
+  return false;
 }
 
 // ---------- script selection ----------
@@ -187,24 +187,23 @@ async function synthesize(ed, seg, label) {
 (async () => {
   if (!KEY && !DRY) { console.log('OPENAI_API_KEY not set — skipping podcast generation (set the repo secret to enable).'); process.exit(0); }
   for (const c of ['ffmpeg', 'ffprobe']) if (!has(c)) { console.log(`${c} not found — skipping podcast generation`); process.exit(0); }
-  if (!DRY && !has('gh')) { console.log('gh not found — skipping podcast generation'); process.exit(0); }
+  if (!DRY && !r2.configured()) { console.log('CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set — skipping podcast generation'); process.exit(0); }
 
   const editions = loadEditions();
   const latest = editions[0];
   if (!latest) { console.log('no editions'); return; }
-  ensureRelease();
-  const index = loadIndex();
+  const index = await loadIndex();
   index.episodes = index.episodes || {};
 
   const cutoff = new Date(Date.parse(latest.date + 'T12:00:00Z') - LOOKBACK_DAYS * 86400000);
 
   // Make sure every published cover is present locally so build.js can serve it from the site (same-origin og:image).
   if (!DRY) for (const [date, ep] of Object.entries(index.episodes)) {
-    for (const f of [`${date}.png`, `${date}-og.png`]) if (!fs.existsSync(path.join(AUDIO_DIR, f))) spawnSync('gh', ['release', 'download', RELEASE_TAG, '-R', REPO, '-p', f, '-D', AUDIO_DIR, '--clobber'], { stdio: 'ignore' });
+    for (const f of [`${date}.png`, `${date}-og.png`]) if (!fs.existsSync(path.join(AUDIO_DIR, f))) await download(f, path.join(AUDIO_DIR, f));
     if (ep.image && !ep.og && !DRY) {
       const ed = editions.find((e) => e.date === date);
       const png = ed && makeWideCover(ed);
-      if (png) { try { sh('gh', ['release', 'upload', RELEASE_TAG, png, '-R', REPO, '--clobber']); ep.og = `${DOWNLOAD_BASE}/${date}-og.png`; saveIndex(index); console.log(`${date}: share image backfilled`); } catch (e) { console.log(`${date}: share image failed: ${e.message}`); } }
+      if (png) { try { await r2.put(`${date}-og.png`, png, 'image/png', r2.CACHE.png); ep.og = `${AUDIO_BASE}/${date}-og.png`; await saveIndex(index); console.log(`${date}: share image backfilled`); } catch (e) { console.log(`${date}: share image failed: ${e.message}`); } }
     }
   }
 
@@ -215,9 +214,9 @@ async function synthesize(ed, seg, label) {
     try {
       const png = makeCover(ed);
       if (!png) break;
-      sh('gh', ['release', 'upload', RELEASE_TAG, png, '-R', REPO, '--clobber']);
-      ep.image = `${DOWNLOAD_BASE}/${ed.date}.png`;
-      saveIndex(index);
+      await r2.put(`${ed.date}.png`, png, 'image/png', r2.CACHE.png);
+      ep.image = `${AUDIO_BASE}/${ed.date}.png`;
+      await saveIndex(index);
       console.log(`${ed.date}: cover backfilled`);
     } catch (e) { console.log(`${ed.date}: cover backfill failed: ${e.message}`); }
   }
@@ -238,11 +237,13 @@ async function synthesize(ed, seg, label) {
       if (versions.some((v) => v.label === label)) throw new Error(`version "${label}" already exists for ${ed.date}; pick another label`);
       const a = await synthesize(ed, seg, label);
       const wide = path.join(AUDIO_DIR, `${ed.date}-og.png`);
-      sh('gh', ['release', 'upload', RELEASE_TAG, a.file, ...(a.png ? [a.png] : []), ...(fs.existsSync(wide) ? [wide] : []), '-R', REPO, '--clobber']);
-      const entry = { url: `${DOWNLOAD_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${DOWNLOAD_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${DOWNLOAD_BASE}/${ed.date}-og.png` } : {}) };
+      await r2.put(path.basename(a.file), a.file, 'audio/mpeg', r2.CACHE.mp3);
+      if (a.png) await r2.put(`${ed.date}.png`, a.png, 'image/png', r2.CACHE.png);
+      if (fs.existsSync(wide)) await r2.put(`${ed.date}-og.png`, wide, 'image/png', r2.CACHE.png);
+      const entry = { url: `${AUDIO_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${AUDIO_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${AUDIO_BASE}/${ed.date}-og.png` } : {}) };
       versions.push({ label, ...entry });
-      index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the release and on /podcast/
-      saveIndex(index); // after each episode so a later failure keeps earlier work
+      index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the bucket and on /podcast/
+      await saveIndex(index); // after each episode so a later failure keeps earlier work
       console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded`);
     } catch (e) {
       failures++;
