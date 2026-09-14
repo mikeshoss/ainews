@@ -294,6 +294,7 @@ function renderEditionPage(ed, editions, idx) {
     <nav class="toc">${toc}</nav>
   </header>
   ${sections}
+  ${renderShare(renderLinkedIn(ed).split('\n\n').slice(0, -1).join('\n\n'), `${SITE_URL}/${ed.date}/`)}
   ${renderSubscribe(base)}
   <nav class="pager">
     ${older ? `<a href="${base}${older.date}/">← ${esc(shortDate(older.date))}</a>` : '<span></span>'}
@@ -317,6 +318,19 @@ function renderEditionPage(ed, editions, idx) {
     og: { type: 'article', title: `${PODCAST.title} — ${longDate(ed.date)}`, image: ed.ogUrl, imageAlt: `${PODCAST.title} — ${longDate(ed.date)}` }, ld });
 }
 
+const FEATURES = new Set((process.env.SITE_FEATURES || '').split(',').map((s) => s.trim()).filter(Boolean));
+// Share row: copy the ready-made post, or open a pre-filled share on X / LinkedIn / Bluesky. Every link is tagged.
+function renderShare(text, pageUrl) {
+  if (!FEATURES.has('share')) return '';
+  const u = (src) => `${pageUrl}?utm_source=${src}&utm_medium=share`;
+  const t = encodeURIComponent(text);
+  return `<div class="share"><span class="share-label">Share</span>
+  <button type="button" class="share-copy" data-copy="${esc(text)}\n\n${esc(u('copy'))}">Copy post</button>
+  <a href="https://x.com/intent/post?text=${t}&url=${encodeURIComponent(u('x'))}" rel="noopener" target="_blank">X</a>
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(u('linkedin'))}" rel="noopener" target="_blank">LinkedIn</a>
+  <a href="https://bsky.app/intent/compose?text=${t}%0A%0A${encodeURIComponent(u('bluesky'))}" rel="noopener" target="_blank">Bluesky</a>
+</div>`;
+}
 function renderSubscribe(base, variant = 'inline') {
   if (!SUBSCRIBE_URL) return '';
   return `<form class="subscribe ${esc(variant)}" method="POST" action="${esc(SUBSCRIBE_URL)}" target="_blank">
@@ -442,6 +456,7 @@ function renderWeekPage(wk, weeks, idx) {
   </section>
   ${renderFigures(wk.figures, campaign)}
   ${renderCalendar(wk.calendar, campaign)}
+  ${renderShare(`What actually changed in AI, ${wk.label}: ${wk.happened.length} developments, ${wk.connects.length} connections, ${wk.unknowns.length} open questions — facts first, no opinion.`, `${SITE_URL}/week/${wk.date}/`)}
   ${renderSubscribe(base)}
   <nav class="pager">
     ${older ? `<a href="${base}week/${older.date}/">← ${esc(older.shortLabel)}</a>` : '<span></span>'}
@@ -536,6 +551,7 @@ function renderStorylinePage(st, storylines, editions) {
   ${(st.figures || []).length ? `<section class="section" id="figures"><h2>Tracked figures</h2><dl class="figures">${st.figures.slice().sort((a, b) => (a.date < b.date ? 1 : -1)).map((f) => `<div><dt>${esc(f.value)}</dt><dd>${esc(f.label)} <span class="muted">${esc(shortDate(f.date))}</span> <a class="src" href="${esc(utm(f.url, 'web', campaign))}" rel="noopener">${esc(f.source || hostname(f.url))}</a></dd></div>`).join('')}</dl></section>` : ''}
   ${questions.length ? `<section class="section" id="questions"><h2>Open questions</h2>${questions.map((q) => `<article class="item unknown${q.settled ? ' settled' : ''}"><h3>${esc(q.question)}</h3><dl><dt>${q.settled ? 'Settled' : 'What would settle it'}</dt><dd>${q.settled ? `${esc(shortDate(q.settled.date))} — ${esc(q.settled.text)}${q.settled.url ? ` <a class="src" href="${esc(utm(q.settled.url, 'web', campaign))}" rel="noopener">source</a>` : ''}` : esc(q.would_settle)}</dd><dt>Asked</dt><dd>${esc(shortDate(q.date))}</dd></dl></article>`).join('')}</section>` : ''}
   <section class="section"><div class="topics">${related}${topics}</div></section>
+  ${renderShare(`${st.name} — where it stands as of ${current ? shortDate(current.date) : shortDate(st.opened)}: ${current ? paragraphs(current.text)[0].split(/(?<=[.!?])\s/)[0] : st.frame}`, `${SITE_URL}/storylines/${st.id}/`)}
   ${renderSubscribe(base)}
 </article>`;
   const url = `${SITE_URL}/storylines/${st.id}/`;
@@ -956,6 +972,8 @@ body.has-player{padding-bottom:84px}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
 .line{display:flex;gap:12px;margin:6px 0}.line .who{flex:0 0 64px;font-weight:600;font-size:.85rem;color:var(--accent)}
 .script-section{font-weight:600;margin-top:1.4em}
+.share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:28px 0 0;font-size:.85rem}.share-label{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-size:.72rem;margin-right:4px}
+.share a,.share-copy{text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--card);border-radius:14px;padding:4px 12px;font:inherit;font-size:.85rem;cursor:pointer}.share a:hover,.share-copy:hover{border-color:var(--accent);color:var(--accent)}.share-copy.done{border-color:var(--good);color:var(--good)}
 .subscribe{margin:28px 0 8px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px}
 .subscribe.hero{margin:16px 0 0}.subscribe.footer{margin:0 0 22px}
 .subscribe-text{margin-bottom:10px;font-size:.95rem}.subscribe.footer .subscribe-text{font-size:.88rem}
@@ -1082,6 +1100,7 @@ function renderPodcastFeed(editions, audio) {
     const desc = paragraphs(ed.summary).join('\n\n');
     return `<item>
 <title>${esc(longDate(ed.date))}</title>
+<itunes:title>${esc(longDate(ed.date))}</itunes:title>
 <link>${SITE_URL}/${ed.date}/</link>
 <guid isPermaLink="false">ainews-${ed.date}</guid>
 <pubDate>${new Date(ep.generated_at || ed.date + 'T12:00:00Z').toUTCString()}</pubDate>
@@ -1258,6 +1277,7 @@ function main() {
   write('.nojekyll', '');
   write('style.css', CSS.trim() + '\n');
   write('player.js', PLAYER_JS);
+  if (process.env.INDEXNOW_KEY) write(`${process.env.INDEXNOW_KEY}.txt`, process.env.INDEXNOW_KEY);
   write('index.html', renderHome(editions, trending, weeks, storylines));
   write('daily/index.html', renderEditionsIndex(editions));
   write('week/index.html', renderWeekIndex(weeks));

@@ -61,6 +61,8 @@ jobs:
           SITE_URL: https://aiedgebriefing.com
           GA_MEASUREMENT_ID: G-WGF9BW5QXC
           SUBSCRIBE_FORM_URL: ${{ vars.SUBSCRIBE_FORM_URL }}
+          SITE_FEATURES: ${{ vars.SITE_FEATURES }}
+          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
         run: node scripts/build.js
       - name: Send today's edition to subscribers
         env:
@@ -73,6 +75,35 @@ jobs:
           R2_BUCKET: ${{ vars.R2_BUCKET }}
           AUDIO_BASE: ${{ vars.AUDIO_BASE }}
         run: node scripts/mail.js || true
+      - name: Post today's edition to social accounts
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          BLUESKY_HANDLE: ${{ vars.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
+          MASTODON_INSTANCE: ${{ vars.MASTODON_INSTANCE }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+        run: node scripts/social.js || true
+      - name: Publish today's episode to YouTube
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+        run: node scripts/youtube.js || true
+      - name: Tell search engines what changed (IndexNow)
+        env:
+          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
+        run: node scripts/indexnow.js || true
       - name: Site assets (cover, favicon, share image)
         run: |
           node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png

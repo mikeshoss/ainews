@@ -125,6 +125,7 @@
 
   // ---------- small page behaviours ----------
   function bindPage(root) {
+    qa('.share-copy', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var t = b.getAttribute('data-copy').replace(/\\n/g, '\n'); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; b.classList.add('done'); setTimeout(function () { b.textContent = 'Copy post'; b.classList.remove('done'); }, 2000); }, function () { window.prompt('Copy the post:', t); }); }); });
     qa('.notes-more', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var n = b.parentNode, o = n.classList.toggle('open'); b.textContent = o ? 'Less' : 'More'; b.setAttribute('aria-expanded', o); }); });
     var m = q('.menu'), c = m && q('.caret', m);
     if (c && !c.getAttribute('data-bound')) {

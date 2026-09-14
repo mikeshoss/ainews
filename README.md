@@ -29,6 +29,10 @@ scripts/r2.js            R2 client over Cloudflare's REST API (one token; no S3 
 scripts/migrate-r2.js    one-time move of the audio from the old GitHub Release to R2 (idempotent, verifies every URL)
 scripts/spotify.js       maps each episode date to its Spotify episode id (spotify.json in R2) so the player can hand off to Spotify at the current timestamp
 scripts/mail.js          sends today's edition (and the Monday week) to the subscriber list via Brevo, once, with sent/ markers in R2
+scripts/social.js        posts today's edition to X / Bluesky / Mastodon (each only when its secrets exist), once, markers in R2
+scripts/youtube.js       publishes today's episode to YouTube (cover + audio → video), once; `--auth` obtains the refresh token
+scripts/indexnow.js      tells Bing/Yandex which pages changed (INDEXNOW_KEY); Google reads the sitemap via Search Console
+scripts/dns.js           add/list DNS records on the zone via the Cloudflare token (sender authentication, verification records)
 scripts/player.js        the site's only script: one shared audio element + bottom "now playing" bar; internal links swap the page in place so audio keeps playing; browser's leave-page prompt while playing
 scripts/cover.js         cover generator (SVG): per-episode covers mixed from section colours by share of items; show cover (--show, variant "line")
 scripts/rasterize.sh     SVG → PNG via librsvg (rsvg-convert), used in CI and locally
@@ -72,6 +76,13 @@ gh variable set AUDIO_BASE --body https://audio.aiedgebriefing.com --repo mikesh
 ```
 
 Without them the workflow still builds and deploys the site; it just skips audio.
+
+Everything below is off until its variable/secret exists, so the site does not change until you turn a feature on:
+
+- `SITE_FEATURES` (variable, comma list): `share` renders the Share row (copy post / X / LinkedIn / Bluesky) on edition, weekly and storyline pages.
+- `INDEXNOW_KEY` (variable, 32+ hex chars you choose): publishes `/<key>.txt` and submits changed pages after each deploy.
+- Social: secrets `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`; `BLUESKY_HANDLE` (var) + `BLUESKY_APP_PASSWORD` (secret); `MASTODON_INSTANCE` (var) + `MASTODON_TOKEN` (secret).
+- YouTube: secrets `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN` (get the last with `node scripts/youtube.js --auth`).
 
 Subscribers (optional): `BREVO_API_KEY` (secret) and `BREVO_LIST_ID`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME`, `SUBSCRIBE_FORM_URL` (variables). The subscribe form renders only when `SUBSCRIBE_FORM_URL` is set; `scripts/mail.js` sends only when the key and list are set. Brevo's free tier sends 300 emails a day — beyond ~300 daily readers, upgrade or move the list to a self-hosted sender. Episodes are served from the R2 custom domain; the feed's enclosure URLs go through [OP3](https://op3.dev) (`https://op3.dev/e,pg=<podcast:guid>/…`) for open, IAB-style download stats — public at `https://op3.dev/show/<guid>`. The show's `podcast:guid` is pinned in `scripts/lib.js`.
 

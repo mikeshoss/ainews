@@ -245,7 +245,8 @@ async function main() {
     };
   });
   fs.writeFileSync(path.join(OUT, 'daily.json'), JSON.stringify({ generated_at: new Date().toISOString(), days: rows }, null, 2));
-  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, snaps, ga, gaError, op3Error));
+  const dist = FETCH ? await distribution() : { subscribers: null, log: [] };
+  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, snaps, ga, gaError, op3Error, dist));
 
   if (JSON_OUT) { console.log(JSON.stringify(rows, null, 2)); return; }
   printTable(rows, snaps, ga, gaError, op3Error);
@@ -281,7 +282,19 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
 function proposedStorylines() {
   try { return require('./build.js').loadStorylines(require('./build.js').loadEditions(), require('./build.js').loadWeeks()).filter((st) => st.status === 'proposed'); } catch { return []; }
 }
-function renderHtml(rows, snaps, ga, gaError, op3Error) {
+// Distribution: subscriber count (Brevo) and what the pipeline sent/posted (markers in R2).
+async function distribution() {
+  const out = { subscribers: null, subscribersError: null, log: [] };
+  if (process.env.BREVO_API_KEY && process.env.BREVO_LIST_ID) {
+    try { const r = await fetch(`https://api.brevo.com/v3/contacts/lists/${process.env.BREVO_LIST_ID}`, { headers: { 'api-key': process.env.BREVO_API_KEY } }); const j = await r.json(); out.subscribers = j.uniqueSubscribers ?? j.totalSubscribers ?? null; if (!r.ok) out.subscribersError = `HTTP ${r.status}`; } catch (e) { out.subscribersError = e.message; }
+  } else out.subscribersError = 'no BREVO_API_KEY / BREVO_LIST_ID in stats/.env';
+  try {
+    const r2 = require('./r2.js');
+    if (r2.configured()) for (const o of [...await r2.list('sent/'), ...await r2.list('posted/')]) out.log.push({ key: o.key, when: o.modified });
+  } catch (e) { out.logError = e.message; }
+  return out;
+}
+function renderHtml(rows, snaps, ga, gaError, op3Error, dist) {
   const proposed = proposedStorylines();
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const n = (x, d = 0) => (x == null ? '<span class="na">—</span>' : Number(x).toLocaleString('en-CA', { minimumFractionDigits: d, maximumFractionDigits: d }));
@@ -320,6 +333,7 @@ ${proposed.length ? `<h2>Editorial — proposed storylines (not published)</h2>$
 <div class="tile"><b>${n(latest ? mp3Total(latest) : null)}</b><span>episode downloads, all-time${isOp3 ? ' (OP3)' : ' (GitHub)'}</span></div>
 ${isOp3 && latest.show ? `<div class="tile"><b>${n(latest.show.monthly)}</b><span>downloads this month</span></div>` : ''}
 <div class="tile"><b>${n(ga ? Object.values(ga).reduce((a, g) => a + g.users, 0) : null)}</b><span>site users, ${ga ? Object.keys(ga).length : 0} days of GA</span></div>
+<div class="tile"><b>${n(dist.subscribers)}</b><span>email subscribers${dist.subscribersError ? ` (${esc(dist.subscribersError)})` : ''}</span></div>
 </div>
 <div class="scroll"><table>
 <tr><th></th><th class="group" colspan="2">Edition</th><th class="group" colspan="3">Run</th><th class="group" colspan="3">Cost (USD)</th><th class="group" colspan="4">Podcast</th><th class="group" colspan="3">Site</th><th></th></tr>
@@ -327,6 +341,7 @@ ${isOp3 && latest.show ? `<div class="tile"><b>${n(latest.show.monthly)}</b><spa
 ${tr}
 </table></div>
 <p class="muted">Claude cost is the run's token usage at Anthropic API list price (input $5, output $25, cache read $0.50, cache write $6.25/5m $10/1h per MTok for Opus 5). * = main session only; runs traced before subagent usage was recorded. TTS is episode length × $${TTS_USD_PER_MINUTE}/min (gpt-4o-mini-tts). Podcast downloads via <a href="https://op3.dev/show/${podcastGuid()}">OP3</a> (open, IAB-style de-duplicated, bots excluded; the site's own player is counted too) — 7 days and all time per episode, New dl = all-time total minus the previous day's snapshot. Snapshots before 14 Sep 2026 were raw GitHub release download counts, a cruder measure; no delta is computed across that boundary.${op3Error ? ` <b>OP3 not fetched: ${esc(op3Error)}</b>` : ''} ${ga ? 'Site figures from Google Analytics 4; Clicks = GA "click" events (outbound links).' : gaError ? `Google Analytics: ${esc(gaError)}` : 'Site figures need Google Analytics credentials (GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT in stats/.env).'}</p>
+${dist.log.length ? `<h2>Distribution log</h2><div class="scroll"><table><tr><th>Sent / posted</th><th>When</th></tr>${dist.log.sort((a, b) => (a.when < b.when ? 1 : -1)).slice(0, 40).map((l) => `<tr><td>${esc(l.key)}</td><td>${esc((l.when || '').slice(0, 16).replace('T', ' '))}</td></tr>`).join('')}</table></div>` : ''}
 <h2>Episodes</h2>
 <div class="scroll"><table>${isOp3
     ? `<tr><th>Episode</th><th class="r">1 day</th><th class="r">7 days</th><th class="r">30 days</th><th class="r">All time</th></tr>${episodes.map(([d, e]) => `<tr><td><a href="https://aiedgebriefing.com/${d}/">${d}</a></td><td class="r">${n(e.d1)}</td><td class="r">${n(e.d7)}</td><td class="r">${n(e.d30)}</td><td class="r">${n(e.all)}</td></tr>`).join('\n')}`
