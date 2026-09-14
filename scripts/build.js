@@ -231,7 +231,7 @@ ${body}
   <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${base}about/">About</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
   <p>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}. Editions <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> · Code <a href="${REPO_URL}/blob/main/LICENSE" rel="license">MIT</a></p>
 </div></footer>
-<script>(function(){var m=document.querySelector('.menu'),b=m&&m.querySelector('.caret');if(!b)return;b.addEventListener('click',function(e){e.preventDefault();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false')}})})();</script>
+<script>(function(){document.querySelectorAll('.notes-more').forEach(function(b){b.addEventListener('click',function(){var n=b.parentNode,o=n.classList.toggle('open');b.textContent=o?'Less':'More';b.setAttribute('aria-expanded',o)})});var m=document.querySelector('.menu'),b=m&&m.querySelector('.caret');if(!b)return;b.addEventListener('click',function(e){e.preventDefault();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false')}})})();</script>
 </body>
 </html>
 `;
@@ -889,7 +889,10 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .listen{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px}.listen-label{font-size:.85rem;color:var(--muted);margin-right:4px}
 .badge-listen{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:var(--fg);border:1px solid var(--line);background:var(--card);border-radius:20px;padding:4px 12px 4px 6px;font-size:.88rem}.badge-listen:hover{border-color:var(--accent)}
 .podcast-hero{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}.podcast-hero img{width:180px;height:180px;border-radius:12px;flex:0 0 auto}.podcast-hero>div{flex:1 1 300px;min-width:0}.podcast-hero h1{margin-top:0}
-.player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}.player.compact audio{max-width:420px;height:36px}
+.player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}
+.notes{margin-top:14px}.notes-text{color:var(--muted);font-size:.95rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.notes-text p{margin:0 0 .7em}.notes.open .notes-text{display:block;-webkit-line-clamp:unset;overflow:visible}
+.notes-more{background:none;border:0;padding:4px 0 0;margin:0;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer}.notes-more:hover{text-decoration:underline}.player.compact audio{max-width:420px;height:36px}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
 .line{display:flex;gap:12px;margin:6px 0}.line .who{flex:0 0 64px;font-weight:600;font-size:.85rem;color:var(--accent)}
@@ -970,11 +973,14 @@ function renderPodcastPage(editions, audio) {
   const eps = editions.filter((ed) => audio[ed.date]).map((ed) => {
     const versions = AUDIO_VERSIONS[ed.date] || [];
     const older = versions.length > 1 && process.env.SHOW_VERSIONS ? `<details class="versions"><summary>${versions.length} versions — earlier ones kept for comparison</summary>${[...versions].reverse().map((v) => `<div class="version"><div class="eyebrow">${esc(v.label)} · ${esc(hostsLabel(v))} · ${mmss(v.seconds)} · ${esc(new Date(v.generated_at).toUTCString().slice(0, 22))}${v.url === audio[ed.date].url ? ' · <b>in the feed</b>' : ''}</div><audio controls preload="none" src="${esc(v.url)}"></audio></div>`).join('')}</details>` : '';
-    return `<article class="card">
-  <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)}</div>
+    // Episode notes: the edition summary, clamped to a few lines with a "more" toggle (the same text the feed carries).
+    const notes = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
+    return `<article class="card episode">
+  <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)} · ${ed.itemCount} items</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
   ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
+  <div class="notes"><div class="notes-text">${notes}</div><button class="notes-more" type="button" aria-expanded="false">More</button></div>
   ${older}
 </article>`;
   }).join('\n');
