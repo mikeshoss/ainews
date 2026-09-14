@@ -164,7 +164,10 @@ function buildTopicIndex(editions, weeks = []) {
 const ORG = { '@type': 'Organization', name: PODCAST.presenter, url: PODCAST.presenterUrl };
 const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>` : '';
 
+// The stylesheet URL carries a content hash so browsers and the CDN never pair new HTML with a cached old CSS.
+let CSS_HASH = '';
 function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
+  if (!CSS_HASH) CSS_HASH = require('crypto').createHash('sha1').update(CSS).digest('hex').slice(0, 10);
   const desc = description || SITE_TAGLINE;
   // Current-section treatment: nav = 'home' | 'editions' (daily index) | 'week' | 'topics' | 'storylines' | 'podcast' | 'about'
   const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
@@ -195,7 +198,7 @@ ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
 <link rel="manifest" href="${base}site.webmanifest">
 <link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
 <link rel="alternate" type="application/rss+xml" title="${esc(PODCAST.title)} — Podcast" href="${base}podcast.xml">
-<link rel="stylesheet" href="${base}style.css">
+<link rel="stylesheet" href="${base}style.css?v=${CSS_HASH}">
 ${jsonld(ld)}
 ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(GA_ID)}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${esc(GA_ID)}',{anonymize_ip:true});</script>` : ''}
@@ -206,11 +209,12 @@ ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(
     <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
     <nav>
       <div class="menu${['home', 'editions', 'week', 'topics'].includes(nav) ? ' current-group' : ''}">
-        <a href="${base}"${cur('home')}>Editions</a><details><summary aria-label="Editions menu">▾</summary><div class="menu-list">
+        <a href="${base}"${cur('home')}>Editions</a><button class="caret" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Editions menu"><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        <div class="menu-list"><div class="menu-list-inner" role="menu">
           <a href="${base}daily/"${cur('editions')}>Daily</a>
           <a href="${base}week/"${cur('week')}>Weekly</a>
           <a href="${base}topics/"${cur('topics')}>Topics</a>
-        </div></details>
+        </div></div>
       </div>
       <a href="${base}storylines/"${cur('storylines')}>Storylines</a>
       <a href="${base}podcast/"${cur('podcast')}>Podcast</a>
@@ -227,6 +231,7 @@ ${body}
   <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${base}about/">About</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
   <p>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}. Editions <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> · Code <a href="${REPO_URL}/blob/main/LICENSE" rel="license">MIT</a></p>
 </div></footer>
+<script>(function(){var m=document.querySelector('.menu'),b=m&&m.querySelector('.caret');if(!b)return;b.addEventListener('click',function(e){e.preventDefault();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false')}})})();</script>
 </body>
 </html>
 `;
@@ -833,11 +838,16 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .unknown dt{font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}.unknown dd{margin:0}
 @media (max-width:560px){.unknown dl{grid-template-columns:1fr}.unknown dd{margin-bottom:6px}}
 .week-card{border-left:4px solid var(--accent)}
-.menu{position:relative;display:inline-flex;align-items:center}.menu details{display:inline-block}.menu summary{list-style:none;cursor:pointer;padding:6px 4px;color:var(--muted);font-size:.8rem;user-select:none}.menu summary::-webkit-details-marker{display:none}
-.menu-list{position:absolute;top:100%;left:0;min-width:140px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;z-index:10;box-shadow:0 6px 20px rgba(0,0,0,.18)}
-.menu-list a{padding:6px 10px;border-radius:6px}.menu-list a:hover{background:var(--accent-soft)}
+.menu{position:relative;display:inline-flex;align-items:center;gap:2px}
+.menu .caret{background:none;border:0;padding:4px 3px;margin:0;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;line-height:1}.menu .caret:hover,.menu:hover .caret{color:var(--accent)}
+.menu-list{display:none;position:absolute;top:100%;left:-8px;padding-top:6px;z-index:20}
+.menu-list>a{display:block}
+.menu:hover .menu-list,.menu.open .menu-list,.menu:focus-within .menu-list{display:block}
+.menu-list-inner{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.site-header nav .menu-list a{display:block;padding:7px 12px;border-radius:6px;border-bottom:0;font-size:.92rem}.site-header nav .menu-list a:hover{background:var(--accent-soft);color:var(--fg)}
+.site-header nav .menu-list a.current{background:var(--accent-soft);border-bottom:0;padding-bottom:7px}
 .menu.current-group>a{color:var(--fg)}
-@media (max-width:640px){.menu-list{position:static;flex-direction:row;flex-wrap:wrap;box-shadow:none;border:0;padding:0 0 0 8px;background:transparent}}
+@media (hover:none){.menu:hover .menu-list{display:none}.menu.open .menu-list{display:block}}
 .storyline-chip{border-color:var(--accent);color:var(--accent);font-weight:600}.storyline-chip::before{content:"⟶ ";opacity:.7}
 .status-badge{background:var(--accent)}.status-proposed .status-badge{background:var(--mixed);color:#111}.status-dormant .status-badge{background:var(--muted)}.status-resolved .status-badge{background:var(--good);color:#111}
 .moved{color:var(--good);font-weight:600}.trend-chip.moved{border-color:var(--good)}
