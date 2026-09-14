@@ -27,6 +27,8 @@ scripts/narrate.js       deterministic single-voice narration from the JSON (pod
 scripts/podcast.js       runs in Actions: OpenAI TTS → MP3 → Cloudflare R2 (audio.aiedgebriefing.com) → audio/index.json for the build
 scripts/r2.js            R2 client over Cloudflare's REST API (one token; no S3 keys, no dependencies); `setup` creates the bucket + custom domain
 scripts/migrate-r2.js    one-time move of the audio from the old GitHub Release to R2 (idempotent, verifies every URL)
+scripts/spotify.js       maps each episode date to its Spotify episode id (spotify.json in R2) so the player can hand off to Spotify at the current timestamp
+scripts/player.js        the site's only script: one shared audio element + bottom "now playing" bar; internal links swap the page in place so audio keeps playing; browser's leave-page prompt while playing
 scripts/cover.js         cover generator (SVG): per-episode covers mixed from section colours by share of items; show cover (--show, variant "line")
 scripts/rasterize.sh     SVG → PNG via librsvg (rsvg-convert), used in CI and locally
 .github/workflows/       builds and deploys site/ to GitHub Pages on every push to main

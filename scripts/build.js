@@ -165,9 +165,10 @@ const ORG = { '@type': 'Organization', name: PODCAST.presenter, url: PODCAST.pre
 const jsonld = (obj) => obj ? `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>` : '';
 
 // The stylesheet URL carries a content hash so browsers and the CDN never pair new HTML with a cached old CSS.
-let CSS_HASH = '';
+let CSS_HASH = '', JS_HASH = '';
+const PLAYER_JS = fs.readFileSync(path.join(__dirname, 'player.js'), 'utf8');
 function layout({ title, description, base, body, canonical, og = {}, ld, nav }) {
-  if (!CSS_HASH) CSS_HASH = require('crypto').createHash('sha1').update(CSS).digest('hex').slice(0, 10);
+  if (!CSS_HASH) { const h = (t) => require('crypto').createHash('sha1').update(t).digest('hex').slice(0, 10); CSS_HASH = h(CSS); JS_HASH = h(PLAYER_JS); }
   const desc = description || SITE_TAGLINE;
   // Current-section treatment: nav = 'home' | 'editions' (daily index) | 'week' | 'topics' | 'storylines' | 'podcast' | 'about'
   const cur = (k) => (nav === k ? ' class="current" aria-current="page"' : '');
@@ -231,7 +232,7 @@ ${body}
   <p>Presented by <a href="${esc(utm(PODCAST.presenterUrl, 'web', 'site'))}" rel="noopener">${esc(PODCAST.presenter)}</a> · Built by <a href="${esc(utm(CREDITS.url, 'web', 'site'))}" rel="noopener">${esc(CREDITS.name)}</a> · <a href="${base}about/">About</a> · <a href="${REPO_URL}">Data &amp; code</a></p>
   <p>© ${new Date().getUTCFullYear()} ${esc(PODCAST.presenter)}. Editions <a href="https://creativecommons.org/licenses/by/4.0/" rel="license noopener">CC BY 4.0</a> · Code <a href="${REPO_URL}/blob/main/LICENSE" rel="license">MIT</a></p>
 </div></footer>
-<script>(function(){document.querySelectorAll('.notes-more').forEach(function(b){b.addEventListener('click',function(){var n=b.parentNode,o=n.classList.toggle('open');b.textContent=o?'Less':'More';b.setAttribute('aria-expanded',o)})});var m=document.querySelector('.menu'),b=m&&m.querySelector('.caret');if(!b)return;b.addEventListener('click',function(e){e.preventDefault();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',o)});document.addEventListener('click',function(e){if(!m.contains(e.target)){m.classList.remove('open');b.setAttribute('aria-expanded','false')}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){m.classList.remove('open');b.setAttribute('aria-expanded','false')}})})();</script>
+<script src="${base}player.js?v=${JS_HASH}" defer></script>
 </body>
 </html>
 `;
@@ -881,7 +882,29 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .tr-prompt pre{max-height:240px}
 .tr details{margin-top:4px}.tr summary{cursor:pointer;font-size:.8rem;color:var(--muted)}
 .tr pre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:4px 0 0;max-height:420px;overflow:auto}
-.player{margin:18px 0 10px;display:flex;gap:14px;align-items:flex-start}.player .art{width:140px;height:140px;border-radius:8px;flex:0 0 auto}.player-body{min-width:0;flex:1}.player audio{width:100%;max-width:560px;display:block}
+.player{margin:18px 0 10px;display:flex;gap:14px;align-items:flex-start}.player .art{width:140px;height:140px;border-radius:8px;flex:0 0 auto}.player-body{min-width:0;flex:1}
+.p-controls{display:flex;align-items:center;gap:12px;max-width:560px;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:8px 16px 8px 8px}
+.pp{width:36px;height:36px;border-radius:50%;border:0;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0}.pp:hover{filter:brightness(1.1)}
+.pp .i-pause{display:none}.playing .pp .i-play{display:none}.playing .pp .i-pause{display:block}
+.p-bar{flex:1;height:6px;background:var(--line);border-radius:3px;cursor:pointer;position:relative;overflow:hidden}.p-fill{height:100%;width:0;background:var(--accent);border-radius:3px}
+.p-time{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.player.compact .p-controls{max-width:420px;padding:6px 12px 6px 6px}.player.compact .pp{width:30px;height:30px}
+.read-link{font-size:.85rem;font-weight:400;margin-left:10px;color:var(--accent)!important;text-decoration:none;white-space:nowrap}.read-link:hover{text-decoration:underline}
+body.has-player{padding-bottom:84px}
+#now-playing{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.25)}
+.np-wrap{max-width:820px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+.np-cover img{display:block;width:44px;height:44px;border-radius:6px}.np-main{flex:1;min-width:0}
+.np-title{display:block;font-size:.85rem;font-weight:600;color:var(--fg);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}.np-title:hover{color:var(--accent)}
+.np-controls{display:flex;align-items:center;gap:10px}
+.np-pp{width:32px;height:32px;border-radius:50%;border:0;background:var(--accent);color:#fff;cursor:pointer;flex:0 0 auto;position:relative}.np-pp::before{content:"";position:absolute;left:12px;top:9px;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent}
+#now-playing.playing .np-pp::before{left:10px;top:9px;width:4px;height:14px;border:0;border-left:4px solid #fff;border-right:4px solid #fff}
+.np-back,.np-fwd{background:none;border:1px solid var(--line);color:var(--muted);border-radius:12px;padding:2px 8px;font-size:.72rem;cursor:pointer}.np-back:hover,.np-fwd:hover{color:var(--fg);border-color:var(--fg)}
+.np-bar{flex:1;height:6px;background:var(--line);border-radius:3px;cursor:pointer;overflow:hidden}.np-fill{height:100%;width:0;background:var(--accent)}
+.np-time{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.np-actions{display:flex;align-items:center;gap:8px}
+.np-spotify{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:16px;padding:5px 11px;white-space:nowrap}.np-spotify:hover{border-color:#1db954;color:#1db954}
+.np-close{background:none;border:0;color:var(--muted);font-size:1.3rem;line-height:1;cursor:pointer;padding:4px 6px}.np-close:hover{color:var(--fg)}
+@media (max-width:640px){.np-back,.np-fwd,.np-spotify span{display:none}.np-spotify{padding:6px}.np-cover{display:none}}
 .spectrum{display:flex;gap:3px;height:8px;margin:10px 0 6px;max-width:560px}.spectrum span{display:block;border-radius:4px;min-width:4px}
 .spectrum-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--muted);margin-bottom:8px}.spectrum-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:8px;vertical-align:1px}
@@ -892,7 +915,7 @@ th{font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mu
 .player-meta{font-size:.8rem;color:var(--muted);margin-top:4px}
 .notes{margin-top:14px}.notes-text{color:var(--muted);font-size:.95rem;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .notes-text p{margin:0 0 .7em}.notes.open .notes-text{display:block;-webkit-line-clamp:unset;overflow:visible}
-.notes-more{background:none;border:0;padding:4px 0 0;margin:0;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer}.notes-more:hover{text-decoration:underline}.player.compact audio{max-width:420px;height:36px}
+.notes-more{background:none;border:0;padding:4px 0 0;margin:0;color:var(--accent);font:inherit;font-size:.85rem;cursor:pointer}.notes-more:hover{text-decoration:underline}
 .feed{display:block;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:.9rem}
 .script-block{padding:14px 0;border-bottom:1px solid var(--line)}.script-ref{font-size:.8rem;color:var(--muted);margin-bottom:8px}
 .line{display:flex;gap:12px;margin:6px 0}.line .who{flex:0 0 64px;font-weight:600;font-size:.85rem;color:var(--accent)}
@@ -927,13 +950,22 @@ function renderSpectrum(ed, withLegend) {
 // "Maya & Alex" from the episode's voices map ({A: "Maya (marin)", B: "Alex (cedar)"}); narration → "Narrated".
 const hostsLabel = (ep) => ep.format === 'dialogue' && ep.voices ? Object.values(ep.voices).map((v) => String(v).replace(/\s*\(.*\)\s*$/, '')).join(' & ') : 'Narrated';
 
+// date -> Spotify episode id (audio/spotify.json, kept by scripts/spotify.js) for "continue in Spotify" deep links.
+let SPOTIFY = {};
+try { SPOTIFY = JSON.parse(fs.readFileSync(path.join(ROOT, 'audio', 'spotify.json'), 'utf8')); } catch { /* none yet */ }
+const spotifyUrl = (date) => (SPOTIFY[date] ? `https://open.spotify.com/episode/${SPOTIFY[date]}` : '');
+
+// The site player: markup only — scripts/player.js drives one shared audio element and the bottom bar.
+// The duration is written in from the index so the control never reads 0:00 before it is touched.
 function renderPlayer(ep, base, ed, compact) {
   if (!ep) return '';
   const label = `${hostsLabel(ep)} · ${mmss(ep.seconds)}`;
   const art = ep.image && !compact ? `<img class="art" src="${esc(ep.image)}" alt="Episode cover" width="140" height="140" loading="lazy">` : '';
-  return `<div class="player${compact ? ' compact' : ''}">${art}<div class="player-body">
-  <audio controls preload="none" src="${esc(op3(ep.url))}"></audio>
-  <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}</div>
+  const date = ed ? ed.date : '';
+  const title = ed ? longDate(ed.date) : PODCAST.title;
+  return `<div class="player${compact ? ' compact' : ''}" data-src="${esc(op3(ep.url))}" data-title="${esc(title)}" data-date="${esc(date)}" data-seconds="${ep.seconds}" data-cover="${esc(ep.image || '')}" data-href="${esc(base + (date ? date + '/' : 'podcast/'))}" data-spotify="${esc(spotifyUrl(date))}">${art}<div class="player-body">
+  <div class="p-controls"><button class="pp" type="button" aria-label="Play"><svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg><svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z" fill="currentColor"/></svg></button><div class="p-bar" role="slider" aria-label="Position"><div class="p-fill"></div></div><span class="p-time">0:00 / ${mmss(ep.seconds)}</span></div>
+  <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}${!compact && spotifyUrl(date) ? ` · <a href="${esc(spotifyUrl(date))}" rel="noopener" target="_blank">open in Spotify</a>` : ''}</div>
 </div></div>`;
 }
 
@@ -977,7 +1009,7 @@ function renderPodcastPage(editions, audio) {
     const notes = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
     return `<article class="card episode">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)} · ${ed.itemCount} items</div>
-  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a></h2>
+  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> <a class="read-link" href="${base}${ed.date}/">Read the edition →</a></h2>
   ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
   <div class="notes"><div class="notes-text">${notes}</div><button class="notes-more" type="button" aria-expanded="false">More</button></div>
@@ -1178,6 +1210,7 @@ function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   write('.nojekyll', '');
   write('style.css', CSS.trim() + '\n');
+  write('player.js', PLAYER_JS);
   write('index.html', renderHome(editions, trending, weeks, storylines));
   write('daily/index.html', renderEditionsIndex(editions));
   write('week/index.html', renderWeekIndex(weeks));

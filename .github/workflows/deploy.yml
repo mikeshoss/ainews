@@ -49,6 +49,13 @@ jobs:
           FORCE_DATE: ${{ github.event.inputs.force_date }}
           FORCE_LABEL: ${{ github.event.inputs.label }}
         run: node scripts/podcast.js
+      - name: Map episodes to Spotify (for "continue in Spotify" links)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+        run: node scripts/spotify.js || true
       - name: Build site
         env:
           SITE_URL: https://aiedgebriefing.com
