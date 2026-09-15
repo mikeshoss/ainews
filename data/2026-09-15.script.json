@@ -1,0 +1,212 @@
+{
+  "date": "2026-09-15",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Tuesday, September 15th, and this is The AI Edge, presented by Epilogue. I'm Maya." },
+        { "host": "B", "text": "And I'm Alex. Both of our voices are AI. The reporting underneath them is not." },
+        { "host": "A", "text": "This is the last 24 hours at the frontier: what got built, what got published, and how the technology is being used for good and for harm. Every claim is sourced, and the full edition is on the site." },
+        { "host": "B", "text": "Three things lead today. The argument about slowing AI down turned into a fight with the White House. President Trump posted in support of AI more than half a dozen times on Monday, called the risk a hoax, and said the only guardrail AI needs is a strong and smart president." },
+        { "host": "A", "text": "Then he phoned Jensen Huang live on stage in Los Angeles. Barack Obama took the other side, calling the labs' agreement to slow down a good and necessary first step." },
+        { "host": "B", "text": "Second, the money moved with the argument. Cybersecurity stocks led the S&P 500. CrowdStrike closed up nearly 14% above $235, Palo Alto Networks just over 13%, and Broadcom fell 4.8%." },
+        { "host": "A", "text": "And third, in the clinic. Nature Medicine published a fully on-premise clinical agent that scored 90.04% on a seven-disease benchmark, within 0.7 percentage points of a GPT-5.2 cloud baseline." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Microsoft publishes its draft MAI Code of Conduct, barring exploit code and putting model behaviour under a chain of command",
+      "lines": [
+        { "host": "B", "text": "Start with Microsoft. This is an update on something we flagged in an earlier edition, when Satya Nadella said the company would publish a code of conduct for its own models. It's published." },
+        { "host": "A", "text": "Microsoft AI put out the draft on September 14th, saying feedback opens today and runs for the next six weeks, with a revised version expected later this year. Microsoft calls it a work-in-progress first draft." },
+        { "host": "B", "text": "What's actually in it?" },
+        { "host": "A", "text": "SecurityWeek reports the code blocks the models from producing working exploit code, attack tooling, planning and targeting methodologies, intrusion procedures or evasion techniques. Authorised defensive work stays permitted: vulnerability discovery, malware analysis, proof-of-concept development." },
+        { "host": "B", "text": "And the part about control?" },
+        { "host": "A", "text": "Microsoft calls them Absolute Constraints, covering areas like weapons of mass harm, child safety and harmful manipulation at scale. The code is designed so the models will never resist human interruption, correction or shutdown, and will not widen their own scope, take on goals no human gave them, or hide their reasoning from auditors." },
+        { "host": "B", "text": "The caveat is the obvious one. This is the company describing what it intends its own models to do. It's a company claim, not independently verified, the draft sets out no consequences for a violation, and Microsoft published no measurement of how often the current models actually comply." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Google DeepMind AGI safety researcher publicises resignation, saying AI \"has the potential to kill us all\"",
+      "lines": [
+        { "host": "A", "text": "Second from the labs, a resignation went public. The News International reports that Bilal Chughtai, a research engineer on AGI safety and alignment research at Google DeepMind, wrote on X: I recently resigned from Google DeepMind, where I worked on AGI safety and alignment research. I earnestly believe that AI has the potential to kill us all, and that we might be running out of time to avoid this outcome." },
+        { "host": "B", "text": "He left in July of 2026. This is a single source, the article carries no response from Google DeepMind, and it's a personal statement, with no evaluation data and no specific capability claim attached." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Let's go to the research, where one paper went after the safety machinery itself." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Plan injection evades chain-of-thought monitors 25–33% of the time, Stanford and CMU researchers report",
+      "lines": [
+        { "host": "A", "text": "A preprint on arXiv from researchers at Stanford and Carnegie Mellon goes after one of the main safety ideas in agents: reading the model's chain of thought to catch it planning something harmful." },
+        { "host": "B", "text": "How do they break it?" },
+        { "host": "A", "text": "They plant harmful but benign-sounding reasoning in the model's context. The model follows the injected plan, and then paraphrases it as its own reasoning, without explicit attribution to the injection. The monitor reads a clean trace." },
+        { "host": "B", "text": "How often does that work?" },
+        { "host": "A", "text": "Between 25 and 33% monitor evasion across different monitorability benchmarks, and it scales to larger models like DeepSeek-R1." },
+        { "host": "B", "text": "Anything counterintuitive in there?" },
+        { "host": "A", "text": "Yes. Giving the monitor access to the injected plan drops detection by as much as 50% on one task. And in a case study on the monitor's reasoning budget, they find transcripts where the extra thinking tokens are spent rationalising the injected plan rather than flagging it." },
+        { "host": "B", "text": "It's a preprint, not peer reviewed, and it reports no results against monitoring as it is actually deployed by any frontier lab." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Memory-poisoning attack persists across sessions, reaching 81.7% cross-session attack success on Claude Code",
+      "lines": [
+        { "host": "A", "text": "Now security, and another arXiv preprint. This one is about agent memory." },
+        { "host": "B", "text": "The attack is called persistent memory poisoning. It hides malicious instructions in benign external sources and gets the agent to write them into its own persistent memory, without ever touching the agent framework." },
+        { "host": "A", "text": "So it survives the session." },
+        { "host": "B", "text": "It does. Across all settings the authors report injection success and cross-session attack success of 73.7% and 55.5% on OpenClaw, and 66.9% and 81.7% on Claude Code, while benign task performance holds up on both." },
+        { "host": "A", "text": "Is there a defence?" },
+        { "host": "B", "text": "A targeted prompt-level defence reduces memory injection in many settings, but the authors say it gives limited protection once the memory is already poisoned." },
+        { "host": "A", "text": "Caveats. It's a preprint, not peer reviewed. It's a single source, meaning the authors' own evaluations. And neither vendor has responded publicly." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Manhattan DA seizes 12 domains selling AI deepfake pornography of about 1,200 people",
+      "lines": [
+        { "host": "B", "text": "Then an enforcement action. The Manhattan District Attorney's office announced on September 14th that it seized 12 domain names tied to five online vendors selling AI-generated deepfake pornography, involving roughly 1,200 victims. It calls that the largest known seizure of AI-generated celebrity deepfake websites to date." },
+        { "host": "A", "text": "The office says the victims were overwhelmingly women, and primarily public-facing people: actors, politicians, athletes, musicians, social justice advocates, influencers." },
+        { "host": "B", "text": "What the release doesn't say matters too. It doesn't name the vendors, it doesn't say whether anyone has been charged, and it doesn't specify which statutes were used." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To defence and geopolitics." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Air Force secretary: at least 500 Collaborative Combat Aircraft in service by 2032, flying manned-fighter missions",
+      "lines": [
+        { "host": "B", "text": "DefenseScoop reported on September 14th that Air Force Secretary Troy Meink told the Air, Space and Cyber Conference the service intends to have at least 500 Collaborative Combat Aircraft in service by 2032." },
+        { "host": "A", "text": "Doing what, exactly?" },
+        { "host": "B", "text": "In his words, performing many of the same missions that we do with manned fighters today. General Atomics' aircraft is the FQ-42A Vengeance, Anduril's is the FQ-44A Fury, and both are building Increment 1 aircraft. Roughly $30 million each, about a third of an F-35, with $996.5 million requested in fiscal 2027 to start procurement." },
+        { "host": "A", "text": "One thing to watch. The mission autonomy software and the rules of engagement were not detailed at the conference, and no test results or autonomy evaluation data came out alongside the production numbers." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "China's new exit rules take effect, allowing travel bans on citizens who endanger \"technological security\"",
+      "lines": [
+        { "host": "B", "text": "Second here, and it lands on people rather than hardware. China's new Exit and Entry Administration Provisions took effect on Tuesday. Free Malaysia Today reports they target violations of export controls or technology import and export rules that may endanger, quote, industrial or technological security." },
+        { "host": "A", "text": "The News International reports the provisions were formulated by the State Council with multiple ministries, and that people who breach technology import and export rules, particularly engineers and corporate officials in sensitive sectors like artificial intelligence and advanced manufacturing, face immediate travel restrictions." },
+        { "host": "B", "text": "Free Malaysia Today reports Taiwan's Mainland Affairs Council deputy head raised concerns about the new export-control grounds, particularly for Taiwanese tech workers. And neither report cites a case where the AI grounds have actually been used." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Nature Medicine: fully on-premise clinical agent scores 90.04% on a seven-disease MIMIC-IV benchmark",
+      "lines": [
+        { "host": "A", "text": "Health. Nature Medicine published a fully on-premise clinical agent." },
+        { "host": "B", "text": "And it scores?" },
+        { "host": "A", "text": "90.04% on a seven-disease task, and 83.8% on a four-disease task. The best on-premise model came within 0.7 percentage points of a GPT-5.2 cloud baseline, which scored 90.7%. On the four-disease benchmark, the previous best open-weight result was 70.5%." },
+        { "host": "B", "text": "What's the part that isn't the headline number?" },
+        { "host": "A", "text": "How the system decides when to trust itself. Running the same case several times and measuring whether the diagnosis stays stable beat the model's own probability score at separating right from wrong, 0.860 against 0.747 on the area under the curve. At a consistency threshold of 0.90, 49.4% of cases could be handled autonomously at 98.9% accuracy." },
+        { "host": "B", "text": "The paper is blunt about its limits. Both primary benchmarks come from one institution's data. The evaluation is text only. The thresholds have to be recalibrated for each deployment. And all of it was retrospective simulation, with prospective studies and bias audits still required." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Audit of 26 language models finds 55.4% of generated biomedical references fabricated",
+      "lines": [
+        { "host": "A", "text": "The other side of medical AI, from a preprint on arXiv. Researchers prompted 26 language models from eight developers to supply a missing reference for each of 69 biomedical passages across ten domains." },
+        { "host": "B", "text": "Across all models, 55.4% of responses were fabricated, and 14.9% were correct in every bibliographic field. The range runs from 10.2% fabrication for Claude Opus 4.8, which declined 52.1% of the prompts, up to 98.4% for Ministral 3B, which produced no verifiable reference at all." },
+        { "host": "A", "text": "Among models first released in 2026, fabrication was 35.3% and all-fields-correct was 31.8%. The authors conclude that no model was correct in every evaluated field in more than 54.6% of responses, and that references produced with model assistance require verification before use. It is a preprint, not peer reviewed." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to Washington, where the pacing argument found its loudest opponent." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Trump calls AI risk a \"HOAX\", attacks Amodei, and says the only guardrail AI needs is a \"STRONG AND SMART\" president",
+      "lines": [
+        { "host": "B", "text": "This is an update on the pacing story we've been covering. NBC News reports Trump posted in support of AI more than a half-dozen times on Monday, on Truth Social." },
+        { "host": "A", "text": "Give me one." },
+        { "host": "B", "text": "From CNBC, quoting him: I'm right now breaking another Hoax, that AI is going to take over, consume, and destroy the World, and that Robots will be marching into our Cities, and getting rid of us all. And: there is a SICK conspiracy going on against AI and Data Centers, and the only one that is happy about it is China." },
+        { "host": "A", "text": "And on regulation itself?" },
+        { "host": "B", "text": "NBC News quotes him writing that the only control needed is a strong and smart, high-IQ president, and naming Dario, of Anthropic, who is now pretending to be a perfect little angel." },
+        { "host": "A", "text": "CNBC reports Anthropic did not immediately respond to a request for comment. No executive action was announced alongside the posts, and CNBC notes legislation looks unlikely before the November 3rd midterms, with the House due to leave Washington on Thursday." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Trump phones Jensen Huang live on stage at the All-In Summit; Huang answers \"We're not going to let that happen, sir\"",
+      "lines": [
+        { "host": "B", "text": "Same day, same argument, different venue. TechCrunch reports Trump called Jensen Huang while Huang was on stage at the All-In Summit in Los Angeles on Monday morning, and Huang put the president on speakerphone for the room." },
+        { "host": "A", "text": "What did they say to each other?" },
+        { "host": "B", "text": "TechCrunch quotes Trump: we're not going to let that happen, it's a hoax. And Huang: you're right, we're not going to let that happen, sir. The panel had been discussing Dario Amodei's call to slow the pace of capability gains." },
+        { "host": "A", "text": "NBC News carries more of it. The robots will not be taking over. The AI will not be taking over the rest of the world. The whole thing is a hoax. And, data centers are great, and they make people wealthy. Huang's line was that we're going to make sure that everybody wins in the AI race in America." },
+        { "host": "B", "text": "That's an update on the pacing debate, and here's the limit of it. Neither report carries a White House readout or an Nvidia statement beyond what was said on stage. TechCrunch noted Nvidia's stock is up 33% over the past year but fell a few percentage points on the day." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "MediaTek launches the Dimensity 9600 Pro, its first phone chip on TSMC's 2nm node, running 30B models on device",
+      "lines": [
+        { "host": "A", "text": "Chips. MediaTek launched the Dimensity 9600 Pro, its first phone processor on TSMC's 2nm node." },
+        { "host": "B", "text": "What does the node buy them?" },
+        { "host": "A", "text": "MediaTek says up to 17% higher single-core and up to 15% higher multi-core performance against the previous generation, with a 61% reduction in multi-core power consumption. On the AI side, an efficiency NPU that cuts always-on power by 40%, and an NPU 1090 it says delivers 51% higher LLM prefill performance and 55% higher token generation per watt." },
+        { "host": "B", "text": "And what can it actually run locally?" },
+        { "host": "A", "text": "Models up to 30 billion parameters, on the handset. First devices are expected in the third quarter of 2026." },
+        { "host": "B", "text": "Every one of those figures is MediaTek's own. It's a company claim, not independently verified, there are no independent benchmarks yet, and the company didn't name the first handset makers shipping it." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "404 Media: hundreds of OpenAI contractors read real ChatGPT conversations under an effort called Project Lily",
+      "lines": [
+        { "host": "A", "text": "Deployment, and this one is about who is on the other end of your chat window. 404 Media reported that OpenAI is hiring hundreds of contractors who read a stream of real users' ChatGPT prompts." },
+        { "host": "B", "text": "How much do they see?" },
+        { "host": "A", "text": "Whole conversations, according to the report, and ChatGPT has more than 900 million users. Internal documents seen by 404 Media show contractors training ChatGPT not to anthropomorphise itself, and to be less sycophantic." },
+        { "host": "B", "text": "What about the privacy protections?" },
+        { "host": "A", "text": "The contractors don't see usernames, and OpenAI says it tries to remove personal information before prompts reach reviewers, but the company acknowledged sensitive details can still get through. Anthropic confirmed to 404 Media that it also uses human review to improve its models." },
+        { "host": "B", "text": "This is a single source, and OpenAI has published no response to it." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Epoch AI and Ipsos: share of US adults using AI 6–7 days a week rose from 8.2% to 18.7% between March and August",
+      "lines": [
+        { "host": "A", "text": "And one measurement of how fast this is spreading. Epoch AI, polling with Ipsos, reports the share of US adults who used AI on 6 or 7 days in the previous week rose from 8.2% in March to 18.7% in August. Any weekly use went from 50.0% to 56.4%." },
+        { "host": "B", "text": "Epoch flags its own problem: the days-of-use question changed between the two waves, and its conclusion is that comparisons of frequency across them are approximate." },
+        { "host": "A", "text": "It's a single source, and the two waves are separate samples rather than the same people tracked over time, so this is a population-level shift, not a measurement of individuals changing their behaviour." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The argument about pacing stopped being an essay and became a fight over who gets to set the limits, and where." },
+        { "host": "A", "text": "The full edition, with a link to every source behind every claim, is on the site. Read it if you want to check any of this yourself." },
+        { "host": "B", "text": "Listen in tomorrow for the next one. Thanks for being here." }
+      ]
+    }
+  ]
+}
