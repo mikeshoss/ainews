@@ -6,9 +6,12 @@ name: Watchdog — did today's edition publish?
 # quota, no secrets, nothing that can be exhausted by the thing it is watching.
 #
 # It checks three things for today: the edition file is committed, the page is live on the site, and
-# the edition is not suspiciously thin. On a miss it opens (or updates) an issue, which emails Mike,
-# and fails — a red X on the repo and a push from the GitHub app. When the edition shows up, the
-# issue is closed automatically.
+# the edition is not suspiciously thin. On a miss it fails, which is what raises the alarm: GitHub
+# emails the repo owner when a scheduled workflow fails, and the job summary carries the diagnosis.
+# The repository is public, so it does NOT open an issue by default — a public "we missed a day"
+# notice is not something to publish by accident. Set the repository variable WATCHDOG_ISSUE to
+# "true" (Settings → Secrets and variables → Actions → Variables) to have it open and auto-close a
+# tracked `watchdog` issue as well.
 #
 # Mondays additionally require the week in review.
 
@@ -77,31 +80,39 @@ jobs:
             echo "ok=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Raise or update the alarm
+      - name: Raise the alarm
         if: steps.check.outputs.ok == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
           D: ${{ steps.check.outputs.date }}
           PROBLEMS: ${{ steps.check.outputs.problems }}
+          WANT_ISSUE: ${{ vars.WATCHDOG_ISSUE }}
         run: |
           set -eu
           TITLE="No edition published for $D"
-          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label watchdog --search "$TITLE in:title" --json number,title \
-                 --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
           {
+            printf '%s\n\n' "## $TITLE"
             printf '%s\n' "$PROBLEMS"
             printf '%s\n\n' "**What to check, in order**"
-            printf '%s\n' "1. The routine's last run at https://claude.ai/code — \`trig_01YaKywNA88XkG8NgK8f6DEv\` (daily) or \`trig_01QQbwNzH1YtgNoj9LKAwX18\` (Monday weekly). A run that dies in the first few minutes is almost always a usage limit; one that dies late is usually a source or a validator."
+            printf '%s\n' "1. The routine's last run at https://claude.ai/code — \`trig_01YaKywNA88XkG8NgK8f6DEv\` (daily), \`trig_01MgeNtEsNVrv5qhVFMKa3N1\` (catch-up) or \`trig_01QQbwNzH1YtgNoj9LKAwX18\` (Monday weekly). A run that dies in the first few minutes is almost always a usage limit; one that dies late is usually a source or a validator."
             printf '%s\n' "2. Usage and limits: https://claude.ai/settings/usage"
             printf '%s\n\n' "3. Workflow logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions"
-            printf '%s\n\n' "To publish late once the cause is fixed, fire the daily routine again — it writes the edition from scratch."
-            printf '%s\n' "_Raised by the watchdog at $(TZ=America/Toronto date '+%H:%M %Z'). It closes itself when the edition appears._"
+            printf '%s\n' "To publish late once the cause is fixed, fire the daily routine again — it writes the edition from scratch."
           } > /tmp/watchdog-body.md
-          if [ -n "${NUM:-}" ]; then
-            gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file /tmp/watchdog-body.md
-          else
-            gh label create watchdog --repo "$GITHUB_REPOSITORY" --color B60205 --description "Automated pipeline alarm" 2>/dev/null || true
-            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --label watchdog --body-file /tmp/watchdog-body.md
+
+          # Primary alarm: the job summary plus a failed scheduled run, which GitHub emails to the owner.
+          cat /tmp/watchdog-body.md >> "$GITHUB_STEP_SUMMARY"
+
+          # Optional, off by default: a tracked issue. The repo is public, so this is opt-in.
+          if [ "${WANT_ISSUE:-}" = "true" ]; then
+            NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label watchdog --search "$TITLE in:title" --json number,title \
+                   --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+            if [ -n "${NUM:-}" ]; then
+              gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file /tmp/watchdog-body.md
+            else
+              gh label create watchdog --repo "$GITHUB_REPOSITORY" --color B60205 --description "Automated pipeline alarm" 2>/dev/null || true
+              gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --label watchdog --body-file /tmp/watchdog-body.md
+            fi
           fi
           echo "::error::$TITLE"
           exit 1
@@ -111,8 +122,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           D: ${{ steps.check.outputs.date }}
+          WANT_ISSUE: ${{ vars.WATCHDOG_ISSUE }}
         run: |
           set -eu
+          [ "${WANT_ISSUE:-}" = "true" ] || { echo "$D: edition committed and live."; exit 0; }
           TITLE="No edition published for $D"
           NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label watchdog --search "$TITLE in:title" --json number,title \
                  --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
