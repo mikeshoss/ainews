@@ -24,7 +24,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { AUDIO_BASE } = require('./r2.js');
-const { podcastGuid } = require('./lib.js');
+const { podcastGuid, addDays } = require('./lib.js');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'stats');
@@ -215,8 +215,10 @@ async function main() {
   const snaps = loadSnapshots();
   const audio = await loadAudioIndex();
 
-  const dates = new Set([...fs.readdirSync(path.join(ROOT, 'data')).map((f) => (f.match(/^(\d{4}-\d{2}-\d{2})\.json$/) || [])[1]).filter(Boolean), ...snaps.map((s) => s.date)]);
-  const days = [...dates].sort().slice(-DAYS);
+  // The last DAYS calendar days, not the days that happen to have files: a day the pipeline missed has no
+  // data file and no snapshot, and deriving the range from the files would hide it instead of showing the gap.
+  const firstEdition = fs.readdirSync(path.join(ROOT, 'data')).map((f) => (f.match(/^(\d{4}-\d{2}-\d{2})\.json$/) || [])[1]).filter(Boolean).sort()[0] || today();
+  const days = Array.from({ length: DAYS }, (_, i) => addDays(today(), i - DAYS + 1)).filter((d) => d >= firstEdition);
   const rows = days.map((date) => {
     const ed = editionFor(date), run = runFor(date);
     // The Monday week in review is a second run on the same date; its cost is folded into the day's total.
@@ -260,6 +262,7 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
   for (const r of rows) {
     total += r.cost.total_usd;
     const notes = [];
+    if (!r.edition && !r.run) notes.push('MISSED — no edition published');
     if (r.run && !r.run.usage_complete) notes.push(`cost = main session only (${r.run.subagents} subagents untraced)`);
     if (r.edition && !r.edition.script) notes.push('no script (narrated)');
     if (r.run && !r.run.email_sent) notes.push('no email');
@@ -271,6 +274,13 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
     console.log(v.map((x, i) => pad(x, cols[i][1], cols[i][2])).join('  '));
   }
   console.log(`\n${rows.length} day(s) · total $${total.toFixed(2)} · Claude at API list price (${Object.keys(CLAUDE_PRICES)[0]} rates), TTS at $${TTS_USD_PER_MINUTE}/min`);
+  const missed = rows.filter((r) => !r.edition && !r.run).map((r) => r.date);
+  console.log(missed.length ? `missed: ${missed.length} day(s) with no edition — ${missed.join(', ')}` : 'missed: none — an edition published every day shown');
+  // The pipeline shares one weekly usage allowance with every other Claude session on the account, so the
+  // pipeline's own 7-day burn is the floor, not the total. Knowing it early is how a limit stops being a surprise.
+  const last7 = rows.slice(-7);
+  const burn = last7.reduce((a, r) => a + r.cost.total_usd, 0);
+  console.log(`7-day pipeline burn: $${burn.toFixed(2)} (${last7.filter((r) => r.run).length} run(s)) — your own sessions draw on the same weekly allowance`);
   const latest = snaps[snaps.length - 1];
   if (latest) console.log(`podcast: ${mp3Total(latest)} downloads all-time per ${snapSource(latest)}${snapSource(latest) === 'op3' && latest.show ? ` · ${latest.show.monthly ?? '—'} this month` : ''} (${snaps.length} daily snapshot${snaps.length === 1 ? '' : 's'}) · https://op3.dev/show/${podcastGuid()}`);
   if (op3Error) console.log(`podcast: OP3 not fetched — ${op3Error}`);

@@ -1,0 +1,122 @@
+name: Watchdog — did today's edition publish?
+
+# The briefing is written by a Claude routine that can fail silently: hit a usage limit, crash mid-run,
+# or push nothing. The deploy workflow still succeeds (it just rebuilds yesterday's site), so nothing
+# says anything is wrong. This workflow is the alarm, and it runs on GitHub's scheduler — no Claude
+# quota, no secrets, nothing that can be exhausted by the thing it is watching.
+#
+# It checks three things for today: the edition file is committed, the page is live on the site, and
+# the edition is not suspiciously thin. On a miss it opens (or updates) an issue, which emails Mike,
+# and fails — a red X on the repo and a push from the GitHub app. When the edition shows up, the
+# issue is closed automatically.
+#
+# Mondays additionally require the week in review.
+
+on:
+  schedule:
+    # UTC. The daily routine fires 11:00 UTC and takes ~40 minutes; the weekly fires 13:00 UTC Mondays.
+    - cron: '20 13 * * *'   # first check — 09:20 ET (08:20 in winter)
+    - cron: '20 17 * * *'   # second check, after the safety-net deploy
+    - cron: '20 23 * * *'   # last call before the day is gone
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Check this date instead of today (YYYY-MM-DD)'
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        name: Look for today's edition
+        env:
+          FORCE_DATE: ${{ github.event.inputs.date }}
+        shell: bash
+        run: |
+          set -u
+          D="${FORCE_DATE:-$(TZ=America/Toronto date +%F)}"
+          DOW=$(TZ=America/Toronto date -d "$D" +%u)   # 1 = Monday
+          echo "date=$D" >> "$GITHUB_OUTPUT"
+          problems=""
+          note() { problems="${problems}- ${1}"$'\n'; }
+
+          # 1. Is the edition committed?
+          if [ -f "data/$D.json" ]; then
+            items=$(node -e "const e=require('./data/$D.json');console.log((e.sections||[]).reduce((a,s)=>a+((s.items||[]).length),0))")
+            echo "edition present: $items items"
+            # A healthy run keeps 12-30 items; under 8 means the run degraded partway through.
+            if [ "$items" -lt 8 ]; then
+              note "The edition published with only $items items (a normal day is 12-30) - the run degraded partway through."
+            fi
+          else
+            note "\`data/$D.json\` is missing: the daily routine did not publish an edition."
+          fi
+
+          # 2. Is Monday's week in review committed?
+          if [ "$DOW" = "1" ] && [ ! -f "data/$D.week.json" ]; then
+            note "\`data/$D.week.json\` is missing: the Monday week-in-review routine did not publish."
+          fi
+
+          # 3. Is the page actually live? (The edition can be committed and the deploy still be broken.)
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "https://aiedgebriefing.com/$D/" || echo 000)
+          if [ "$code" != "200" ]; then
+            note "https://aiedgebriefing.com/$D/ returns HTTP $code - the edition is not live on the site."
+          fi
+
+          if [ -n "$problems" ]; then
+            { echo "problems<<WATCHDOG_EOF"; printf '%s' "$problems"; echo "WATCHDOG_EOF"; } >> "$GITHUB_OUTPUT"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Raise or update the alarm
+        if: steps.check.outputs.ok == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          D: ${{ steps.check.outputs.date }}
+          PROBLEMS: ${{ steps.check.outputs.problems }}
+        run: |
+          set -eu
+          TITLE="No edition published for $D"
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label watchdog --search "$TITLE in:title" --json number,title \
+                 --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+          {
+            printf '%s\n' "$PROBLEMS"
+            printf '%s\n\n' "**What to check, in order**"
+            printf '%s\n' "1. The routine's last run at https://claude.ai/code — \`trig_01YaKywNA88XkG8NgK8f6DEv\` (daily) or \`trig_01QQbwNzH1YtgNoj9LKAwX18\` (Monday weekly). A run that dies in the first few minutes is almost always a usage limit; one that dies late is usually a source or a validator."
+            printf '%s\n' "2. Usage and limits: https://claude.ai/settings/usage"
+            printf '%s\n\n' "3. Workflow logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions"
+            printf '%s\n\n' "To publish late once the cause is fixed, fire the daily routine again — it writes the edition from scratch."
+            printf '%s\n' "_Raised by the watchdog at $(TZ=America/Toronto date '+%H:%M %Z'). It closes itself when the edition appears._"
+          } > /tmp/watchdog-body.md
+          if [ -n "${NUM:-}" ]; then
+            gh issue comment "$NUM" --repo "$GITHUB_REPOSITORY" --body-file /tmp/watchdog-body.md
+          else
+            gh label create watchdog --repo "$GITHUB_REPOSITORY" --color B60205 --description "Automated pipeline alarm" 2>/dev/null || true
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$TITLE" --label watchdog --body-file /tmp/watchdog-body.md
+          fi
+          echo "::error::$TITLE"
+          exit 1
+
+      - name: All clear — close any open alarm for today
+        if: steps.check.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          D: ${{ steps.check.outputs.date }}
+        run: |
+          set -eu
+          TITLE="No edition published for $D"
+          NUM=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --label watchdog --search "$TITLE in:title" --json number,title \
+                 --jq ".[] | select(.title == \"$TITLE\") | .number" | head -1)
+          if [ -n "${NUM:-}" ]; then
+            gh issue close "$NUM" --repo "$GITHUB_REPOSITORY" --comment "The $D edition is committed and live. Closing."
+          fi
+          echo "$D: edition committed and live."
