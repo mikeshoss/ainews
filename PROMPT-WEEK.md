@@ -18,6 +18,14 @@ You are producing this week's Week in Review for AI Edge Briefing. The daily edi
 6. Read `PROMPT.md` §1 (the four beats and the **Sourcing rules**) and §2. They apply here unchanged.
 7. `node scripts/build.js --storylines` and read every `storylines/*.json` — you will update them in §3f.
 
+## 0b. Keep your own context small
+
+Read §0b of `PROMPT.md` and follow it here too. The week in review is the most expensive run of the week, and
+for the same reason: every turn re-sends the whole conversation, so what you pull in early you pay for all
+morning. Write with `Write`, change with `Edit`, never print a file back to check it, read only the part of a
+file you need, and let subagents hold the raw material. It costs you nothing editorially — the locks in
+`scripts/validate-week.js` are what guarantee the rigour, not the size of your context.
+
 ## 1. Research — the dailies are the inventory, not the ceiling
 
 1. From the daily files, list every item with its date, topics and sources. Group items that share topics across days — those groups are your first candidates for threads.

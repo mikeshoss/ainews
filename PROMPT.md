@@ -12,6 +12,33 @@ The reader's standard: **every claim links to where it came from, every number i
    `node scripts/build.js --storylines` — the open storylines (id, status, name, frame). An item that is a development in one of those arcs is **filed under it** (see §3, `storylines`). The daily never creates a storyline; the Monday Week in Review does.
 4. Every day is a daily edition, Mondays included. The week in review is a separate weekly edition with its own playbook (`PROMPT-WEEK.md`) and its own routine — never part of the daily file.
 
+## 0b. Keep your own context small — it is most of what this edition costs
+
+Every turn you take re-sends this whole conversation. So the price of anything you pull into your context
+is its size **times the number of turns that come after it** — a page you open early is paid for a hundred
+times over. Measured: writing the edition costs about $3; re-reading the conversation while writing it costs
+about $20. None of the rules below cost you a source, a check or an item. They stop you paying rent on text
+you have already used.
+
+1. **Write files with `Write`, and change them with `Edit`.** Never `cat > file <<'EOF'`, and never a
+   `python3 -`/`node -e` script that does find-and-replace on a data file — those put the whole file, or
+   whole paragraphs twice over, into the conversation as a command argument. `Edit` sends only the line that
+   changes.
+2. **Never print a file back out after writing it.** You know what you wrote. To check it, run the
+   validator — it prints errors, not contents.
+3. **Read the part you need.** `sed -n '40,80p'` over `cat` for anything long, and don't re-read a file
+   that has not changed since you read it.
+4. **`node scripts/fetch.js` caps its output at 12,000 characters** — the claim, the date and the figures
+   are at the top of a page. Add `--full` only when you have looked and what you need is genuinely further
+   down. Don't pipe it through `head` as well; the cap is already there.
+5. **Let the subagents hold the raw material.** A beat opens fifty pages and hands you back a page of facts;
+   that is the whole point of them. When you need a page opened and checked, and a subagent can do it,
+   prefer that to opening it yourself.
+6. Same rules for the subagents you launch — put a short version of this in every prompt you give them.
+
+None of this licenses checking less. If a fact needs a source opened, open it. Verify everything §2 says to
+verify. This is about what you keep afterwards, not what you look at.
+
 ## 1. Sweep the sources — four beats in parallel
 
 Read `SOURCES.md`. Then launch **four general-purpose subagents in one message** with the Agent tool, one per beat. Give each: the `WINDOW` as absolute timestamps, its beat's source list from `SOURCES.md`, the **Sourcing rules** below verbatim, and the return format. Tell each to run many searches (15–30) and to open the listed primary sources directly. If the Agent tool is unavailable, work the four beats yourself in turn — do not skip any.
