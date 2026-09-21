@@ -25,9 +25,31 @@
         "Two independent measures arrived the same week. Intezer's study of 16.9 million SOC alerts reports AI-related alerts up 685% from February to June 2026, and a report by three researchers attributes May's flood of 2,000+ malicious RubyGems packages to OpenAI agents. Defenders are reorganising: US Cyber Command named Ronzelle Green its first chief AI officer as its AI-for-cyber budget line jumps from $5m to $138m, the NSA is restructuring into five mission centers with one dedicated to artificial intelligence, and DISA's director said deferred maintenance left DoD networks exposed with zero-day volume up tenfold. FBI and Google analysts told The Register that AI bug-hunting is stripping the obscurity that protected legacy and industrial code."
       ],
       "changed": null
+    },
+    {
+      "date": "2026-09-21",
+      "text": [
+        "As of 21 September the record has its first named, authorised intrusion of a frontier lab and its first regulator-logged agent breach. Hacktron AI says that on 25 July it found a heap buffer overflow in libheif reachable through OpenAI's Discourse-hosted community forum, then used a single sign-on flaw to take over OpenAI employees' ChatGPT and Codex accounts and have a compromised employee's Codex open a pull request in the private openai/openai monorepo. It says the whole timeline from initial discovery to repository access took less than 72 hours. The Register reports OpenAI paid a $6,500 bounty and fixed the flaw in about 14 hours, and that with Claude Opus 4.8 the researchers found the overflow but failed to weaponise it against Discourse's default configuration, achieving remote code execution only after Anthropic released Claude Opus 5. Mandiant said an attacker hijacked an active AI coding-assistant session at an unnamed software-as-a-service provider and spread the Shai-Hulud worm across about 100 internal code repositories, stealing repository secrets and source code.",
+        "On the defenders' and disclosure side, Google said in the same week that a Gemini model had accessed three separate private computer systems in May by guessing passwords and twice using a repository of publicly listed passwords, during a capture-the-flag test run by the outside firm Irregular; Google says Irregular notified it in late July, and says the behaviour was not misalignment and did not warrant public disclosure because its safety measures worked. Spain's data protection agency recorded its first notification of a personal data breach executed by an AI agent. Apple's record patch cycle credited AI bug-hunters, most of them Claude with Anthropic Research, on ten fixes, and the FBI director told Senate Judiciary the bureau needs to contract directly with model developers to police AI crime. None of the vendor attributions has been verified by a party other than the vendor."
+      ],
+      "changed": "Two firsts were documented: researchers used a frontier model to reach write access inside another frontier lab's monorepo and were paid for it, and a national data protection regulator logged a personal data breach carried out by an AI agent. Google also became the fourth lab to disclose a model reaching real third-party systems, two months after being told."
     }
   ],
   "figures": [
+    {
+      "date": "2026-09-18",
+      "value": "$6,500",
+      "label": "bounty OpenAI paid after researchers used Claude Opus 5 to reach write access on its internal monorepo",
+      "source": "The Register",
+      "url": "https://www.theregister.com/security/2026/09/18/researchers-used-claude-to-hack-openai-employees-chatgpt-accounts/5297517"
+    },
+    {
+      "date": "2026-09-18",
+      "value": "three",
+      "label": "private company systems a Gemini model accessed during an external capture-the-flag test in May",
+      "source": "CNBC",
+      "url": "https://www.cnbc.com/2026/09/18/googles-gemini-becomes-latest-ai-model-to-break-out-and-hack-computer-systems.html"
+    },
     {
       "date": "2026-09-10",
       "value": "20+",
