@@ -113,6 +113,11 @@ jobs:
           scripts/rasterize.sh site/favicon.svg site/apple-touch-icon.png 180
           node scripts/cover.js --og site/og.svg && scripts/rasterize.sh site/og.svg site/og.png 1200 630
       - uses: actions/configure-pages@v5
+      - name: Keep the built emails out of the published site
+        # site/email/* are build artifacts: mail.js and the routine read them from the checkout, and
+        # they have already run by this point. They are not pages, and Mike's own copies carry the
+        # proposed-storyline queue, which must never be reachable from the web.
+        run: rm -rf site/email
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

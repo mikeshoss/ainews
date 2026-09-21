@@ -2,7 +2,8 @@
 'use strict';
 // Sends each new edition to the subscriber list (Brevo) — once. Runs in Actions after the build.
 // For every data/DATE.json and DATE.week.json without a sent/<key> marker in R2: create a Brevo campaign from the
-// built site/email/DATE.reader.html (daily) or DATE.week.html (Monday) and send it, then write the marker.
+// built site/email/DATE.reader.html (daily) or DATE.week.reader.html (Monday) and send it, then write the marker.
+// Always the *.reader.* file: the other copies are Mike's and carry the editorial queue, which subscribers never see.
 // Only today's edition is sent; anything older is marked without sending (so a first run never blasts the archive).
 // Env: BREVO_API_KEY, BREVO_LIST_ID, BREVO_SENDER_EMAIL, BREVO_SENDER_NAME (+ R2 creds for the markers).
 // Usage: node scripts/mail.js [--dry-run]
@@ -34,8 +35,8 @@ async function brevo(method, p, body) {
     const date = key.slice(0, 10), weekly = key.endsWith('.week');
     const marker = `sent/${key}`;
     if (!DRY && await r2.exists(marker)) continue;
-    const htmlPath = path.join(ROOT, 'site', 'email', weekly ? `${date}.week.html` : `${date}.reader.html`);
-    const subjPath = path.join(ROOT, 'site', 'email', weekly ? `${date}.week.subject.txt` : `${date}.reader.subject.txt`);
+    const htmlPath = path.join(ROOT, 'site', 'email', weekly ? `${date}.week.reader.html` : `${date}.reader.html`);
+    const subjPath = path.join(ROOT, 'site', 'email', weekly ? `${date}.week.reader.subject.txt` : `${date}.reader.subject.txt`);
     if (!fs.existsSync(htmlPath)) { console.log(`${key}: no built email — run build.js first`); continue; }
     if (daysOld(date) > 0) { console.log(`${key}: not today's edition — marking as sent without sending`); if (!DRY) await r2.put(marker, Buffer.from('skipped\n'), 'text/plain', 'no-store'); continue; }
     const html = fs.readFileSync(htmlPath, 'utf8'), subject = fs.readFileSync(subjPath, 'utf8').trim();

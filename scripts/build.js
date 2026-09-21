@@ -721,6 +721,10 @@ function renderEmail(ed) {
 
 // The subscriber edition: fuller than the LinkedIn post, shorter than the page. Sent by scripts/mail.js.
 const SUBSCRIBE_URL = process.env.SUBSCRIBE_FORM_URL || '';
+// Brevo replaces {{ unsubscribe }} with the opt-out link when it sends a campaign. It only belongs in the two
+// files mail.js sends; Mike's own Gmail copies are not campaigns and would show the tag as literal text.
+const UNSUB = `<p style="color:#999;font-size:11px;margin:12px 0 0">You are receiving this because you subscribed at <a href="${SITE_URL}/" style="color:#999">aiedgebriefing.com</a>. <a href="{{ unsubscribe }}" style="color:#999">Unsubscribe</a>.</p>`;
+
 function renderReaderEmail(ed) {
   const url = `${SITE_URL}/${ed.date}/?utm_source=email&utm_medium=email&utm_campaign=${ed.date}`;
   const h2 = (t) => `<h2 style="font-size:14px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(t)}</h2>`;
@@ -738,11 +742,13 @@ ${paragraphs(ed.summary).map((p) => `<p style="margin:0 0 10px">${esc(p)}</p>`).
 ${h2('The lead item in each section')}${sections}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
 <p style="color:#777;font-size:12px">Written by AI from primary sources, checked mechanically, with the full run log published — <a href="${SITE_URL}/about/" style="color:#777">how it works</a>. <a href="${SITE_URL}/storylines/" style="color:#777">Storylines</a> · <a href="${SITE_URL}/week/" style="color:#777">Week in review</a> · <a href="${SITE_URL}/podcast/" style="color:#777">Podcast</a></p>
+${UNSUB}
 </div>`;
   return { html, subject: `${SITE_NAME}: ${paragraphs(ed.summary)[0].split(/(?<=[.!?])\s/)[0].slice(0, 110)}` };
 }
 
-function renderWeekEmail(wk, proposed = []) {
+// forSubscribers = the Brevo campaign: no editorial queue, and an unsubscribe link.
+function renderWeekEmail(wk, proposed = [], forSubscribers = false) {
   const url = `${SITE_URL}/week/${wk.date}/`;
   const campaign = `week-${wk.date}`;
   const h2 = (s) => `<h2 style="font-size:15px;margin:22px 0 8px;color:#111;text-transform:uppercase;letter-spacing:.04em">${esc(s)}</h2>`;
@@ -770,6 +776,7 @@ ${calendar ? h2('On the calendar') + calendar : ''}
 ${proposed.length ? `<div style="margin-top:24px;padding:12px 14px;border:1px solid #e0c36a;border-radius:8px;background:#fff9e6"><p style="margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#7a4b00">For the editor — not published</p>${proposed.map((st) => `<p style="margin:0 0 8px"><b>Proposed storyline: ${esc(st.name)}</b><br><span style="color:#333">${esc(st.frame)}</span><br><span style="color:#555;font-size:13px">${esc(st.proposed_note || '')} ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} already filed. Reply "promote ${esc(st.id)}", or rename/merge it, and it goes live.</span></p>`).join('')}</div>` : ''}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
 <p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/topics/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
+${forSubscribers ? UNSUB : ''}
 </div>`;
   const text = [
     `${SITE_NAME} - Week in review`, `The week of ${wk.label}`, '', `Full week in review: ${url}`, '',
@@ -1328,10 +1335,14 @@ function main() {
       fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'events.jsonl'));
       if (trace.hasTranscript) fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.transcript.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'transcript.jsonl'));
     }
+    // Two weekly emails: Mike's carries the proposed-storyline queue, the subscribers' never does.
     const em = renderWeekEmail(wk, proposed);
     write(`email/${wk.date}.week.html`, em.html);
     write(`email/${wk.date}.week.txt`, em.text);
     write(`email/${wk.date}.week.subject.txt`, em.subject + '\n');
+    const wrd = renderWeekEmail(wk, [], true);
+    write(`email/${wk.date}.week.reader.html`, wrd.html);
+    write(`email/${wk.date}.week.reader.subject.txt`, wrd.subject + '\n');
   });
   write('about/index.html', renderAbout(editions));
   const urls = [`${SITE_URL}/`, `${SITE_URL}/daily/`, `${SITE_URL}/week/`, `${SITE_URL}/storylines/`, `${SITE_URL}/storylines/history/`, `${SITE_URL}/topics/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
