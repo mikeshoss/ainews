@@ -773,7 +773,9 @@ ${h2('2 · What connects')}${connects}
 ${h2("3 · What we don't know")}${unknowns}
 ${figures ? h2('By the numbers') + figures : ''}
 ${calendar ? h2('On the calendar') + calendar : ''}
-${proposed.length ? `<div style="margin-top:24px;padding:12px 14px;border:1px solid #e0c36a;border-radius:8px;background:#fff9e6"><p style="margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#7a4b00">For the editor — not published</p>${proposed.map((st) => `<p style="margin:0 0 8px"><b>Proposed storyline: ${esc(st.name)}</b><br><span style="color:#333">${esc(st.frame)}</span><br><span style="color:#555;font-size:13px">${esc(st.proposed_note || '')} ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} already filed. Reply "promote ${esc(st.id)}", or rename/merge it, and it goes live.</span></p>`).join('')}</div>` : ''}
+${/* The proposed-storyline queue used to render here. It is editorial state: it reached the published
+     trace of the run that built this email, which is a page on the public site. It lives on the private
+     stats page instead (scripts/stats.js proposedStorylines()). */ ''}
 <hr style="border:0;border-top:1px solid #ddd;margin:24px 0">
 <p style="color:#777;font-size:12px">Facts, then connections, then what is still open — never opinion. Every claim links to its source. <a href="${url}" style="color:#777">Web version</a> · <a href="${SITE_URL}/topics/" style="color:#777">Trends</a> · <a href="${REPO_URL}" style="color:#777">Data on GitHub</a></p>
 ${forSubscribers ? UNSUB : ''}
@@ -786,7 +788,7 @@ ${forSubscribers ? UNSUB : ''}
     "## 3. What we don't know", ...wk.unknowns.flatMap((u) => [`- ${u.question}`, `  ${u.evidence_ends}`, `  Would confirm: ${u.would_confirm}`, `  Would invalidate: ${u.would_invalidate}`]), '',
     ...((wk.figures || []).length ? ['## By the numbers', ...wk.figures.map((f) => `- ${f.value} — ${f.label} (${f.source || hostname(f.url)})`), ''] : []),
     ...((wk.calendar || []).length ? ['## On the calendar', ...wk.calendar.map((c) => `- ${c.date} — ${c.event} (${c.source || hostname(c.url)})`), ''] : []),
-    ...(proposed.length ? ['## For the editor — not published', ...proposed.map((st) => `- Proposed storyline: ${st.name} — ${st.frame} (${st.timeline.length} items filed). Reply "promote ${st.id}" to publish it.`), ''] : []),
+    // (the proposed-storyline queue is on the private stats page, not in any email — see above)
   ].join('\n');
   return { html, text, subject: `${SITE_NAME} — Week in review, ${wk.shortLabel}` };
 }
