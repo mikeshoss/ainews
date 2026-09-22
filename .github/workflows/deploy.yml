@@ -67,6 +67,64 @@ jobs:
           SITE_FEATURES: ${{ vars.SITE_FEATURES }}
           INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
         run: node scripts/build.js
+      - name: Site assets (cover, favicon, share image)
+        run: |
+          node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
+          node scripts/cover.js --favicon site/favicon.svg
+          scripts/rasterize.sh site/favicon.svg site/favicon-32.png 32
+          scripts/rasterize.sh site/favicon.svg site/favicon-192.png 192
+          scripts/rasterize.sh site/favicon.svg site/apple-touch-icon.png 180
+          node scripts/cover.js --og site/og.svg && scripts/rasterize.sh site/og.svg site/og.png 1200 630
+      - uses: actions/configure-pages@v5
+      - name: Keep the built emails out of the published site
+        # site/email/* are build artifacts: mail.js and the routine read them from the checkout, and
+        # they have already run by this point. They are not pages, and Mike's own copies carry the
+        # proposed-storyline queue, which must never be reachable from the web.
+        run: rm -rf site/email
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Everything that TELLS someone about the edition runs here, after the deployment above.
+  # In the build job these ran before the site was published, so the first thing a subscriber, a
+  # follower or a search engine got was a link to a page that did not exist yet.
+  announce:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install ffmpeg and librsvg
+        run: sudo apt-get update -qq >/dev/null && sudo apt-get install -y -qq ffmpeg librsvg2-bin fonts-dejavu-core >/dev/null
+      - name: Rebuild the email bodies and the post text
+        env:
+          SITE_URL: https://aiedgebriefing.com
+          GA_MEASUREMENT_ID: G-WGF9BW5QXC
+          SUBSCRIBE_FORM_URL: ${{ vars.SUBSCRIBE_FORM_URL }}
+          SITE_FEATURES: ${{ vars.SITE_FEATURES }}
+          INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
+        run: node scripts/build.js
+      - name: Wait for the new edition to actually answer
+        # deploy-pages reports success when the deployment is created; the edge can lag a little behind.
+        run: |
+          D=$(TZ=America/Toronto date +%F)
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "https://aiedgebriefing.com/$D/" || echo 000)
+            if [ "$code" = "200" ]; then echo "$D is live"; exit 0; fi
+            sleep 10
+          done
+          echo "::warning::https://aiedgebriefing.com/$D/ still not 200 after 5 minutes — announcing anyway"
       - name: Send today's edition to subscribers
         env:
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
@@ -107,29 +165,3 @@ jobs:
         env:
           INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
         run: node scripts/indexnow.js || true
-      - name: Site assets (cover, favicon, share image)
-        run: |
-          node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
-          node scripts/cover.js --favicon site/favicon.svg
-          scripts/rasterize.sh site/favicon.svg site/favicon-32.png 32
-          scripts/rasterize.sh site/favicon.svg site/favicon-192.png 192
-          scripts/rasterize.sh site/favicon.svg site/apple-touch-icon.png 180
-          node scripts/cover.js --og site/og.svg && scripts/rasterize.sh site/og.svg site/og.png 1200 630
-      - uses: actions/configure-pages@v5
-      - name: Keep the built emails out of the published site
-        # site/email/* are build artifacts: mail.js and the routine read them from the checkout, and
-        # they have already run by this point. They are not pages, and Mike's own copies carry the
-        # proposed-storyline queue, which must never be reachable from the web.
-        run: rm -rf site/email
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

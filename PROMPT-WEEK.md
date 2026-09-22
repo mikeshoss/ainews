@@ -150,6 +150,23 @@ If the push is rejected (the daily routine may have pushed minutes earlier): `gi
 
 ## 5. Send the email
 
+
+**Wait for the page before you send.** The email links to `https://aiedgebriefing.com/week/DATE/`, and that page
+does not exist until GitHub Actions has built, generated the audio and deployed — several minutes after your
+push, not at the moment of it. Sending first means the first thing the reader clicks is a 404. So poll until
+it answers, then send:
+
+```
+for i in $(seq 1 40); do
+  code=$(curl -s -o /dev/null -w '%{http_code}' "https://aiedgebriefing.com/week/$DATE/")
+  [ "$code" = "200" ] && echo live && break
+  sleep 20
+done
+```
+
+If it is still not 200 after that (about 13 minutes), send the email anyway and say so in your report — a late
+email is better than none — but check the Actions run for a failure before you finish.
+
 After the push, send one email via the Gmail tool:
 - **to**: the reader's address given in the routine prompt (never write it into this repo — the repo and the trace are public)
 - **subject**: the contents of `site/email/DATE.week.subject.txt`
