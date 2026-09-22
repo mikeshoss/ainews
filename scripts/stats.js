@@ -114,6 +114,28 @@ function editionFor(date) {
   return { edition: ed.edition || 'daily', items, sections: sections.length, links, script: fs.existsSync(path.join(ROOT, 'data', `${date}.script.json`)) };
 }
 
+function weekEditionFor(date) {
+  const file = path.join(ROOT, 'data', `${date}.week.json`);
+  if (!fs.existsSync(file)) return null;
+  try {
+    const wk = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const links = new Set([...(wk.happened || []).flatMap((it) => (it.sources || []).map((x) => x.url)), ...(wk.connects || []).flatMap((c) => (c.sources || []).map((x) => x.url))]).size;
+    return { happened: (wk.happened || []).length, connects: (wk.connects || []).length, unknowns: (wk.unknowns || []).length, links };
+  } catch { return null; }
+}
+
+// Was the episode the one we meant to publish? 'dialogue' is the two-host show; 'narration' is the code-read
+// fallback, which is correct only when no usable two-host script existed. Narration *with* a script present is
+// the failure this page exists to surface — it means something published the fallback over a good script.
+function podcastHealth(row) {
+  if (!row.podcast) return { state: 'none', label: 'no episode yet', bad: false };
+  if (row.podcast.format === 'dialogue') return { state: 'dialogue', label: 'Maya & Alex', bad: false };
+  const hasScript = !!(row.edition && row.edition.script);
+  return hasScript
+    ? { state: 'wrong', label: 'NARRATED — a two-host script exists', bad: true }
+    : { state: 'narration', label: 'narrated (no script — expected)', bad: false };
+}
+
 // ---------- podcast downloads (OP3) ----------
 const OP3 = 'https://op3.dev/api/1';
 async function op3Get(pathAndQuery) {
@@ -255,21 +277,33 @@ async function main() {
       podcast: a ? { format: a.format, seconds: a.seconds, versions: versions.length, episode_downloads, episode_7d } : null,
       downloads_today,
       site: g || null,
-      week: weekRun ? { minutes: weekRun.minutes, tool_calls: weekRun.tool_calls, claude_usd: +weekRun.claude_usd.toFixed(2), usage_complete: weekRun.usage_complete, email_sent: weekRun.email_sent } : null,
-      cost: { claude_usd: +((run ? run.claude_usd : 0) + (weekRun ? weekRun.claude_usd : 0)).toFixed(2), tts_usd: +tts_usd.toFixed(3), total_usd: +((run ? run.claude_usd : 0) + (weekRun ? weekRun.claude_usd : 0) + tts_usd).toFixed(2) },
+      week: weekRun ? { minutes: weekRun.minutes, tool_calls: weekRun.tool_calls, subagents: weekRun.subagents, claude_usd: +weekRun.claude_usd.toFixed(2), usage_complete: weekRun.usage_complete, email_sent: weekRun.email_sent, edition: weekEditionFor(date) } : null,
+      // The Monday week in review is a separate edition and a separate run; it gets its own row rather than
+      // being folded into the daily's cost, where it made Monday look like a $140 daily.
+      cost: { claude_usd: +(run ? run.claude_usd : 0).toFixed(2), tts_usd: +tts_usd.toFixed(3), total_usd: +((run ? run.claude_usd : 0) + tts_usd).toFixed(2) },
     };
   });
-  fs.writeFileSync(path.join(OUT, 'daily.json'), JSON.stringify({ generated_at: new Date().toISOString(), days: rows }, null, 2));
+  const weeks = rows.filter((r) => r.week).map((r) => ({ date: r.date, ...r.week }));
+  fs.writeFileSync(path.join(OUT, 'daily.json'), JSON.stringify({ generated_at: new Date().toISOString(), days: rows, weeks }, null, 2));
   const dist = FETCH ? await distribution() : { subscribers: null, log: [] };
-  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, snaps, ga, gaError, op3Error, dist));
+  fs.writeFileSync(path.join(OUT, 'index.html'), renderHtml(rows, weeks, snaps, ga, gaError, op3Error, dist));
 
-  if (JSON_OUT) { console.log(JSON.stringify(rows, null, 2)); return; }
-  printTable(rows, snaps, ga, gaError, op3Error);
+  if (JSON_OUT) { console.log(JSON.stringify({ days: rows, weeks }, null, 2)); return; }
+  printTable(rows, weeks, snaps, ga, gaError, op3Error);
 }
 
-function printTable(rows, snaps, ga, gaError, op3Error) {
+function printTable(rows, weeks, snaps, ga, gaError, op3Error) {
   const pad = (s, n, right) => { s = String(s == null ? '—' : s); return right ? s.padStart(n) : s.padEnd(n); };
-  const cols = [['Date', 10], ['Items', 5, 1], ['Run', 5, 1], ['Tools', 5, 1], ['Claude $', 8, 1], ['TTS $', 6, 1], ['Total $', 7, 1], ['Ep 7d', 5, 1], ['Ep all', 6, 1], ['New dl', 6, 1], ['Users', 5, 1], ['Views', 5, 1], ['Clicks', 6, 1], ['Notes', 0]];
+  const cols = [['Date', 10], ['Items', 5, 1], ['Run', 5, 1], ['Tools', 5, 1], ['Claude $', 8, 1], ['TTS $', 6, 1], ['Total $', 7, 1], ['Podcast', 32], ['Ep all', 6, 1], ['New dl', 6, 1], ['Users', 5, 1], ['Views', 5, 1], ['Clicks', 6, 1], ['Notes', 0]];
+  // The most recent episode first, because the question this answers is "can I press play?"
+  const withAudio = rows.filter((r) => r.podcast);
+  const newest = withAudio[withAudio.length - 1];
+  if (newest) {
+    const h = podcastHealth(newest);
+    console.log(h.bad
+      ? `!! ${newest.date}: the episode published NARRATED even though a two-host script exists — do not expect Maya & Alex\n`
+      : `${newest.date} episode: ${h.label}\n`);
+  }
   console.log(cols.map(([h, n, r]) => pad(h, n, r)).join('  '));
   let total = 0;
   for (const r of rows) {
@@ -281,13 +315,25 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
     if (r.run && !r.run.email_sent) notes.push('no email');
     if (r.run && r.run.subagents) notes.unshift(`${r.run.subagents} agents`);
     if (r.run && r.run.sessions > 1) notes.push(`${r.run.sessions} sessions on this trace (daily + catch-up); time is their sum, not end-to-end`);
-    if (r.week) notes.push(`+ week in review: ${r.week.minutes}m, $${r.week.claude_usd}${r.week.usage_complete ? '' : ' (main only)'}${r.week.email_sent ? '' : ', no email'}`);
+    const h = podcastHealth(r);
     const v = [r.date, r.edition && r.edition.items, r.run && `${r.run.minutes}m`, r.run && r.run.tool_calls,
       r.run ? r.cost.claude_usd.toFixed(2) : null, r.podcast ? r.cost.tts_usd.toFixed(2) : null, r.run || r.podcast ? r.cost.total_usd.toFixed(2) : null,
-      r.podcast && r.podcast.episode_7d, r.podcast && r.podcast.episode_downloads, r.downloads_today, r.site && r.site.users, r.site && r.site.views, r.site && r.site.clicks, notes.join('; ')];
+      h.state === 'none' ? null : (h.bad ? '!! ' : '') + h.label,
+      r.podcast && r.podcast.episode_downloads, r.downloads_today, r.site && r.site.users, r.site && r.site.views, r.site && r.site.clicks, notes.join('; ')];
     console.log(v.map((x, i) => pad(x, cols[i][1], cols[i][2])).join('  '));
   }
-  console.log(`\n${rows.length} day(s) · total $${total.toFixed(2)} · Claude at API list price (${Object.keys(CLAUDE_PRICES)[0]} rates), TTS at $${TTS_USD_PER_MINUTE}/min`);
+  if (weeks.length) {
+    console.log('\nWeek in review');
+    const wc = [['Monday', 10], ['Run', 5, 1], ['Tools', 5, 1], ['Claude $', 8, 1], ['Devs', 4, 1], ['Conn', 4, 1], ['Open', 4, 1], ['Links', 5, 1], ['Notes', 0]];
+    console.log(wc.map(([h2, n2, r2]) => pad(h2, n2, r2)).join('  '));
+    for (const w of weeks) {
+      total += w.claude_usd;
+      const wn = [w.usage_complete ? '' : 'cost = main session only', w.email_sent ? '' : 'no email'].filter(Boolean).join('; ');
+      console.log([w.date, `${w.minutes}m`, w.tool_calls, w.claude_usd.toFixed(2), w.edition && w.edition.happened, w.edition && w.edition.connects, w.edition && w.edition.unknowns, w.edition && w.edition.links, wn]
+        .map((x, i) => pad(x, wc[i][1], wc[i][2])).join('  '));
+    }
+  }
+  console.log(`\n${rows.length} day(s) + ${weeks.length} week(s) · total $${total.toFixed(2)} · Claude at API list price (${Object.keys(CLAUDE_PRICES)[0]} rates), TTS at $${TTS_USD_PER_MINUTE}/min`);
   const missed = rows.filter((r) => !r.edition && !r.run).map((r) => r.date);
   console.log(missed.length ? `missed: ${missed.length} day(s) with no edition — ${missed.join(', ')}` : 'missed: none — an edition published every day shown');
   // The pipeline shares one weekly usage allowance with every other Claude session on the account, so the
@@ -318,11 +364,11 @@ async function distribution() {
   } catch (e) { out.logError = e.message; }
   return out;
 }
-function renderHtml(rows, snaps, ga, gaError, op3Error, dist) {
+function renderHtml(rows, weeks, snaps, ga, gaError, op3Error, dist) {
   const proposed = proposedStorylines();
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const n = (x, d = 0) => (x == null ? '<span class="na">—</span>' : Number(x).toLocaleString('en-CA', { minimumFractionDigits: d, maximumFractionDigits: d }));
-  const total = rows.reduce((a, r) => a + r.cost.total_usd, 0);
+  const total = rows.reduce((a, r) => a + r.cost.total_usd, 0) + weeks.reduce((a, w) => a + w.claude_usd, 0);
   const latest = snaps[snaps.length - 1];
   const isOp3 = latest && snapSource(latest) === 'op3';
   const episodes = !latest ? [] : isOp3 ? Object.entries(latest.episodes || {}).sort((a, b) => b[0].localeCompare(a[0])) : latest.assets.filter((a) => a.name.endsWith('.mp3')).sort((a, b) => b.name.localeCompare(a.name));
@@ -333,9 +379,23 @@ function renderHtml(rows, snaps, ga, gaError, op3Error, dist) {
 <td class="r">${r.run ? `${r.run.minutes} min` : n(null)}</td><td class="r">${n(r.run && r.run.tool_calls)}</td><td class="r">${n(r.run && r.run.subagents)}</td>
 <td class="r">${r.run ? '$' + n(r.cost.claude_usd, 2) + (r.run.usage_complete ? '' : '<sup title="main session only; subagent usage was not traced for this run">*</sup>') : n(null)}</td>
 <td class="r">${r.podcast ? '$' + n(r.cost.tts_usd, 2) : n(null)}</td><td class="r"><strong>${r.run || r.podcast ? '$' + n(r.cost.total_usd, 2) : n(null)}</strong></td>
-<td class="r">${r.podcast ? `${Math.round(r.podcast.seconds / 60)} min` : n(null)}</td><td class="r">${n(r.podcast && r.podcast.episode_7d)}</td><td class="r">${n(r.podcast && r.podcast.episode_downloads)}</td><td class="r">${n(r.downloads_today)}</td>
+<td class="r">${r.podcast ? `${Math.round(r.podcast.seconds / 60)} min` : n(null)}</td>
+<td class="${podcastHealth(r).bad ? 'bad' : ''}">${podcastHealth(r).state === 'none' ? n(null) : esc(podcastHealth(r).label)}</td><td class="r">${n(r.podcast && r.podcast.episode_downloads)}</td><td class="r">${n(r.downloads_today)}</td>
 <td class="r">${n(r.site && r.site.users)}</td><td class="r">${n(r.site && r.site.views)}</td><td class="r">${n(r.site && r.site.clicks)}</td>
-<td>${[r.run && !r.run.email_sent && r.edition ? 'no email' : '', r.edition && !r.edition.script ? 'narrated' : '', r.week ? `+ week in review (${r.week.minutes} min, $${n(r.week.claude_usd, 2)})` : ''].filter(Boolean).join(', ')}</td></tr>`).join('\n');
+<td>${[r.run && !r.run.email_sent && r.edition ? 'no email' : '', r.run && r.run.sessions > 1 ? `${r.run.sessions} sessions on this trace` : ''].filter(Boolean).join(', ')}</td></tr>`).join('\n');
+  // "Can I press play?" — the newest episode, and whether it is the show or the fallback.
+  const withAudio = rows.filter((r) => r.podcast);
+  const newest = withAudio[withAudio.length - 1];
+  const health = newest ? podcastHealth(newest) : null;
+  const banner = !newest ? '' : health.bad
+    ? `<p class="alert"><b>${esc(newest.date)}: published NARRATED, but a two-host script exists.</b> This episode is the fallback, not the show — something published over a good script. <a href="https://aiedgebriefing.com/${esc(newest.date)}/">check the edition</a></p>`
+    : `<p class="ok">${esc(newest.date)} episode: <b>${esc(health.label)}</b>${health.state === 'narration' ? ' — no usable two-host script that day, so the fallback is correct' : ''}.</p>`;
+  const weekRows = weeks.slice().reverse().map((w) => `<tr>
+<td><a href="https://aiedgebriefing.com/week/${w.date}/">${w.date}</a></td>
+<td class="r">${w.minutes} min</td><td class="r">${n(w.tool_calls)}</td><td class="r">${n(w.subagents)}</td>
+<td class="r"><strong>$${n(w.claude_usd, 2)}</strong>${w.usage_complete ? '' : '<sup title="main session only">*</sup>'}</td>
+<td class="r">${n(w.edition && w.edition.happened)}</td><td class="r">${n(w.edition && w.edition.connects)}</td><td class="r">${n(w.edition && w.edition.unknowns)}</td><td class="r">${n(w.edition && w.edition.links)}</td>
+<td>${w.email_sent ? '' : 'no email'}</td></tr>`).join('\n');
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI Edge Briefing — private stats</title>
 <style>
 :root{color-scheme:light dark;--fg:#1a1a1a;--bg:#fff;--muted:#6b6b6b;--line:#e4e4e4;--accent:#0b5fff}
@@ -347,9 +407,13 @@ h1{font-size:1.3rem;margin:0 0 4px}.muted{color:var(--muted)}a{color:var(--accen
 .scroll{overflow-x:auto}table{border-collapse:collapse;white-space:nowrap}th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left}
 th{font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}td.r,th.r{text-align:right}.na{color:var(--muted)}
 th.group{border-bottom:none;text-align:center;color:var(--fg)}small{color:var(--muted)}h2{font-size:1rem;margin:28px 0 8px}
+.alert{border-left:4px solid #c0392b;background:#c0392b18;padding:10px 14px;border-radius:0 6px 6px 0;margin:16px 0}
+.ok{border-left:4px solid #2e9e6b;background:#2e9e6b14;padding:10px 14px;border-radius:0 6px 6px 0;margin:16px 0}
+td.bad{color:#c0392b;font-weight:600}
 </style>
 <h1>AI Edge Briefing — private stats</h1>
 <p class="muted">Generated ${esc(new Date().toLocaleString('en-CA', { timeZone: TZ }))} (Toronto). Local only; nothing on this page is published.</p>
+${banner}
 ${proposed.length ? `<h2>Editorial — proposed storylines (not published)</h2>${proposed.map((st) => `<p><b>${esc(st.name)}</b> <code>${esc(st.id)}</code> — ${esc(st.frame)}<br><span class="muted">${esc(st.proposed_note || '')} ${st.timeline.length} item(s) filed. To publish: set "status": "live" in storylines/${esc(st.id)}.json (or tell Claude "promote ${esc(st.id)}").</span></p>`).join('')}` : ''}
 <div class="tiles">
 <div class="tile"><b>$${n(total, 2)}</b><span>cost, ${rows.length} days shown</span></div>
@@ -361,9 +425,13 @@ ${isOp3 && latest.show ? `<div class="tile"><b>${n(latest.show.monthly)}</b><spa
 </div>
 <div class="scroll"><table>
 <tr><th></th><th class="group" colspan="2">Edition</th><th class="group" colspan="3">Run</th><th class="group" colspan="3">Cost (USD)</th><th class="group" colspan="4">Podcast</th><th class="group" colspan="3">Site</th><th></th></tr>
-<tr><th>Date</th><th class="r">Items</th><th class="r">Links</th><th class="r">Time</th><th class="r">Tool calls</th><th class="r">Agents</th><th class="r">Claude</th><th class="r">TTS</th><th class="r">Total</th><th class="r">Length</th><th class="r">7 days</th><th class="r">All time</th><th class="r">New dl</th><th class="r">Users</th><th class="r">Views</th><th class="r">Clicks</th><th>Notes</th></tr>
+<tr><th>Date</th><th class="r">Items</th><th class="r">Links</th><th class="r">Time</th><th class="r">Tool calls</th><th class="r">Agents</th><th class="r">Claude</th><th class="r">TTS</th><th class="r">Total</th><th class="r">Length</th><th>Episode</th><th class="r">All time</th><th class="r">New dl</th><th class="r">Users</th><th class="r">Views</th><th class="r">Clicks</th><th>Notes</th></tr>
 ${tr}
 </table></div>
+${weekRows ? `<h2>Week in review</h2><div class="scroll"><table>
+<tr><th>Monday</th><th class="r">Time</th><th class="r">Tool calls</th><th class="r">Agents</th><th class="r">Claude</th><th class="r">Developments</th><th class="r">Connections</th><th class="r">Open questions</th><th class="r">Links</th><th>Notes</th></tr>
+${weekRows}
+</table></div>` : ''}
 <p class="muted">Claude cost is the run's token usage at Anthropic API list price (input $5, output $25, cache read $0.50, cache write $6.25/5m $10/1h per MTok for Opus 5). * = main session only; runs traced before subagent usage was recorded. TTS is episode length × $${TTS_USD_PER_MINUTE}/min (gpt-4o-mini-tts). Podcast downloads via <a href="https://op3.dev/show/${podcastGuid()}">OP3</a> (open, IAB-style de-duplicated, bots excluded; the site's own player is counted too) — 7 days and all time per episode, New dl = all-time total minus the previous day's snapshot. Snapshots before 14 Sep 2026 were raw GitHub release download counts, a cruder measure; no delta is computed across that boundary.${op3Error ? ` <b>OP3 not fetched: ${esc(op3Error)}</b>` : ''} ${ga ? 'Site figures from Google Analytics 4; Clicks = GA "click" events (outbound links).' : gaError ? `Google Analytics: ${esc(gaError)}` : 'Site figures need Google Analytics credentials (GA4_PROPERTY_ID and GA4_SERVICE_ACCOUNT in stats/.env).'}</p>
 ${dist.log.length ? `<h2>Distribution log</h2><div class="scroll"><table><tr><th>Sent / posted</th><th>When</th></tr>${dist.log.sort((a, b) => (a.when < b.when ? 1 : -1)).slice(0, 40).map((l) => `<tr><td>${esc(l.key)}</td><td>${esc((l.when || '').slice(0, 16).replace('T', ' '))}</td></tr>`).join('')}</table></div>` : ''}
 <h2>Episodes</h2>
