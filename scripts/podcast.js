@@ -3,7 +3,15 @@
 // Turns editions into podcast episodes. Runs in GitHub Actions (needs OPENAI_API_KEY, CLOUDFLARE_API_TOKEN +
 // CLOUDFLARE_ACCOUNT_ID, ffmpeg).
 // For each edition in the last LOOKBACK_DAYS without audio: use the dialogue script if it exists AND passes
-// validate-script.js, otherwise the code-generated narration (narrate.js). Synthesizes with OpenAI TTS,
+// validate-script.js, otherwise the code-generated narration (narrate.js).
+//
+// The two scripts do not arrive at the same moment. The morning run is meant to commit the edition and its
+// dialogue script together, but if it commits them separately the push of the edition alone starts a build,
+// and that build would reach this script before the dialogue one exists — narrating an episode that had a
+// perfectly good two-host script a minute behind it. So an edition younger than GRACE_MS with no valid
+// dialogue script is left alone rather than narrated; --no-wait (which the nightly safety-net run passes)
+// says the wait is over, narrate what is there. And a narration that is still fresh is replaced if a valid
+// dialogue script turns up inside UPGRADE_MS, keeping the narration as an earlier version. Synthesizes with OpenAI TTS,
 // concatenates with ffmpeg, renders the episode cover (cover.js → librsvg) and embeds it, uploads DATE.mp3 + DATE.png
 // to the R2 bucket behind AUDIO_BASE (scripts/r2.js), and maintains index.json there
 // (also written to audio/index.json for build.js). Idempotent; the index is updated last.
@@ -23,6 +31,8 @@ const r2 = require('./r2.js');
 const ROOT = path.resolve(__dirname, '..');
 const AUDIO_DIR = path.join(ROOT, 'audio');
 const LOOKBACK_DAYS = 14;
+const GRACE_MS = 2 * 60 * 60 * 1000;      // how long to wait for a dialogue script before narrating
+const UPGRADE_MS = 6 * 60 * 60 * 1000;    // how late a dialogue script may arrive and still replace a narration
 const MAX_PER_RUN = 3;             // cost cap
 const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
 const MODEL = 'gpt-4o-mini-tts';
@@ -38,6 +48,7 @@ const DRY = args.includes('--dry-run');
 const MAX = Number((args[args.indexOf('--max') + 1]) || MAX_PER_RUN) || MAX_PER_RUN;
 const FORCE = args.includes('--force') ? args[args.indexOf('--force') + 1] : (process.env.FORCE_DATE || null);
 const LABEL = args.includes('--label') ? args[args.indexOf('--label') + 1] : (process.env.FORCE_LABEL || null);
+const NO_WAIT = args.includes('--no-wait') || process.env.PODCAST_NO_WAIT === '1';
 const PAUSE_INTRO = 1.4;           // longer breath after the intro before the news starts
 const KEY = process.env.OPENAI_API_KEY;
 const AUDIO_BASE = r2.AUDIO_BASE;
@@ -69,6 +80,17 @@ async function download(name, to) {
 }
 
 // ---------- script selection ----------
+// 'valid' | 'invalid' | 'none'. Cached: the selection pass and the synthesis pass both ask.
+const scriptStateCache = new Map();
+function scriptState(date) {
+  if (scriptStateCache.has(date)) return scriptStateCache.get(date);
+  const p = path.join(ROOT, 'data', `${date}.script.json`);
+  let state = 'none';
+  if (fs.existsSync(p)) state = spawnSync('node', [path.join(__dirname, 'validate-script.js'), p], { encoding: 'utf8' }).status === 0 ? 'valid' : 'invalid';
+  scriptStateCache.set(date, state);
+  return state;
+}
+
 function segmentsFor(ed) {
   const scriptPath = path.join(ROOT, 'data', `${ed.date}.script.json`);
   if (fs.existsSync(scriptPath)) {
@@ -220,12 +242,36 @@ async function synthesize(ed, seg, label) {
       console.log(`${ed.date}: cover backfilled`);
     } catch (e) { console.log(`${ed.date}: cover backfill failed: ${e.message}`); }
   }
-  const todo = editions.filter((ed) => Date.parse(ed.date + 'T12:00:00Z') >= cutoff && (!index.episodes[ed.date] || FORCE === ed.date)).slice(0, MAX);
   if (FORCE && !LABEL) { console.log('--force needs --label (e.g. v2) so the earlier version is kept'); process.exit(2); }
-  if (!todo.length) { console.log('all recent editions already have audio'); return; }
+  const now = Date.now();
+  const ageOf = (iso, fallbackDate) => { const t = Date.parse(iso || ''); return now - (Number.isFinite(t) ? t : Date.parse(fallbackDate + 'T12:00:00Z')); };
+  const todo = [];
+  for (const ed of editions) {
+    if (Date.parse(ed.date + 'T12:00:00Z') < cutoff) continue;
+    const ep = index.episodes[ed.date];
+    const script = scriptState(ed.date);
+    if (FORCE === ed.date) { todo.push({ ed, upgrade: !!ep }); continue; }
+    if (!ep) {
+      if (script === 'valid' || NO_WAIT) { todo.push({ ed, upgrade: false }); continue; }
+      // 'invalid' is a decision, not a gap — the run wrote a script and it failed its locks, so narrate.
+      if (script === 'invalid') { todo.push({ ed, upgrade: false }); continue; }
+      const age = ageOf(ed.generated_at, ed.date);
+      if (age >= GRACE_MS) { todo.push({ ed, upgrade: false }); continue; }
+      console.log(`${ed.date}: no dialogue script yet and the edition is ${Math.round(age / 60000)} min old — waiting (up to ${GRACE_MS / 3600000}h) rather than narrating it`);
+      continue;
+    }
+    // Already has audio. The only reason to make it again is a dialogue script that arrived after we narrated.
+    if (ep.format === 'narration' && script === 'valid') {
+      const age = ageOf(ep.generated_at, ed.date);
+      if (age < UPGRADE_MS) { console.log(`${ed.date}: narrated ${Math.round(age / 60000)} min ago but a valid dialogue script exists now — remaking it with both hosts`); todo.push({ ed, upgrade: true }); }
+      else console.log(`${ed.date}: narrated, and a dialogue script exists, but the episode is ${(age / 3600000).toFixed(1)}h old — leaving it (use --force DATE --label vN to replace it)`);
+    }
+  }
+  if (!todo.length) { console.log('nothing to do: every recent edition has the best audio available for it'); return; }
+  todo.splice(MAX);
 
   let failures = 0;
-  for (const ed of todo) {
+  for (const { ed, upgrade } of todo) {
     const seg = segmentsFor(ed);
     const reqs = requestsFor(seg);
     const chars = reqs.reduce((a, r) => a + (r.text ? r.text.length : 0), 0);
@@ -233,7 +279,7 @@ async function synthesize(ed, seg, label) {
     if (DRY) continue;
     try {
       const versions = versionsFor(index, ed.date);
-      const label = FORCE === ed.date ? LABEL : 'v1';
+      const label = FORCE === ed.date ? LABEL : (upgrade ? `v${versions.length + 1}` : 'v1');
       if (versions.some((v) => v.label === label)) throw new Error(`version "${label}" already exists for ${ed.date}; pick another label`);
       const a = await synthesize(ed, seg, label);
       const wide = path.join(AUDIO_DIR, `${ed.date}-og.png`);

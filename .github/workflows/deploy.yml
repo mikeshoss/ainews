@@ -48,7 +48,10 @@ jobs:
           AUDIO_BASE: ${{ vars.AUDIO_BASE }}
           FORCE_DATE: ${{ github.event.inputs.force_date }}
           FORCE_LABEL: ${{ github.event.inputs.label }}
-        run: node scripts/podcast.js
+        # The nightly safety-net run is the moment the wait is over: narrate anything that still has no
+        # dialogue script. Push-triggered runs wait, so an edition committed a minute before its script
+        # is not narrated by the build that the edition's own commit started.
+        run: node scripts/podcast.js ${{ github.event_name == 'schedule' && '--no-wait' || '' }}
       - name: Map episodes to Spotify (for "continue in Spotify" links)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
