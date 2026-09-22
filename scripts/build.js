@@ -104,6 +104,11 @@ const STATUS_LABEL = { proposed: 'Proposed', live: 'Live', dormant: 'Dormant', r
 const STATUS_ORDER = { live: 0, proposed: 1, dormant: 2, resolved: 3 };
 function loadStorylines(editions, weeks) {
   if (!fs.existsSync(STORY_DIR)) return [];
+  // Activity is measured the same way buildTopicIndex measures it for topic slugs, so the two never
+  // disagree about what "recently" means: a window of TREND_WINDOW_DAYS back from the newest edition.
+  const latestEdition = editions[0] ? editions[0].date : null;
+  const editionDates = editions.map((e) => e.date);                        // newest first
+  const windowEditions = latestEdition ? editionDates.filter((d) => daysBetween(latestEdition, d) < TREND_WINDOW_DAYS).length : 0;
   const list = fs.readdirSync(STORY_DIR).filter((f) => f.endsWith('.json')).map((f) => {
     const st = JSON.parse(fs.readFileSync(path.join(STORY_DIR, f), 'utf8'));
     st.id = st.id || f.slice(0, -5);
@@ -116,11 +121,22 @@ function loadStorylines(editions, weeks) {
     st.timeline.sort((a, b) => (a.date < b.date ? 1 : -1));
     st.lastActivity = [st.timeline[0] && st.timeline[0].date, st.current && st.current.date, ...st.connections.map((c) => c.week.date)].filter(Boolean).sort().pop() || st.opened;
     st.editions = new Set(st.timeline.map((t) => t.date));
+    // How much this arc actually moved lately. `recent` counts developments, not days: an arc with
+    // eighteen items this week and one with three both "moved", and only the count says which is which.
+    st.recent = latestEdition ? st.timeline.filter((t) => daysBetween(latestEdition, t.date) < TREND_WINDOW_DAYS).length : 0;
+    st.recentDays = latestEdition ? [...st.editions].filter((d) => daysBetween(latestEdition, d) < TREND_WINDOW_DAYS).length : 0;
+    st.streak = 0;
+    for (const d of editionDates) { if (st.editions.has(d)) st.streak++; else break; }
+    st.everyEdition = windowEditions > 0 && st.streak >= windowEditions;
+    st.quietDays = latestEdition && st.timeline[0] ? daysBetween(latestEdition, st.timeline[0].date) : null;
     return st;
   });
   return list.sort((a, b) => (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9) || (a.lastActivity < b.lastActivity ? 1 : -1) || a.name.localeCompare(b.name));
 }
-const movedRecently = (st, latestDate) => st.lastActivity && daysBetween(latestDate, st.lastActivity) < 7;
+// Most active first. `lastActivity` cannot order this list: nearly every live arc shares the newest
+// edition's date, so that sort fell through to the name and the strip came out alphabetical.
+const byActivity = (a, b) => b.recent - a.recent || b.streak - a.streak || b.timeline.length - a.timeline.length || a.name.localeCompare(b.name);
+const HOME_STORYLINES = 4;   // ranked rows on the home page; the rest are named on one line
 
 function buildTopicIndex(editions, weeks = []) {
   const topics = new Map();
@@ -366,17 +382,24 @@ function renderWeekCard(wk, base) {
 }
 
 // Home: one feed, dailies and weekly reviews interleaved newest-first (a week sorts before the daily of the same date).
-function renderHome(editions, trending, weeks, storylines) {
+function renderHome(editions, weeks, storylines) {
   const base = './';
-  const latest = editions[0] ? editions[0].date : null;
-  const live = storylines.filter((st) => st.status === 'live');
-  const trend = live.map((st) => `<a class="trend-chip${latest && movedRecently(st, latest) ? ' moved' : ''}" href="${base}storylines/${esc(st.id)}/">${esc(st.name)}${latest && movedRecently(st, latest) ? ' <span class="count">moved</span>' : ''}</a>`).join('');
+  const live = storylines.filter((st) => st.status === 'live').slice().sort(byActivity);
+  const top = live.slice(0, HOME_STORYLINES), rest = live.slice(HOME_STORYLINES);
+  const storyRows = top.map((st) => `<a class="story-row" href="${base}storylines/${esc(st.id)}/"><span class="story-name">${esc(st.name)}</span><span class="story-n">${st.recent}${st.everyEdition ? '<span class="story-run" title="a development in every edition this week">●</span>' : ''}</span></a>`).join('');
+  const quieter = rest.length ? `<p class="story-quiet"><span class="label">quieter</span>${rest.map((st) => `<a href="${base}storylines/${esc(st.id)}/">${esc(st.name)}</a>`).join('<span class="sep">·</span>')}</p>` : '';
+  const anyRun = top.some((st) => st.everyEdition);
   const feed = [...editions.map((ed) => ({ key: `${ed.date}-0`, html: renderEditionCard(ed, base) })), ...weeks.map((wk) => ({ key: `${wk.date}-1`, html: renderWeekCard(wk, base) }))]
     .sort((a, b) => (a.key < b.key ? 1 : -1)).map((x) => x.html).join('\n');
   const body = `<section class="hero">
   <h1>${esc(SITE_NAME)}</h1>
   <p class="lede">${esc(SITE_TAGLINE)}</p>
-  ${live.length ? `<div class="trend-strip"><span class="label">Storylines</span>${trend}<a class="more" href="${base}storylines/">all storylines →</a></div>` : ''}
+  ${live.length ? `<div class="storylines">
+    <div class="story-head"><span class="label">Storylines</span><span class="story-window">developments · last 7 days</span></div>
+    ${storyRows}
+    ${quieter}
+    <p class="story-foot">${anyRun ? '<span class="story-run">●</span> in every edition this week' : ''}<a class="more" href="${base}storylines/">all storylines →</a></p>
+  </div>` : ''}
   ${renderSubscribe(base, 'hero')}
 </section>
 <section class="editions">
@@ -473,10 +496,10 @@ function renderWeekPage(wk, weeks, idx) {
 // ---------- storylines ----------
 const STORY_LEDE = 'The arcs that keep going: where each one stands as of its latest update, how that has changed, and what would settle it. Curated, capped at twelve, never deleted.';
 function renderStorylineCard(st, base, latest) {
-  const moved = latest && movedRecently(st, latest);
+  const moved = st.recent > 0;
   const first = st.current ? paragraphs(st.current.text)[0] : '';
   return `<article class="card card-link story-card status-${esc(st.status)}">
-  <div class="eyebrow"><span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span>${moved ? ' · <span class="moved">moved this week</span>' : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} across ${st.editions.size} edition${st.editions.size === 1 ? '' : 's'}${st.current ? ` · updated ${esc(shortDate(st.current.date))}` : ''}</div>
+  <div class="eyebrow"><span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span>${moved ? ` · <span class="moved">${st.recent} this week</span>` : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} across ${st.editions.size} edition${st.editions.size === 1 ? '' : 's'}${st.current ? ` · updated ${esc(shortDate(st.current.date))}` : ''}</div>
   <h2><a href="${base}storylines/${esc(st.id)}/" class="stretch">${esc(st.name)}</a></h2>
   <p class="muted">${esc(st.frame)}</p>
   ${st.current ? `<p>${esc(first)}</p>` : ''}
@@ -526,7 +549,7 @@ function renderStorylinePage(st, storylines, editions) {
   const questions = (st.questions || []).slice().reverse();
   const body = `<article class="edition storyline">
   <header class="edition-header">
-    <div class="eyebrow"><a href="${base}storylines/">Storylines</a> / <span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span> · opened ${esc(shortDate(st.opened))}${latest && movedRecently(st, latest) ? ' · <span class="moved">moved this week</span>' : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} · ${st.states.length} update${st.states.length === 1 ? '' : 's'}</div>
+    <div class="eyebrow"><a href="${base}storylines/">Storylines</a> / <span class="badge status-badge">${esc(STATUS_LABEL[st.status] || st.status)}</span> · opened ${esc(shortDate(st.opened))}${st.recent ? ` · <span class="moved">${st.recent} this week</span>` : ''} · ${st.timeline.length} item${st.timeline.length === 1 ? '' : 's'} · ${st.states.length} update${st.states.length === 1 ? '' : 's'}</div>
     <h1>${esc(st.name)}</h1>
     <p class="lede">${esc(st.frame)}</p>
     <div class="settle"><strong>What would settle it</strong><p>${esc(st.question)}</p></div>
@@ -884,11 +907,26 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .card-link .player,.card-link .topics{position:relative;z-index:1}
 .card p{margin:0 0 .8em}
 .hero{margin-bottom:32px}
-.trend-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px}
-.trend-strip .label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:4px}
-.trend-chip{text-decoration:none;color:var(--fg);font-size:.88rem;border:1px solid var(--line);border-radius:14px;padding:4px 12px;line-height:1.4}
-.trend-chip:hover{border-color:var(--accent);color:var(--accent)}
-.trend-strip .more{margin-left:auto;font-size:.85rem;text-decoration:none}
+/* The storylines block. Rows, not chips: nine wrapped pills filled a whole phone screen before the
+   first edition, and carried a badge that fired on eight of them. A row per arc with its count of
+   recent developments ranks itself, and the quieter ones still get named. */
+.storylines{padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px}
+.story-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:6px}
+.story-head .label{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.story-window{font-size:.72rem;color:var(--muted)}
+.story-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:7px 0;text-decoration:none;color:var(--fg);border-bottom:1px solid var(--line)}
+.story-row:last-of-type{border-bottom:none}
+.story-row:hover .story-name{color:var(--accent)}
+.story-name{font-size:.95rem;line-height:1.35}
+.story-n{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem;white-space:nowrap}
+.story-run{color:var(--accent);margin-left:5px;font-size:.7rem;vertical-align:.15em}
+.story-quiet{margin:10px 0 0;font-size:.82rem;line-height:1.6;color:var(--muted)}
+.story-quiet .label{text-transform:uppercase;letter-spacing:.06em;font-size:.7rem;margin-right:8px}
+.story-quiet a{color:var(--muted);text-decoration:none}
+.story-quiet a:hover{color:var(--accent)}
+.story-quiet .sep{margin:0 6px;opacity:.5}
+.story-foot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:12px 0 0;font-size:.75rem;color:var(--muted)}
+.story-foot .more{font-size:.8rem;text-decoration:none;margin-left:auto}
 .pager{display:flex;justify-content:space-between;margin-top:48px;padding-top:18px;border-top:1px solid var(--line)}
 .pager a{text-decoration:none}
 .week{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 26px 18px}
@@ -914,7 +952,7 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 @media (hover:none){.menu:hover .menu-list{display:none}.menu.open .menu-list{display:block}}
 .storyline-chip{border-color:var(--accent);color:var(--accent);font-weight:600}.storyline-chip::before{content:"⟶ ";opacity:.7}
 .status-badge{background:var(--accent)}.status-proposed .status-badge{background:var(--mixed);color:#111}.status-dormant .status-badge{background:var(--muted)}.status-resolved .status-badge{background:var(--good);color:#111}
-.moved{color:var(--good);font-weight:600}.trend-chip.moved{border-color:var(--good)}
+.moved{color:var(--good);font-weight:600}
 .settle{border:1px solid var(--line);border-left:4px solid var(--mixed);border-radius:8px;padding:12px 16px;margin:18px 0}.settle p{margin:.3em 0 0}.resolved-box{border-left-color:var(--good)}
 .asof{font-size:.85rem;font-weight:400;text-transform:none;letter-spacing:0;margin-left:8px}
 .changed{border-top:1px solid var(--line);padding-top:10px;margin-top:14px}
@@ -992,7 +1030,9 @@ body.has-player{padding-bottom:84px}
 .hp{position:absolute;left:-9999px}
 .site-footer{border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;padding-block:28px 36px;line-height:1.7}
 .site-footer p{margin:0 0 .6em}
-@media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}}
+@media (max-width:520px){h1{font-size:1.6rem}main{padding-block:20px 36px}
+.storylines{padding:12px 14px}.story-name{font-size:.9rem}.story-row{padding:6px 0}
+.story-head{flex-wrap:wrap;gap:2px 10px}.story-foot{flex-wrap:wrap;gap:4px 10px}}
 `;
 
 
@@ -1287,7 +1327,7 @@ function main() {
   write('style.css', CSS.trim() + '\n');
   write('player.js', PLAYER_JS);
   if (process.env.INDEXNOW_KEY) write(`${process.env.INDEXNOW_KEY}.txt`, process.env.INDEXNOW_KEY);
-  write('index.html', renderHome(editions, trending, weeks, storylines));
+  write('index.html', renderHome(editions, weeks, storylines));
   write('daily/index.html', renderEditionsIndex(editions));
   write('week/index.html', renderWeekIndex(weeks));
   write('storylines/index.html', renderStorylinesIndex(storylines, editions));
