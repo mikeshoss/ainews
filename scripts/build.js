@@ -920,11 +920,13 @@ h3 a:hover{border-bottom-color:var(--accent);color:var(--accent)}
 .story-name{font-size:.95rem;line-height:1.35}
 .story-n{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem;white-space:nowrap}
 .story-run{color:var(--accent);margin-left:5px;font-size:.7rem;vertical-align:.15em}
-.story-quiet{margin:10px 0 0;font-size:.82rem;line-height:1.6;color:var(--muted)}
-.story-quiet .label{text-transform:uppercase;letter-spacing:.06em;font-size:.7rem;margin-right:8px}
+/* The quieter arcs are a different kind of thing from the ranked rows, so they get a rule above them
+   and a label with its own shape — without it the block read as one undifferentiated list. */
+.story-quiet{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:.82rem;line-height:1.7;color:var(--muted)}
+.story-quiet .label{display:inline-block;text-transform:uppercase;letter-spacing:.07em;font-size:.66rem;font-weight:600;color:var(--fg);opacity:.75;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin-right:9px;vertical-align:1px}
 .story-quiet a{color:var(--muted);text-decoration:none}
 .story-quiet a:hover{color:var(--accent)}
-.story-quiet .sep{margin:0 6px;opacity:.5}
+.story-quiet .sep{margin:0 6px;opacity:.45}
 .story-foot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:12px 0 0;font-size:.75rem;color:var(--muted)}
 .story-foot .more{font-size:.8rem;text-decoration:none;margin-left:auto}
 .pager{display:flex;justify-content:space-between;margin-top:48px;padding-top:18px;border-top:1px solid var(--line)}
