@@ -1,0 +1,42 @@
+name: Audio audit — does the episode say what the script says?
+
+# gpt-4o-mini-tts is generative, not a reader: it can return perfectly good audio that quietly left a
+# sentence out. Every other lock in this repo stops at the script, so this is the one that checks the
+# last mile. podcast.js now runs the same check on each segment as it synthesises; this workflow points
+# it at an episode that is already published, which is the only way to answer "has this been happening?"
+
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Episode to audit (YYYY-MM-DD), or blank for every episode with a dialogue script'
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check the audio against the script
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+          D: ${{ github.event.inputs.date }}
+        run: |
+          set -u
+          fail=0
+          dates="$D"
+          if [ -z "$dates" ]; then dates=$(ls data/*.script.json | sed 's|data/||; s|\.script\.json||'); fi
+          for d in $dates; do
+            echo "::group::$d"
+            node scripts/verify-audio.js "$d" || fail=1
+            echo "::endgroup::"
+          done
+          [ "$fail" = "0" ] || echo "::warning::at least one episode does not match its script"
+          exit 0

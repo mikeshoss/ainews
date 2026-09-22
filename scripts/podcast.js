@@ -25,6 +25,7 @@ const { execFileSync, spawnSync } = require('child_process');
 const { loadEditions } = require('./build.js');
 const { longDate, PODCAST } = require('./lib.js');
 const { narrationFor } = require('./narrate.js');
+const verify = require('./verify-audio.js');
 const { coverSvg, wideCoverSvg } = require('./cover.js');
 const r2 = require('./r2.js');
 
@@ -35,12 +36,17 @@ const GRACE_MS = 2 * 60 * 60 * 1000;      // how long to wait for a dialogue scr
 const UPGRADE_MS = 6 * 60 * 60 * 1000;    // how late a dialogue script may arrive and still replace a narration
 const MAX_PER_RUN = 3;             // cost cap
 const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
+const VERIFY = !process.argv.includes('--no-verify');   // transcribe each segment and check it says what we sent
+const VERIFY_TRIES = 3;            // how many times to re-speak a segment that came back missing words
 const MODEL = 'gpt-4o-mini-tts';
 const PAUSE_TURN = 0.45;           // seconds of silence between speaker turns
 const PAUSE_PARA = 0.7;            // between narration paragraphs / blocks
 const INSTRUCTIONS = {
-  dialogue: 'You are a co-host of a calm, credible morning news briefing about AI. Conversational and warm, natural pacing, no dramatisation or sales energy. Read numbers, currencies, percentages and acronyms clearly. Brief natural pauses at commas and full stops.',
-  narration: 'You are the narrator of a calm, credible morning news briefing about AI. Measured, clear, unhurried; a professional newsreader, not a robot. Read numbers, currencies, percentages and acronyms clearly. Brief natural pauses at commas and full stops.',
+  // The constraint comes first, deliberately. This model is generative, not a reader: told only to be "a
+  // conversational co-host" it performs, and on 2026-09-22 it smoothed "I'm Maya." out of the intro entirely.
+  // Every word here has already passed the script locks, so the only correct behaviour is to say all of them.
+  dialogue: 'Read the text exactly as written, word for word. Do not add, omit, shorten, reorder or paraphrase anything, including short sentences at the end of a passage. Deliver it as a co-host of a calm, credible morning news briefing about AI: warm, natural pacing, no dramatisation or sales energy. Read numbers, currencies, percentages and acronyms clearly. Brief natural pauses at commas and full stops.',
+  narration: 'Read the text exactly as written, word for word. Do not add, omit, shorten, reorder or paraphrase anything. Deliver it as the narrator of a calm, credible morning news briefing about AI: measured, clear, unhurried; a professional newsreader, not a robot. Read numbers, currencies, percentages and acronyms clearly. Brief natural pauses at commas and full stops.',
 };
 
 const args = process.argv.slice(2);
@@ -182,6 +188,26 @@ function versionsFor(index, date) {
   return (index.versions[date] = index.versions[date] || []);
 }
 
+// Speak one segment and check the audio actually contains it. gpt-4o-mini-tts is generative: it can drop a
+// trailing sentence and return perfectly valid audio. Every editorial lock in this repo stops at the script,
+// so without this the last mile is unchecked — which is how "I'm Maya." was lost on 2026-09-22.
+async function speakVerified(req, seg, outFile) {
+  let last = null;
+  for (let attempt = 1; attempt <= (VERIFY ? VERIFY_TRIES : 1); attempt++) {
+    await tts(req, seg.instructions, outFile);
+    if (!VERIFY) return;
+    let heard;
+    try { heard = await verify.transcribe(fs.readFileSync(outFile), path.basename(outFile)); }
+    catch (e) { console.log(`    cannot verify this segment (${e.message}) — keeping it`); return; }
+    const r = verify.check({ hosts: {}, blocks: [{ type: 'segment', lines: [{ host: 'x', text: req.text }] }] }, heard);
+    if (!r.missing.length) { if (attempt > 1) console.log(`    verified on attempt ${attempt}`); return; }
+    last = r.missing;
+    console.log(`    attempt ${attempt}: ${r.missing.length} sentence(s) not in the audio — ${r.missing[0].why}`);
+  }
+  // Publishing audio that does not match the transcript we publish beside it is worse than publishing nothing.
+  throw new Error(`segment still wrong after ${VERIFY_TRIES} attempts: ${last.map((m) => `"${m.sentence.slice(0, 60)}" (${m.why})`).join('; ')}`);
+}
+
 async function synthesize(ed, seg, label) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `ep-${ed.date}-`));
   const reqs = requestsFor(seg);
@@ -189,7 +215,9 @@ async function synthesize(ed, seg, label) {
   let n = 0;
   for (const r of reqs) {
     const f = path.join(tmp, `seg-${String(n++).padStart(3, '0')}.mp3`);
-    if (r.pause) silence(r.pause, f); else { process.stdout.write(`  tts ${r.voice} ${r.text.length} chars\n`); await tts(r, seg.instructions, f); }
+    if (r.pause) { silence(r.pause, f); list.push(`file '${f}'`); continue; }
+    process.stdout.write(`  tts ${r.voice} ${r.text.length} chars\n`);
+    await speakVerified(r, seg, f);
     list.push(`file '${f}'`);
   }
   const listFile = path.join(tmp, 'list.txt');
