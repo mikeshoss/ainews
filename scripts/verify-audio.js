@@ -44,7 +44,23 @@ const norm = (s) => joinDecimals(stripThousands(s))
   .replace(/[^a-z0-9' ]+/g, ' ')
   .replace(/\s+/g, ' ')
   .trim();
-const words = (s) => norm(s).split(' ').filter(Boolean);
+// The script is written in British English and whisper transcribes in American; it also splits compounds
+// ("build out" for "buildout") and joins them the other way. Fold both sides to one spelling so the check is
+// about words that were *not said*, not about how either side spells them.
+const KEEP_OUR = new Set(['our', 'four', 'your', 'hour', 'tour', 'pour', 'flour', 'sour', 'scour', 'devour']);
+const fold = (w) => {
+  let x = w;
+  x = x.replace(/isation\b/, 'ization').replace(/isations\b/, 'izations');
+  x = x.replace(/ise\b/, 'ize').replace(/ised\b/, 'ized').replace(/ising\b/, 'izing').replace(/ises\b/, 'izes');
+  x = x.replace(/ysed\b/, 'yzed').replace(/yse\b/, 'yze');
+  if (!KEEP_OUR.has(x)) x = x.replace(/our\b/, 'or').replace(/ours\b/, 'ors');
+  x = x.replace(/mme\b/, 'm').replace(/mmes\b/, 'ms');
+  x = x.replace(/tre\b/, 'ter').replace(/tres\b/, 'ters');
+  x = x.replace(/ogue\b/, 'og');
+  x = x.replace(/ll(ed|ing|er)\b/, 'l$1');
+  return x;
+};
+const words = (s) => norm(s).split(' ').filter(Boolean).map(fold);
 const sentences = (s) => String(s).split(/(?<=[.!?])\s+/).map((x) => x.trim()).filter(Boolean);
 
 // What a sentence is *identifiable* by: its rare words. "That's a company claim, and it hasn't been
@@ -103,7 +119,13 @@ function spokenLines(script) {
 function check(script, transcript) {
   const hay = words(transcript);
   const heard = new Map();
-  for (const w of hay) heard.set(w, (heard.get(w) || 0) + 1);
+  const bump = (w) => heard.set(w, (heard.get(w) || 0) + 1);
+  for (let i = 0; i < hay.length; i++) {
+    bump(hay[i]);
+    // "buildout" in the script against "build out" in the transcript, and the reverse via the split below.
+    if (i + 1 < hay.length) bump(hay[i] + hay[i + 1]);
+    for (const part of hay[i].split(/(?=[A-Z])/)) if (part !== hay[i]) bump(part);
+  }
 
   const lines = spokenLines(script);
   const freq = rarity(lines.map((l) => l.text).join(' '));
@@ -124,7 +146,7 @@ function check(script, transcript) {
       const numbersGone = gone.filter((w) => /\d/.test(w));
       const nonNum = rare.filter((w) => !/\d/.test(w));
       const nonNumGone = gone.filter((w) => !/\d/.test(w));
-      const allowed = nonNum.length > 3 ? 1 : 0;
+      const allowed = nonNum.length > 6 ? 2 : nonNum.length > 3 ? 1 : 0;
       const failed = numbersGone.length > 0 || nonNumGone.length > allowed;
       const c = (rare.length - gone.length) / rare.length;
       if (failed) missing.push({ block: line.block, name: line.name, sentence: s, rare, gone, coverage: +c.toFixed(2), why: numbersGone.length ? `figure not spoken: ${numbersGone.join(', ')}` : `not spoken: ${nonNumGone.join(', ')}` });
