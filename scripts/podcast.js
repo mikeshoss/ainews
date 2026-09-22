@@ -37,7 +37,7 @@ const UPGRADE_MS = 6 * 60 * 60 * 1000;    // how late a dialogue script may arri
 const MAX_PER_RUN = 3;             // cost cap
 const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
 const VERIFY = !process.argv.includes('--no-verify');   // transcribe each segment and check it says what we sent
-const VERIFY_TRIES = 3;            // how many times to re-speak a segment that came back missing words
+const VERIFY_ROUNDS = 3;           // passes of transcribe-and-repair before giving up on an episode
 const MODEL = 'gpt-4o-mini-tts';
 const PAUSE_TURN = 0.45;           // seconds of silence between speaker turns
 const PAUSE_PARA = 0.7;            // between narration paragraphs / blocks
@@ -188,44 +188,50 @@ function versionsFor(index, date) {
   return (index.versions[date] = index.versions[date] || []);
 }
 
-// Speak one segment and check the audio actually contains it. gpt-4o-mini-tts is generative: it can drop a
-// trailing sentence and return perfectly valid audio. Every editorial lock in this repo stops at the script,
-// so without this the last mile is unchecked — which is how "I'm Maya." was lost on 2026-09-22.
-async function speakVerified(req, seg, outFile) {
-  let last = null;
-  for (let attempt = 1; attempt <= (VERIFY ? VERIFY_TRIES : 1); attempt++) {
-    await tts(req, seg.instructions, outFile);
-    if (!VERIFY) return;
-    let heard;
-    try { heard = await verify.transcribe(fs.readFileSync(outFile), path.basename(outFile)); }
-    catch (e) { console.log(`    cannot verify this segment (${e.message}) — keeping it`); return; }
-    const r = verify.check({ hosts: {}, blocks: [{ type: 'segment', lines: [{ host: 'x', text: req.text }] }] }, heard);
-    if (!r.missing.length) { if (attempt > 1) console.log(`    verified on attempt ${attempt}`); return; }
-    last = r.missing;
-    console.log(`    attempt ${attempt}: ${r.missing.length} sentence(s) not in the audio — ${r.missing[0].why}`);
-  }
-  // Publishing audio that does not match the transcript we publish beside it is worse than publishing nothing.
-  throw new Error(`segment still wrong after ${VERIFY_TRIES} attempts: ${last.map((m) => `"${m.sentence.slice(0, 60)}" (${m.why})`).join('; ')}`);
-}
+// The script as verify-audio.js wants it: every line the episode is supposed to speak, in order.
+const asScript = (seg) => ({ hosts: {}, blocks: [{ type: 'episode', lines: seg.lines.filter((l) => l.text).map((l) => ({ host: 'x', text: l.text })) }] });
 
 async function synthesize(ed, seg, label) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `ep-${ed.date}-`));
   const reqs = requestsFor(seg);
-  const list = [];
-  let n = 0;
-  for (const r of reqs) {
-    const f = path.join(tmp, `seg-${String(n++).padStart(3, '0')}.mp3`);
-    if (r.pause) { silence(r.pause, f); list.push(`file '${f}'`); continue; }
-    process.stdout.write(`  tts ${r.voice} ${r.text.length} chars\n`);
-    await speakVerified(r, seg, f);
-    list.push(`file '${f}'`);
+  const files = [];
+  for (const [i, r] of reqs.entries()) {
+    const f = path.join(tmp, `seg-${String(i).padStart(3, '0')}.mp3`);
+    if (r.pause) silence(r.pause, f); else { process.stdout.write(`  tts ${r.voice} ${r.text.length} chars\n`); await tts(r, seg.instructions, f); }
+    files.push(f);
   }
   const listFile = path.join(tmp, 'list.txt');
-  fs.writeFileSync(listFile, list.join('\n'));
   const out = path.join(AUDIO_DIR, `${ed.date}${label && label !== 'v1' ? '-' + label : ''}.mp3`);
   // Re-encode on concat so segments with different encoder settings join cleanly; mono 64k is plenty for speech.
-  sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
-    '-metadata', `title=${PODCAST.title} — ${longDate(ed.date)}`, '-metadata', `artist=${PODCAST.title}`, '-metadata', `album=${PODCAST.title}`, '-metadata', `album_artist=${PODCAST.presenter}`, out]);
+  const join = () => {
+    fs.writeFileSync(listFile, files.map((f) => `file '${f}'`).join('\n'));
+    sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
+      '-metadata', `title=${PODCAST.title} — ${longDate(ed.date)}`, '-metadata', `artist=${PODCAST.title}`, '-metadata', `album=${PODCAST.title}`, '-metadata', `album_artist=${PODCAST.presenter}`, out]);
+  };
+  join();
+
+  // Does the episode say what the script says? gpt-4o-mini-tts is generative and can return good audio that
+  // quietly left a sentence out — on 2026-09-22 it dropped "I'm Maya." and we published it. One transcription
+  // of the finished episode costs ~30s and about 10c, and whisper is more accurate over a whole episode than
+  // over a five-second clip; only the segments carrying a missing sentence are spoken again.
+  if (VERIFY) {
+    for (let round = 1; round <= VERIFY_ROUNDS; round++) {
+      let heard;
+      try { heard = await verify.transcribe(fs.readFileSync(out), path.basename(out)); }
+      catch (e) { console.log(`  cannot verify this episode (${e.message}) — publishing it unchecked`); break; }
+      const r = verify.check(asScript(seg), heard);
+      if (!r.missing.length) { console.log(`  verified: all ${r.total} checkable sentences are in the audio`); break; }
+      const bad = new Set();
+      for (const m of r.missing) { const i = reqs.findIndex((q) => q.text && q.text.includes(m.sentence)); if (i >= 0) bad.add(i); }
+      console.log(`  round ${round}: ${r.missing.length} sentence(s) missing — ${r.missing.map((m) => m.why).join('; ')}`);
+      if (!bad.size || round === VERIFY_ROUNDS) {
+        fs.rmSync(tmp, { recursive: true, force: true });
+        throw new Error(`audio does not match the script after ${round} attempt(s): ${r.missing.map((m) => `"${m.sentence.slice(0, 60)}" (${m.why})`).join('; ')}`);
+      }
+      for (const i of bad) { console.log(`    re-speaking segment ${i}`); await tts(reqs[i], seg.instructions, files[i]); }
+      join();
+    }
+  }
   const png = makeCover(ed);
   if (png) embedCover(out, png);
   const seconds = Math.round(parseFloat(sh('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', out])));
