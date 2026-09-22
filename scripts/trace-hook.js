@@ -100,8 +100,17 @@ process.stdin.on('end', () => {
     fs.appendFileSync(path.join(dir, `${key}.jsonl`), line);
 
     // Keep the raw transcript of the main session (not subagent sidechains) next to the events.
+    // More than one session can share a key — the catch-up routine runs as AINEWS_RUN=daily too — and this
+    // file is written whole each time, so a second session would replace the first one's record. Within a
+    // session the transcript only grows, so "never replace a longer one" keeps the run that did the work and
+    // puts the other session beside it rather than throwing it away.
     if (transcript_path && !ev.agent_id && fs.existsSync(transcript_path)) {
-      try { fs.writeFileSync(path.join(dir, `${key}.transcript.jsonl`), redact(fs.readFileSync(transcript_path, 'utf8'))); } catch { /* best effort */ }
+      try {
+        const primary = path.join(dir, `${key}.transcript.jsonl`);
+        const body = redact(fs.readFileSync(transcript_path, 'utf8'));
+        if (!fs.existsSync(primary) || fs.statSync(primary).size <= Buffer.byteLength(body)) fs.writeFileSync(primary, body);
+        else fs.writeFileSync(path.join(dir, `${key}.transcript.${String(ev.session_id || 'other').slice(0, 8)}.jsonl`), body);
+      } catch { /* best effort */ }
     }
   } catch { /* never block the harness */ }
   process.exit(0);

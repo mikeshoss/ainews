@@ -70,23 +70,36 @@ function costOf(u) {
 }
 const addUsage = (a, b) => { if (!b) return a; if (!a) return { ...b }; for (const k of ['messages', 'input', 'output', 'cache_read', 'cache_write_5m', 'cache_write_1h']) a[k] += b[k] || 0; return a; };
 
+// More than one session can write to the same trace key — the catch-up routine runs under AINEWS_RUN=daily
+// too, so on a day it fires there are two sessions in DATE.jsonl. Each Stop carries its own session's usage
+// *cumulatively*, so the last Stop of each session is that session's total; taking the last Stop in the file
+// would report the second session's total as the day's, and measuring first-event-to-last-event would call
+// two runs five hours apart one five-hour run.
 function runFor(date) {
   const file = path.join(ROOT, 'trace', `${date}.jsonl`);
   if (!fs.existsSync(file)) return null;
   const evs = fs.readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-  const run = { started: null, ended: null, minutes: 0, tools: {}, tool_calls: 0, subagents: 0, email_sent: false, usage: null, subagent_usage: null, usage_complete: false };
+  const run = { started: null, ended: null, minutes: 0, sessions: 0, tools: {}, tool_calls: 0, subagents: 0, email_sent: false, usage: null, subagent_usage: null, usage_complete: false };
+  let sessionStart = null, sessionEnd = null, sessionUsage = null;
+  const closeSession = () => {
+    if (sessionUsage) run.usage = addUsage(run.usage, sessionUsage);
+    if (sessionStart && sessionEnd) run.minutes += Math.max(0, (new Date(sessionEnd) - new Date(sessionStart)) / 60000);
+    sessionStart = sessionEnd = sessionUsage = null;
+  };
   for (const e of evs) {
-    if (e.event === 'SessionStart' && !run.started) run.started = e.t;
+    if (e.event === 'SessionStart') { closeSession(); run.sessions++; sessionStart = e.t; if (!run.started) run.started = e.t; }
+    if (sessionStart) sessionEnd = e.t;
     run.ended = e.t;
     if (e.event === 'PostToolUse') { run.tool_calls++; run.tools[e.tool_name] = (run.tools[e.tool_name] || 0) + 1; if (/gmail.*send_message/i.test(e.tool_name || '')) run.email_sent = true; }
     if (e.event === 'SubagentStop') { run.subagents++; if (e.usage) run.subagent_usage = addUsage(run.subagent_usage, e.usage); }
-    if (e.event === 'Stop' && e.usage) run.usage = e.usage; // the last Stop carries the whole session
+    if (e.event === 'Stop' && e.usage) sessionUsage = e.usage; // cumulative: the last one of this session is its total
   }
+  closeSession();
+  run.minutes = Math.round(run.minutes);
   // Older traces have no usage on the Stop event; sum the kept transcript instead (main session only).
   const transcript = path.join(ROOT, 'trace', `${date}.transcript.jsonl`);
   if (!run.usage && fs.existsSync(transcript)) run.usage = usageOf(transcript);
   run.usage_complete = !!(run.usage && (run.subagents === 0 || run.subagent_usage));
-  if (run.started && run.ended) run.minutes = Math.round((new Date(run.ended) - new Date(run.started)) / 60000);
   run.claude_usd = costOf(run.usage) + costOf(run.subagent_usage);
   return run;
 }
@@ -267,6 +280,7 @@ function printTable(rows, snaps, ga, gaError, op3Error) {
     if (r.edition && !r.edition.script) notes.push('no script (narrated)');
     if (r.run && !r.run.email_sent) notes.push('no email');
     if (r.run && r.run.subagents) notes.unshift(`${r.run.subagents} agents`);
+    if (r.run && r.run.sessions > 1) notes.push(`${r.run.sessions} sessions on this trace (daily + catch-up); time is their sum, not end-to-end`);
     if (r.week) notes.push(`+ week in review: ${r.week.minutes}m, $${r.week.claude_usd}${r.week.usage_complete ? '' : ' (main only)'}${r.week.email_sent ? '' : ', no email'}`);
     const v = [r.date, r.edition && r.edition.items, r.run && `${r.run.minutes}m`, r.run && r.run.tool_calls,
       r.run ? r.cost.claude_usd.toFixed(2) : null, r.podcast ? r.cost.tts_usd.toFixed(2) : null, r.run || r.podcast ? r.cost.total_usd.toFixed(2) : null,
