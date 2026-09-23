@@ -183,6 +183,13 @@ Then:
 2. Launch one general-purpose subagent as an adversarial fact-checker. Give it the full contents of `data/DATE.json` and `data/DATE.script.json` and this instruction: *"For every statement in the script, find the sentence in the edition that supports it. List every statement that is not supported, adds a detail, changes a number, softens or drops a caveat, or characterises something the edition does not — quote the script line and the closest edition text. If everything is supported, reply exactly: NO UNSUPPORTED STATEMENTS."* Fix everything it lists, re-run the validator, and repeat — up to 3 rounds.
 3. If it still cannot be made clean, delete `data/DATE.script.json` and say so in your report; the episode will be narrated from the edition text instead. A missing script is acceptable; an unlocked script is not.
 
+**If the audio check fails, do not reword the script to get past it.** `scripts/podcast.js` transcribes the
+finished episode and stops the deploy when a sentence is missing from it. That is a fault in the synthesiser,
+not in your writing. On 2026-09-23 the response was to rewrite accurate lines until the check passed, which
+dropped the caveat "preprints" and a real price from the edition — the check made the briefing worse. Never
+trade a fact, a figure or a caveat for a green build. Leave the script as written, say in your report that
+audio verification failed and which words it could not confirm, and let a human decide.
+
 ## 4. Validate, build, publish
 
 ```

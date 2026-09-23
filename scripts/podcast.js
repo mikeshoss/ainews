@@ -220,7 +220,8 @@ async function synthesize(ed, seg, label) {
       try { heard = await verify.transcribe(fs.readFileSync(out), path.basename(out)); }
       catch (e) { console.log(`  cannot verify this episode (${e.message}) — publishing it unchecked`); break; }
       const r = verify.check(asScript(seg), heard);
-      if (!r.missing.length) { console.log(`  verified: all ${r.total} checkable sentences are in the audio`); break; }
+      for (const w of r.warnings) console.log(`  note: ${w.why} — rest of the sentence is there, not treating it as missing`);
+      if (!r.missing.length) { console.log(`  verified: no sentence missing from the audio (${r.total} checked, ${r.warnings.length} heard differently)`); break; }
       const bad = new Set();
       for (const m of r.missing) { const i = reqs.findIndex((q) => q.text && q.text.includes(m.sentence)); if (i >= 0) bad.add(i); }
       console.log(`  round ${round}: ${r.missing.length} sentence(s) missing — ${r.missing.map((m) => m.why).join('; ')}`);

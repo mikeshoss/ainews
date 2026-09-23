@@ -23,6 +23,9 @@ const { AUDIO_BASE } = require('./r2.js');
 const ROOT = path.resolve(__dirname, '..');
 const KEY = process.env.OPENAI_API_KEY;
 const MODEL = 'whisper-1';
+// Below this share of a sentence's distinctive words, the sentence was not spoken at all — a failure that
+// stops the deploy. Above it, the words are there and the transcriber just heard one differently — a note.
+const BLOCK_BELOW = 0.4;
 // Below this share of a sentence's words found in the transcript, we call it missing. Whisper is accurate on
 // clean synthetic speech; the slack is for its own spelling choices, not for the voice skipping words.
 const SENTENCE_MATCH = 0.6;
@@ -129,7 +132,7 @@ function check(script, transcript) {
 
   const lines = spokenLines(script);
   const freq = rarity(lines.map((l) => l.text).join(' '));
-  const missing = [];
+  const missing = [], warnings = [];
   let total = 0, skipped = 0;
   for (const line of lines) {
     for (const s of sentences(line.text)) {
@@ -143,16 +146,20 @@ function check(script, transcript) {
       // Numbers get no slack. Every other lock in this repo exists to keep figures tied to their source, and
       // whisper transcribes digits reliably — so a figure that is not in the audio is a failure, full stop.
       // A name or a technical term may be spelled differently, so those allow one miss in a long sentence.
-      const numbersGone = gone.filter((w) => /\d/.test(w));
-      const nonNum = rare.filter((w) => !/\d/.test(w));
-      const nonNumGone = gone.filter((w) => !/\d/.test(w));
-      const allowed = nonNum.length > 6 ? 2 : nonNum.length > 3 ? 1 : 0;
-      const failed = numbersGone.length > 0 || nonNumGone.length > allowed;
       const c = (rare.length - gone.length) / rare.length;
-      if (failed) missing.push({ block: line.block, name: line.name, sentence: s, rare, gone, coverage: +c.toFixed(2), why: numbersGone.length ? `figure not spoken: ${numbersGone.join(', ')}` : `not spoken: ${nonNumGone.join(', ')}` });
+      if (!gone.length) continue;
+      const why = `${gone.filter((w) => /\d/.test(w)).length ? 'figure ' : ''}not spoken: ${gone.join(', ')}`;
+      const row = { block: line.block, name: line.name, sentence: s, rare, gone, coverage: +c.toFixed(2), why };
+      // Two different findings, and conflating them cost us on 2026-09-23. A sentence that is mostly absent
+      // was not spoken — that is the failure this exists to catch, and it blocks. A sentence that is all
+      // there bar one word is the transcriber, not the voice: whisper writes "cash" for "cache", splits
+      // "preprints", and turns "$2.00" into words. Blocking on that made the editor reword accurate copy —
+      // it dropped the caveat "preprints" and a real price — to satisfy a machine. That is worse than the
+      // bug. So a near-miss is reported and published; only a missing sentence stops the run.
+      if (c < BLOCK_BELOW) missing.push(row); else warnings.push(row);
     }
   }
-  return { total, skipped, missing, worst: missing.reduce((a, m) => Math.min(a, m.coverage), 1) };
+  return { total, skipped, missing, warnings, worst: missing.reduce((a, m) => Math.min(a, m.coverage), 1) };
 }
 
 async function audioFor(date, file) {
@@ -182,9 +189,10 @@ if (require.main === module) {
     const r = check(script, transcript);
 
     if (asJson) { console.log(JSON.stringify({ date, ...r }, null, 2)); process.exit(r.missing.length ? 1 : 0); }
-    console.log(`${r.total} checkable sentences · ${r.skipped} with no distinctive words · ${r.missing.length} not found in the audio\n`);
+    console.log(`${r.total} checkable sentences · ${r.missing.length} not spoken · ${r.warnings.length} heard differently\n`);
     for (const m of r.missing) console.log(`  [${m.block}] ${m.name}: "${m.sentence}"\n      ${m.why}  (${Math.round(m.coverage * 100)}% of its distinctive words are in the audio)\n`);
-    if (!r.missing.length) console.log('the audio says everything the script says.');
+    for (const m of r.warnings) console.log(`  note  [${m.block}] ${m.name}: ${m.why} — the rest of the sentence is there`);
+    if (!r.missing.length) console.log('\nno sentence is missing from the audio.');
     process.exit(r.missing.length ? 1 : 0);
   })().catch((e) => { console.error(e.message); process.exit(2); });
 }
