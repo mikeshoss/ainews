@@ -1,0 +1,48 @@
+name: Main guard — code reaches main by pull request only
+
+# Every push to main is performed by the same GitHub account, whether it is the 07:00 editorial routine or a
+# human at a keyboard, so a branch rule cannot tell them apart and must let both through. This workflow is
+# the tell-tale instead: a push to main that is not a merged pull request and changes anything outside the
+# content paths (data/, storylines/, trace/) fails loudly, and GitHub emails the owner. It does not block —
+# the routine's morning content pushes must never be at risk — it makes a bypass visible the same day.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Was this a merged pull request, or content only?
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          set -eu
+          merged=$(gh api "repos/$GITHUB_REPOSITORY/commits/$AFTER/pulls" --jq '[.[] | select(.merged_at != null)] | length')
+          if [ "$merged" != "0" ]; then echo "merged pull request — fine"; exit 0; fi
+          # A brand-new branch has an all-zero "before"; compare against the parent instead.
+          case "$BEFORE" in 0000000*) BEFORE="$AFTER~1";; esac
+          changed=$(git diff --name-only "$BEFORE" "$AFTER")
+          code=$(printf '%s\n' "$changed" | grep -vE '^(data|storylines|trace)/' || true)
+          if [ -z "$code" ]; then echo "content only ($(printf '%s\n' "$changed" | wc -l | tr -d ' ') file(s)) — fine"; exit 0; fi
+          {
+            echo "## Direct push of code to main"
+            echo
+            echo "This push was not a merged pull request and changed files outside data/, storylines/ and trace/:"
+            echo
+            printf '%s\n' "$code" | sed 's/^/- /'
+            echo
+            echo "Code goes to main through a pull request from staging. If this was deliberate, note why here."
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::direct push of code to main: $(printf '%s' "$code" | tr '\n' ' ')"
+          exit 1

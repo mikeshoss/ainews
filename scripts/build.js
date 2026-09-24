@@ -14,6 +14,14 @@ const DATA_DIR = path.join(ROOT, 'data');
 const OUT_DIR = path.join(ROOT, 'site');
 const SITE_NAME = 'AI Edge Briefing';
 const SITE_TAGLINE = 'Daily, fact-first coverage of frontier AI — the advances, the research, and how it is being used for good and for harm.';
+// SITE_ENV=staging builds the private preview at staging.aiedgebriefing.com: noindex everywhere, robots
+// Disallow, no feeds or sitemap (a staging podcast.xml would carry the real show's permanent podcast:guid), a
+// visible ribbon, and no silent fallback to the production origin. With the flag absent — production — nothing
+// below changes a single byte of the output; that is verified by diffing builds, not assumed.
+const SITE_ENV = process.env.SITE_ENV || 'production';
+const STAGING = SITE_ENV === 'staging';
+if (STAGING && !process.env.SITE_URL) { console.error('SITE_ENV=staging but SITE_URL is not set — refusing to default to https://aiedgebriefing.com'); process.exit(2); }
+if (STAGING && /^https:\/\/(www\.)?aiedgebriefing\.com\/?$/.test(process.env.SITE_URL)) { console.error(`SITE_ENV=staging with the production SITE_URL ${process.env.SITE_URL} — refusing`); process.exit(2); }
 const SITE_URL = (process.env.SITE_URL || 'https://aiedgebriefing.com').replace(/\/$/, '');
 const REPO_URL = 'https://github.com/mikeshoss/ainews';
 const GA_ID = process.env.GA_MEASUREMENT_ID || '';
@@ -197,7 +205,7 @@ function layout({ title, description, base, body, canonical, og = {}, ld, nav })
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="theme-color" content="#121212">
-${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
+${STAGING ? '<meta name="robots" content="noindex,nofollow">\n' : ''}${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
 <meta property="og:site_name" content="${esc(SITE_NAME)}">
 <meta property="og:type" content="${esc(og.type || 'website')}">
 <meta property="og:title" content="${esc(og.title || title)}">
@@ -213,15 +221,15 @@ ${canonical ? `<meta property="og:url" content="${esc(canonical)}">` : ''}
 <link rel="icon" type="image/png" sizes="32x32" href="${base}favicon-32.png">
 <link rel="apple-touch-icon" href="${base}apple-touch-icon.png">
 <link rel="manifest" href="${base}site.webmanifest">
-<link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
+${STAGING ? '' : `<link rel="alternate" type="application/rss+xml" title="${esc(SITE_NAME)}" href="${base}feed.xml">
 <link rel="alternate" type="application/rss+xml" title="${esc(PODCAST.title)} — Podcast" href="${base}podcast.xml">
-<link rel="stylesheet" href="${base}style.css?v=${CSS_HASH}">
+`}<link rel="stylesheet" href="${base}style.css?v=${CSS_HASH}">
 ${jsonld(ld)}
 ${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${esc(GA_ID)}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${esc(GA_ID)}',{anonymize_ip:true});</script>` : ''}
 </head>
 <body>
-<header class="site-header">
+${STAGING ? stagingRibbon() : ''}<header class="site-header">
   <div class="wrap">
     <a class="brand" href="${base}">${esc(SITE_NAME)}</a>
     <nav>
@@ -581,6 +589,13 @@ function renderStorylinePage(st, storylines, editions) {
   return layout({ title: `${st.name} — Storylines — ${SITE_NAME}`, description: st.frame, base, body, canonical: url, nav: 'storylines',
     og: { type: 'article', title: `${st.name} — ${SITE_NAME}` },
     ld: { '@context': 'https://schema.org', '@type': 'CollectionPage', name: `${st.name} — ${SITE_NAME}`, url, description: st.frame, publisher: ORG, dateModified: current ? current.date : st.opened } });
+}
+// Staging only: an unmistakable banner. Its CSS is inlined here rather than added to the CSS constant, because
+// that constant feeds CSS_HASH and touching it would change production's style.css?v= on the next deploy.
+function stagingRibbon() {
+  return `<style>.staging-ribbon{position:sticky;top:0;z-index:1000;background:#b3261e;color:#fff;text-align:center;padding:6px 12px;font:600 13px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;letter-spacing:.04em}</style>
+<div class="staging-ribbon" role="status">STAGING PREVIEW · ${esc(new URL(SITE_URL).host)} · not the live site — nothing here is announced</div>
+`;
 }
 // A tiny page that sends old URLs to their new home (GitHub Pages cannot issue redirects).
 function renderRedirect(to) {
@@ -1328,7 +1343,9 @@ function main() {
   write('.nojekyll', '');
   write('style.css', CSS.trim() + '\n');
   write('player.js', PLAYER_JS);
-  if (process.env.INDEXNOW_KEY) write(`${process.env.INDEXNOW_KEY}.txt`, process.env.INDEXNOW_KEY);
+  if (process.env.INDEXNOW_KEY && !STAGING) write(`${process.env.INDEXNOW_KEY}.txt`, process.env.INDEXNOW_KEY);
+  // Cloudflare Pages honours _headers; this keeps images, json and txt out of search too, not just the html.
+  if (STAGING) write('_headers', '/*\n  X-Robots-Tag: noindex, nofollow\n');
   write('index.html', renderHome(editions, weeks, storylines));
   write('daily/index.html', renderEditionsIndex(editions));
   write('week/index.html', renderWeekIndex(weeks));
@@ -1339,10 +1356,10 @@ function main() {
   write('trends/index.html', renderRedirect(`${SITE_URL}/topics/`));
   for (const t of topics.values()) write(`trends/${t.slug}/index.html`, renderRedirect(`${SITE_URL}/topics/${t.slug}/`));
   write('editions/index.html', renderRedirect(`${SITE_URL}/daily/`));
-  write('feed.xml', renderFeed(editions, weeks));
+  if (!STAGING) write('feed.xml', renderFeed(editions, weeks));
   write('topics/index.html', renderTrendsIndex(topics, trending, editions));
   write('podcast/index.html', renderPodcastPage(editions, audio));
-  write('podcast.xml', renderPodcastFeed(editions, audio));
+  if (!STAGING) write('podcast.xml', renderPodcastFeed(editions, audio));   // a preview feed would carry the real podcast:guid
   for (const t of topics.values()) write(`topics/${t.slug}/index.html`, renderTopicPage(t));
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
@@ -1395,11 +1412,11 @@ function main() {
     ...storylines.map((st) => `${SITE_URL}/storylines/${st.id}/`),
     ...[...topics.keys()].map((t) => `${SITE_URL}/topics/${t}/`)];
   const lastmod = editions[0] ? editions[0].date : new Date().toISOString().slice(0, 10);
-  write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc><lastmod>${/\/(\d{4}-\d{2}-\d{2})\//.exec(u) ? RegExp.$1 : lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
-  write('robots.txt', `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+  if (!STAGING) write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${esc(u)}</loc><lastmod>${/\/(\d{4}-\d{2}-\d{2})\//.exec(u) ? RegExp.$1 : lastmod}</lastmod></url>`).join('\n')}\n</urlset>\n`);
+  write('robots.txt', STAGING ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`);
   write('site.webmanifest', JSON.stringify({ name: SITE_NAME, short_name: PODCAST.title, start_url: './', display: 'standalone', background_color: '#121212', theme_color: '#121212', icons: [{ src: 'favicon-192.png', sizes: '192x192', type: 'image/png' }, { src: 'apple-touch-icon.png', sizes: '180x180', type: 'image/png' }] }, null, 2));
   write('topics.json', JSON.stringify([...topics.values()].map((t) => ({ slug: t.slug, label: t.label, editions: t.dates.size, items: t.entries.length, weeks: t.weeks.size, threads: t.threads, lastSeen: t.lastSeen })), null, 2));
-  console.log(`Built ${editions.length} edition(s), ${weeks.length} week(s), ${storylines.length} storyline(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/`);
+  console.log(`Built ${editions.length} edition(s), ${weeks.length} week(s), ${storylines.length} storyline(s), ${topics.size} topic(s), ${trending.length} trending, ${Object.keys(audio).length} episode(s) → ${path.relative(ROOT, OUT_DIR)}/ [${SITE_ENV}]`);
 }
 
 if (require.main === module) main();

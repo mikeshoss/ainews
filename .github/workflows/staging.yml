@@ -1,0 +1,122 @@
+name: Staging preview
+
+# The code-and-design preview at https://staging.aiedgebriefing.com — Cloudflare Pages behind Cloudflare
+# Access, Mike only. Runs on every push to `staging`, and on every push to `main` so the preview always
+# carries today's edition (main is merged into staging first).
+#
+# Deliberately NOT a copy of deploy.yml. Nothing here can touch production:
+#   - no podcast.js  (real TTS spend, and it rewrites the live R2 index.json)
+#   - no spotify.js  (writes R2)
+#   - no announce    (mail.js / social.js / youtube.js write "sent"/"posted" markers to R2 for any edition
+#                     that is not today's — even with no credentials — which would silently suppress the
+#                     real announcement for that day)
+#   - no GitHub Pages (one site per repo; actions/deploy-pages would REPLACE the live site)
+# The Cloudflare token this job holds has Pages: Edit only. It cannot reach R2, so no future edit to this
+# file can either.
+
+on:
+  push:
+    branches: [staging, main]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # to merge main into staging and push the result back
+
+concurrency:
+  group: staging
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.aiedgebriefing.com
+    env:
+      CLOUDFLARE_PAGES_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: staging
+          fetch-depth: 0
+
+      - name: Bring today's content in from main
+        # Editorial content lands on main directly (the routines). Merge it so the preview shows today's
+        # edition under the staged code. A push made with GITHUB_TOKEN does not start another workflow run,
+        # so this cannot loop. A conflict fails the job — GitHub emails the owner — and the preview stays at
+        # its last good deploy. Conflicts can only happen if code on staging touched data/, storylines/ or
+        # trace/, which it must never do.
+        run: |
+          set -eu
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          if git merge-base --is-ancestor origin/main HEAD; then echo "staging already contains main"; exit 0; fi
+          git merge --no-edit origin/main \
+            || { echo "::error::main does not merge cleanly into staging. Locally: git checkout staging && git merge origin/main, resolve, push."; exit 1; }
+          git push origin HEAD:staging
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate all editions
+        run: |
+          set -e
+          for f in data/*-[0-9][0-9].json; do [ -e "$f" ] && node scripts/validate.js "$f"; done || true
+          for f in data/*.week.json; do [ -e "$f" ] && node scripts/validate-week.js "$f"; done || true
+          node scripts/validate-storyline.js || true
+
+      - name: Install librsvg
+        run: sudo apt-get update -qq >/dev/null && sudo apt-get install -y -qq librsvg2-bin fonts-dejavu-core >/dev/null
+
+      - name: Fetch the published episode index (read-only)
+        # build.js reads audio/index.json and audio/spotify.json — gitignored files that podcast.js and
+        # spotify.js keep in R2. Staging never runs those scripts, so it reads the public copies. GET only.
+        run: |
+          mkdir -p audio
+          curl -fsSL "https://audio.aiedgebriefing.com/index.json?t=$(date +%s)"   -o audio/index.json
+          curl -fsSL "https://audio.aiedgebriefing.com/spotify.json?t=$(date +%s)" -o audio/spotify.json || true
+
+      - name: Build site (staging mode)
+        env:
+          SITE_ENV: staging
+          SITE_URL: https://staging.aiedgebriefing.com
+          SITE_FEATURES: ${{ vars.STAGING_SITE_FEATURES || vars.SITE_FEATURES }}
+          # Deliberately absent: GA_MEASUREMENT_ID (no analytics pollution), INDEXNOW_KEY (no ownership key
+          # file on a preview host), SUBSCRIBE_FORM_URL (no live form posting to the real list).
+        run: node scripts/build.js
+
+      - name: Site assets (cover, favicon, share image)
+        run: |
+          node scripts/cover.js --show site/cover.svg && scripts/rasterize.sh site/cover.svg site/cover.png
+          node scripts/cover.js --favicon site/favicon.svg
+          scripts/rasterize.sh site/favicon.svg site/favicon-32.png 32
+          scripts/rasterize.sh site/favicon.svg site/favicon-192.png 192
+          scripts/rasterize.sh site/favicon.svg site/apple-touch-icon.png 180
+          node scripts/cover.js --og site/og.svg && scripts/rasterize.sh site/og.svg site/og.png 1200 630
+
+      - name: Keep the built emails out of the preview
+        # Mike's copies carry the proposed-storyline queue. Access-gated or not, they are not pages.
+        run: rm -rf site/email
+
+      - name: Refuse to ship anything that could pass for production
+        # The mechanical proof that this build is a preview and not a clone of the live site.
+        run: |
+          set -e
+          test ! -e site/podcast.xml && test ! -e site/feed.xml && test ! -e site/sitemap.xml
+          grep -qx 'Disallow: /' site/robots.txt
+          grep -q 'name="robots" content="noindex,nofollow"' site/index.html
+          grep -q 'staging-ribbon' site/index.html
+          ! grep -rq 'googletagmanager' site
+          test -f site/_headers && grep -q 'X-Robots-Tag' site/_headers
+          echo "preview checks passed"
+
+      - name: Deploy to Cloudflare Pages (ainews-staging)
+        # Skipped until CLOUDFLARE_PAGES_TOKEN exists on the `staging` environment, so the build and its
+        # checks run from day one and nothing lands on a public pages.dev URL before Access is proven.
+        if: env.CLOUDFLARE_PAGES_TOKEN != ''
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_PAGES_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy site --project-name ainews-staging --branch staging --commit-hash "$(git rev-parse HEAD)" --commit-dirty=true
