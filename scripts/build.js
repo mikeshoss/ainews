@@ -357,8 +357,13 @@ function renderShare(text, pageUrl) {
 }
 function renderSubscribe(base, variant = 'inline') {
   if (!SUBSCRIBE_URL) return '';
+  const pick = SUBSCRIBE_PICK ? `<div class="subscribe-pick">
+    <label><input type="checkbox" name="${esc(SUBSCRIBE_PICK.field)}" value="${esc(SUBSCRIBE_PICK.daily)}" checked> Daily briefing <span class="muted">· every morning</span></label>
+    <label><input type="checkbox" name="${esc(SUBSCRIBE_PICK.field)}" value="${esc(SUBSCRIBE_PICK.weekly)}" checked> Weekly review <span class="muted">· Mondays</span></label>
+  </div>` : '';
+  const lead = SUBSCRIBE_PICK ? 'Every morning, every Monday, or both.' : 'One email each morning.';
   return `<form class="subscribe ${esc(variant)}" method="POST" action="${esc(SUBSCRIBE_URL)}" target="_blank">
-  <div class="subscribe-text"><strong>One email each morning.</strong> Every claim linked to its source. No opinion, no ads.</div>
+  <div class="subscribe-text"><strong>${lead}</strong> Every claim linked to its source. No opinion, no ads.</div>${pick}
   <div class="subscribe-row"><input type="email" name="EMAIL" required placeholder="you@example.com" aria-label="Email address" autocomplete="email"><input type="hidden" name="email_address_check" value="" class="hp"><input type="hidden" name="locale" value="en"><button type="submit">Subscribe</button></div>
 </form>`;
 }
@@ -759,6 +764,11 @@ function renderEmail(ed) {
 
 // The subscriber edition: fuller than the LinkedIn post, shorter than the page. Sent by scripts/mail.js.
 const SUBSCRIBE_URL = process.env.SUBSCRIBE_FORM_URL || '';
+// Daily / weekly are separate Brevo lists. Brevo's multi-list form block is a set of checkboxes sharing one field
+// name (lists_<n>[]) whose values are list IDs; all three come from the form's exported HTML. Without them the form
+// is single-list and mail.js sends everything to BREVO_LIST_ID.
+const SUBSCRIBE_PICK = process.env.SUBSCRIBE_LIST_FIELD && process.env.SUBSCRIBE_DAILY_LIST && process.env.SUBSCRIBE_WEEKLY_LIST
+  ? { field: process.env.SUBSCRIBE_LIST_FIELD, daily: process.env.SUBSCRIBE_DAILY_LIST, weekly: process.env.SUBSCRIBE_WEEKLY_LIST } : null;
 // Brevo replaces {{ unsubscribe }} with the opt-out link when it sends a campaign. It only belongs in the two
 // files mail.js sends; Mike's own Gmail copies are not campaigns and would show the tag as literal text.
 const UNSUB = `<p style="color:#999;font-size:11px;margin:12px 0 0">You are receiving this because you subscribed at <a href="${SITE_URL}/" style="color:#999">aiedgebriefing.com</a>. <a href="{{ unsubscribe }}" style="color:#999">Unsubscribe</a>.</p>`;
@@ -1041,6 +1051,7 @@ body.has-player{padding-bottom:84px}
 .subscribe{margin:28px 0 8px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px}
 .subscribe.hero{margin:16px 0 0}.subscribe.footer{margin:0 0 22px}
 .subscribe-text{margin-bottom:10px;font-size:.95rem}.subscribe.footer .subscribe-text{font-size:.88rem}
+.subscribe-pick{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 12px;font-size:.92rem}.subscribe-pick label{display:flex;align-items:center;gap:7px;cursor:pointer}.subscribe-pick input{accent-color:var(--accent);width:16px;height:16px;margin:0}.subscribe.none .subscribe-pick{color:var(--bad)}
 .subscribe-row{display:flex;gap:8px;flex-wrap:wrap}.subscribe input[type=email]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;font-size:.95rem}
 .subscribe input[type=email]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .subscribe button{padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}.subscribe button:hover{filter:brightness(1.1)}

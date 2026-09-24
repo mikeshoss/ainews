@@ -125,6 +125,8 @@
 
   // ---------- small page behaviours ----------
   function bindPage(root) {
+    // Two-list subscribe: at least one of daily / weekly must be ticked, or Brevo would create a contact on no list.
+    qa('form.subscribe', root).forEach(function (f) { if (f.getAttribute('data-bound')) return; f.setAttribute('data-bound', '1'); f.addEventListener('submit', function (e) { var boxes = qa('.subscribe-pick input', f); if (boxes.length && !boxes.some(function (b) { return b.checked; })) { e.preventDefault(); f.classList.add('none'); boxes[0].focus(); } }); qa('.subscribe-pick input', f).forEach(function (b) { b.addEventListener('change', function () { f.classList.remove('none'); }); }); });
     qa('.share-copy', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var t = b.getAttribute('data-copy').replace(/\\n/g, '\n'); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; b.classList.add('done'); setTimeout(function () { b.textContent = 'Copy post'; b.classList.remove('done'); }, 2000); }, function () { window.prompt('Copy the post:', t); }); }); });
     qa('.notes-more', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var n = b.parentNode, o = n.classList.toggle('open'); b.textContent = o ? 'Less' : 'More'; b.setAttribute('aria-expanded', o); }); });
     var m = q('.menu'), c = m && q('.caret', m);
