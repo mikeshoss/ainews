@@ -37,7 +37,7 @@ scripts/dns.js           add/list DNS records on the zone via the Cloudflare tok
 scripts/player.js        the site's only script: one shared audio element + bottom "now playing" bar; internal links swap the page in place so audio keeps playing; browser's leave-page prompt while playing
 scripts/cover.js         cover generator (SVG): per-episode covers mixed from section colours by share of items; show cover (--show, variant "line")
 scripts/rasterize.sh     SVG → PNG via librsvg (rsvg-convert), used in CI and locally
-.github/workflows/       builds and deploys site/ to GitHub Pages on every push to main
+.github/workflows/       deploy.yml builds, makes the podcast and deploys site/ to GitHub Pages on every push to main; staging.yml builds the staging branch to the private preview; main-guard.yml flags code pushed to main outside a pull request
 scripts/trace-hook.js    Claude Code hook: records every tool call of a run to trace/YYYY-MM-DD.jsonl (published at /YYYY-MM-DD/trace/); the weekly run's prompt carries AINEWS_RUN=week so it lands in trace/YYYY-MM-DD.week.jsonl
 .claude/settings.json    wires the hook (SessionStart, PostToolUse, SubagentStop, Stop); it only records inside the cloud sandbox
 PROMPT.md                the editorial playbook the daily routine follows
@@ -46,6 +46,32 @@ SOURCES.md               the source list it sweeps
 ```
 
 The routine reads `PROMPT.md`, fans out four research subagents across `SOURCES.md` (labs/compute, research, security/military, health/policy), verifies, writes the edition, validates it, pushes to `main`, then emails the built email body. To change what gets covered or how, edit `PROMPT.md` or `SOURCES.md` — the routine picks up the change on its next run.
+
+## Branches: staging, then main
+
+Nothing goes live unseen. `main` is what the world sees — GitHub Pages at https://aiedgebriefing.com — and
+`staging` is where code and design change first.
+
+- **`staging`** builds to the private preview at https://staging.aiedgebriefing.com (Cloudflare Pages behind
+  Cloudflare Access, one-time PIN to Mike's email) on every push, via `.github/workflows/staging.yml`. The build
+  runs with `SITE_ENV=staging`: every page carries `noindex`, `robots.txt` disallows everything, there is no
+  `feed.xml`, `podcast.xml` or `sitemap.xml` (a preview feed would carry the real show's permanent `podcast:guid`),
+  no analytics, no subscribe form, and a red ribbon. The job holds a Pages-only Cloudflare token and cannot reach
+  R2; it never runs `podcast.js`, never announces, and refuses to ship if any of those checks fail.
+- **Content is not code.** Editions, scripts, storylines and traces land on `main` directly from the cloud
+  routines every morning, exactly as before — that is the product publishing, not a change to review. The staging
+  workflow merges `main` into `staging` before every build, so the preview always shows today's edition under the
+  staged code. Code on `staging` never touches `data/`, `storylines/` or `trace/`; that is the only way the merge
+  can conflict.
+- **Promotion is a pull request**: `gh pr create --base main --head staging`, read the diff, merge (merge commit,
+  so the branches stay convergent). That push runs `deploy.yml` as usual. Direct pushes of code to `main` are
+  flagged by `main-guard.yml` — it fails and emails, it does not block, because the routine's morning push is the
+  same GitHub account and must never be at risk.
+- **Playbooks are read from `main` at run time.** A change to `PROMPT.md`, `PROMPT-WEEK.md` or `SOURCES.md` on
+  `staging` is a diff to review and nothing more; it affects the next edition only once merged — before 11:00 UTC
+  for that day's daily, 13:00 UTC Monday for the weekly.
+- Secrets: `CLOUDFLARE_PAGES_TOKEN` (Cloudflare Pages: Edit only) lives on the `staging` GitHub environment, where
+  `deploy.yml` cannot see it. `STAGING_SITE_FEATURES` optionally overrides `SITE_FEATURES` on the preview.
 
 ## Section colours
 
