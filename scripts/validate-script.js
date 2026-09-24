@@ -132,7 +132,10 @@ let prevHost = null, run = 0;
     }
   }
   if (b.type === 'intro') {
-    if (!/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: intro must disclose that the episode is voiced by AI`);
+    // The AI-voice disclosure moved to the outro (2026-09-24): up front it distracted from the news.
+    if (/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: the AI-voice disclosure belongs in the outro now, not the intro`);
+    // Presented by Epilogue, then what Epilogue is, then where to find it — the invitation is required.
+    if (!/epiloguelabs\.com/i.test(blockText)) err(`${where}: intro must invite listeners to epiloguelabs.com (e.g. "Visit epiloguelabs.com to learn more.")`);
     const o = dateObj(date), weekday = spokenDate(date).split(',')[0], alt = `${weekday} the ${ordinal(o.getUTCDate())} of ${spokenDate(date).split(', ')[1].split(' ')[0]}`;
     if (!blockText.includes(spokenDate(date)) && !blockText.includes(alt)) err(`${where}: intro must say the date the way it is spoken: "${spokenDate(date)}" or "${alt}"`);
     if (!blockText.includes(PODCAST.title)) err(`${where}: intro must name the show: "${PODCAST.title}"`);
@@ -144,14 +147,22 @@ let prevHost = null, run = 0;
       if (!self) err(`${where}: host ${k} (${name}) must introduce themselves by name in the intro, in their own line`);
     }
   }
-  if (b.type === 'outro' && !/\btomorrow\b/i.test(blockText)) err(`${where}: outro must remind listeners to listen in tomorrow`);
+  if (b.type === 'outro') {
+    if (!/\btomorrow\b/i.test(blockText)) err(`${where}: outro must remind listeners to listen in tomorrow`);
+    if (!/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: outro must disclose that the voices are AI (e.g. "Our voices are AI-generated.")`);
+  }
 });
 
 // ---------- whole-script locks ----------
 {
-  const all = (sc.blocks || []).flatMap((b) => (b.lines || []).map((l) => l.text || '')).join(' ');
-  const mentions = (all.match(new RegExp(PODCAST.presenter, 'g')) || []).length;
-  if (mentions > 1) err(`"${PODCAST.presenter}" is mentioned ${mentions} times — once, in the intro, is the limit (no plugging)`);
+  // Epilogue lives in the intro — "presented by", a sentence or two on what it is, and the invitation — and
+  // nowhere else. The count allows for that; anything outside the intro is a plug.
+  const outside = (sc.blocks || []).filter((b) => b.type !== 'intro').flatMap((b) => (b.lines || []).map((l) => l.text || '')).join(' ');
+  const plugs = (outside.match(new RegExp(PODCAST.presenter, 'gi')) || []).length;
+  if (plugs) err(`"${PODCAST.presenter}" is mentioned ${plugs} time(s) outside the intro — it belongs in the intro only (no plugging)`);
+  const intro = (sc.blocks || []).find((b) => b.type === 'intro');
+  const inIntro = intro ? ((intro.lines || []).map((l) => l.text || '').join(' ').match(new RegExp(PODCAST.presenter, 'gi')) || []).length : 0;
+  if (inIntro > 4) err(`"${PODCAST.presenter}" is mentioned ${inIntro} times in the intro — "presented by", a sentence or two, the invitation; not a pitch`);
 }
 if (!introSeen) err('no intro block');
 if (!outroSeen) err('no outro block');
