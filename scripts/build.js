@@ -357,14 +357,14 @@ function renderShare(text, pageUrl) {
 }
 function renderSubscribe(base, variant = 'inline') {
   if (!SUBSCRIBE_URL) return '';
-  const pick = SUBSCRIBE_PICK ? `<div class="subscribe-pick">
-    <label><input type="checkbox" name="${esc(SUBSCRIBE_PICK.field)}" value="${esc(SUBSCRIBE_PICK.daily)}" checked> Daily briefing <span class="muted">· every morning</span></label>
-    <label><input type="checkbox" name="${esc(SUBSCRIBE_PICK.field)}" value="${esc(SUBSCRIBE_PICK.weekly)}" checked> Weekly review <span class="muted">· Mondays</span></label>
-  </div>` : '';
-  const lead = SUBSCRIBE_PICK ? 'Every morning, every Monday, or both.' : 'One email each morning.';
-  return `<form class="subscribe ${esc(variant)}" method="POST" action="${esc(SUBSCRIBE_URL)}" target="_blank">
-  <div class="subscribe-text"><strong>${lead}</strong> Every claim linked to its source. No opinion, no ads.</div>${pick}
-  <div class="subscribe-row"><input type="email" name="EMAIL" required placeholder="you@example.com" aria-label="Email address" autocomplete="email"><input type="hidden" name="email_address_check" value="" class="hp"><input type="hidden" name="locale" value="en"><button type="submit">Subscribe</button></div>
+  return `<form class="subscribe ${esc(variant)}" method="POST" action="${esc(SUBSCRIBE_URL)}">
+  <div class="subscribe-text"><strong>Every morning, every Monday, or both.</strong> Every claim linked to its source. No opinion, no ads.</div>
+  <div class="subscribe-pick">
+    <label><input type="checkbox" name="daily" value="1" checked> Daily briefing <span class="muted">· every morning</span></label>
+    <label><input type="checkbox" name="weekly" value="1" checked> Weekly review <span class="muted">· Mondays</span></label>
+  </div>
+  <div class="subscribe-row"><input type="email" name="email" required placeholder="you@example.com" aria-label="Email address" autocomplete="email"><label class="hp" aria-hidden="true">Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label><button type="submit">Subscribe</button></div>
+  <p class="subscribe-note" role="status" aria-live="polite"></p>
 </form>`;
 }
 function renderEditionCard(ed, base) {
@@ -681,6 +681,10 @@ function sourceCount() {
   } catch { return 100; }
 }
 
+function renderNote(base, title, html) {
+  const body = `<article class="prose"><h1>${esc(title)}</h1>${html}</article>`;
+  return layout({ title: `${title} — ${SITE_NAME}`, description: title, base, body }).replace('</head>', '<meta name="robots" content="noindex">\n</head>');
+}
 function renderAbout(editions) {
   const base = '../';
   const latest = editions[0];
@@ -763,15 +767,15 @@ function renderEmail(ed) {
 }
 
 // The subscriber edition: fuller than the LinkedIn post, shorter than the page. Sent by scripts/mail.js.
-const SUBSCRIBE_URL = process.env.SUBSCRIBE_FORM_URL || '';
-// Daily / weekly are separate Brevo lists. Brevo's multi-list form block is a set of checkboxes sharing one field
-// name (lists_<n>[]) whose values are list IDs; all three come from the form's exported HTML. Without them the form
-// is single-list and mail.js sends everything to BREVO_LIST_ID.
-const SUBSCRIBE_PICK = process.env.SUBSCRIBE_LIST_FIELD && process.env.SUBSCRIBE_DAILY_LIST && process.env.SUBSCRIBE_WEEKLY_LIST
-  ? { field: process.env.SUBSCRIBE_LIST_FIELD, daily: process.env.SUBSCRIBE_DAILY_LIST, weekly: process.env.SUBSCRIBE_WEEKLY_LIST } : null;
-// Brevo replaces {{ unsubscribe }} with the opt-out link when it sends a campaign. It only belongs in the two
-// files mail.js sends; Mike's own Gmail copies are not campaigns and would show the tag as literal text.
-const UNSUB = `<p style="color:#999;font-size:11px;margin:12px 0 0">You are receiving this because you subscribed at <a href="${SITE_URL}/" style="color:#999">aiedgebriefing.com</a>. <a href="{{ unsubscribe }}" style="color:#999">Unsubscribe</a>.</p>`;
+// The form posts to the subscribe Worker (worker/subscribe): double opt-in, then a Resend contact in the segment,
+// opted in to the topics ticked. Without the URL the form does not render at all.
+const SUBSCRIBE_URL = process.env.SUBSCRIBE_URL || '';
+// The footer of the two files mail.js sends. Resend fills {{{RESEND_UNSUBSCRIBE_URL}}} with the preference page
+// (daily / weekly / everything off). Canada's anti-spam law wants the sender named with a postal address on every
+// send: MAIL_POSTAL_ADDRESS. mail.js refuses to send while it is unset, so the placeholder can never reach a reader.
+// Mike's own Gmail copies are not broadcasts and would show the tag as literal text, so they never include this.
+const POSTAL = process.env.MAIL_POSTAL_ADDRESS || '[postal address not set — MAIL_POSTAL_ADDRESS]';
+const UNSUB = `<p style="color:#999;font-size:11px;margin:12px 0 0">You are receiving this because you subscribed at <a href="${SITE_URL}/" style="color:#999">aiedgebriefing.com</a> and confirmed by email. <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#999">Manage your subscription or unsubscribe</a>.<br>${esc(SITE_NAME)} is published by Epilogue Labs · ${esc(POSTAL)}</p>`;
 
 function renderReaderEmail(ed) {
   const url = `${SITE_URL}/${ed.date}/?utm_source=email&utm_medium=email&utm_campaign=${ed.date}`;
@@ -1051,7 +1055,8 @@ body.has-player{padding-bottom:84px}
 .subscribe{margin:28px 0 8px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:10px}
 .subscribe.hero{margin:16px 0 0}.subscribe.footer{margin:0 0 22px}
 .subscribe-text{margin-bottom:10px;font-size:.95rem}.subscribe.footer .subscribe-text{font-size:.88rem}
-.subscribe-pick{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 12px;font-size:.92rem}.subscribe-pick label{display:flex;align-items:center;gap:7px;cursor:pointer}.subscribe-pick input{accent-color:var(--accent);width:16px;height:16px;margin:0}.subscribe.none .subscribe-pick{color:var(--bad)}
+.subscribe .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}.subscribe-note{margin:8px 0 0;font-size:.88rem;color:var(--muted)}.subscribe-note:empty{display:none}.subscribe.error .subscribe-note{color:var(--bad)}.subscribe.done .subscribe-pick,.subscribe.done .subscribe-row{display:none}.subscribe.done .subscribe-note{color:var(--good);font-size:.95rem}
+.subscribe-pick{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 12px;font-size:.92rem}.subscribe-pick label{display:flex;align-items:center;gap:7px;cursor:pointer}.subscribe-pick input{accent-color:var(--accent);width:16px;height:16px;margin:0}.subscribe.error .subscribe-pick{color:var(--bad)}
 .subscribe-row{display:flex;gap:8px;flex-wrap:wrap}.subscribe input[type=email]{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;font-size:.95rem}
 .subscribe input[type=email]:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
 .subscribe button{padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;font:inherit;font-weight:600;cursor:pointer}.subscribe button:hover{filter:brightness(1.1)}
@@ -1417,6 +1422,8 @@ function main() {
     write(`email/${wk.date}.week.reader.subject.txt`, wrd.subject + '\n');
   });
   write('about/index.html', renderAbout(editions));
+  write('subscribe/check-email/index.html', renderNote('../../', 'Check your email', `<p>We sent a confirmation link to the address you entered. Open it within 48 hours and you are on the list. Nothing is stored until you do.</p><p class="muted">Not there? Check spam, then <a href="../../">try again</a>.</p>`));
+  write('subscribe/confirmed/index.html', renderNote('../../', 'You are subscribed', `<p>Thanks — the next edition lands in your inbox. Every email has a link to switch the daily or the weekly on or off, or to unsubscribe.</p><p><a href="../../">Read today's edition →</a></p>`));
   const urls = [`${SITE_URL}/`, `${SITE_URL}/daily/`, `${SITE_URL}/week/`, `${SITE_URL}/storylines/`, `${SITE_URL}/storylines/history/`, `${SITE_URL}/topics/`, `${SITE_URL}/podcast/`, `${SITE_URL}/about/`,
     ...editions.flatMap((ed) => [`${SITE_URL}/${ed.date}/`, ...(ed.audio || loadScript(ed.date) ? [`${SITE_URL}/${ed.date}/script/`] : []), ...(ed.hasTrace ? [`${SITE_URL}/${ed.date}/trace/`] : [])]),
     ...weeks.flatMap((wk) => [`${SITE_URL}/week/${wk.date}/`, ...(wk.hasTrace ? [`${SITE_URL}/week/${wk.date}/trace/`] : [])]),
