@@ -1,0 +1,24 @@
+# The subscribe endpoint: a Cloudflare Worker, because the site is static and cannot take a form by itself.
+# Deployed by .github/workflows/mail-setup.yml (wrangler), which also sets the secrets and the Resend IDs.
+name = "ainews-subscribe"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = false
+routes = [{ pattern = "subscribe.aiedgebriefing.com", custom_domain = true }]
+
+[vars]
+SITE_URL = "https://aiedgebriefing.com"
+MAIL_FROM = "AI Edge Briefing <briefing@aiedgebriefing.com>"
+MAIL_REPLY_TO = "ventures+aiedge@epiloguelabs.com"
+ALLOWED_ORIGINS = "https://aiedgebriefing.com,https://www.aiedgebriefing.com,https://staging.aiedgebriefing.com"
+# RESEND_SEGMENT_ID, RESEND_TOPIC_DAILY, RESEND_TOPIC_WEEKLY are passed at deploy time (--var) from the repo variables.
+# Secrets (wrangler secret put): RESEND_API_KEY (full access — contacts need it), SUBSCRIBE_SIGNING_SECRET.
+
+# 5 sign-up attempts a minute per IP. The confirm link is not limited: it is signed and single-purpose.
+[[ratelimits]]
+name = "RL"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60

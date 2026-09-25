@@ -83,8 +83,11 @@ jobs:
           SITE_ENV: staging
           SITE_URL: https://staging.aiedgebriefing.com
           SITE_FEATURES: ${{ vars.STAGING_SITE_FEATURES || vars.SITE_FEATURES }}
+          # The real subscribe Worker, so the form can be tried on the preview: a sign-up here is a real
+          # sign-up (double opt-in, real contact). Unset the variable to hide the form on staging.
+          SUBSCRIBE_URL: ${{ vars.STAGING_SUBSCRIBE_URL }}
           # Deliberately absent: GA_MEASUREMENT_ID (no analytics pollution), INDEXNOW_KEY (no ownership key
-          # file on a preview host), SUBSCRIBE_FORM_URL (no live form posting to the real list).
+          # file on a preview host).
         run: node scripts/build.js
 
       - name: Site assets (cover, favicon, share image)

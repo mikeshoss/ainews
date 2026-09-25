@@ -25,10 +25,8 @@ env:
   SITE_ENV: production
   SITE_URL: https://aiedgebriefing.com
   GA_MEASUREMENT_ID: G-WGF9BW5QXC
-  SUBSCRIBE_FORM_URL: ${{ vars.SUBSCRIBE_FORM_URL }}
-  SUBSCRIBE_LIST_FIELD: ${{ vars.SUBSCRIBE_LIST_FIELD }}
-  SUBSCRIBE_DAILY_LIST: ${{ vars.SUBSCRIBE_DAILY_LIST }}
-  SUBSCRIBE_WEEKLY_LIST: ${{ vars.SUBSCRIBE_WEEKLY_LIST }}
+  SUBSCRIBE_URL: ${{ vars.SUBSCRIBE_URL }}
+  MAIL_POSTAL_ADDRESS: ${{ vars.MAIL_POSTAL_ADDRESS }}
   SITE_FEATURES: ${{ vars.SITE_FEATURES }}
   INDEXNOW_KEY: ${{ vars.INDEXNOW_KEY }}
 
@@ -135,12 +133,12 @@ jobs:
           echo "::warning::https://aiedgebriefing.com/$D/ still not 200 after 5 minutes — announcing anyway"
       - name: Send today's edition to subscribers
         env:
-          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
-          BREVO_LIST_ID: ${{ vars.BREVO_LIST_ID }}
-          BREVO_DAILY_LIST_ID: ${{ vars.BREVO_DAILY_LIST_ID }}
-          BREVO_WEEKLY_LIST_ID: ${{ vars.BREVO_WEEKLY_LIST_ID }}
-          BREVO_SENDER_EMAIL: ${{ vars.BREVO_SENDER_EMAIL }}
-          BREVO_SENDER_NAME: ${{ vars.BREVO_SENDER_NAME }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_SEGMENT_ID: ${{ vars.RESEND_SEGMENT_ID }}
+          RESEND_TOPIC_DAILY: ${{ vars.RESEND_TOPIC_DAILY }}
+          RESEND_TOPIC_WEEKLY: ${{ vars.RESEND_TOPIC_WEEKLY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          MAIL_REPLY_TO: ${{ vars.MAIL_REPLY_TO }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           R2_BUCKET: ${{ vars.R2_BUCKET }}
