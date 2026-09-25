@@ -125,6 +125,25 @@
 
   // ---------- small page behaviours ----------
   function bindPage(root) {
+    // Subscribe form → the Worker as JSON (the plain POST still works without this, via a redirect).
+    qa('form.subscribe', root).forEach(function (f) {
+      if (f.getAttribute('data-bound')) return; f.setAttribute('data-bound', '1');
+      var note = f.querySelector('.subscribe-note'), say = function (cls, msg) { f.classList.remove('error', 'done'); if (cls) f.classList.add(cls); if (note) note.textContent = msg; };
+      f.addEventListener('submit', function (e) {
+        var boxes = qa('.subscribe-pick input', f);
+        if (boxes.length && !boxes.some(function (b) { return b.checked; })) { e.preventDefault(); say('error', 'Pick the daily briefing, the weekly review, or both.'); boxes[0].focus(); return; }
+        if (!window.fetch) return;  // plain POST
+        e.preventDefault();
+        var btn = f.querySelector('button[type=submit]'); btn.disabled = true; say('', 'Sending…');
+        var body = { email: f.email.value, daily: f.daily && f.daily.checked, weekly: f.weekly && f.weekly.checked, website: f.website ? f.website.value : '' };
+        fetch(f.action, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(body) })
+          .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+          .then(function (x) { if (x.ok && x.j.ok) say('done', 'Check your email — one click there and you are on the list.'); else say('error', x.j.error || 'Could not subscribe. Please try again.'); })
+          .catch(function () { say('error', 'Could not reach the subscribe service. Please try again in a minute.'); })
+          .then(function () { btn.disabled = false; });
+      });
+      qa('.subscribe-pick input', f).forEach(function (b) { b.addEventListener('change', function () { if (f.classList.contains('error')) say('', ''); }); });
+    });
     qa('.share-copy', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var t = b.getAttribute('data-copy').replace(/\\n/g, '\n'); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { b.textContent = 'Copied'; b.classList.add('done'); setTimeout(function () { b.textContent = 'Copy post'; b.classList.remove('done'); }, 2000); }, function () { window.prompt('Copy the post:', t); }); }); });
     qa('.notes-more', root).forEach(function (b) { if (b.getAttribute('data-bound')) return; b.setAttribute('data-bound', '1'); b.addEventListener('click', function () { var n = b.parentNode, o = n.classList.toggle('open'); b.textContent = o ? 'Less' : 'More'; b.setAttribute('aria-expanded', o); }); });
     var m = q('.menu'), c = m && q('.caret', m);
