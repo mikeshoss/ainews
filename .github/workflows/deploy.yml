@@ -66,6 +66,10 @@ jobs:
         # The nightly safety-net run is the moment the wait is over: narrate anything that still has no
         # dialogue script. Push-triggered runs wait, so an edition committed a minute before its script
         # is not narrated by the build that the edition's own commit started.
+        # A podcast failure must never take the page down with it: the step reports and the deploy goes on.
+        # The audio is retried by the next push to main (the routines push traces several times a day) and
+        # the watchdog reports an episode that is still missing.
+        continue-on-error: true
         run: node scripts/podcast.js ${{ github.event_name == 'schedule' && '--no-wait' || '' }}
       - name: Map episodes to Spotify (for "continue in Spotify" links)
         if: github.ref == 'refs/heads/main'

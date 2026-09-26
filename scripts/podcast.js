@@ -137,14 +137,24 @@ function requestsFor(seg) {
 }
 
 // ---------- synthesis ----------
+// One TTS request. A hung connection is the failure mode seen on 2026-09-26 (five minutes per call, then
+// "fetch failed"), so every attempt has a hard deadline and network errors retry like a 5xx does.
+const TTS_TIMEOUT_MS = 90_000;
 async function tts(req, instructions, outFile) {
   for (let attempt = 1; attempt <= 4; attempt++) {
-    const res = await fetch('https://api.openai.com/v1/audio/speech', {
-      method: 'POST',
-      headers: { authorization: `Bearer ${KEY}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ model: MODEL, voice: req.voice, input: req.text, instructions, response_format: 'mp3' }),
-    });
-    if (res.ok) { fs.writeFileSync(outFile, Buffer.from(await res.arrayBuffer())); return; }
+    let res;
+    try {
+      res = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: { authorization: `Bearer ${KEY}`, 'content-type': 'application/json' },
+        body: JSON.stringify({ model: MODEL, voice: req.voice, input: req.text, instructions, response_format: 'mp3' }),
+        signal: AbortSignal.timeout(TTS_TIMEOUT_MS),
+      });
+      if (res.ok) { fs.writeFileSync(outFile, Buffer.from(await res.arrayBuffer())); return; }
+    } catch (e) {
+      if (attempt === 4) throw new Error(`TTS network error after ${attempt} attempts: ${e.message}`);
+      const wait = 2000 * 2 ** attempt; console.log(`  TTS ${e.name === 'TimeoutError' ? `no answer in ${TTS_TIMEOUT_MS / 1000}s` : e.message}, retrying in ${wait / 1000}s`); await new Promise((r) => setTimeout(r, wait)); continue;
+    }
     const body = await res.text().catch(() => '');
     if ((res.status === 429 || res.status >= 500) && attempt < 4) { const wait = 2000 * 2 ** attempt; console.log(`  TTS ${res.status}, retrying in ${wait / 1000}s`); await new Promise((r) => setTimeout(r, wait)); continue; }
     throw new Error(`TTS failed ${res.status}: ${body.slice(0, 300)}`);
@@ -329,6 +339,7 @@ async function synthesize(ed, seg, label) {
     } catch (e) {
       failures++;
       console.log(`  FAILED ${ed.date}: ${e.message}`);
+      if (process.env.GITHUB_ACTIONS) console.log(`::warning title=No episode for ${ed.date}::${e.message.slice(0, 200)} — the page still deploys; the next push retries the audio and the watchdog reports it if it is still missing.`);
     }
   }
   if (failures) process.exit(1);
