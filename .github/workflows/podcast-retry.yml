@@ -1,0 +1,29 @@
+# If today's edition is live but has no episode, run the build again. The morning build already retries a
+# request four times; this covers the day when the speech API is down for hours, not seconds. Each run is a
+# no-op when the episode exists, so it costs nothing on a normal day.
+name: Podcast retry (only when today's episode is missing)
+on:
+  schedule:
+    - cron: '20 14,16,18,20,22 * * *'   # every two hours through the afternoon, UTC
+  workflow_dispatch:
+permissions:
+  actions: write
+  contents: read
+concurrency: podcast-retry
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-run the build if the page is live and the episode is not
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          D=$(TZ=America/Toronto date +%F)
+          if [ ! -f "data/$D.json" ]; then echo "$D: no edition yet — nothing to narrate"; exit 0; fi
+          ep=$(curl -s --max-time 30 https://audio.aiedgebriefing.com/index.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(JSON.parse(s).episodes['$D']?'yes':'no')}catch{process.stdout.write('unknown')}})")
+          if [ "$ep" = "yes" ]; then echo "$D: episode exists"; exit 0; fi
+          if [ "$(gh run list --workflow deploy.yml --status in_progress --json databaseId -q 'length')" != "0" ]; then echo "$D: a build is already running"; exit 0; fi
+          echo "$D: no episode ($ep) — dispatching the build"
+          gh workflow run deploy.yml --ref main
+          echo "No episode for $D at $(date -u +%H:%M) UTC — dispatched a rebuild." >> "$GITHUB_STEP_SUMMARY"
