@@ -73,6 +73,16 @@ jobs:
             note "https://aiedgebriefing.com/$D/ returns HTTP $code - the edition is not live on the site."
           fi
 
+          # 4. Does today's episode exist? (The build deploys the page even when the podcast step fails.)
+          # The 13:20 UTC check runs too soon after an 11:00 edition on a slow TTS day; only the later checks report it.
+          if [ "$(date -u +%H)" -ge 16 ] && [ "$code" = "200" ]; then
+            ep=$(curl -s --max-time 30 https://audio.aiedgebriefing.com/index.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(JSON.parse(s).episodes['$D']?'yes':'no')}catch{process.stdout.write('unknown')}})")
+            echo "episode present: $ep"
+            if [ "$ep" != "yes" ]; then
+              note "No podcast episode for $D - the page is live but the audio step failed (see the deploy runs' warnings)."
+            fi
+          fi
+
           if [ -n "$problems" ]; then
             { echo "problems<<WATCHDOG_EOF"; printf '%s' "$problems"; echo "WATCHDOG_EOF"; } >> "$GITHUB_OUTPUT"
             echo "ok=false" >> "$GITHUB_OUTPUT"
