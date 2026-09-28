@@ -49,7 +49,14 @@ async function resend(method, p, body) {
     if (!html.includes('{{{RESEND_UNSUBSCRIBE_URL}}}')) throw new Error(`${key}: the built email has no {{{RESEND_UNSUBSCRIBE_URL}}} — refusing to send without an unsubscribe link`);
     console.log(`${key}: ${DRY ? 'would send' : 'sending'} "${subject}" (${html.length} chars) to the ${weekly ? 'weekly' : 'daily'} topic`);
     if (DRY) continue;
-    const b = await resend('POST', '/broadcasts', { segment_id: SEGMENT, topic_id: weekly ? TOPIC.weekly : TOPIC.daily, from: FROM, reply_to: REPLY_TO, subject, html, name: `${SITE_NAME} ${key}`, send: true });
+    let b;
+    try {
+      b = await resend('POST', '/broadcasts', { segment_id: SEGMENT, topic_id: weekly ? TOPIC.weekly : TOPIC.daily, from: FROM, reply_to: REPLY_TO, subject, html, name: `${SITE_NAME} ${key}`, send: true });
+    } catch (e) {
+      // Nobody subscribed yet: not an error, and not something to retry tomorrow either.
+      if (/has no contacts/i.test(e.message)) { console.log(`${key}: no subscribers yet — marking as sent without sending`); await r2.put(marker, Buffer.from('no subscribers\n'), 'text/plain', 'no-store'); continue; }
+      throw e;
+    }
     await r2.put(marker, Buffer.from(`resend broadcast ${b.id} ${new Date().toISOString()}\n`), 'text/plain', 'no-store');
     console.log(`${key}: sent (broadcast ${b.id})`);
   }
