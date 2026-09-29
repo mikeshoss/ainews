@@ -39,6 +39,9 @@ const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
 const VERIFY = !process.argv.includes('--no-verify');   // transcribe each segment and check it says what we sent
 const VERIFY_ROUNDS = 3;           // passes of transcribe-and-repair before giving up on an episode
 const MODEL = 'gpt-4o-mini-tts';
+// Playback speed applied on concat (ffmpeg atempo: pitch-preserving). Mike, 2026-09-29: 1.25. The TTS reads at
+// its own pace; the transcription check runs on the sped-up file, so it verifies what listeners hear.
+const SPEED = Number(process.env.PODCAST_SPEED || '1.25');
 const PAUSE_TURN = 0.45;           // seconds of silence between speaker turns
 const PAUSE_PARA = 0.7;            // between narration paragraphs / blocks
 const INSTRUCTIONS = {
@@ -238,7 +241,7 @@ async function synthesize(ed, seg, label) {
   // Re-encode on concat so segments with different encoder settings join cleanly; mono 64k is plenty for speech.
   const join = () => {
     fs.writeFileSync(listFile, files.map((f) => `file '${f}'`).join('\n'));
-    sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
+    sh('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'concat', '-safe', '0', '-i', listFile, ...(SPEED !== 1 ? ['-filter:a', `atempo=${SPEED}`] : []), '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '64k',
       '-metadata', `title=${PODCAST.title} — ${longDate(ed.date)}`, '-metadata', `artist=${PODCAST.title}`, '-metadata', `album=${PODCAST.title}`, '-metadata', `album_artist=${PODCAST.presenter}`, out]);
   };
   join();
@@ -374,6 +377,7 @@ async function synthesize(ed, seg, label) {
       if (fs.existsSync(wide)) await r2.put(`${ed.date}-og.png`, wide, 'image/png', r2.CACHE.png);
       const entry = { url: `${AUDIO_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${AUDIO_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${AUDIO_BASE}/${ed.date}-og.png` } : {}) };
       versions.push({ label, ...entry });
+      if (index.retracted) delete index.retracted[ed.date]; // a new version supersedes a takedown
       if (REVIEW) {
         index.pending = index.pending || {};
         index.pending[ed.date] = { label, ...entry }; // parked: the review page shows it; --approve moves it into episodes
