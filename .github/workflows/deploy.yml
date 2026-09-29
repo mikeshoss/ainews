@@ -67,6 +67,12 @@ jobs:
           FORCE_DATE: ${{ github.event.inputs.force_date }}
           FORCE_LABEL: ${{ github.event.inputs.label }}
           RETRACT_DATE: ${{ github.event.inputs.retract_date }}
+          PODCAST_REVIEW: ${{ vars.PODCAST_REVIEW }}
+          REVIEW_URL: ${{ vars.REVIEW_URL }}
+          REVIEW_EMAIL: ${{ vars.REVIEW_EMAIL }}
+          REVIEW_SIGNING_SECRET: ${{ secrets.REVIEW_SIGNING_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
         # The nightly safety-net run is the moment the wait is over: narrate anything that still has no
         # dialogue script. Push-triggered runs wait, so an edition committed a minute before its script
         # is not narrated by the build that the edition's own commit started.

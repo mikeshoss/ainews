@@ -1,0 +1,46 @@
+# Dispatched by the review Worker when Mike presses a button on the review page.
+#   approve  → scripts/podcast.js --approve DATE (pending → live in index.json), then a deploy so the site and feed carry it.
+#   feedback → the note goes to data/DATE.review.md on main, for the rewrite and the next version.
+name: Podcast review (approve or feedback)
+on:
+  workflow_dispatch:
+    inputs:
+      date: { description: "Edition date (YYYY-MM-DD)", required: true }
+      action: { description: "approve | feedback", required: true, type: choice, options: [approve, feedback] }
+      note: { description: "Feedback text (feedback only)", required: false }
+permissions:
+  contents: write
+  actions: write
+concurrency: podcast-review
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Approve — pending becomes the live episode
+        if: inputs.action == 'approve'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/podcast.js --approve "${{ inputs.date }}"
+          gh workflow run deploy.yml --ref main
+          echo "${{ inputs.date }}: approved; deploy dispatched" >> "$GITHUB_STEP_SUMMARY"
+      - name: Feedback — save it against the date
+        if: inputs.action == 'feedback'
+        env:
+          NOTE: ${{ inputs.note }}
+        run: |
+          D="${{ inputs.date }}"
+          f="data/$D.review.md"
+          [ -f "$f" ] || printf '# Review notes for %s\n' "$D" > "$f"
+          printf '\n## %s UTC\n\n%s\n' "$(date -u '+%Y-%m-%d %H:%M')" "$NOTE" >> "$f"
+          git config user.name github-actions && git config user.email github-actions@github.com
+          git add "$f" && git commit -m "Review feedback for $D" && git push origin main
+          echo "${{ inputs.date }}: feedback saved to $f" >> "$GITHUB_STEP_SUMMARY"

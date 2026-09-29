@@ -15,7 +15,7 @@
 // concatenates with ffmpeg, renders the episode cover (cover.js → librsvg) and embeds it, uploads DATE.mp3 + DATE.png
 // to the R2 bucket behind AUDIO_BASE (scripts/r2.js), and maintains index.json there
 // (also written to audio/index.json for build.js). Idempotent; the index is updated last.
-// Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE --label vN]
+// Usage: node scripts/podcast.js [--dry-run] [--max N] [--force DATE --label vN] [--retract DATE] [--approve DATE]
 // Re-running a date with --force keeps every earlier version (index.versions) and makes the new one current.
 
 const fs = require('fs');
@@ -54,6 +54,29 @@ const DRY = args.includes('--dry-run');
 const MAX = Number((args[args.indexOf('--max') + 1]) || MAX_PER_RUN) || MAX_PER_RUN;
 const FORCE = args.includes('--force') ? args[args.indexOf('--force') + 1] : (process.env.FORCE_DATE || null);
 const LABEL = args.includes('--label') ? args[args.indexOf('--label') + 1] : (process.env.FORCE_LABEL || null);
+// Review gate (PODCAST_REVIEW=1): a finished episode is parked in index.pending — off the site and the feed — and
+// Mike gets an email with a signed link to the review page (worker/review). "Put it live" there runs
+// podcast-review.yml → --approve DATE, which moves the entry into index.episodes and redeploys. Feedback goes
+// to data/DATE.review.md for a rewrite and a new version. Started 2026-09-30 after four bad intros in a row.
+const REVIEW = process.env.PODCAST_REVIEW === '1';
+const REVIEW_URL = (process.env.REVIEW_URL || '').replace(/\/$/, '');
+const REVIEW_EMAIL = process.env.REVIEW_EMAIL || '';
+const reviewSig = (date) => require('crypto').createHmac('sha256', process.env.REVIEW_SIGNING_SECRET || '').update(date).digest('hex');
+async function sendReviewEmail(date, label, entry) {
+  const key = process.env.RESEND_API_KEY, from = process.env.MAIL_FROM || 'AI Edge Briefing <briefing@aiedgebriefing.com>';
+  if (!key || !REVIEW_EMAIL) { console.log('  review email not sent (RESEND_API_KEY / REVIEW_EMAIL unset)'); return; }
+  const link = REVIEW_URL ? `${REVIEW_URL}/${date}?t=${reviewSig(date)}` : entry.url;
+  const mins = Math.round(entry.seconds / 60);
+  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
+<p style="color:#777;font-size:12px;margin:0 0 4px">The AI Edge · review</p>
+<h1 style="font-size:20px;margin:0 0 12px">${longDate(date)} — ${label} is ready to review (${mins} min)</h1>
+<p>It is parked: not on the site, not in the feed. Listen, then put it live or send feedback.</p>
+<p style="margin:18px 0"><a href="${link}" style="background:#0b57d0;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block">Open the review page</a></p>
+<p style="color:#777;font-size:13px">Transcript: <a href="${SITE_URL}/${date}/script/" style="color:#777">${SITE_URL}/${date}/script/</a>${REVIEW_URL ? '' : '<br>Review page not deployed yet — this link is the audio itself; tell Claude to approve.'}</p>
+</div>`;
+  const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify({ from, to: [REVIEW_EMAIL], subject: `Review: The AI Edge ${longDate(date)} (${label})`, html, text: `${longDate(date)} ${label} is ready to review (${mins} min): ${link}` }) });
+  console.log(`  review email ${res.ok ? 'sent' : 'FAILED ' + res.status} → ${REVIEW_EMAIL}`);
+}
 const NO_WAIT = args.includes('--no-wait') || process.env.PODCAST_NO_WAIT === '1';
 const PAUSE_INTRO = 1.4;           // longer breath after the intro before the news starts
 const KEY = process.env.OPENAI_API_KEY;
@@ -295,6 +318,14 @@ async function synthesize(ed, seg, label) {
     if (index.episodes[RETRACT]) { index.retracted[RETRACT] = { ...index.episodes[RETRACT], retracted_at: new Date().toISOString() }; delete index.episodes[RETRACT]; await saveIndex(index); console.log(`${RETRACT}: episode retracted — off the site and the feed on this deploy`); }
     else console.log(`${RETRACT}: no current episode to retract`);
   }
+  const APPROVE = args.includes('--approve') ? args[args.indexOf('--approve') + 1] : (process.env.APPROVE_DATE || null);
+  if (APPROVE) {
+    const p = index.pending && index.pending[APPROVE];
+    if (!p) { console.log(`${APPROVE}: nothing pending to approve`); process.exit(1); }
+    const { label, ...entry } = p;
+    index.episodes[APPROVE] = entry; delete index.pending[APPROVE]; if (index.retracted) delete index.retracted[APPROVE];
+    await saveIndex(index); console.log(`${APPROVE}: ${label} approved — on the site and in the feed on this deploy`); process.exit(0);
+  }
   if (FORCE && !LABEL) { console.log('--force needs --label (e.g. v2) so the earlier version is kept'); process.exit(2); }
   const now = Date.now();
   const ageOf = (iso, fallbackDate) => { const t = Date.parse(iso || ''); return now - (Number.isFinite(t) ? t : Date.parse(fallbackDate + 'T12:00:00Z')); };
@@ -305,6 +336,7 @@ async function synthesize(ed, seg, label) {
     const script = scriptState(ed.date);
     if (FORCE === ed.date) { todo.push({ ed, upgrade: !!ep }); continue; }
     if (!ep && index.retracted && index.retracted[ed.date]) continue;   // taken down on purpose; only --force brings it back
+    if (index.pending && index.pending[ed.date]) continue;              // parked for review; approval or --force decides
     if (!ep) {
       if (script === 'valid' || NO_WAIT) { todo.push({ ed, upgrade: false }); continue; }
       // 'invalid' is a decision, not a gap — the run wrote a script and it failed its locks, so narrate.
@@ -342,9 +374,17 @@ async function synthesize(ed, seg, label) {
       if (fs.existsSync(wide)) await r2.put(`${ed.date}-og.png`, wide, 'image/png', r2.CACHE.png);
       const entry = { url: `${AUDIO_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${AUDIO_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${AUDIO_BASE}/${ed.date}-og.png` } : {}) };
       versions.push({ label, ...entry });
-      index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the bucket and on /podcast/
-      await saveIndex(index); // after each episode so a later failure keeps earlier work
-      console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded`);
+      if (REVIEW) {
+        index.pending = index.pending || {};
+        index.pending[ed.date] = { label, ...entry }; // parked: the review page shows it; --approve moves it into episodes
+        await saveIndex(index);
+        console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded — PENDING REVIEW (${label})`);
+        await sendReviewEmail(ed.date, label, entry);
+      } else {
+        index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the bucket and on /podcast/
+        await saveIndex(index); // after each episode so a later failure keeps earlier work
+        console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded`);
+      }
     } catch (e) {
       failures++;
       console.log(`  FAILED ${ed.date}: ${e.message}`);

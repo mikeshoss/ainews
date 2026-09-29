@@ -5,9 +5,9 @@ on:
   workflow_dispatch:
     inputs:
       what:
-        description: "resend-objects: create the segment and topics if missing and print their IDs · worker: deploy worker/subscribe with secrets and IDs"
+        description: "resend-objects: create the segment and topics · worker: deploy worker/subscribe · review-worker: deploy worker/review (the podcast review page)"
         type: choice
-        options: [resend-objects, worker]
+        options: [resend-objects, worker, review-worker]
         required: true
 permissions:
   contents: read
@@ -85,3 +85,33 @@ jobs:
           echo "POST /subscribe with a bad address → HTTP $code (expected 400)"
           [ "$code" = 400 ]
           echo "Worker live at https://subscribe.aiedgebriefing.com — set: gh variable set SUBSCRIBE_URL --body https://subscribe.aiedgebriefing.com/subscribe" >> "$GITHUB_STEP_SUMMARY"
+  review-worker:
+    if: inputs.what == 'review-worker'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Check inputs
+        env:
+          A: ${{ secrets.REVIEW_SIGNING_SECRET }}
+          B: ${{ secrets.REVIEW_GITHUB_TOKEN }}
+          C: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          [ -n "$A" ] || { echo "::error::secret REVIEW_SIGNING_SECRET is not set"; exit 1; }
+          [ -n "$B" ] || { echo "::error::secret REVIEW_GITHUB_TOKEN is not set (fine-grained PAT, this repo, Actions: read and write)"; exit 1; }
+          [ -n "$C" ] || { echo "::error::secret CLOUDFLARE_API_TOKEN is not set"; exit 1; }
+      - name: Deploy worker/review
+        working-directory: worker/review
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx --yes wrangler@4 deploy 2>&1 | tee deploy.log
+          url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
+          printf '%s' "${{ secrets.REVIEW_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put REVIEW_SIGNING_SECRET
+          printf '%s' "${{ secrets.REVIEW_GITHUB_TOKEN }}" | npx --yes wrangler@4 secret put GITHUB_TOKEN
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$url/2026-01-01?t=deadbeef")
+          echo "bad signature → HTTP $code (expected 403)"; [ "$code" = 403 ]
+          { echo "## Review page live"; echo; echo "Set the variable: \`gh variable set REVIEW_URL --body $url\`"; } >> "$GITHUB_STEP_SUMMARY"
+          echo "REVIEW_URL=$url"
