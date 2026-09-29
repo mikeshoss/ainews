@@ -287,6 +287,14 @@ async function synthesize(ed, seg, label) {
       console.log(`${ed.date}: cover backfilled`);
     } catch (e) { console.log(`${ed.date}: cover backfill failed: ${e.message}`); }
   }
+  // --retract DATE: take an episode off the site and out of the feed without deleting the file. The entry moves
+  // to index.retracted; nothing narrates that date again until --force DATE --label vN makes a new one.
+  const RETRACT = args.includes('--retract') ? args[args.indexOf('--retract') + 1] : (process.env.RETRACT_DATE || null);
+  if (RETRACT) {
+    index.retracted = index.retracted || {};
+    if (index.episodes[RETRACT]) { index.retracted[RETRACT] = { ...index.episodes[RETRACT], retracted_at: new Date().toISOString() }; delete index.episodes[RETRACT]; await saveIndex(index); console.log(`${RETRACT}: episode retracted — off the site and the feed on this deploy`); }
+    else console.log(`${RETRACT}: no current episode to retract`);
+  }
   if (FORCE && !LABEL) { console.log('--force needs --label (e.g. v2) so the earlier version is kept'); process.exit(2); }
   const now = Date.now();
   const ageOf = (iso, fallbackDate) => { const t = Date.parse(iso || ''); return now - (Number.isFinite(t) ? t : Date.parse(fallbackDate + 'T12:00:00Z')); };
@@ -296,6 +304,7 @@ async function synthesize(ed, seg, label) {
     const ep = index.episodes[ed.date];
     const script = scriptState(ed.date);
     if (FORCE === ed.date) { todo.push({ ed, upgrade: !!ep }); continue; }
+    if (!ep && index.retracted && index.retracted[ed.date]) continue;   // taken down on purpose; only --force brings it back
     if (!ep) {
       if (script === 'valid' || NO_WAIT) { todo.push({ ed, upgrade: false }); continue; }
       // 'invalid' is a decision, not a gap — the run wrote a script and it failed its locks, so narrate.
