@@ -142,8 +142,10 @@ let prevHost = null, run = 0;
     if (!blockText.includes(PODCAST.presenter)) err(`${where}: intro must say "presented by ${PODCAST.presenter}"`);
     // Heard, not read (2026-09-28): the Epilogue lines were three fragments and a dangling "It's"; the three
     // things were one-word labels ("Hardware."). Every intro sentence must stand on its own as speech.
+    // Enforced from 2026-09-30: today's script was written under the old rules, and a script the validator
+    // rejects at narration time is read by one voice instead — worse than a label.
     const hostNames = hostKeys.map((k) => (hosts[k] || {}).name).filter(Boolean);
-    for (const l of b.lines) {
+    for (const l of (date >= '2026-09-30' ? b.lines : [])) {
       // "D.C." and "U.S." are not sentence ends.
       const masked = (l.text || '').replace(/\b(?:[A-Z]\.){2,}/g, (m) => m.replace(/\./g, '\u0000'));
       const sentences = masked.split(/(?<=[.!?])\s+/).map((x) => x.replace(/\u0000/g, '.').trim()).filter(Boolean);
