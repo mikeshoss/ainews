@@ -13,6 +13,9 @@ on:
       label:
         description: 'Version label for the regenerated episode (e.g. v2); earlier versions are kept'
         required: false
+      retract_date:
+        description: 'Take this edition''s episode off the site and feed (YYYY-MM-DD); the file is kept'
+        required: false
 
 permissions:
   contents: read
@@ -63,6 +66,7 @@ jobs:
           AUDIO_BASE: ${{ vars.AUDIO_BASE }}
           FORCE_DATE: ${{ github.event.inputs.force_date }}
           FORCE_LABEL: ${{ github.event.inputs.label }}
+          RETRACT_DATE: ${{ github.event.inputs.retract_date }}
         # The nightly safety-net run is the moment the wait is over: narrate anything that still has no
         # dialogue script. Push-triggered runs wait, so an edition committed a minute before its script
         # is not narrated by the build that the edition's own commit started.
