@@ -1,0 +1,14 @@
+# The podcast review page: Mike hears a parked episode and puts it live or sends feedback.
+# Deployed by .github/workflows/mail-setup.yml (what = review-worker). Lives on workers.dev; the link in the
+# review email is signed (HMAC over the date), so no login is needed and a stale or guessed URL opens nothing.
+name = "ainews-review"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[vars]
+SITE_URL = "https://aiedgebriefing.com"
+AUDIO_BASE = "https://audio.aiedgebriefing.com"
+REPO = "mikeshoss/ainews"
+# Secrets (wrangler secret put): REVIEW_SIGNING_SECRET (same value as the repo secret — Actions signs, this verifies),
+# GITHUB_TOKEN (fine-grained PAT, this repo only, Actions: read and write — dispatches podcast-review.yml).

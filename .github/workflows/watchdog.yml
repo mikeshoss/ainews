@@ -76,9 +76,11 @@ jobs:
           # 4. Does today's episode exist? (The build deploys the page even when the podcast step fails.)
           # The 13:20 UTC check runs too soon after an 11:00 edition on a slow TTS day; only the later checks report it.
           if [ "$(date -u +%H)" -ge 16 ] && [ "$code" = "200" ]; then
-            ep=$(curl -s --max-time 30 https://audio.aiedgebriefing.com/index.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{process.stdout.write(JSON.parse(s).episodes['$D']?'yes':'no')}catch{process.stdout.write('unknown')}})")
+            ep=$(curl -s --max-time 30 https://audio.aiedgebriefing.com/index.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{const j=JSON.parse(s);process.stdout.write(j.episodes['$D']?'yes':(j.pending&&j.pending['$D'])?'pending':'no')}catch{process.stdout.write('unknown')}})")
             echo "episode present: $ep"
-            if [ "$ep" != "yes" ]; then
+            if [ "$ep" = "pending" ]; then
+              note "The $D episode is still waiting for your approval - open the review link in this morning's email to put it live."
+            elif [ "$ep" != "yes" ]; then
               note "No podcast episode for $D - the page is live but the audio step failed (see the deploy runs' warnings)."
             fi
           fi
