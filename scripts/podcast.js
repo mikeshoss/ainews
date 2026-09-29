@@ -374,6 +374,7 @@ async function synthesize(ed, seg, label) {
       if (fs.existsSync(wide)) await r2.put(`${ed.date}-og.png`, wide, 'image/png', r2.CACHE.png);
       const entry = { url: `${AUDIO_BASE}/${path.basename(a.file)}`, bytes: a.bytes, seconds: a.seconds, format: seg.format, voices: seg.voices, model: MODEL, generated_at: new Date().toISOString(), ...(a.png ? { image: `${AUDIO_BASE}/${ed.date}.png` } : {}), ...(fs.existsSync(wide) ? { og: `${AUDIO_BASE}/${ed.date}-og.png` } : {}) };
       versions.push({ label, ...entry });
+      if (index.retracted) delete index.retracted[ed.date]; // a new version supersedes a takedown
       if (REVIEW) {
         index.pending = index.pending || {};
         index.pending[ed.date] = { label, ...entry }; // parked: the review page shows it; --approve moves it into episodes
