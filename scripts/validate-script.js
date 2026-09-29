@@ -140,6 +140,21 @@ let prevHost = null, run = 0;
     if (!blockText.includes(spokenDate(date)) && !blockText.includes(alt)) err(`${where}: intro must say the date the way it is spoken: "${spokenDate(date)}" or "${alt}"`);
     if (!blockText.includes(PODCAST.title)) err(`${where}: intro must name the show: "${PODCAST.title}"`);
     if (!blockText.includes(PODCAST.presenter)) err(`${where}: intro must say "presented by ${PODCAST.presenter}"`);
+    // Heard, not read (2026-09-28): the Epilogue lines were three fragments and a dangling "It's"; the three
+    // things were one-word labels ("Hardware."). Every intro sentence must stand on its own as speech.
+    const hostNames = hostKeys.map((k) => (hosts[k] || {}).name).filter(Boolean);
+    for (const l of b.lines) {
+      // "D.C." and "U.S." are not sentence ends.
+      const masked = (l.text || '').replace(/\b(?:[A-Z]\.){2,}/g, (m) => m.replace(/\./g, '\u0000'));
+      const sentences = masked.split(/(?<=[.!?])\s+/).map((x) => x.replace(/\u0000/g, '.').trim()).filter(Boolean);
+      for (const sent of sentences) {
+        const n = sent.split(/\s+/).length;
+        const isName = hostNames.some((nm) => new RegExp(`\\b${nm}\\b`).test(sent));
+        const invitation = /epiloguelabs\.com/i.test(sent);
+        if (n <= 3 && !isName && !invitation && !/\?$/.test(sent)) err(`${where}: "${sent}" is a label, not a sentence — the intro is heard, not read; say the thing in a full sentence`);
+        if (/^(it's|it is|it was|they're|these are)\b/i.test(sent) && /epilogue/i.test(l.text) && !/presented by/i.test(sent)) err(`${where}: "${sent.slice(0, 50)}" — in the Epilogue lines the subject is Epilogue, never "it"`);
+      }
+    }
     for (const k of hostKeys) {
       const name = (hosts[k] || {}).name;
       if (!name) continue;
