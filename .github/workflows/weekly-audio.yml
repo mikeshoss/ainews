@@ -1,0 +1,37 @@
+# Turns Mike's Monday recording into the parked week-in-review episode. Dispatched by the review Worker when a
+# recording is uploaded (or by hand). Runs scripts/weekly-audio.js: clean, encode, audio lock, park, email.
+name: Weekly audio (Mike's read → parked episode)
+on:
+  workflow_dispatch:
+    inputs:
+      date: { description: "Week-in-review date (the Monday, YYYY-MM-DD)", required: true }
+      label: { description: "Version label (blank = next)", required: false }
+permissions:
+  contents: read
+concurrency: weekly-audio
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg >/dev/null
+      - name: Clean, check and park the recording
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          REVIEW_EMAIL: ${{ vars.REVIEW_EMAIL }}
+          REVIEW_URL: ${{ vars.REVIEW_URL }}
+          REVIEW_SIGNING_SECRET: ${{ secrets.REVIEW_SIGNING_SECRET }}
+          SITE_URL: https://aiedgebriefing.com
+        run: |
+          node scripts/weekly-audio.js "${{ inputs.date }}" ${{ inputs.label && format('--label {0}', inputs.label) || '' }} | tee out.log
+          grep -E 'PENDING REVIEW|not heard' out.log >> "$GITHUB_STEP_SUMMARY" || true
