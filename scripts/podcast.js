@@ -280,7 +280,7 @@ async function synthesize(ed, seg, label) {
 // ---------- main ----------
 (async () => {
   // --approve / --retract only touch the index in R2: they must not depend on the TTS key or ffmpeg.
-  const ADMIN = args.includes('--approve') || args.includes('--retract') || process.env.APPROVE_DATE || process.env.RETRACT_DATE;
+  const ADMIN = args.includes('--approve') || args.includes('--retract') || args.includes('--review-email') || process.env.APPROVE_DATE || process.env.RETRACT_DATE || process.env.REVIEW_EMAIL_DATE;
   if (!KEY && !DRY && !ADMIN) { console.log('OPENAI_API_KEY not set — skipping podcast generation (set the repo secret to enable).'); process.exit(0); }
   for (const c of ['ffmpeg', 'ffprobe']) if (!has(c) && !ADMIN) { console.log(`${c} not found — skipping podcast generation`); process.exit(0); }
   if (!DRY && !r2.configured()) { console.log('CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set — skipping podcast generation'); process.exit(0); }
@@ -323,6 +323,14 @@ async function synthesize(ed, seg, label) {
     index.retracted = index.retracted || {};
     if (index.episodes[RETRACT]) { index.retracted[RETRACT] = { ...index.episodes[RETRACT], retracted_at: new Date().toISOString() }; delete index.episodes[RETRACT]; await saveIndex(index); console.log(`${RETRACT}: episode retracted — off the site and the feed on this deploy`); }
     else console.log(`${RETRACT}: no current episode to retract`);
+  }
+  // --review-email DATE: send the review email for that date's pending (or live) entry. Exercises the real
+  // Resend wiring from Actions on demand — the thing that was never tried before 2026-09-30's morning run.
+  const EMAIL_FOR = args.includes('--review-email') ? args[args.indexOf('--review-email') + 1] : (process.env.REVIEW_EMAIL_DATE || null);
+  if (EMAIL_FOR) {
+    const p = (index.pending && index.pending[EMAIL_FOR]) || (index.episodes[EMAIL_FOR] && { label: 'live', ...index.episodes[EMAIL_FOR] });
+    if (!p) { console.log(`${EMAIL_FOR}: no episode to send a review email for`); process.exit(1); }
+    await sendReviewEmail(EMAIL_FOR, p.label, p); process.exit(0);
   }
   const APPROVE = args.includes('--approve') ? args[args.indexOf('--approve') + 1] : (process.env.APPROVE_DATE || null);
   if (APPROVE) {

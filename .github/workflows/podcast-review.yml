@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       date: { description: "Edition date (YYYY-MM-DD)", required: true }
-      action: { description: "approve | feedback", required: true, type: choice, options: [approve, feedback] }
+      action: { description: "approve | feedback | test-email (re-send the review email for the date)", required: true, type: choice, options: [approve, feedback, test-email] }
       note: { description: "Feedback text (feedback only)", required: false }
 permissions:
   contents: write
@@ -32,6 +32,19 @@ jobs:
           node scripts/podcast.js --approve "${{ inputs.date }}"
           gh workflow run deploy.yml --ref main
           echo "${{ inputs.date }}: approved; deploy dispatched" >> "$GITHUB_STEP_SUMMARY"
+      - name: Test — re-send the review email for the date
+        if: inputs.action == 'test-email'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          REVIEW_EMAIL: ${{ vars.REVIEW_EMAIL }}
+          REVIEW_URL: ${{ vars.REVIEW_URL }}
+          REVIEW_SIGNING_SECRET: ${{ secrets.REVIEW_SIGNING_SECRET }}
+        run: node scripts/podcast.js --review-email "${{ inputs.date }}"
       - name: Feedback — save it against the date
         if: inputs.action == 'feedback'
         env:
