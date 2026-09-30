@@ -463,7 +463,7 @@ function renderUnknown(u, wk, base, opts = {}) {
 </article>`;
 }
 
-function renderWeekPage(wk, weeks, idx) {
+function renderWeekPage(wk, weeks, idx, ep) {
   const base = '../../';
   const campaign = `week-${wk.date}`;
   const newer = weeks[idx - 1], older = weeks[idx + 1];
@@ -473,6 +473,7 @@ function renderWeekPage(wk, weeks, idx) {
     <div class="eyebrow"><span class="badge">Week in review</span> · ${wk.happened.length} developments · ${wk.connects.length} connection${wk.connects.length === 1 ? '' : 's'} · ${wk.unknowns.length} open question${wk.unknowns.length === 1 ? '' : 's'}${wk.hasTrace ? ` · <a href="${base}week/${wk.date}/trace/">how this edition was made</a>` : ''}</div>
     <h1>The week of ${esc(wk.label)}</h1>
     <div class="summary">${summary}</div>
+    ${ep ? renderPlayer(ep, base, { ...wk, week: true }, false) : ''}
     <nav class="toc"><a href="#happened">1 · What happened <span class="count">${wk.happened.length}</span></a><a href="#connects">2 · What connects <span class="count">${wk.connects.length}</span></a><a href="#unknowns">3 · What we don't know <span class="count">${wk.unknowns.length}</span></a>${(wk.figures || []).length ? '<a href="#figures">By the numbers</a>' : ''}${(wk.calendar || []).length ? '<a href="#calendar">Calendar</a>' : ''}</nav>
   </header>
   <section class="section" id="happened">
@@ -1105,13 +1106,30 @@ function renderPlayer(ep, base, ed, compact) {
   const label = `${hostsLabel(ep)} · ${mmss(ep.seconds)}`;
   const art = ep.image && !compact ? `<img class="art" src="${esc(ep.image)}" alt="Episode cover" width="140" height="140" loading="lazy">` : '';
   const date = ed ? ed.date : '';
-  const title = ed ? longDate(ed.date) : PODCAST.title;
-  return `<div class="player${compact ? ' compact' : ''}" data-src="${esc(op3(ep.url))}" data-title="${esc(title)}" data-date="${esc(date)}" data-seconds="${ep.seconds}" data-cover="${esc(ep.image || '')}" data-href="${esc(base + (date ? date + '/' : 'podcast/'))}" data-spotify="${esc(spotifyUrl(date))}">${art}<div class="player-body">
+  const title = ed ? (ed.week ? `Week in review, ${ed.label}` : longDate(ed.date)) : PODCAST.title;
+  return `<div class="player${compact ? ' compact' : ''}" data-src="${esc(op3(ep.url))}" data-title="${esc(title)}" data-date="${esc(date)}" data-seconds="${ep.seconds}" data-cover="${esc(ep.image || '')}" data-href="${esc(base + (date ? (ed.week ? 'week/' : '') + date + '/' : 'podcast/'))}" data-spotify="${esc(ed && ed.week ? '' : spotifyUrl(date))}">${art}<div class="player-body">
   <div class="p-controls"><button class="pp" type="button" aria-label="Play"><svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg><svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z" fill="currentColor"/></svg></button><div class="p-bar" role="slider" aria-label="Position"><div class="p-fill"></div></div><span class="p-time">0:00 / ${mmss(ep.seconds)}</span></div>
-  <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}${!compact && spotifyUrl(date) ? ` · <a href="${esc(spotifyUrl(date))}" rel="noopener" target="_blank">open in Spotify</a>` : ''}</div>
+  <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.week ? 'week/' : ''}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}${!compact && !(ed && ed.week) && spotifyUrl(date) ? ` · <a href="${esc(spotifyUrl(date))}" rel="noopener" target="_blank">open in Spotify</a>` : ''}</div>
 </div></div>`;
 }
 
+// The Monday host script (Mike's read): data/DATE.week.host.json, written by the weekly run.
+function loadHostScript(date) {
+  const p = path.join(DATA_DIR, `${date}.week.host.json`);
+  if (!fs.existsSync(p)) return null;
+  try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; }
+}
+function renderHostScriptPage(wk, hs, ep) {
+  const base = '../../../';
+  const names = { open: 'Open', happened: 'What happened', connects: 'What connects', unknowns: "What we don't know", calendar: 'On the calendar', close: 'Close' };
+  const blocks = hs.blocks.map((b) => `<section class="script-block"><div class="script-ref">${esc(names[b.type] || b.type)}</div>${b.lines.map((l) => `<p>${esc(l.text)}</p>`).join('')}</section>`).join('\n');
+  const page = `<div class="eyebrow"><a href="${base}week/${wk.date}/">Week in review, ${esc(wk.label)}</a> / transcript</div>
+<h1>Transcript — week of ${esc(wk.shortLabel)}</h1>
+${ep ? renderPlayer(ep, base, { ...wk, week: true }, false) : ''}
+<p class="lede">Read by ${esc(hs.host.name)}. The script is written from the week in review and checked against it before it is read: every figure is the edition's figure, and the recording is transcribed and checked against the script before it is published.</p>
+${blocks}`;
+  return layout({ title: `Transcript — week of ${wk.shortLabel} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/week/${wk.date}/script/`, nav: 'podcast' });
+}
 function loadScript(date) {
   const p = path.join(DATA_DIR, `${date}.script.json`);
   if (!fs.existsSync(p)) return null;
@@ -1142,23 +1160,33 @@ ${body}`;
   return layout({ title: `Transcript — ${shortDate(ed.date)} — ${SITE_NAME}`, base, body: page, canonical: `${SITE_URL}/${ed.date}/script/`, nav: 'podcast' });
 }
 
-function renderPodcastPage(editions, audio) {
+function renderPodcastPage(editions, audio, weeks = []) {
   const base = '../';
   const feed = `${SITE_URL}/podcast.xml`;
-  const eps = editions.filter((ed) => audio[ed.date]).map((ed) => {
+  const dayCards = editions.filter((ed) => audio[ed.date]).map((ed) => {
     const versions = AUDIO_VERSIONS[ed.date] || [];
     const older = versions.length > 1 && process.env.SHOW_VERSIONS ? `<details class="versions"><summary>${versions.length} versions — earlier ones kept for comparison</summary>${[...versions].reverse().map((v) => `<div class="version"><div class="eyebrow">${esc(v.label)} · ${esc(hostsLabel(v))} · ${mmss(v.seconds)} · ${esc(new Date(v.generated_at).toUTCString().slice(0, 22))}${v.url === audio[ed.date].url ? ' · <b>in the feed</b>' : ''}</div><audio controls preload="none" src="${esc(v.url)}"></audio></div>`).join('')}</details>` : '';
     // Episode notes: the edition summary, clamped to a few lines with a "more" toggle (the same text the feed carries).
     const notes = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
-    return `<article class="card episode">
+    return { date: ed.date, html: `<article class="card episode">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)} · ${ed.itemCount} items</div>
   <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> <a class="read-link" href="${base}${ed.date}/">Read the edition →</a></h2>
   ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
   <div class="notes"><div class="notes-text">${notes}</div><button class="notes-more" type="button" aria-expanded="false">More</button></div>
   ${older}
-</article>`;
-  }).join('\n');
+</article>` };
+  });
+  const weekCards = weeks.filter((wk) => audio[`${wk.date}.week`]).map((wk) => {
+    const ep = audio[`${wk.date}.week`];
+    return { date: wk.date + 'z', html: `<article class="card episode week">
+  <div class="eyebrow"><span class="badge">Week in review</span> · ${esc(hostsLabel(ep))} · ${mmss(ep.seconds)} · ${wk.happened.length} developments</div>
+  <h2><a href="${base}week/${wk.date}/">The week of ${esc(wk.label)}</a> <a class="read-link" href="${base}week/${wk.date}/">Read the review →</a></h2>
+  ${renderPlayer(ep, base, { ...wk, week: true }, false)}
+  <div class="notes"><div class="notes-text">${paragraphs(wk.summary).map((p) => `<p>${esc(p)}</p>`).join('')}</div><button class="notes-more" type="button" aria-expanded="false">More</button></div>
+</article>` };
+  });
+  const eps = [...dayCards, ...weekCards].sort((x, y) => (x.date < y.date ? 1 : -1)).map((c) => c.html).join('\n');
   const legend = Object.entries(SECTION_COLORS).map(([name, c]) => `<span><i style="background:${c.hex}"></i>${esc(name)} <span class="muted">${esc(c.name)}</span></span>`).join('');
   const badges = [...Object.entries(PODCAST.listen || {}).map(([k, v]) => `<a class="badge-listen" href="${esc(v.url)}" rel="noopener">${PLATFORM_ICONS[k] || ''}<span>${esc(v.label || k)}</span></a>`),
     `<a class="badge-listen" href="${base}podcast.xml" title="Podcast RSS feed">${PLATFORM_ICONS.RSS}<span>RSS</span></a>`].join('');
@@ -1176,7 +1204,7 @@ ${eps || '<p class="muted">No episodes yet.</p>'}`;
     ld: { '@context': 'https://schema.org', '@type': 'PodcastSeries', name: PODCAST.title, url: `${SITE_URL}/podcast/`, webFeed: feed, image: `${SITE_URL}/cover.png`, description: `${PODCAST.tagline}. Presented by ${PODCAST.presenter}.`, author: ORG, sameAs: Object.values(PODCAST.listen || {}).map((v) => v.url) } });
 }
 
-function renderPodcastFeed(editions, audio) {
+function renderPodcastFeed(editions, audio, weeks = []) {
   const items = editions.filter((ed) => audio[ed.date]).slice(0, 60).map((ed) => {
     const ep = audio[ed.date];
     const desc = paragraphs(ed.summary).join('\n\n');
@@ -1195,6 +1223,27 @@ ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <itunes:author>${esc(PODCAST.author)}</itunes:author>
 <enclosure url="${esc(op3(ep.url))}" length="${ep.bytes}" type="audio/mpeg"/>
 <podcast:transcript url="${SITE_URL}/${ed.date}/script/" type="text/html"/>
+</item>`;
+  }).join('\n');
+  // The Monday week in review, read by a person: same feed, its own title, its own transcript.
+  const weekItems = weeks.filter((wk) => audio[`${wk.date}.week`]).slice(0, 12).map((wk) => {
+    const ep = audio[`${wk.date}.week`];
+    const desc = paragraphs(wk.summary).join('\n\n');
+    const title = `Week in review, ${wk.label} — with ${Object.values(ep.voices || {})[0] || 'Mike Shoss'}`;
+    return `<item>
+<title>${esc(title)}</title>
+<itunes:title>${esc(title)}</itunes:title>
+<link>${SITE_URL}/week/${wk.date}/</link>
+<guid isPermaLink="false">ainews-${wk.date}-week</guid>
+<pubDate>${new Date(ep.generated_at || wk.date + 'T12:00:00Z').toUTCString()}</pubDate>
+<description>${esc(desc)}</description>
+<itunes:summary>${esc(desc)}</itunes:summary>
+<itunes:duration>${hhmmss(ep.seconds)}</itunes:duration>
+<itunes:explicit>false</itunes:explicit>
+<itunes:episodeType>full</itunes:episodeType>
+<itunes:author>${esc(PODCAST.author)}</itunes:author>
+<enclosure url="${esc(op3(ep.url))}" length="${ep.bytes}" type="audio/mpeg"/>
+<podcast:transcript url="${SITE_URL}/week/${wk.date}/script/" type="text/html"/>
 </item>`;
   }).join('\n');
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -1218,7 +1267,7 @@ ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
 <itunes:explicit>false</itunes:explicit>
 <itunes:category text="Technology"/>
 <itunes:category text="News"><itunes:category text="Tech News"/></itunes:category>
-${items}
+${weekItems}\n${items}
 </channel>
 </rss>
 `;
@@ -1374,8 +1423,8 @@ function main() {
   write('editions/index.html', renderRedirect(`${SITE_URL}/daily/`));
   if (!STAGING) write('feed.xml', renderFeed(editions, weeks));
   write('topics/index.html', renderTrendsIndex(topics, trending, editions));
-  write('podcast/index.html', renderPodcastPage(editions, audio));
-  if (!STAGING) write('podcast.xml', renderPodcastFeed(editions, audio));   // a preview feed would carry the real podcast:guid
+  write('podcast/index.html', renderPodcastPage(editions, audio, weeks));
+  if (!STAGING) write('podcast.xml', renderPodcastFeed(editions, audio, weeks));   // a preview feed would carry the real podcast:guid
   for (const t of topics.values()) write(`topics/${t.slug}/index.html`, renderTopicPage(t));
   editions.forEach((ed, i) => {
     const trace = loadTrace(ed.date);
@@ -1406,7 +1455,10 @@ function main() {
   weeks.forEach((wk, i) => {
     const trace = loadTrace(`${wk.date}.week`);
     wk.hasTrace = !!trace;
-    write(`week/${wk.date}/index.html`, renderWeekPage(wk, weeks, i));
+    const wep = audio[`${wk.date}.week`];
+    write(`week/${wk.date}/index.html`, renderWeekPage(wk, weeks, i, wep));
+    const hs = loadHostScript(wk.date);
+    if (hs) { write(`week/${wk.date}/script.json`, JSON.stringify(hs)); write(`week/${wk.date}/script/index.html`, renderHostScriptPage(wk, hs, wep)); }
     if (trace) {
       write(`week/${wk.date}/trace/index.html`, renderTracePage({ base: '../../../', backHref: `../../../week/${wk.date}/`, backLabel: `Week in review — ${wk.label}`, title: `week of ${wk.shortLabel}`, canonical: `${SITE_URL}/week/${wk.date}/trace/`, nav: 'week' }, trace));
       fs.copyFileSync(path.join(TRACE_DIR, `${wk.date}.week.jsonl`), path.join(OUT_DIR, 'week', wk.date, 'trace', 'events.jsonl'));

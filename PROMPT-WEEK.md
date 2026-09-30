@@ -130,18 +130,54 @@ Storylines are the curated arcs (`storylines/<id>.json`) that answer "what is ac
 - **Propose at most one new storyline per week**, only if the admission test holds: it could plausibly be settled by a future event, and it has either 3+ developments across 2+ weeks or one development that clears the daily significance bar. **Do not create a file for it.** Put the proposal in your final report only — the id you would use, the name, the frame, and why it clears the admission test. A `storylines/*.json` file is committed to a public repository and written through a published run log, so a proposed storyline written as a file is editorial state anyone can read; the editor creates the file when they decide to promote it. The cap is **12 live** — do not promote past it.
 - Validate: `node scripts/validate-storyline.js --check-links` must exit 0. Commit `storylines/` with the week file.
 
+### 3g. The host script — the week in review as Mike reads it
+
+The Monday episode is not voiced by AI. Mike records it himself from a script you write: `data/DATE.week.host.json`.
+It is heard, not read, so it is written for the ear; `scripts/validate-host-script.js` enforces the mechanical
+part and the example at `docs/examples/2026-09-28.week.host.json` (with its week file beside it) shows the voice.
+Read the example before writing. Shape:
+
+```json
+{ "date": "DATE", "kind": "week-host", "host": { "name": "Mike Shoss" },
+  "blocks": [ { "type": "open", "lines": [ { "text": "…" } ] }, { "type": "happened", "lines": […] },
+              { "type": "connects", "lines": […] }, { "type": "unknowns", "lines": […] },
+              { "type": "calendar", "lines": […] }, { "type": "close", "lines": [ { "text": "…" } ] } ] }
+```
+
+- **One line = one paragraph = one teleprompter screen.** 40–120 words each. First person, plain speech, complete
+  sentences. No sentence of two words or fewer except a question. No dashes doing the work of a sentence.
+- **open** (3 paragraphs): the date as spoken ("Monday, October 5th"), "this is The AI Edge, the week in review,
+  presented by Epilogue", "I'm Mike Shoss"; one paragraph on what this is (the daily is voiced by AI, Mondays it is
+  him, same rules: primary source, the source's number, gaps stated); then the week in three sentences.
+- **happened** (5–8 paragraphs): the developments grouped by actor or thread, not one per item — who did what,
+  reported where, with the figures the week file has and no others. A paragraph opens by saying what it is
+  about ("Anthropic's week was a courtroom."), never with a bare label.
+- **connects** (3–4 paragraphs): three of the week's connections, in the first person — this is the part that is
+  his to say. Every claim still traces to the week file.
+- **unknowns**: an opening line, then 3–4 of the week's open questions **verbatim**, each with one sentence of why
+  it matters. Never a question the week file does not carry.
+- **calendar**: the dated items, one paragraph.
+- **close** (1 paragraph): the full review is on the site with a link behind every claim; the daily is back
+  tomorrow morning with Maya and Alex; his name; thanks. **No AI-voice line** — this one is a person.
+- 900–1,600 words. Every figure exactly as `DATE.week.json` prints it (the validator checks every digit token).
+  Dates spoken month-first with an ordinal. Numbers as digits. No URLs.
+
+Validate: `node scripts/validate-host-script.js data/DATE.week.host.json` must exit 0. Commit it with the week
+file. The build publishes it at `/week/DATE/script/` and the review page shows it as the teleprompter.
+
 ## 4. Validate, fact-check, build
 
 ```
 node scripts/validate-week.js data/DATE.week.json --check-links
 node scripts/validate-storyline.js --check-links
+node scripts/validate-host-script.js data/DATE.week.host.json
 ```
 
 Fix every ERROR. For every WARN about a link that could not be verified, confirm it with `WebFetch` or `node scripts/fetch.js`; if it does not open, replace or remove it. Then launch **one adversarial subagent** with the week file, the daily files and this instruction: *"List every sentence in `summary`, `connects` and `unknowns` that asserts a cause, a motive, a likelihood or a consequence without attributing it to a named source; every number in `connects` that is not in the joined items; and every development whose bullets go beyond what the linked sources say. Quote each sentence."* Fix everything it finds and re-run the validator. Then:
 
 ```
 node scripts/build.js
-git add data/DATE.week.json storylines/ trace/
+git add data/DATE.week.json data/DATE.week.host.json storylines/ trace/
 git commit -m "Week in review DATE"
 git push origin main
 ```

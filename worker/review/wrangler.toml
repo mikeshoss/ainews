@@ -12,3 +12,8 @@ AUDIO_BASE = "https://audio.aiedgebriefing.com"
 REPO = "mikeshoss/ainews"
 # Secrets (wrangler secret put): REVIEW_SIGNING_SECRET (same value as the repo secret — Actions signs, this verifies),
 # GITHUB_TOKEN (fine-grained PAT, this repo only, Actions: read and write — dispatches podcast-review.yml).
+
+# The Monday recording is written here (weekly/DATE.raw.<ext>) before scripts/weekly-audio.js picks it up.
+[[r2_buckets]]
+binding = "AUDIO"
+bucket_name = "ainews-audio"

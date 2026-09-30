@@ -99,7 +99,7 @@ jobs:
           C: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           [ -n "$A" ] || { echo "::error::secret REVIEW_SIGNING_SECRET is not set"; exit 1; }
-          [ -n "$B" ] || { echo "::error::secret REVIEW_GITHUB_TOKEN is not set (fine-grained PAT, this repo, Actions: read and write)"; exit 1; }
+          [ -n "$B" ] || echo "::warning::REVIEW_GITHUB_TOKEN is not set — the page deploys, but Put it live / Send feedback / upload-processing will ask you to tell Claude instead (fine-grained PAT, this repo, Actions: read and write)"
           [ -n "$C" ] || { echo "::error::secret CLOUDFLARE_API_TOKEN is not set"; exit 1; }
       - name: Deploy worker/review
         working-directory: worker/review
@@ -110,7 +110,7 @@ jobs:
           npx --yes wrangler@4 deploy 2>&1 | tee deploy.log
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
           printf '%s' "${{ secrets.REVIEW_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put REVIEW_SIGNING_SECRET
-          printf '%s' "${{ secrets.REVIEW_GITHUB_TOKEN }}" | npx --yes wrangler@4 secret put GITHUB_TOKEN
+          if [ -n "${{ secrets.REVIEW_GITHUB_TOKEN }}" ]; then printf '%s' "${{ secrets.REVIEW_GITHUB_TOKEN }}" | npx --yes wrangler@4 secret put GITHUB_TOKEN; fi
           code=$(curl -s -o /dev/null -w '%{http_code}' "$url/2026-01-01?t=deadbeef")
           echo "bad signature → HTTP $code (expected 403)"; [ "$code" = 403 ]
           { echo "## Review page live"; echo; echo "Set the variable: \`gh variable set REVIEW_URL --body $url\`"; } >> "$GITHUB_STEP_SUMMARY"

@@ -71,14 +71,17 @@ async function sendReviewEmail(date, label, entry) {
   if (!key || !REVIEW_EMAIL) { console.log('  review email not sent (RESEND_API_KEY / REVIEW_EMAIL unset)'); return; }
   const link = REVIEW_URL ? `${REVIEW_URL}/${date}?t=${reviewSig(date)}` : entry.url;
   const mins = Math.round(entry.seconds / 60);
+  const isWeek = date.endsWith('.week'), day = date.slice(0, 10);
+  const title = isWeek ? `Week in review, ${longDate(day)}` : longDate(day);
+  const tx = isWeek ? `${SITE_URL}/week/${day}/script/` : `${SITE_URL}/${day}/script/`;
   const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
 <p style="color:#777;font-size:12px;margin:0 0 4px">The AI Edge · review</p>
-<h1 style="font-size:20px;margin:0 0 12px">${longDate(date)} — ${label} is ready to review (${mins} min)</h1>
+<h1 style="font-size:20px;margin:0 0 12px">${title} — ${label} is ready to review (${mins} min)</h1>
 <p>It is parked: not on the site, not in the feed. Listen, then put it live or send feedback.</p>
 <p style="margin:18px 0"><a href="${link}" style="background:#0b57d0;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block">Open the review page</a></p>
-<p style="color:#777;font-size:13px">Transcript: <a href="${SITE_URL}/${date}/script/" style="color:#777">${SITE_URL}/${date}/script/</a>${REVIEW_URL ? '' : '<br>Review page not deployed yet — this link is the audio itself; tell Claude to approve.'}</p>
+<p style="color:#777;font-size:13px">Transcript: <a href="${tx}" style="color:#777">${tx}</a>${REVIEW_URL ? '' : '<br>Review page not deployed yet — this link is the audio itself; tell Claude to approve.'}</p>
 </div>`;
-  const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify({ from, to: [REVIEW_EMAIL], subject: `Review: The AI Edge ${longDate(date)} (${label})`, html, text: `${longDate(date)} ${label} is ready to review (${mins} min): ${link}` }) });
+  const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify({ from, to: [REVIEW_EMAIL], subject: `Review: The AI Edge ${title} (${label})`, html, text: `${title} ${label} is ready to review (${mins} min): ${link}` }) });
   console.log(`  review email ${res.ok ? 'sent' : 'FAILED ' + res.status} → ${REVIEW_EMAIL}`);
 }
 const NO_WAIT = args.includes('--no-wait') || process.env.PODCAST_NO_WAIT === '1';
