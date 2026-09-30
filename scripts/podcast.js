@@ -64,6 +64,7 @@ const LABEL = args.includes('--label') ? args[args.indexOf('--label') + 1] : (pr
 const REVIEW = process.env.PODCAST_REVIEW === '1';
 const REVIEW_URL = (process.env.REVIEW_URL || '').replace(/\/$/, '');
 const REVIEW_EMAIL = process.env.REVIEW_EMAIL || '';
+const SITE_URL = (process.env.SITE_URL || 'https://aiedgebriefing.com').replace(/\/$/, '');
 const reviewSig = (date) => require('crypto').createHmac('sha256', process.env.REVIEW_SIGNING_SECRET || '').update(date).digest('hex');
 async function sendReviewEmail(date, label, entry) {
   const key = process.env.RESEND_API_KEY, from = process.env.MAIL_FROM || 'AI Edge Briefing <briefing@aiedgebriefing.com>';
