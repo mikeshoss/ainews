@@ -279,8 +279,10 @@ async function synthesize(ed, seg, label) {
 
 // ---------- main ----------
 (async () => {
-  if (!KEY && !DRY) { console.log('OPENAI_API_KEY not set — skipping podcast generation (set the repo secret to enable).'); process.exit(0); }
-  for (const c of ['ffmpeg', 'ffprobe']) if (!has(c)) { console.log(`${c} not found — skipping podcast generation`); process.exit(0); }
+  // --approve / --retract only touch the index in R2: they must not depend on the TTS key or ffmpeg.
+  const ADMIN = args.includes('--approve') || args.includes('--retract') || process.env.APPROVE_DATE || process.env.RETRACT_DATE;
+  if (!KEY && !DRY && !ADMIN) { console.log('OPENAI_API_KEY not set — skipping podcast generation (set the repo secret to enable).'); process.exit(0); }
+  for (const c of ['ffmpeg', 'ffprobe']) if (!has(c) && !ADMIN) { console.log(`${c} not found — skipping podcast generation`); process.exit(0); }
   if (!DRY && !r2.configured()) { console.log('CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID not set — skipping podcast generation'); process.exit(0); }
 
   const editions = loadEditions();
