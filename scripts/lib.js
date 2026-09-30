@@ -43,7 +43,7 @@ const SECTION_COLORS = {
 };
 const PODCAST = { title: 'The AI Edge', presenter: 'Epilogue', author: 'Epilogue (Mike Shoss)', email: 'mike@epiloguelabs.com', tagline: 'Daily, fact-first frontier AI news', presenterUrl: 'https://epiloguelabs.com/',
   // Where the show can be followed. Add a platform here (and an icon in build.js PLATFORM_ICONS if it's new) as directories approve it.
-  listen: { Spotify: { url: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU', label: 'Spotify' } } };
+  listen: { Spotify: { url: 'https://open.spotify.com/show/68XgJimZVbQzc2PoLvbuqU', label: 'Spotify' }, iHeart: { url: 'https://www.iheart.com/podcast/269-the-ai-edge-346577152/', label: 'iHeartRadio' } } };
 const CREDITS = { name: 'Mike Shoss', url: 'https://www.linkedin.com/in/mikeshoss' };
 PODCAST.feedUrl = 'https://aiedgebriefing.com/podcast.xml';
 // The show's permanent identity (podcast:guid): UUIDv5 of the feed URL (scheme and trailing slash stripped) in the
