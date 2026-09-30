@@ -67,7 +67,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx --yes wrangler@4 deploy \
+          npx --yes wrangler@4 deploy --config wrangler.toml \
             --var RESEND_SEGMENT_ID:"${{ vars.RESEND_SEGMENT_ID }}" \
             --var RESEND_TOPIC_DAILY:"${{ vars.RESEND_TOPIC_DAILY }}" \
             --var RESEND_TOPIC_WEEKLY:"${{ vars.RESEND_TOPIC_WEEKLY }}"
@@ -77,8 +77,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          printf '%s' "${{ secrets.RESEND_API_KEY }}" | npx --yes wrangler@4 secret put RESEND_API_KEY
-          printf '%s' "${{ secrets.SUBSCRIBE_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put SUBSCRIBE_SIGNING_SECRET
+          printf '%s' "${{ secrets.RESEND_API_KEY }}" | npx --yes wrangler@4 secret put --config wrangler.toml RESEND_API_KEY
+          printf '%s' "${{ secrets.SUBSCRIBE_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put --config wrangler.toml SUBSCRIBE_SIGNING_SECRET
       - name: Prove it answers
         run: |
           code=$(curl -s -o /dev/null -w '%{http_code}' -X POST https://subscribe.aiedgebriefing.com/subscribe -H 'content-type: application/json' -H 'accept: application/json' -d '{"email":"not-an-email","daily":true}')
@@ -107,10 +107,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          npx --yes wrangler@4 deploy 2>&1 | tee deploy.log
+          npx --yes wrangler@4 deploy --config wrangler.toml 2>&1 | tee deploy.log
           url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -1)
-          printf '%s' "${{ secrets.REVIEW_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put REVIEW_SIGNING_SECRET
-          if [ -n "${{ secrets.REVIEW_GITHUB_TOKEN }}" ]; then printf '%s' "${{ secrets.REVIEW_GITHUB_TOKEN }}" | npx --yes wrangler@4 secret put GITHUB_TOKEN; fi
+          printf '%s' "${{ secrets.REVIEW_SIGNING_SECRET }}" | npx --yes wrangler@4 secret put --config wrangler.toml REVIEW_SIGNING_SECRET
+          if [ -n "${{ secrets.REVIEW_GITHUB_TOKEN }}" ]; then printf '%s' "${{ secrets.REVIEW_GITHUB_TOKEN }}" | npx --yes wrangler@4 secret put --config wrangler.toml GITHUB_TOKEN; fi
           code=$(curl -s -o /dev/null -w '%{http_code}' "$url/2026-01-01?t=deadbeef")
           echo "bad signature → HTTP $code (expected 403)"; [ "$code" = 403 ]
           { echo "## Review page live"; echo; echo "Set the variable: \`gh variable set REVIEW_URL --body $url\`"; } >> "$GITHUB_STEP_SUMMARY"

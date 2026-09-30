@@ -1074,6 +1074,8 @@ body.has-player{padding-bottom:84px}
 const PLATFORM_ICONS = {
   // Spotify mark: green disc with three arcs.
   Spotify: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.2 9.3c3.9-1.2 8.3-.8 11.7 1.1" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round"/><path d="M6.8 12.5c3.2-1 6.9-.6 9.8.9" fill="none" stroke="#000" stroke-width="1.6" stroke-linecap="round"/><path d="M7.3 15.5c2.6-.8 5.5-.5 7.9.7" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round"/></svg>`,
+  // iHeart mark: red disc, white heart.
+  iHeart: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#C6002B"/><path d="M12 18.2 6.6 13c-1.5-1.5-1.5-3.9 0-5.3 1.4-1.3 3.6-1.3 5 0l.4.4.4-.4c1.4-1.3 3.6-1.3 5 0 1.5 1.4 1.5 3.8 0 5.3L12 18.2z" fill="#fff"/></svg>`,
   RSS: `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect width="24" height="24" rx="5" fill="#f26522"/><circle cx="7" cy="17" r="2" fill="#fff"/><path d="M5 10a9 9 0 0 1 9 9M5 5a14 14 0 0 1 14 14" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>`,
 };
 const AUDIO_INDEX = path.join(ROOT, 'audio', 'index.json');
