@@ -66,6 +66,25 @@ const REVIEW_URL = (process.env.REVIEW_URL || '').replace(/\/$/, '');
 const REVIEW_EMAIL = process.env.REVIEW_EMAIL || '';
 const SITE_URL = (process.env.SITE_URL || 'https://aiedgebriefing.com').replace(/\/$/, '');
 const reviewSig = (date) => require('crypto').createHmac('sha256', process.env.REVIEW_SIGNING_SECRET || '').update(date).digest('hex');
+// Monday: the week-in-review script is published and waiting to be read. Links the teleprompter (the review page
+// for DATE.week with nothing pending), which records in the browser or takes an upload.
+async function sendRecordEmail(date) {
+  const key = process.env.RESEND_API_KEY, from = process.env.MAIL_FROM || 'AI Edge Briefing <briefing@aiedgebriefing.com>';
+  if (!key || !REVIEW_EMAIL) { console.log('  record email not sent (RESEND_API_KEY / REVIEW_EMAIL unset)'); return; }
+  const k = `${date}.week`;
+  const link = REVIEW_URL ? `${REVIEW_URL}/${k}?t=${reviewSig(k)}` : `${SITE_URL}/week/${date}/script/`;
+  const sc = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', `${date}.week.host.json`), 'utf8'));
+  const words = sc.blocks.reduce((n, b) => n + b.lines.reduce((m, l) => m + l.text.split(/\s+/).length, 0), 0);
+  const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;padding:8px 4px;font-size:15px;line-height:1.5;color:#222">
+<p style="color:#777;font-size:12px;margin:0 0 4px">The AI Edge · week in review</p>
+<h1 style="font-size:20px;margin:0 0 12px">${longDate(date)} — the script is ready to record (${words} words, about ${Math.round(words / 140)} minutes)</h1>
+<p>Open the teleprompter, read it in one take — record in the browser or upload a file from your own software. The recording is checked against the script and you get the review link back, or the paragraphs to do again.</p>
+<p style="margin:18px 0"><a href="${link}" style="background:#0b57d0;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block">Open the teleprompter</a></p>
+<p style="color:#777;font-size:13px">The script as a page: <a href="${SITE_URL}/week/${date}/script/" style="color:#777">${SITE_URL}/week/${date}/script/</a></p>
+</div>`;
+  const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify({ from, to: [REVIEW_EMAIL], subject: `Record: The AI Edge week in review, ${longDate(date)}`, html, text: `The week-in-review script for ${longDate(date)} is ready to record (${words} words): ${link}` }) });
+  console.log(`  record email ${res.ok ? 'sent' : 'FAILED ' + res.status} → ${REVIEW_EMAIL}`);
+}
 async function sendReviewEmail(date, label, entry) {
   const key = process.env.RESEND_API_KEY, from = process.env.MAIL_FROM || 'AI Edge Briefing <briefing@aiedgebriefing.com>';
   if (!key || !REVIEW_EMAIL) { console.log('  review email not sent (RESEND_API_KEY / REVIEW_EMAIL unset)'); return; }
@@ -332,8 +351,10 @@ async function synthesize(ed, seg, label) {
   const EMAIL_FOR = args.includes('--review-email') ? args[args.indexOf('--review-email') + 1] : (process.env.REVIEW_EMAIL_DATE || null);
   if (EMAIL_FOR) {
     const p = (index.pending && index.pending[EMAIL_FOR]) || (index.episodes[EMAIL_FOR] && { label: 'live', ...index.episodes[EMAIL_FOR] });
-    if (!p) { console.log(`${EMAIL_FOR}: no episode to send a review email for`); process.exit(1); }
-    await sendReviewEmail(EMAIL_FOR, p.label, p); process.exit(0);
+    if (p) { await sendReviewEmail(EMAIL_FOR, p.label, p); process.exit(0); }
+    // A Monday with a host script and no recording yet: the email is "ready to record", linking the teleprompter.
+    if (EMAIL_FOR.endsWith('.week') && fs.existsSync(path.join(ROOT, 'data', `${EMAIL_FOR.slice(0, 10)}.week.host.json`))) { await sendRecordEmail(EMAIL_FOR.slice(0, 10)); process.exit(0); }
+    console.log(`${EMAIL_FOR}: no episode to send a review email for`); process.exit(1);
   }
   const APPROVE = args.includes('--approve') ? args[args.indexOf('--approve') + 1] : (process.env.APPROVE_DATE || null);
   if (APPROVE) {
