@@ -68,6 +68,7 @@ jobs:
           FORCE_LABEL: ${{ github.event.inputs.label }}
           RETRACT_DATE: ${{ github.event.inputs.retract_date }}
           PODCAST_REVIEW: ${{ vars.PODCAST_REVIEW }}
+          PODCAST_SPEED: ${{ vars.PODCAST_SPEED }}
           REVIEW_URL: ${{ vars.REVIEW_URL }}
           REVIEW_EMAIL: ${{ vars.REVIEW_EMAIL }}
           REVIEW_SIGNING_SECRET: ${{ secrets.REVIEW_SIGNING_SECRET }}
@@ -145,6 +146,22 @@ jobs:
             sleep 10
           done
           echo "::warning::https://aiedgebriefing.com/$D/ still not 200 after 5 minutes — announcing anyway"
+      - name: Monday — tell Mike the week-in-review script is ready to record (once)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AUDIO_BASE: ${{ vars.AUDIO_BASE }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          REVIEW_EMAIL: ${{ vars.REVIEW_EMAIL }}
+          REVIEW_URL: ${{ vars.REVIEW_URL }}
+          REVIEW_SIGNING_SECRET: ${{ secrets.REVIEW_SIGNING_SECRET }}
+        run: |
+          D=$(TZ=America/Toronto date +%F)
+          [ -f "data/$D.week.host.json" ] || exit 0
+          if node -e "require('./scripts/r2.js').exists('sent/record-$D').then(x=>process.exit(x?0:1))"; then echo "$D: record email already sent"; exit 0; fi
+          node scripts/podcast.js --review-email "$D.week" && node -e "require('./scripts/r2.js').put('sent/record-$D', Buffer.from(new Date().toISOString()+'\n'), 'text/plain', 'no-store').then(()=>console.log('marker written'))"
       - name: Send today's edition to subscribers
         env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

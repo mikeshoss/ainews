@@ -97,6 +97,7 @@ let prevHost = null, run = 0;
     lineCount++; words += text.trim().split(/\s+/).length;
     if (text.length > 600) err(`${lw}: line is ${text.length} chars (max 600) — split it`);
     if (/https?:\/\/|www\./i.test(text)) err(`${lw}: URLs must not be read aloud`);
+    if (/\blevel with\b/i.test(text)) err(`${lw}: "level with" is heard as a level — say "ties" or "on a par with"`);
     if (NUMBER_WORDS.test(text)) err(`${lw}: numbers must be written as digits, not words ("${text.match(NUMBER_WORDS)[0]}")`);
     const dbm = text.match(/\b\d{1,2}(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\b/);
     if (dbm) err(`${lw}: dates are spoken month-first with an ordinal ("September 10th"), not "${dbm[0]}"`);
@@ -134,6 +135,7 @@ let prevHost = null, run = 0;
   if (b.type === 'intro') {
     // The AI-voice disclosure moved to the outro (2026-09-24): up front it distracted from the news.
     if (/voiced by ai|synthetic voice|ai[- ]generated|ai voices|voices are ai|we(?:'re| are) ai|ai[- ]voiced|read by ai/i.test(blockText)) err(`${where}: the AI-voice disclosure belongs in the outro now, not the intro`);
+    if (/\bthe last day\b/i.test(blockText)) err(`${where}: "the last day" — spoken, that is the final day; say "the last 24 hours" or "since yesterday morning"`);
     // Presented by Epilogue, then what Epilogue is, then where to find it — the invitation is required.
     if (!/epiloguelabs\.com/i.test(blockText)) err(`${where}: intro must invite listeners to epiloguelabs.com (e.g. "Visit epiloguelabs.com to learn more.")`);
     const o = dateObj(date), weekday = spokenDate(date).split(',')[0], alt = `${weekday} the ${ordinal(o.getUTCDate())} of ${spokenDate(date).split(', ')[1].split(' ')[0]}`;
