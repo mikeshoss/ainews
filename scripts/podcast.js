@@ -39,9 +39,9 @@ const MAX_CHARS = 3800;            // per TTS request (API limit 4096)
 const VERIFY = !process.argv.includes('--no-verify');   // transcribe each segment and check it says what we sent
 const VERIFY_ROUNDS = 3;           // passes of transcribe-and-repair before giving up on an episode
 const MODEL = 'gpt-4o-mini-tts';
-// Playback speed applied on concat (ffmpeg atempo: pitch-preserving). Mike, 2026-09-29: 1.25. The TTS reads at
+// Playback speed applied on concat (ffmpeg atempo: pitch-preserving). Mike, 2026-10-01: 1.15 (1.25 was too fast for some). The TTS reads at
 // its own pace; the transcription check runs on the sped-up file, so it verifies what listeners hear.
-const SPEED = Number(process.env.PODCAST_SPEED || '1.25');
+const SPEED = Number(process.env.PODCAST_SPEED || '1.15');
 const PAUSE_TURN = 0.45;           // seconds of silence between speaker turns
 const PAUSE_PARA = 0.7;            // between narration paragraphs / blocks
 const INSTRUCTIONS = {
@@ -97,6 +97,7 @@ async function sendReviewEmail(date, label, entry) {
 <p style="color:#777;font-size:12px;margin:0 0 4px">The AI Edge · review</p>
 <h1 style="font-size:20px;margin:0 0 12px">${title} — ${label} is ready to review (${mins} min)</h1>
 <p>It is parked: not on the site, not in the feed. Listen, then put it live or send feedback.</p>
+${entry.unverified && entry.unverified.length ? `<p style="color:#8a1c1c"><b>Listen for these figures</b> — the check could not confirm them after three readings:</p><ul style="color:#8a1c1c">${entry.unverified.map((u) => `<li>${u}</li>`).join('')}</ul>` : ''}
 <p style="margin:18px 0"><a href="${link}" style="background:#0b57d0;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;display:inline-block">Open the review page</a></p>
 <p style="color:#777;font-size:13px">Transcript: <a href="${tx}" style="color:#777">${tx}</a>${REVIEW_URL ? '' : '<br>Review page not deployed yet — this link is the audio itself; tell Claude to approve.'}</p>
 </div>`;
@@ -254,8 +255,11 @@ async function synthesize(ed, seg, label) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `ep-${ed.date}-`));
   const reqs = requestsFor(seg);
   const files = [];
-  for (const [i, r] of reqs.entries()) {
+  for (let [i, r] of reqs.entries()) {
     const f = path.join(tmp, `seg-${String(i).padStart(3, '0')}.mp3`);
+    // A two-word line gives the voice nothing to lean on: "I'm Maya." came out "I Maya." (2026-10-01). Expanding the
+    // contraction on short lines costs nothing to the ear and the transcription check still matches the script.
+    if (r.text && r.text.split(/\s+/).length <= 4) r = { ...r, text: r.text.replace(/\bI'm\b/g, 'I am').replace(/\bI'll\b/g, 'I will').replace(/\bit's\b/gi, (m) => m[0] + 't is') };
     if (r.pause) silence(r.pause, f); else { process.stdout.write(`  tts ${r.voice} ${r.text.length} chars\n`); await tts(r, seg.instructions, f); }
     files.push(f);
   }
@@ -279,12 +283,23 @@ async function synthesize(ed, seg, label) {
       try { heard = await verify.transcribe(fs.readFileSync(out), path.basename(out)); }
       catch (e) { console.log(`  cannot verify this episode (${e.message}) — publishing it unchecked`); break; }
       const r = verify.check(asScript(seg), heard);
-      for (const w of r.warnings) console.log(`  note: ${w.why} — rest of the sentence is there, not treating it as missing`);
-      if (!r.missing.length) { console.log(`  verified: no sentence missing from the audio (${r.total} checked, ${r.warnings.length} heard differently)`); break; }
+      // A figure the transcription did not hear is re-spoken, every time: on 2026-10-01 "$3.26" was read as
+      // "3 dollars 36 cents" and a coverage note let it through. Names and terms heard differently stay notes.
+      const figureMisses = r.warnings.filter((w) => /^figure /.test(w.why));
+      for (const w of r.warnings.filter((w) => !/^figure /.test(w.why))) console.log(`  note: ${w.why} — rest of the sentence is there, not treating it as missing`);
+      const toFix = [...r.missing, ...figureMisses];
+      if (!toFix.length) { console.log(`  verified: no sentence missing from the audio (${r.total} checked, ${r.warnings.length} heard differently)`); break; }
       const bad = new Set();
-      for (const m of r.missing) { const i = reqs.findIndex((q) => q.text && q.text.includes(m.sentence)); if (i >= 0) bad.add(i); }
-      console.log(`  round ${round}: ${r.missing.length} sentence(s) missing — ${r.missing.map((m) => m.why).join('; ')}`);
+      for (const m of toFix) { const i = reqs.findIndex((q) => q.text && q.text.includes(m.sentence)); if (i >= 0) bad.add(i); }
+      console.log(`  round ${round}: ${r.missing.length} sentence(s) missing, ${figureMisses.length} figure(s) not heard — ${toFix.map((m) => m.why).join('; ')}`);
       if (!bad.size || round === VERIFY_ROUNDS) {
+        if (!r.missing.length && figureMisses.length) {
+          // Only figures left after three readings: whisper may be hearing them its own way. Publish, and say so
+          // where it is heard — the review email lists them for Mike to listen for.
+          seg.unverified = figureMisses.map((m) => `${m.why} — "${m.sentence.slice(0, 90)}"`);
+          console.log(`  ${figureMisses.length} figure(s) still not heard after ${round} readings — publishing with a note for review`);
+          break;
+        }
         fs.rmSync(tmp, { recursive: true, force: true });
         throw new Error(`audio does not match the script after ${round} attempt(s): ${r.missing.map((m) => `"${m.sentence.slice(0, 60)}" (${m.why})`).join('; ')}`);
       }
@@ -418,7 +433,7 @@ async function synthesize(ed, seg, label) {
         index.pending[ed.date] = { label, ...entry }; // parked: the review page shows it; --approve moves it into episodes
         await saveIndex(index);
         console.log(`  → ${a.seconds}s, ${(a.bytes / 1e6).toFixed(1)} MB, uploaded — PENDING REVIEW (${label})`);
-        await sendReviewEmail(ed.date, label, entry);
+        await sendReviewEmail(ed.date, label, { ...entry, unverified: seg.unverified });
       } else {
         index.episodes[ed.date] = entry; // newest version is what the feed carries; earlier ones stay in the bucket and on /podcast/
         await saveIndex(index); // after each episode so a later failure keeps earlier work
