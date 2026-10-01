@@ -38,7 +38,12 @@ const stripThousands = (s) => { let out = String(s); while (/\d,\d{3}/.test(out)
 // A decimal is one number, not two: "81.1%" must not become the tokens "81" and "1", or the figure the
 // sentence exists to carry stops being checkable.
 const joinDecimals = (s) => String(s).replace(/(\d)\.(\d)/g, '$1point$2');
-const norm = (s) => joinDecimals(stripThousands(s))
+// "1M-token" is heard as "one million token" and "64K" as "64,000": fold the script's unit suffixes and the
+// transcript's spelled-out or comma forms to one token each, before thousands separators are stripped.
+const foldUnits = (s) => String(s)
+  .replace(/\b(\d{1,3}),000,000\b/g, '$1million').replace(/\b(\d{1,3}),000\b/g, '$1thousand')
+  .replace(/(\d+(?:\.\d+)?)\s*(?:M|million)\b/g, '$1million').replace(/(\d+(?:\.\d+)?)\s*(?:K|k|thousand)\b/g, '$1thousand');
+const norm = (s) => joinDecimals(stripThousands(foldUnits(s)))
   .toLowerCase()
   .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"')
   .replace(/%/g, ' percent ')
