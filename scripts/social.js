@@ -19,6 +19,7 @@ const DRY = process.argv.includes('--dry-run');
 const ONLY = process.argv.includes('--platform') ? process.argv[process.argv.indexOf('--platform') + 1] : null;
 const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const hook = (summary) => (paragraphs(summary)[0] || '').split(/(?<=[.!?])\s/)[0];
+// The post leads with the episode name when the editor wrote one; the summary's first sentence otherwise.
 const link = (p, src) => `${SITE_URL}${p}?utm_source=${src}&utm_medium=social`;
 // Keep the hook whole when it fits; otherwise cut at a word and add an ellipsis. Links count as ~23 chars on X.
 const fit = (text, url, max) => { const room = max - 24 - 2; const t = text.length > room ? text.slice(0, room - 1).replace(/\s+\S*$/, '') + '…' : text; return `${t}\n\n${url}`; };
@@ -26,7 +27,7 @@ const fit = (text, url, max) => { const room = max - 24 - 2; const t = text.leng
 // What to say. Daily: the hook sentence + link. Weekly: the shape of the week + link.
 function posts() {
   const out = [];
-  for (const ed of loadEditions()) out.push({ key: ed.date, text: (max, src) => fit(hook(ed.summary), link(`/${ed.date}/`, src), max), date: ed.date });
+  for (const ed of loadEditions()) out.push({ key: ed.date, text: (max, src) => fit(ed.title ? ed.title.replace(/\.$/, '') + '.' : hook(ed.summary), link(`/${ed.date}/`, src), max), date: ed.date });
   for (const wk of loadWeeks()) out.push({ key: `${wk.date}.week`, text: (max, src) => fit(`What actually changed in AI, ${periodLabel(wk.period)}: ${wk.happened.length} developments, ${wk.connects.length} connections, ${wk.unknowns.length} open questions — facts first, no opinion.`, link(`/week/${wk.date}/`, src), max), date: wk.date });
   return out;
 }

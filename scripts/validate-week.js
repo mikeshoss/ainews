@@ -35,6 +35,15 @@ if (date && !isMonday(date)) err(`${date} is not a Monday — the week in review
 if (!wk.generated_at || isNaN(Date.parse(wk.generated_at))) err(`"generated_at" must be an ISO timestamp`);
 const period = wk.period || {};
 if (date && (period.from !== addDays(date, -7) || period.to !== addDays(date, -1))) err(`"period" must be {"from":"${addDays(date, -7)}","to":"${addDays(date, -1)}"} (the Monday–Sunday before ${date}); got ${JSON.stringify(period)}`);
+// "title": the episode's name (required from 2026-10-05; the summary's first sentence stands in before that).
+if (String(wk.date || '') >= '2026-10-05' && !(wk.title || '').trim()) err(`"title" is required: the week's name, 3–10 words, a statement`);
+if (wk.title) {
+  const t = String(wk.title).trim(), n = t.split(/\s+/).length, sum = Array.isArray(wk.summary) ? wk.summary.join(' ') : String(wk.summary || '');
+  if (n < 3 || n > 10) err(`"title" is ${n} words; want 3–10`);
+  if (/[.!?]$/.test(t)) err(`"title" ends with punctuation — it is a name, not a sentence`);
+  if (/https?:\/\//i.test(t) || /:\s/.test(t)) err(`"title" must not contain a URL or a colon`);
+  for (const num of t.match(/\d[\d,.]*/g) || []) if (!sum.includes(num)) err(`"title" carries "${num}", which is not in the summary`);
+}
 const summaryText = Array.isArray(wk.summary) ? wk.summary.join(' ') : String(wk.summary || '');
 if (summaryText.trim().length < 200) err(`"summary" is too short (${summaryText.trim().length} chars)`);
 

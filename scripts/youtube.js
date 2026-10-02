@@ -69,7 +69,7 @@ async function upload(token, file, meta) {
     const marker = `posted/youtube/${ed.date}`;
     if (!DRY && (yt[ed.date] || await r2.exists(marker))) continue;
     if (ed.date !== today) { if (!DRY) await r2.put(marker, Buffer.from('skipped\n'), 'text/plain', 'no-store'); continue; }
-    const title = `${longDate(ed.date)} — ${PODCAST.title}`;
+    const title = `${episodeTitle(ed)} — ${PODCAST.title}`;
     const description = `${paragraphs(ed.summary).join('\n\n')}\n\nEvery claim links to its source: ${SITE_URL}/${ed.date}/?utm_source=youtube\nTranscript: ${SITE_URL}/${ed.date}/script/\n\n${PODCAST.title}, presented by ${PODCAST.presenter}. Voiced by AI from the written edition.`;
     console.log(`${ed.date}: ${DRY ? 'would upload' : 'uploading'} "${title}"`);
     if (DRY) continue;
