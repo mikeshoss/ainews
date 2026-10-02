@@ -44,7 +44,6 @@ Keep **5–12 developments**, ranked by the daily's significance order: capabili
 {
   "date": "DATE", "kind": "week", "generated_at": "<ISO-8601 UTC>",
   "period": { "from": "YYYY-MM-DD", "to": "YYYY-MM-DD" },
-  "title": "The episode's name — 3 to 10 words, a statement of what the week was. No period, no colon, no figure that is not in the summary. Shown as 'Name [Week in review, 21–27 Sep 2026]'.",
   "summary": ["2–3 paragraphs on the shape of the week — facts and numbers only, ~150–250 words"],
   "happened": [
     { "id": "pentagon-anthropic-exit",

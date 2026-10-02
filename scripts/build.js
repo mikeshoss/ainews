@@ -1090,7 +1090,7 @@ const mmss = (sec) => { const m = Math.floor(sec / 60), s2 = sec % 60; return `$
 const bracketDate = (date) => { const d = dateObj(date); return `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
 const episodeName = (ed) => { const t = (ed.title || '').trim(); if (t) return t.replace(/\.$/, ''); const first = (paragraphs(ed.summary)[0] || '').split(/(?<=[.!?])\s/)[0].replace(/\.$/, ''); return first.length > 80 ? first.slice(0, 77).replace(/\s+\S*$/, '') + '…' : first; };
 const episodeTitle = (ed) => `${episodeName(ed)} [${bracketDate(ed.date)}]`;
-const weekEpisodeTitle = (wk, host) => `${episodeName(wk)} [Week in review, ${wk.shortLabel}]${host ? ` — with ${host}` : ''}`;
+const weekEpisodeTitle = (wk, host) => `Week in review, ${wk.label}${host ? ` — with ${host}` : ''}`;   // the weekly keeps its plain title for now (Mike, 2026-10-02)
 const hhmmss = (sec) => `${String(Math.floor(sec / 3600)).padStart(2, '0')}:${String(Math.floor((sec % 3600) / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 
 function renderSpectrum(ed, withLegend) {
