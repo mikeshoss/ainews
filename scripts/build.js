@@ -1084,6 +1084,13 @@ function loadAudio() {
   try { const idx = JSON.parse(fs.readFileSync(AUDIO_INDEX, 'utf8')); AUDIO_VERSIONS = idx.versions || {}; return idx.episodes || {}; } catch { return {}; }
 }
 const mmss = (sec) => { const m = Math.floor(sec / 60), s2 = sec % 60; return `${m}:${String(s2).padStart(2, '0')}`; };
+// Episode titles (Mike, 2026-10-02): a name, then the date in square brackets — "OpenAI widens the reckoning over its
+// escaped agents [2 Oct 2026]". The name is the edition's "title" when the editor wrote one, else the summary's first
+// sentence, trimmed. The weekly says what it is before the dates.
+const bracketDate = (date) => { const d = dateObj(date); return `${d.getUTCDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const episodeName = (ed) => { const t = (ed.title || '').trim(); if (t) return t.replace(/\.$/, ''); const first = (paragraphs(ed.summary)[0] || '').split(/(?<=[.!?])\s/)[0].replace(/\.$/, ''); return first.length > 80 ? first.slice(0, 77).replace(/\s+\S*$/, '') + '…' : first; };
+const episodeTitle = (ed) => `${episodeName(ed)} [${bracketDate(ed.date)}]`;
+const weekEpisodeTitle = (wk, host) => `Week in review, ${wk.label}${host ? ` — with ${host}` : ''}`;   // the weekly keeps its plain title for now (Mike, 2026-10-02)
 const hhmmss = (sec) => `${String(Math.floor(sec / 3600)).padStart(2, '0')}:${String(Math.floor((sec % 3600) / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
 
 function renderSpectrum(ed, withLegend) {
@@ -1108,7 +1115,7 @@ function renderPlayer(ep, base, ed, compact) {
   const label = `${hostsLabel(ep)} · ${mmss(ep.seconds)}`;
   const art = ep.image && !compact ? `<img class="art" src="${esc(ep.image)}" alt="Episode cover" width="140" height="140" loading="lazy">` : '';
   const date = ed ? ed.date : '';
-  const title = ed ? (ed.week ? `Week in review, ${ed.label}` : longDate(ed.date)) : PODCAST.title;
+  const title = ed ? (ed.week ? weekEpisodeTitle(ed) : episodeTitle(ed)) : PODCAST.title;
   return `<div class="player${compact ? ' compact' : ''}" data-src="${esc(op3(ep.url))}" data-title="${esc(title)}" data-date="${esc(date)}" data-seconds="${ep.seconds}" data-cover="${esc(ep.image || '')}" data-href="${esc(base + (date ? (ed.week ? 'week/' : '') + date + '/' : 'podcast/'))}" data-spotify="${esc(ed && ed.week ? '' : spotifyUrl(date))}">${art}<div class="player-body">
   <div class="p-controls"><button class="pp" type="button" aria-label="Play"><svg class="i-play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg><svg class="i-pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z" fill="currentColor"/></svg></button><div class="p-bar" role="slider" aria-label="Position"><div class="p-fill"></div></div><span class="p-time">0:00 / ${mmss(ep.seconds)}</span></div>
   <div class="player-meta">${esc(PODCAST.title)} · ${esc(label)}${!compact && ed ? ` · <a href="${base}${ed.week ? 'week/' : ''}${ed.date}/script/">read the transcript</a> · <a href="${base}podcast/">subscribe</a>` : ''}${!compact && !(ed && ed.week) && spotifyUrl(date) ? ` · <a href="${esc(spotifyUrl(date))}" rel="noopener" target="_blank">open in Spotify</a>` : ''}</div>
@@ -1172,7 +1179,7 @@ function renderPodcastPage(editions, audio, weeks = []) {
     const notes = paragraphs(ed.summary).map((p) => `<p>${esc(p)}</p>`).join('');
     return { date: ed.date, html: `<article class="card episode">
   <div class="eyebrow">${esc(shortDate(ed.date))} · ${esc(hostsLabel(audio[ed.date]))} · ${mmss(audio[ed.date].seconds)} · ${ed.itemCount} items</div>
-  <h2><a href="${base}${ed.date}/">${esc(longDate(ed.date))}</a> <a class="read-link" href="${base}${ed.date}/">Read the edition →</a></h2>
+  <h2><a href="${base}${ed.date}/">${esc(episodeName(ed))}</a> <a class="read-link" href="${base}${ed.date}/">Read the edition →</a></h2>
   ${renderSpectrum(ed, false)}
   ${renderPlayer(audio[ed.date], base, ed, false)}
   <div class="notes"><div class="notes-text">${notes}</div><button class="notes-more" type="button" aria-expanded="false">More</button></div>
@@ -1211,8 +1218,8 @@ function renderPodcastFeed(editions, audio, weeks = []) {
     const ep = audio[ed.date];
     const desc = paragraphs(ed.summary).join('\n\n');
     return `<item>
-<title>${esc(longDate(ed.date))}</title>
-<itunes:title>${esc(longDate(ed.date))}</itunes:title>
+<title>${esc(episodeTitle(ed))}</title>
+<itunes:title>${esc(episodeTitle(ed))}</itunes:title>
 <link>${SITE_URL}/${ed.date}/</link>
 <guid isPermaLink="false">ainews-${ed.date}</guid>
 <pubDate>${new Date(ep.generated_at || ed.date + 'T12:00:00Z').toUTCString()}</pubDate>
@@ -1231,7 +1238,7 @@ ${ep.image ? `<itunes:image href="${esc(ep.image)}"/>` : ''}
   const weekItems = weeks.filter((wk) => audio[`${wk.date}.week`]).slice(0, 12).map((wk) => {
     const ep = audio[`${wk.date}.week`];
     const desc = paragraphs(wk.summary).join('\n\n');
-    const title = `Week in review, ${wk.label} — with ${Object.values(ep.voices || {})[0] || 'Mike Shoss'}`;
+    const title = weekEpisodeTitle(wk, Object.values(ep.voices || {})[0] || 'Mike Shoss');
     return `<item>
 <title>${esc(title)}</title>
 <itunes:title>${esc(title)}</itunes:title>
@@ -1493,4 +1500,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { longDate, shortDate, paragraphs, loadEditions, loadWeeks, loadStorylines, buildTopicIndex, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };
+module.exports = { longDate, shortDate, paragraphs, episodeName, episodeTitle, loadEditions, loadWeeks, loadStorylines, buildTopicIndex, SECTION_ORDER, FLAG_LABELS, SITE_NAME, SITE_URL, REPO_URL };

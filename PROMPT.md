@@ -90,6 +90,7 @@ Schema (see `data/2026-09-11.json` for a full example once it exists):
   "edition": "daily",
   "generated_at": "<ISO-8601 UTC timestamp>",
   "window": "e.g. 10 Sep 11:00 → 11 Sep 11:00 UTC",
+  "title": "The episode's name — 3 to 10 words, a statement: who did what, or what changed. No period, no colon, no figure that is not in the summary. It is read in podcast apps as 'Name [2 Oct 2026]', so it must stand alone.",
   "summary": ["paragraph 1", "paragraph 2"],
   "sections": [
     {

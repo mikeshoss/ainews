@@ -31,6 +31,17 @@ if (ed.date !== fname) err(`"date" (${ed.date}) must match filename (${fname})`)
 if (ed.edition !== 'daily') err(`"edition" must be "daily" (the week in review is a separate data/DATE.week.json)`);
 if (ed.week_in_review) err(`"week_in_review" no longer belongs in a daily edition — it is its own file, data/DATE.week.json`);
 if (!ed.generated_at || isNaN(Date.parse(ed.generated_at))) err(`"generated_at" must be an ISO timestamp`);
+// "title": the episode's name — 3 to 10 words, a statement not a label, no trailing period, no URL, no number
+// that is not in the summary. Required from 2026-10-05 (before that, the summary's first sentence stands in).
+if (ed.date >= '2026-10-05' && !(ed.title || '').trim()) err(`"title" is required: the episode's name, 3–10 words (e.g. "OpenAI widens the reckoning over its escaped agents")`);
+if (ed.title) {
+  const t = String(ed.title).trim(), n = t.split(/\s+/).length;
+  if (n < 3 || n > 10) err(`"title" is ${n} words; want 3–10`);
+  if (/[.!?]$/.test(t)) err(`"title" ends with punctuation — it is a name, not a sentence`);
+  if (/https?:\/\//i.test(t) || /:\s/.test(t)) err(`"title" must not contain a URL or a colon`);
+  const sum = (Array.isArray(ed.summary) ? ed.summary.join(' ') : String(ed.summary || ''));
+  for (const num of t.match(/\d[\d,.]*/g) || []) if (!sum.includes(num)) err(`"title" carries "${num}", which is not in the summary`);
+}
 const summaryText = Array.isArray(ed.summary) ? ed.summary.join(' ') : String(ed.summary || '');
 if (summaryText.trim().length < 200) err(`"summary" is too short (${summaryText.trim().length} chars; want a real paragraph or two)`);
 if (!Array.isArray(ed.sections) || !ed.sections.length) err(`"sections" must be a non-empty array`);
