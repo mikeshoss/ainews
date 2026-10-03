@@ -1,0 +1,441 @@
+{
+  "date": "2026-10-03",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Saturday, October 3rd, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue is an AI venture studio and consultancy in Toronto, building products where the answer has to be right. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Visit epiloguelabs.com to learn more."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what happened at the frontier of AI in the last 24 hours, for good and for harm, with every claim linked to its source on the site."
+        },
+        {
+          "host": "B",
+          "text": "What's leading?"
+        },
+        {
+          "host": "A",
+          "text": "First, a federal judge in Oklahoma ruled that a warrantless police search of Flock's automated licence plate reader network was unconstitutional, and called that network a type of indiscriminate mass surveillance."
+        },
+        {
+          "host": "B",
+          "text": "Second, Cerebras fell nearly 20% this week to its lowest price since its May stock market debut, after a report that OpenAI will run the Ultrafast mode of GPT-6.1 Sol on Nvidia GPUs rather than Cerebras hardware. CNBC says the market cap now sits at just over $39 billion."
+        },
+        {
+          "host": "A",
+          "text": "And third, we finally have per-site figures for the AI agents that have been probing government websites, including over 200,000 requests at one US Department of Education site."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI safety and transparency lead David Robinson resigns days after three researchers were dismissed",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Let's start with OpenAI. Benzinga reported on October 3rd that David Robinson, a leader on OpenAI's Safety Systems team, resigned last week. An OpenAI spokesperson confirmed the departure to Business Insider on Friday."
+        },
+        {
+          "host": "B",
+          "text": "What was his job?"
+        },
+        {
+          "host": "A",
+          "text": "Safety and transparency. He helped develop and publish the system cards that describe OpenAI's models, and before that he led the company's policy planning."
+        },
+        {
+          "host": "B",
+          "text": "This is an update on yesterday's episode, when OpenAI said it had parted ways with three researchers for violating its policies on accessing and handling sensitive company information. Robinson's exit also follows that of the safety head, Johannes Heidecke, earlier this year."
+        },
+        {
+          "host": "A",
+          "text": "One caveat. The original reporting is Business Insider's, and that page wouldn't open for us, so everything we have comes from a single source, Benzinga's account of it."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "On to the research, starting with a result that is about scaffolding rather than a new model."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "MIT visual harness lifts Claude Opus 5.0 from 40.68 to 100.00 on the ARC-AGI-3 efficiency score",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A preprint on arXiv describes a visual harness called VISTA. The paper says it improves Claude Opus 5.0's Relative Human Action Efficiency score on ARC-AGI-3 from 40.68 to a perfect 100.00, with the model completing all 25 public games using 57.4% fewer actions than first-time human participants."
+        },
+        {
+          "host": "B",
+          "text": "What does the harness actually do?"
+        },
+        {
+          "host": "A",
+          "text": "It gives a general-purpose multimodal model what the authors call long-horizon vision. It keeps a lossless visual memory of past observations in their original form, which the model can retrieve and reorganise as it reasons."
+        },
+        {
+          "host": "B",
+          "text": "And the point is that the model underneath didn't change. The organisers' own baseline, with no programs, puts that same Claude Opus 5.0 at 40.68."
+        },
+        {
+          "host": "A",
+          "text": "Worth saying this is a preprint, so it isn't peer reviewed, and the numbers are the authors' own. The arXiv HTML lists the affiliation of its five authors as the Massachusetts Institute of Technology."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Argo-Bench: Claude Opus 5.5, strongest of 14 models, scores 95 or higher on 34.8% of 210 enterprise data tasks",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Also on arXiv, a benchmark called Argo-Bench, from a company called TextQL. It puts 14 frontier and open-weight models on enterprise data work."
+        },
+        {
+          "host": "A",
+          "text": "How did they do?"
+        },
+        {
+          "host": "B",
+          "text": "The paper says the strongest, Claude Opus 5.5, solves 34.8% of tasks and averages 59.5 points. Nine of the fourteen average below 35. The authors write that models often analyse the wrong quantity or optimise the wrong objective."
+        },
+        {
+          "host": "A",
+          "text": "There are 210 tasks, over a simulated New York City food delivery platform with 81 million orders in 2024, exported to a warehouse of 235 tables and 7.5 billion rows."
+        },
+        {
+          "host": "A",
+          "text": "A preprint again, not peer reviewed, and arXiv is the only source we have for it. The benchmark is also built by a company that sells data-agent software, so the incentive runs toward a hard benchmark."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Now security, and two stories that both come back to what agents are allowed to touch."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Per-site counts published: 200,000+ agent requests at a US Education Department site, 899 at Library and Archives Canada",
+      "lines": [
+        {
+          "host": "A",
+          "text": "SecurityWeek reports the US Department of Education received over 200,000 requests in June targeting its Civil Rights Data Collection website, including a basic SQL injection probe. Library and Archives Canada was hit with 899 requests in May and July, 13 of them carrying attack payloads."
+        },
+        {
+          "host": "B",
+          "text": "What was in those payloads?"
+        },
+        {
+          "host": "A",
+          "text": "Three SQL injection probes, a cross-site scripting probe, and requests that tested input handling, output formats and a debug flag. SecurityWeek also lists automated workflows aimed at the White House, the Departments of War, Justice and Commerce, the CDC, the SEC, and state agencies in California, Maryland, Illinois, Texas and New York."
+        },
+        {
+          "host": "B",
+          "text": "This is an update on what we carried yesterday in aggregate. These are the first per-site, per-month counts."
+        },
+        {
+          "host": "A",
+          "text": "And the caveats cut both ways. SecurityWeek says researchers found nothing in the data they analysed to suggest the agents obtained non-public information, and Canada's Communications Security Establishment said there is no indication that government systems have been compromised at this time. SecurityWeek is also the only source we have for the counts."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Apple tells developers it will restrict macOS Full Disk Access, citing the growing risk from AI agents",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Apple told developers on October 2nd that it will introduce additional controls around Full Disk Access on macOS."
+        },
+        {
+          "host": "A",
+          "text": "Apple's own words: some developers are using Full Disk Access in ways that could put users at risk, exposing everything on their systems, including files, mail, messages, and even browsing history, without users' full knowledge and understanding."
+        },
+        {
+          "host": "B",
+          "text": "And the reason Apple gave is agents. Apple wrote that addressing this is critical, because as AI agents become increasingly capable and autonomous, the risks associated with this level of access will grow substantially."
+        },
+        {
+          "host": "A",
+          "text": "That's an operating system vendor narrowing a long-standing permission because of agents, rather than because of a specific exploit."
+        },
+        {
+          "host": "B",
+          "text": "Apple named no macOS version, no date, and no developer or app, and TechCrunch says Apple did not respond to its request for more detail. Nothing in the post says any agent has abused the permission."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Report estimates Chinese fabs took delivery of 343 immersion DUV systems by early 2026, and urges a total ban",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To chips and geopolitics. The South China Morning Post reports that Chinese-owned fabs had acquired an estimated 343 immersion deep ultraviolet lithography systems by early 2026."
+        },
+        {
+          "host": "B",
+          "text": "That figure comes from a report by the Centre for Technology & Statecraft, which we opened directly. It says roughly 270 of the machines are a single immersion model, 80% of the advanced stockpile, and it puts ASML's share of that market at 99%, with Nikon at 1%."
+        },
+        {
+          "host": "A",
+          "text": "Why does immersion matter, if China can't buy the newest machines at all?"
+        },
+        {
+          "host": "B",
+          "text": "Because, as the Post's subheadline puts it, the tools can be adapted to manufacture 7-nanometre logic chips and advanced memory for AI processors."
+        },
+        {
+          "host": "A",
+          "text": "And the report's recommendation is blunt: replace the current partial controls with a China-wide ban on all immersion exports, with complementary controls on spare parts and servicing."
+        },
+        {
+          "host": "B",
+          "text": "The authors are a former US export control official, Nicholas Brown, and Saif Khan, a former White House adviser, so this is advocacy by former officials, not a government finding. The report itself is dated September 2026."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Xaira publishes antibody design results, including 7 functional binders from 60,000 designs against a GPCR",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To health and science. Xaira Therapeutics published results from its antibody design platform."
+        },
+        {
+          "host": "B",
+          "text": "The headline result is from a programme it calls XA-4, aimed at a receptor the company describes as previously seemingly intractable. Xaira says it screened a library of 60,000 designed VHHs and confirmed 7 binders by flow cytometry, out of 92 selected candidates."
+        },
+        {
+          "host": "A",
+          "text": "What were the potencies?"
+        },
+        {
+          "host": "B",
+          "text": "The best candidate showed an IC50 of 183 nanomolar in a beta-arrestin antagonism assay, and a cell-binding EC50 of 32 nanomolar. On a programme it calls XA-1, Xaira says it designed 182 sequences for a 10% binder rate, 18 confirmed binders, with the best at 17 nanomolar against the human target."
+        },
+        {
+          "host": "A",
+          "text": "It also reports 3 weeks to a progressable binder and 7 weeks in total to a lead molecule."
+        },
+        {
+          "host": "B",
+          "text": "These are the company's own numbers, in a blog post rather than a peer-reviewed paper, and they are not independently verified. The targets aren't named, and these are in-vitro binding and cell-assay results. No animal efficacy, no toxicology, no clinical data."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Federal judge rules a warrantless Flock plate-reader search unconstitutional and indiscriminate mass surveillance",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Now the policy story of the day. 404 Media reports that Judge Sara Hill, in the federal district court for the Northern District of Oklahoma, ruled that a Tulsa County deputy's query of the Flock automated licence plate reader network was an unconstitutional warrantless search, not supported by probable cause and done without a warrant."
+        },
+        {
+          "host": "B",
+          "text": "How much did one query return?"
+        },
+        {
+          "host": "A",
+          "text": "Hill wrote that it provided him with more than 50 individual records of the defendant's whereabouts across the country for an entire month. She called the network a type of indiscriminate mass surveillance, and said courts leaning on the Knotts precedent had not considered the widespread and automated context of an AI-powered surveillance system."
+        },
+        {
+          "host": "B",
+          "text": "All the Flock evidence, and the vehicle search that followed, were thrown out."
+        },
+        {
+          "host": "A",
+          "text": "Two caveats here. 404 Media states plainly that the decision will not set a binding precedent, and 404 Media is the only source we have for it."
+        },
+        {
+          "host": "B",
+          "text": "A Flock spokesperson told 404 Media the company was not a party to the case, that the ruling goes against the overwhelming weight of authority in similar cases across the country, and that they expect it to be appealed and ultimately overturned."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Which brings us to compute, and to the money underneath it."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Cerebras falls nearly 20% to a post-IPO low after a report that OpenAI moved Ultrafast inference to Nvidia",
+      "lines": [
+        {
+          "host": "B",
+          "text": "CNBC reports Cerebras fell nearly 20% this week to its lowest price since its May stock market debut. The trigger was a post on X by the research firm SemiAnalysis, which said OpenAI will power the Ultrafast mode for GPT-6.1 Sol with Nvidia graphics processors instead of Cerebras hardware."
+        },
+        {
+          "host": "A",
+          "text": "What are the numbers?"
+        },
+        {
+          "host": "B",
+          "text": "The stock closed Friday at $166.43, and CNBC says the market cap now sits at just over $39 billion, against the $95 billion it closed at on its first day of trading."
+        },
+        {
+          "host": "A",
+          "text": "And there's a large contract behind that. CNBC says that in January Cerebras struck a deal worth over $10 billion with OpenAI, to supply 750 megawatts of computing power through 2028."
+        },
+        {
+          "host": "B",
+          "text": "Insider selling added pressure. Per the prospectus, as cited by CNBC, up to 19.4 million shares, 8% of the total outstanding, unlocked on Wednesday, and two executives sold over $240 million of Class A shares between August 20th and September 25th."
+        },
+        {
+          "host": "A",
+          "text": "The caveat is that the trigger is a post on X, not a disclosure from either company, and CNBC is the only source we have. Sam Altman then posted that Cerebras is a close partner, and the stock rose almost 3% in extended trading on Friday."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Epoch AI estimates memory shipped through 2027 could run about 30–170 million concurrent frontier agents",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Epoch AI published an estimate of how many agents the world's memory supply could actually run. It says high-bandwidth memory shipped during 2025-26 could support 16–56 million concurrent agents once deployed, rising to about 30–170 million including shipments through 2027, assuming full deployment and allocation to these workloads."
+        },
+        {
+          "host": "A",
+          "text": "And in human terms?"
+        },
+        {
+          "host": "B",
+          "text": "Because an agent can work all 168 hours each week, 4.2 times the 40-hour workweek for a full-time employee, Epoch converts that to the weekly hours of about 67–240 million people from shipments through 2026, and about 140–720 million from shipments through 2027. For scale, it notes the US has a population of 342 million and an estimated 100 million knowledge workers."
+        },
+        {
+          "host": "A",
+          "text": "The part that doesn't close is the money. Epoch says using 20% of capacity from memory shipped through 2027 would imply $2.6–5.3 trillion a year in API-equivalent spending, against roughly $1 trillion in developer revenue by end-2027 at fivefold annual growth."
+        },
+        {
+          "host": "B",
+          "text": "These are modelled upper bounds on an assumption of full deployment, not a forecast of agents in use, and Epoch AI is the only source we have."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Data centre opposition has affected around $42 billion of European investment, STL Partners research says",
+      "lines": [
+        {
+          "host": "A",
+          "text": "On deployment, the backlash against data centres is now showing up as money. CNBC reports that public opposition has already affected around $42 billion of data centre investments in Europe, through delays and cancellations, against around $77 billion in the US, according to research from STL Partners."
+        },
+        {
+          "host": "B",
+          "text": "How is that playing out in planning terms?"
+        },
+        {
+          "host": "A",
+          "text": "More than 70 European projects were rejected or restricted between January and April, more than in all of 2025, according to the European Data Center Monitor. Scotland has paused planning approvals for new hyperscale data centres. Denmark passed an emergency law that could put data centres at the back of the queue for grid power applications. And Spain proposed rules this summer requiring data centres to source 80% of their electricity from renewables."
+        },
+        {
+          "host": "A",
+          "text": "The caveat is the measure itself. Those are a consultancy's estimates of investment affected, not cancelled, CNBC does not give STL Partners' methodology or the period covered, and CNBC is the only source we have. CNBC also notes the AI build-out shows little sign of slowing."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Anthropic commits $100 million to train 10,000 \"Frontier Deployed Engineers\" by the end of 2027",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Last one. Anthropic announced a programme it calls Claude Frontier Academy. Anthropic says it is a $100 million commitment to train 10,000 engineers it calls Frontier Deployed Engineers by the end of 2027."
+        },
+        {
+          "host": "A",
+          "text": "How does it work?"
+        },
+        {
+          "host": "B",
+          "text": "Three phases: a multi-day in-person programme built around a simulated enterprise deployment, then a 12-week residency leading a real Claude project at the engineer's own organisation, then an assessment and a credential. Launch partners named include Accenture, Bain, Deloitte, McKinsey, Morgan Stanley and Novo Nordisk, with cohorts in San Francisco, New York and London."
+        },
+        {
+          "host": "A",
+          "text": "A lab issuing its own professional credential is a different kind of lock-in from an API contract. The skill being certified is deployment of one vendor's models, and the certifying body is the vendor."
+        },
+        {
+          "host": "B",
+          "text": "And this is all a company claim. Anthropic gives no breakdown of how the $100 million is spent, no cohort sizes, no fee structure, no stated pass rate, and no independent accreditation."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we've just said, is on the site."
+        },
+        {
+          "host": "B",
+          "text": "And where a page wouldn't open for us, we've said so inside the item rather than quietly filling the gap."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "B",
+          "text": "Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
