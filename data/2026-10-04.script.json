@@ -1,0 +1,418 @@
+{
+  "date": "2026-10-04",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Sunday, October 4th, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue works the way this briefing works: every claim is checked against the primary source, and whatever doesn't reconcile is left out. More at epiloguelabs.com."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what moved at the frontier of AI since yesterday morning: the advances, the research, and the uses for good and for harm, each one linked to its source on the site."
+        },
+        {
+          "host": "B",
+          "text": "What's at the top?"
+        },
+        {
+          "host": "A",
+          "text": "First, President Trump appointed his Director of National Intelligence, Jay Clayton, as AI czar, chairing a new White House panel the administration calls the Super Intelligence Force, which has 120 days to report on the risks and opportunities posed by AI."
+        },
+        {
+          "host": "B",
+          "text": "Second, Northrop Grumman says its uncrewed aircraft Talon Blue completed its first fully autonomous flight at Mojave, from taxi and takeoff through manoeuvres and landing."
+        },
+        {
+          "host": "A",
+          "text": "And third, Microsoft and Hugging Face published a benchmark that runs each of 507 business tasks 20 separate times. Claude Opus 5.5 leads on a single attempt at 67.16%, but passes all 20 attempts on only 241 of those tasks."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI says it pauses training or holds back models \"when we need to slow down\", responding to its safety lead's resignation",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's start with OpenAI, which has now answered the resignation we covered yesterday."
+        },
+        {
+          "host": "A",
+          "text": "A spokesperson, Drew Pusateri, told TechCrunch this: we're making sure our models don't become more capable than we can safely manage and secure, and we pause training or hold back models when we need to slow down."
+        },
+        {
+          "host": "B",
+          "text": "Did they say which models?"
+        },
+        {
+          "host": "A",
+          "text": "No. OpenAI didn't say which models, if any, it has paused or held back, and gave no dates and no figures. It's the company's own account of its own practice, and it is not independently verified. An update to yesterday's item on David Robinson's resignation essay."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "ThinkingBox runs each of 507 business tasks 20 times: Claude Opus 5.5 leads at 67.16% but passes all 20 on only 241",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Microsoft and Hugging Face released a benchmark called ThinkingBox. It's 507 stateful business workflows across retail, auto insurance, travel, a neobank and consulting."
+        },
+        {
+          "host": "B",
+          "text": "Each task runs 20 independent times from an identical clean backend, and the grade comes from the state of the database afterwards and the side effects, not from what the model said it did."
+        },
+        {
+          "host": "A",
+          "text": "On a single attempt, Claude Opus 5.5 is first at 67.16%, Claude Opus 5 at 66.50%, GPT-5.4 at 65.36%, GPT-5.6 Sol at 61.91%, and GPT-6 Astra at 58.31%. The best open-weight model is Kimi K3 at 57.37%."
+        },
+        {
+          "host": "B",
+          "text": "Now make it do that 20 times in a row."
+        },
+        {
+          "host": "A",
+          "text": "Then it comes apart. Claude Opus 5.5 and Claude Opus 5 each pass all 20 attempts on 241 of the 507 tasks. GPT-6 Astra manages 231, GPT-5.4 manages 128, and Kimi K3 just 68."
+        },
+        {
+          "host": "B",
+          "text": "And the failures are quiet ones. In an ablation of 121,680 valid trials across 12 models, 79,853 attempts failed the executable checks, and 67.24% of those failures still terminated cleanly, invoked a state-changing tool, and reported no final tool error."
+        },
+        {
+          "host": "A",
+          "text": "Two caveats. This is a Microsoft-run evaluation of its rivals' models, published by Microsoft, so the leaderboard is a company claim. And the paper underneath it is a preprint, so it has not been peer reviewed."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Over to security, where a bug that a model found is now being exploited by people."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Rejetto HFS flaw found with Anthropic's Mythos model is exploited in the wild, the second such bug known to be attacked",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The Register reports that a critical authentication bypass in Rejetto HTTP File Server is under attack. It gives an attacker admin access and remote code execution, and it's the second Anthropic-linked vulnerability known to have been exploited in real attacks. The fix is version 3.2.1 or later."
+        },
+        {
+          "host": "B",
+          "text": "Who's hitting it?"
+        },
+        {
+          "host": "A",
+          "text": "VulnCheck's Patrick Garrity told The Register the first activity came Thursday evening from a single IP address in China, aimed at vulnerable servers in the US and Japan. On Friday he said they had seen four hits, from two US addresses in the same subnet that appear to be coming from a proxy."
+        },
+        {
+          "host": "B",
+          "text": "Garrity's tracker counts 286 CVEs uncovered as of Friday by Anthropic's Mythos model and its Project Glasswing programme, and until Thursday only one of those bugs had been attacked for real."
+        },
+        {
+          "host": "A",
+          "text": "Caveats. The discovery claim comes from Horizon3.ai and Anthropic, so that part is a company claim, and VulnCheck's telemetry is not independently verified. The Register doesn't say how many hosts were compromised, if any. It's an update to a story we've been following."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Google suspends product-vulnerability submissions to its open-source bug bounty over an influx of invalid AI reports",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Google, meanwhile, has stopped taking a whole class of bug report."
+        },
+        {
+          "host": "A",
+          "text": "Tom's Hardware reports that Google suspended product vulnerability submissions to its Open Source Software Vulnerability Reward Program over an influx of invalid AI-driven reports. It was announced in a Google post on X on October 1st, effective the same day, with an update on the programme promised by the first quarter of 2027."
+        },
+        {
+          "host": "B",
+          "text": "Supply-chain reports are unaffected, and so are product reports filed before October 1st. Google said it may still take some product bugs through its Cloud programme."
+        },
+        {
+          "host": "A",
+          "text": "Only one outlet carried this, so a single source. The line about maintainers being overwhelmed by unexploitable hallucinations is Tom's Hardware reporting it, not a Google count, and no figure for how many invalid reports arrived has been published."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "To defence now, and an aircraft that took itself off the ground."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Northrop Grumman says its YFQ-48A Talon Blue completed a first fully autonomous flight, taxi through landing",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Northrop Grumman's release says its Talon Blue completed its first fully autonomous flight, including taxi, takeoff, in-flight manoeuvres, and landing. The War Zone reports it flew from Mojave Air and Space Port and was built by Northrop's subsidiary Scaled Composites."
+        },
+        {
+          "host": "B",
+          "text": "Who paid for it?"
+        },
+        {
+          "host": "A",
+          "text": "Northrop did. The War Zone reports Talon Blue was developed through company investment rather than under a government contract. It's aimed at the Air Force's Collaborative Combat Aircraft Increment 2, a competition whose requirements, The War Zone says, remain undefined."
+        },
+        {
+          "host": "B",
+          "text": "Fully autonomous is a company claim about one test flight, and it is not independently verified. The release doesn't say what the aircraft decided for itself and what was pre-programmed, and gives no duration, altitude or speed. The more than 500,000 autonomous flight hours it cites is a company-wide total, not this aircraft's."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "North Korea claims artificial intelligence aboard an intermediate-range missile fired toward the East Sea",
+      "lines": [
+        {
+          "host": "A",
+          "text": "North Korea is now attaching an AI claim to a missile. Euronews reports an intermediate-range ballistic missile was launched early Saturday from the Wonsan area."
+        },
+        {
+          "host": "B",
+          "text": "South Korea's Joint Chiefs of Staff put the distance travelled at more than 700 kilometres, and Japan's Defense Ministry estimated roughly 680 kilometres. Japan's military said it landed outside Japan's exclusive economic zone."
+        },
+        {
+          "host": "A",
+          "text": "Kim Yo Jong said the missile can alter its trajectory at low altitudes, asserted unspecified artificial intelligence capabilities, and said there is no way to avoid this attack."
+        },
+        {
+          "host": "B",
+          "text": "That is Pyongyang's own claim, and it is not independently verified. Euronews is a single source here, and reports no technical analysis either way. South Korea's military often accuses the North of exaggerating its capabilities."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Treasury Secretary Bessent tells AI executives who want federal guardrails to slow down on their own",
+      "lines": [
+        {
+          "host": "A",
+          "text": "And here's Washington's answer to the labs that have been asking to be regulated."
+        },
+        {
+          "host": "B",
+          "text": "Treasury Secretary Scott Bessent, on The Axios Show on Saturday, said AI executives who want federal guardrails should slow development themselves. Benzinga quotes him saying: it's kind of like Hannibal Lecter, stop me before I kill again. This alarmism without solutions by some of the AI community, that's not leadership."
+        },
+        {
+          "host": "A",
+          "text": "He said the companies appear to be listening, pointing to OpenAI shelving a new model after internal tests raised questions about whether it would follow user instructions. The labs, he said, have been very cooperative."
+        },
+        {
+          "host": "B",
+          "text": "Benzinga reports no new proposal, no legislation and no timeline, and Bessent speaks for Treasury, not for the agencies that would write AI rules. Only one outlet on this: the Axios page refused our fetcher."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "American Academy of Pediatrics publishes a policy statement on generative AI in pediatric clinical care",
+      "lines": [
+        {
+          "host": "B",
+          "text": "The American Academy of Pediatrics published a policy statement on generative AI in paediatric clinical care. Its core position is that these tools need to be specifically designed for paediatric care, rather than adapted from adult models."
+        },
+        {
+          "host": "A",
+          "text": "The Academy says most generative AI tools are trained on data where children are underrepresented, and few are rigorously evaluated in paediatrics. It asks developers to incorporate paediatric datasets, address bias, and put in place privacy and security safeguards that recognise children's developmental differences."
+        },
+        {
+          "host": "B",
+          "text": "The lead author, Srinivasan Suresh, says there will be a need for rigorous human oversight and accountability. His co-author, R. Brandon Hunter, puts it this way: adoption is often moving faster than the evidence on how to use these tools effectively is being produced."
+        },
+        {
+          "host": "A",
+          "text": "It covers clinicians using AI in care, not children and families using it directly. One caveat: the journal page refused our fetcher, so everything here comes from the Academy's own release as carried by Mirage News, a single source."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Trump names DNI Jay Clayton AI czar to chair a \"Super Intelligence Force\" reporting in 120 days",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Reuters, relaying a Wall Street Journal interview, reports that President Trump appointed Director of National Intelligence Jay Clayton as the administration's AI czar, leading a new White House panel tasked with reporting within 120 days on the risks and opportunities posed by AI."
+        },
+        {
+          "host": "B",
+          "text": "Clayton told the Journal: the president asked that a group be put together, which the administration refers to as the Super Intelligence Force, to keep the US a leader in advanced AI while protecting Americans' interests. He added that the risk of not being first is high."
+        },
+        {
+          "host": "A",
+          "text": "The charter, as Reuters describes it, has the panel reviewing AI-related risks and the government's current reporting mechanisms for breaches, hacks and other incidents, and recommending ways to strengthen federal-response capabilities under existing authorities."
+        },
+        {
+          "host": "B",
+          "text": "Who's on it?"
+        },
+        {
+          "host": "A",
+          "text": "Vice chairs Emil Michael, Scott Kupor and FTC Chair Andrew Ferguson. Members include Vice President JD Vance, Defense Secretary Pete Hegseth and Chief of Staff Susie Wiles. External advisers include David Sacks and Condoleezza Rice."
+        },
+        {
+          "host": "B",
+          "text": "This is an update. Yesterday we carried NBC's report that Clayton was expected to be named; what's new is the confirmation, the charter, the deadline and the membership. The Journal piece is paywalled, so this is Reuters and CNBC relaying it."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "White House says 17 countries endorsed a \"Kyoto Vision\" pledging expanded researcher access to AI for science",
+      "lines": [
+        {
+          "host": "A",
+          "text": "There's also an international statement carrying the same new vocabulary. The White House says 17 countries endorsed what it calls the Kyoto Vision, with ministers pledging to expand researcher access to, in its words, SI for science tools, scientific data, computing infrastructure, and experimental facilities."
+        },
+        {
+          "host": "B",
+          "text": "SI is super intelligence, the term the administration adopted by executive order on September 29th. There's no funding figure, no timeline, and no named mechanism. France, Canada, India and China are not among the endorsers."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "OpenRouter data: agents used 7.3 trillion tokens against humans' 1.4 trillion in August, 85%+ of them cached",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Tom's Hardware, citing an Andreessen Horowitz chart of OpenRouter figures, reports agents at 7.3 trillion tokens against humans' 1.4 trillion as of August, six months after agent usage first surpassed humans."
+        },
+        {
+          "host": "A",
+          "text": "But most of that is re-reading. More than 85% of agent tokens come from cached prompts, a16z wrote, citing OpenRouter. And one call-centre consultancy found that in its own September logs on Claude Code, 96% of all input was re-reading old conversation."
+        },
+        {
+          "host": "B",
+          "text": "Tom's Hardware states the caveats itself: the data measures token volume, not spending, it's one platform only, and the trend isn't completely consistent, with dips in April and July. These are their own numbers, a16z is disclosed in the piece as an OpenRouter investor, and it's a single source."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "AWS CEO Garman puts $1 billion in community spending and 100+ data-centre moratoriums on the record",
+      "lines": [
+        {
+          "host": "A",
+          "text": "And Amazon has put its own numbers behind the data-centre backlash."
+        },
+        {
+          "host": "B",
+          "text": "In a blog post reported by TechCrunch, AWS chief executive Matt Garman says that over the past three years Amazon has contributed more than $1 billion to US communities where it has a meaningful data centre presence, and that more than 100 data centre moratoriums are being considered across the United States."
+        },
+        {
+          "host": "A",
+          "text": "On water, he says direct data centre consumption is 0.5% of all industrial water usage in the United States. TechCrunch notes a planned Amazon data centre in Texas is permitted to release 33 million tons of carbon dioxide per year, more than any other power plant in the country. Garman's answer is that the generators are idle 99.9% of the time."
+        },
+        {
+          "host": "B",
+          "text": "Those are Amazon's own numbers, none independently audited, and only one outlet carried the post. TechCrunch's counterpoint: an independent watchdog said data centres were the main culprit behind a 76% year-over-year price increase on America's largest electrical grid. An update to yesterday's item on AWS and government NDAs."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Google cuts free Gemini users to Flash-Lite only from October 9, and takes Pro away from $4.99 subscribers",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Google's Gemini support page says that starting in October 2026 there will be changes to model availability for the Gemini apps on a personal account, taking effect for users without a subscription on October 9th. With no plan, you're left with the Flash-Lite version of Gemini, losing Flash and Pro."
+        },
+        {
+          "host": "A",
+          "text": "AI Plus subscribers, at $4.99 a month, keep Flash-Lite and Flash but lose Pro. AI Pro, at $19.99 a month, and AI Ultra keep all three, and AI Pro also gains Deep Think, which had been restricted to the higher tier. Google says subscribers will be emailed when their own switch happens, rather than all changing on October 9th."
+        },
+        {
+          "host": "B",
+          "text": "Google gives no reason for the change and publishes no usage-limit numbers for any tier. 9to5Google also reports the app is adding low, medium and high effort levels for each model, which will use more of your limit."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Anthropic starts prompting Claude users to opt in to training on their voice recordings",
+      "lines": [
+        {
+          "host": "A",
+          "text": "And Anthropic is asking for your voice. BleepingComputer reports a new prompt in Claude's voice features: allow us to use your voice data to improve our AI models. The choices are Allow, or Not now."
+        },
+        {
+          "host": "B",
+          "text": "It's a separate control from the option to train on chats and coding sessions, so you can turn on one and not the other. In the interface BleepingComputer saw, it's off by default, so users aren't opted in automatically, and Anthropic says the data can be deleted later."
+        },
+        {
+          "host": "A",
+          "text": "Anthropic hasn't published a post about it, and only one outlet has it, so a single source. The report doesn't say how widely the prompt has rolled out, to which plans, or what retention period applies."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "B",
+          "text": "That's The AI Edge for today. The full edition, with a link to every source behind everything we've said, is on the site."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "B",
+          "text": "Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
