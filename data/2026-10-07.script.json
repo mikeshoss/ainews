@@ -1,0 +1,562 @@
+{
+  "date": "2026-10-07",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Wednesday, October 7th, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue builds for high-consequence work: document-dense, driven by precedent, and reviewed by people whose licence is on the line. Epilogue quotes every figure exactly as the source wrote it, and says so when something doesn't tie out. Find out more at epiloguelabs.com."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what moved at the frontier of AI in the last 24 hours: the advances, the research, and the uses for good and for harm, with every claim linked to its source on the site."
+        },
+        {
+          "host": "B",
+          "text": "What's at the top today?"
+        },
+        {
+          "host": "A",
+          "text": "First, OpenAI has published a catalogue of 722 mathematical manuscripts that it says were produced by a model it has not released."
+        },
+        {
+          "host": "B",
+          "text": "Second, Anthropic has merged two cyber programmes into one that opens its most capable models to vetted security teams, and says partners on Project Glasswing uncovered at least 129,000 verified software vulnerabilities between April and July 2026."
+        },
+        {
+          "host": "A",
+          "text": "And third, Common Sense Media has rated ChatGPT for Teens an unacceptable risk, after testing more than 4,000 prompts."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI publishes 722 maths manuscripts in 372 families from an unreleased internal model",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's start with the maths. What did OpenAI put out?"
+        },
+        {
+          "host": "A",
+          "text": "A repository. OpenAI says the catalogue contains 722 manuscripts organized into 372 families, and that they were produced by an internal OpenAI model that hasn't been released."
+        },
+        {
+          "host": "B",
+          "text": "How much work went into each one?"
+        },
+        {
+          "host": "A",
+          "text": "OpenAI says that on average, each result used three hours of ChatGPT Pro thinking compute, and that over the course of the evaluation the model was posed approximately 4,000 problems."
+        },
+        {
+          "host": "B",
+          "text": "And what about the verification?"
+        },
+        {
+          "host": "A",
+          "text": "OpenAI says the collection includes results at different stages of verification, that not all have accompanying Lean formalizations, and that some of the unformalized results could have issues."
+        },
+        {
+          "host": "B",
+          "text": "Does it say how many were formalized?"
+        },
+        {
+          "host": "A",
+          "text": "No. It says only that many, but not all, of the manuscripts have been formalized. There's no count in the README. All of this is OpenAI's own account of its own model, and it is not independently verified. We couldn't open OpenAI's announcement post, so everything we've quoted comes from the repository itself."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Mistral previews Large 4, a 1T-parameter model trained on 3,800 Grace Blackwell GPUs in Europe",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Mistral also put out a large model."
+        },
+        {
+          "host": "A",
+          "text": "A preview of Mistral Large 4. Mistral AI says it's a 1 trillion-parameter natively multimodal model with 49 billion active parameters, available as a public preview API, trained from scratch on 3,800 NVIDIA Grace Blackwell GPUs in Mistral's own datacenters in Europe. Mistral says the weights drop at the end of October, after red-teaming."
+        },
+        {
+          "host": "B",
+          "text": "What's the striking number?"
+        },
+        {
+          "host": "A",
+          "text": "A cyber one. Mistral AI says the model scores 82% on the Artificial Analysis Cyber Index reproduce-and-patch test, which it calls the highest of any model, and that Claude Opus 5.5 and GPT-6 Astra score near zero on the same test because they refuse to perform the task."
+        },
+        {
+          "host": "B",
+          "text": "So the gap there isn't capability, it's willingness."
+        },
+        {
+          "host": "A",
+          "text": "That's how Mistral AI frames it. And every one of those figures is Mistral's own company claim, not independently verified."
+        },
+        {
+          "host": "B",
+          "text": "Anything that doesn't tie out?"
+        },
+        {
+          "host": "A",
+          "text": "Yes, and we'll flag it. The Mistral post says 3,800 GPUs. Mistral's VP Science Pierre Stock told TechCrunch the run used only 4,000 Nvidia GPUs. Those are different numbers for the same training run, and we're quoting both as published."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's move to the research, where a lot of today's work lands on agents."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Apple–Johns Hopkins self-alignment method cuts an Agentic Misalignment score from 79.1 to 3.8",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A paper on arXiv called SIGMA, with affiliations listed as Apple and Johns Hopkins University, reports a large drop on two agentic safety measures."
+        },
+        {
+          "host": "B",
+          "text": "How large?"
+        },
+        {
+          "host": "A",
+          "text": "arXiv reports AgentHarm harmfulness decreasing from 22.6 to 14.8, and Agentic Misalignment decreasing from 79.1 to 3.8."
+        },
+        {
+          "host": "B",
+          "text": "And what's the method?"
+        },
+        {
+          "host": "A",
+          "text": "The model writes its own training material. It acts as its own task-designer agent, generating alignment dilemmas from a model spec, then goes through supervised fine-tuning plus reinforcement learning with the model itself as the reward model. The authors say it outperforms Deliberative Alignment and Constitutional AI baselines."
+        },
+        {
+          "host": "B",
+          "text": "Why does that matter beyond the one result?"
+        },
+        {
+          "host": "A",
+          "text": "The training was single-turn chat data, and the gains showed up in multi-turn agentic settings. That carry-over is exactly what has been failing. But this is a preprint, not peer reviewed, and we have a single source for it, with the authors reporting on their own training runs."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Benchmark across six coding-agent harnesses: auto-approve raises attack success from 29.2% to 95.6%",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And a result about coding tools many listeners use daily."
+        },
+        {
+          "host": "A",
+          "text": "A benchmark on arXiv called HarnessSecurity-Bench. It reports that enabling auto-approve raises attack success from 29.2% to 95.6%."
+        },
+        {
+          "host": "B",
+          "text": "Which tools?"
+        },
+        {
+          "host": "A",
+          "text": "arXiv names six: Claude Code, Codex CLI, Gemini CLI, gptme, Qwen Code, and GitHub Copilot."
+        },
+        {
+          "host": "B",
+          "text": "A big jump for one setting. How much testing is behind it?"
+        },
+        {
+          "host": "A",
+          "text": "The authors say they conducted 2,500 trials, recording 81,155 tool calls and over 2.2 billion tokens."
+        },
+        {
+          "host": "B",
+          "text": "Do any of the defences hold up?"
+        },
+        {
+          "host": "A",
+          "text": "Some. The paper says network isolation and read-only mode reduce attack effects with substantial utility losses, while command allowlisting and denylisting do so with a small utility loss and a utility gain, respectively. It also reports that about half of confirmed mechanism implementations are opt-in. Off unless you turn them on. This is also a preprint, not peer reviewed, and a single source, measured against one baseline model rather than confirmed by the vendors."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "To security, where two reports hit the same question from opposite directions."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Anthropic merges Project Glasswing into a three-tier cyber programme, citing 129,000 verified vulnerabilities",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Anthropic has folded Project Glasswing and its Cyber Verification Program into one programme with three access tiers, and says each tier includes access to Claude Opus 5.5, Claude Sonnet 5.5 and Claude Mythos 5.1."
+        },
+        {
+          "host": "B",
+          "text": "What does a tier actually buy you?"
+        },
+        {
+          "host": "A",
+          "text": "Fewer blocks. Anthropic says that on its own CyScenarioBench evaluation, in the Defense Access tier 46 of the 50 trials were blocked at some point. In the Red Team Access tier, no blocks occurred, and Claude Opus 5.5 completed 34 of the 50 tasks — effectively the model's 67.6% success rate with no safeguards applied."
+        },
+        {
+          "host": "B",
+          "text": "And the case for doing it?"
+        },
+        {
+          "host": "A",
+          "text": "Anthropic says Glasswing partners uncovered at least 129,000 verified software vulnerabilities between April and July 2026, with more than 33,000 rated critical or high severity."
+        },
+        {
+          "host": "B",
+          "text": "Does Anthropic put limits on that figure?"
+        },
+        {
+          "host": "A",
+          "text": "It does. Anthropic says it rests on partial data from 33 partner reports, that fewer than 50% of partners disclosed patched numbers, and that it expects the true impact to be at least five times higher. These are all company claims, not independently verified."
+        },
+        {
+          "host": "B",
+          "text": "And not everyone reads those numbers the same way."
+        },
+        {
+          "host": "A",
+          "text": "No. The Register reports that VulnCheck researcher Patrick Garrity was not particularly impressed, noting that fewer than 0.5 percent of the 225 Anthropic-linked vulnerabilities he tracked were being exploited in real-world attacks. The Register also points out that on Anthropic's own figures, of 5,674 true positive vulnerabilities, only 516 have been patched."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "CrowdStrike: a classifier blocked 515 direct bypass attempts but task decomposition worked in 9 of 10 categories",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And the report from the other direction?"
+        },
+        {
+          "host": "A",
+          "text": "CrowdStrike tested what it calls the most advanced publicly deployed content safety classifier, one that guards models such as Claude Opus 5.5 and Fable 5. The direct attacks all failed. CrowdStrike says it tested approximately 515 distinct bypass techniques and they achieved a 0% direct bypass rate."
+        },
+        {
+          "host": "B",
+          "text": "So the classifier works."
+        },
+        {
+          "host": "A",
+          "text": "On what it can see. CrowdStrike's point is structural: the classifier evaluates individual requests, not request sequences. Split a harmful goal into subtasks that are each genuinely benign, get the pieces, and reassemble them with an unclassified model."
+        },
+        {
+          "host": "B",
+          "text": "And how well did that work?"
+        },
+        {
+          "host": "A",
+          "text": "CrowdStrike says that across 9 of 10 offensive categories it produced working offensive code. It also says an attacker with a free API key and a local open weight model has everything they need to cheaply run this pipeline today."
+        },
+        {
+          "host": "B",
+          "text": "Caveats?"
+        },
+        {
+          "host": "A",
+          "text": "Several. These are CrowdStrike's own measurements, a company claim, from a single source, and CrowdStrike doesn't name the vendor. The blog carries a date of October 6th but no time of day, so we couldn't confirm its position inside our window to the hour."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "On to defence, where the news is about how things get built."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "White House and Anduril announce a $6.6 billion software-run yard for Virginia-class submarine components",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The White House and Anduril announced a facility in Baltimore County, Maryland, making components for the Virginia-class submarine."
+        },
+        {
+          "host": "B",
+          "text": "What's the money?"
+        },
+        {
+          "host": "A",
+          "text": "White House Principal Deputy Press Secretary Anna Kelly said on a call with reporters that the Navy and Anduril will invest $6.6 billion, creating over 13,000 direct and indirect jobs and driving $2 billion in annual economic output. Breaking Defense reports that total breaks down as $3.7 billion in private capital and up to $2.9 billion from the Navy."
+        },
+        {
+          "host": "B",
+          "text": "Where's the AI in a shipyard?"
+        },
+        {
+          "host": "A",
+          "text": "In the production layer. Anduril says its industrial software platform ArsenalOS will be the digital backbone, connecting fabrication workflows, outfitting sequences, material movement, inspection protocols and documentation requirements in a single system."
+        },
+        {
+          "host": "B",
+          "text": "When does it actually make anything?"
+        },
+        {
+          "host": "A",
+          "text": "Anduril says initial operations are expected in 2030. The figures are projections, not results: the Navy's $2.9 billion share is a ceiling rather than an obligation, and the job and output figures are Anduril's and the White House's projections rather than measured results, not independently verified. Anduril says the structure ensures that Anduril, not the taxpayer, takes on the majority of the execution risk."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Now to health, where one company published results that cut both ways."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Google reports geospatial foundation-model gains across five public-health studies, including cholera in DR Congo",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Google Research published five partner-led case studies adding its Population Dynamics Foundation Model to epidemiological workflows."
+        },
+        {
+          "host": "B",
+          "text": "Where were the gains?"
+        },
+        {
+          "host": "A",
+          "text": "Cholera emergence in the Democratic Republic of Congo, with WHO AFRO. Across 403 health zones over 89 weeks, Google Research reports a 9.7% improvement in area under the precision-recall curve at 4 weeks, and 18.1% on one precision measure at 8 weeks."
+        },
+        {
+          "host": "B",
+          "text": "And vaccination coverage?"
+        },
+        {
+          "host": "A",
+          "text": "With Mount Sinai and Boston Children's Hospital, across 146 US–Canada border counties, Google Research reports a 36% relative gain in explained variance, from 0.159 to 0.216."
+        },
+        {
+          "host": "B",
+          "text": "You said it cuts both ways."
+        },
+        {
+          "host": "A",
+          "text": "Two of the five barely moved, and Google says so. On cardiovascular mortality across 3,091 US counties, mean absolute error was 18.7 deaths per county with the model against 19.1 using census data, with no statistically significant differences. All of these are Google's own figures, a company claim, published on a research blog rather than a peer-reviewed paper we could reach."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Policy next, and this one is about words rather than rules."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Justice Department tells staff to write \"super intelligence\" instead of \"artificial intelligence\"",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The Justice Department has told its employees to stop writing artificial intelligence."
+        },
+        {
+          "host": "B",
+          "text": "And write what instead?"
+        },
+        {
+          "host": "A",
+          "text": "Super intelligence, and the initials S-I. Acting Deputy Attorney General Trent McCotter issued the memo on Tuesday, October 6th, covering public statements, policy documents, records and other communications, and extending to court filings when appropriate."
+        },
+        {
+          "host": "B",
+          "text": "Where does that come from?"
+        },
+        {
+          "host": "A",
+          "text": "An executive order signed on September 29th. Forbes reports it directed federal departments and agencies to use those terms, and said the executive branch will no longer acknowledge the usage of artificial intelligence and A-I in any applicable setting. Analytics Insight says officials have 60 days to propose a formal definition."
+        },
+        {
+          "host": "B",
+          "text": "Is it showing up anywhere yet?"
+        },
+        {
+          "host": "A",
+          "text": "Already. Forbes reports that the prosecutors' release in Tuesday's music streaming fraud sentencing extensively uses the phrase, and refers to the case as Super Intelligence-Assisted Music Streaming Fraud."
+        },
+        {
+          "host": "B",
+          "text": "What don't we know?"
+        },
+        {
+          "host": "A",
+          "text": "The memo isn't public. Both accounts trace back to the same Reuters report of a document Reuters saw, so this is effectively a single source. And neither says whether the renaming has any legal effect, or how it squares with statutes that use the old term."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Compute now, and a number that is large even by this year's standards."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "SpaceX seeks $40 billion led by Apollo to buy Nvidia chips, the Financial Times reports",
+      "lines": [
+        {
+          "host": "A",
+          "text": "SpaceX is looking to raise $40 billion to buy Nvidia chips, led by Apollo Global Management. Reuters reports that the Financial Times reported it on Tuesday, citing people familiar with the matter."
+        },
+        {
+          "host": "B",
+          "text": "How is it structured?"
+        },
+        {
+          "host": "A",
+          "text": "Reuters says about $10 billion in bank loans and $30 billion in investment-grade debt, with the bond fund Pimco among a small group of lenders in talks, and the transaction expected to close in 2027."
+        },
+        {
+          "host": "B",
+          "text": "What are the chips for?"
+        },
+        {
+          "host": "A",
+          "text": "Data centres on the ground, and SpaceX's planned AI infrastructure in orbit. Musk has said the company plans to use Nvidia hardware exclusively for its data centres."
+        },
+        {
+          "host": "B",
+          "text": "How did the market take it?"
+        },
+        {
+          "host": "A",
+          "text": "SpaceX shares fell 1% in extended trading, and Nvidia's rose 0.5%. For scale, the same story notes Morgan Stanley estimates AI infrastructure will require $1.5 trillion in external financing by 2028. Nothing is confirmed on the record, though: SpaceX, Apollo and Nvidia didn't respond to Reuters, and Pimco declined to comment."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And last, deployment and impact."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Common Sense Media rates ChatGPT for Teens \"Unacceptable Risk\", finding crisis-hotline referrals fell after launch",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Common Sense Media has rated ChatGPT for Teens an unacceptable risk, after testing more than 4,000 prompts before and after the product launched."
+        },
+        {
+          "host": "B",
+          "text": "What moved in the wrong direction?"
+        },
+        {
+          "host": "A",
+          "text": "The crisis responses. On prompts where a resource was warranted, Common Sense Media reports the share of responses naming a crisis hotline fell from 33% before launch to 23% after. Referrals to a specific medical or mental-health professional fell from 68% to 58%. Urgent language, things like right now or call 911, fell from 87% to 75%."
+        },
+        {
+          "host": "B",
+          "text": "What about the parental notifications?"
+        },
+        {
+          "host": "A",
+          "text": "Common Sense Media says fresh accounts making explicit crisis disclosures produced zero notifications across all four personas tested, over sessions of 5 to 60 minutes. Four notifications arrived across the entire testing programme."
+        },
+        {
+          "host": "B",
+          "text": "And the schoolwork side?"
+        },
+        {
+          "host": "A",
+          "text": "Show me the answer appeared in 43% of responses for a linked 13-year-old account with Study Hours, and in 90% of responses for an unlinked 17-year-old using the at-study prefix. Delete that prefix and you get a 100% assignment completion rate."
+        },
+        {
+          "host": "B",
+          "text": "What are they asking for?"
+        },
+        {
+          "host": "A",
+          "text": "Their first recommendation is to suspend teen access until the safety features are independently verified. This is one organisation's testing, a single source. OpenAI's response isn't recorded in the assessment, and these are percentages of tested prompts, not of real teenage conversations."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "B",
+          "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we've said, is on the site."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "B",
+          "text": "Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
