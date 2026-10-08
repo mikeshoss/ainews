@@ -1,0 +1,232 @@
+{
+  "date": "2026-10-08",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Thursday, October 8th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning: the advances, the research, and the uses for good and for harm, with every claim linked to its source." },
+        { "host": "B", "text": "What's at the top today?" },
+        { "host": "A", "text": "First, Anthropic has released Claude Haiku 5.5, and says it costs 90% less than Haiku 4.5 for shorter requests." },
+        { "host": "B", "text": "Second, OpenAI has started putting GPT-6 in front of every ChatGPT tier, an audience it puts at more than 1.2 billion people a week." },
+        { "host": "A", "text": "And third, on Epoch AI's new InnovationEval, the best model reached 40% of a human post-training innovation's gains, mostly through hyperparameter tuning." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic ships Claude Haiku 5.5 at $0.10/$0.50 per million tokens, 90% below Haiku 4.5 under 100k",
+      "lines": [
+        { "host": "B", "text": "Start with the price cut. What are the numbers?" },
+        { "host": "A", "text": "Anthropic has put Claude Haiku 5.5 at $0.10 per million input tokens and $0.50 per million output tokens, for prompts up to 100,000 tokens. Haiku 4.5 was $1.00 and $5.00. So 90% off for the shorter requests, and half off above that length." },
+        { "host": "B", "text": "And across a real workload?" },
+        { "host": "A", "text": "Anthropic says around 75% cheaper on average. On the OSWorld 2.1 offline subset it reports 72.4%, against 15.7% for Haiku 4.5." },
+        { "host": "B", "text": "What's the catch?" },
+        { "host": "A", "text": "Those figures are Anthropic's own and not independently verified. And Anthropic flags one itself: the new model uses a different tokenizer that consumes slightly more tokens per task, so the saving per job is smaller than the headline price. The post doesn't quantify by how much." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI rolls GPT-6 and Intelligent UI to all ChatGPT tiers, citing more than 1.2 billion weekly users",
+      "lines": [
+        { "host": "B", "text": "Then OpenAI, going the other way: not cheaper, just wider." },
+        { "host": "A", "text": "TechCrunch reports that on October 7th OpenAI rolled out a new GPT-6 model along with something it calls Intelligent UI, which adds tappable buttons, task-specific calculators, interactive charts and editable graphs to responses. Unite.AI reports paid tiers went first, and the Free and Go tiers followed on October 8th." },
+        { "host": "B", "text": "And the reach?" },
+        { "host": "A", "text": "OpenAI describes it as more than 1.2 billion people using ChatGPT each week. There's one performance figure, and it's narrow: on web-search questions GPT-6 Instant starts answering 44% sooner on average than GPT-5.6 Instant. That's time to first response, not completion." },
+        { "host": "B", "text": "How well sourced is that?" },
+        { "host": "A", "text": "The 44% is OpenAI's own and not independently verified. And worth saying out loud: OpenAI's announcement page refused every direct read we attempted, so what we have comes from the outlets that covered it. OpenAI says work remains ahead to improve the model's design judgment." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "NVIDIA says fine-tuned Nemotron 3 scored 535.4/600 at IOI 2026, above the top human score of 498.27",
+      "lines": [
+        { "host": "B", "text": "And a pair of competition results." },
+        { "host": "A", "text": "NVIDIA says a fine-tuned version of its Nemotron 3 model scored 535.4 out of 600 at IOI 2026. The gold threshold was 361.12. The top human score was 498.27." },
+        { "host": "B", "text": "Above the best human competitor, then. Who checked it?" },
+        { "host": "A", "text": "On that scoreboard, yes. NVIDIA also reports 30 out of 42 at IMO 2026, against a gold threshold of 29, and there the official IMO graders marked the submitted proofs. NVIDIA says the system worked in plain language, with no formal prover, external tools or internet access." },
+        { "host": "B", "text": "But the coding score is different." },
+        { "host": "A", "text": "NVIDIA says so itself. It calls the informatics run an unofficial, unsupervised benchmark that was not part of the official ranking, so it isn't a contest placing against that human. We have a single source, NVIDIA's own write-up, and that figure is not independently verified." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Next, to the research, and a benchmark about inventing methods rather than solving problems." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Epoch AI's InnovationEval: best model reached 40% of a human post-training innovation's gains, verdict \"No\"",
+      "lines": [
+        { "host": "A", "text": "Epoch AI built a test called InnovationEval. The question is whether a model can invent a machine-learning improvement it hasn't seen, rather than reproduce one. The scale is pinned to a real paper: the old baseline is zero, matching the published new method is 100%." },
+        { "host": "B", "text": "And the best score?" },
+        { "host": "A", "text": "40%, from Claude Fable 5.1, and Epoch says that came mostly from tuning hyperparameters rather than from a new idea. GPT-5.6 Sol reached about 35% on a generous reading of what counted as in scope, and about 15% once out-of-scope changes were stripped out." },
+        { "host": "B", "text": "That gap between 35% and 15% is doing a lot of work." },
+        { "host": "A", "text": "It's a judgement call by the graders, not a measurement. Epoch also discarded one model's gains entirely, because they came from submitting many near-identical runs and keeping the luckiest." },
+        { "host": "B", "text": "So the verdict?" },
+        { "host": "A", "text": "Epoch's answer to whether AI can automate AI research is, flatly, \"No\". It says the models did not discover anything comparable to the original innovation. Hold it lightly though: a single source, one benchmark built around one specific innovation, and Epoch says it plans to run it again." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Adversarial image patches hijack vision-based web agents at 91.9% average attack success, against 17.4% baseline",
+      "lines": [
+        { "host": "B", "text": "There's also a paper on attacking agents that doesn't go through text at all." },
+        { "host": "A", "text": "A team at the University of Utah, in a preprint on arXiv, put a small doctored patch of pixels on a web page. An agent that navigates by looking at the screen then clicks the attacker's content and carries out the matching action." },
+        { "host": "B", "text": "How often does it work?" },
+        { "host": "A", "text": "They report an average attack success rate of 91.9%, against 17.4% for the strongest previous method, across 2,250 tasks covering 13 public websites. The reason it matters is that the defences people have built mostly read text. If the injection lives in the image, the agent sees a page that looks legitimate." },
+        { "host": "B", "text": "What should we hold back on?" },
+        { "host": "A", "text": "It's a preprint and has not been peer reviewed, the figures are the authors' own on their own benchmark, and we have a single source. The abstract does not say which defences were tested, and there's no response from any vendor." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "From agents attacked in a lab to servers taken over for real." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Black Lotus Labs: PoeLLM cryptomining campaign hit 3,400+ exposed AI servers, hiding C2 addresses in a GitHub poem",
+      "lines": [
+        { "host": "A", "text": "BleepingComputer reports that Lumen's Black Lotus Labs has found a cryptomining campaign it calls PoeLLM, which has compromised more than 3,400 servers. At its peak, as many as 800 infected systems were active on a single day." },
+        { "host": "B", "text": "What kind of servers?" },
+        { "host": "A", "text": "Mostly AI serving software left open to the internet: LiteLLM and Ollama. Infected hosts attempt a flaw in LiteLLM's test endpoints, which Horizon3.ai showed can be chained with a second flaw for unauthenticated remote code execution." },
+        { "host": "B", "text": "And the part people will remember is how it finds its way home." },
+        { "host": "A", "text": "The malware pulls four words or phrases out of a poem called \"On the Nature of Connection\", which the operator keeps in a stylesheet file inside a GitHub repository that appears to fork Node.js. A hard-coded dictionary turns those words into an address. Change the poem, change the server." },
+        { "host": "B", "text": "How solid are the numbers?" },
+        { "host": "A", "text": "They're the security company's and not independently verified. The first count given out was 2,100 servers before researchers revised it to 3,400, and one outlet is still writing \"more than 3,000\". Attribution is only moderate confidence, based on code comments and where the admin server sits." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Hijacked tensorlake npm release steals Claude, Cursor and Windsurf configs and wipes the home directory if its token is revoked",
+      "lines": [
+        { "host": "B", "text": "And a supply-chain attack built specifically around AI coding tools." },
+        { "host": "A", "text": "StepSecurity reports that someone pushed eight commits onto the main branch of the tensorlake project under a maintainer's name, none through a pull request. The project's own release workflow then published a poisoned version to npm." },
+        { "host": "B", "text": "What does it steal?" },
+        { "host": "A", "text": "Configuration files for AI coding tools: Claude, Cursor and Windsurf. Then it writes its own settings files back into any repository it can reach, so it runs again the next time someone opens that project in their editor, committed with the message \"chore: update dependencies\"." },
+        { "host": "B", "text": "So it reinfects through the developer's own tooling." },
+        { "host": "A", "text": "That's the design. And there's the token behaviour: when the malware holds a stolen GitHub token, it installs a watcher that checks that token against GitHub every 60 seconds for up to 24 hours. If GitHub rejects the token, the watcher deletes the user's home directory." },
+        { "host": "B", "text": "So revoking the token is what triggers it?" },
+        { "host": "A", "text": "That's what StepSecurity describes, which is why its advice is to remove the watcher before rotating any credentials, and to pin the previous version. The poisoned release is off the registry now. Neither report gives a count of how many developers were hit." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To defence, and the slower machinery of government." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Feinberg memo orders an AI security-classification pilot within six months using the Air Force's ACME system",
+      "lines": [
+        { "host": "A", "text": "DefenseScoop says it has seen a memo from the Deputy Defense Secretary ordering a small-scale deployment of an automated security classification system within six months. The software is an AI-aided suite built by the Air Force." },
+        { "host": "B", "text": "Classification as in deciding what's secret?" },
+        { "host": "A", "text": "Yes, and that's the striking part. If the pilot works, DefenseScoop says the system would become the single authoritative reference for the department's original classification decisions. That role has historically belonged to designated human officials." },
+        { "host": "B", "text": "Why now?" },
+        { "host": "A", "text": "The memo argues current procedures cause dysfunction that is endangering to the department's mission. For scale, DefenseScoop says hundreds of officials hold authority to classify, and the department is sitting on a backlog of roughly 140 million pages of paper." },
+        { "host": "B", "text": "And the obvious worry?" },
+        { "host": "A", "text": "Misclassification, faster. A CNAS fellow quoted in the piece warned of exactly that and said human oversight has to persist forever. The Pentagon did not say which AI models would be used, the memo isn't public, and only one outlet has it." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to health, and a review of hospital records." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Vanderbilt records review finds AI-linked psychosis in 28 of 215,712 mental health patients, 0.013%",
+      "lines": [
+        { "host": "A", "text": "The study, in JAMA Psychiatry, screened 578,058 records from 215,712 unique patients at Vanderbilt University Medical Center, and puts AI psychosis at 0.013% of patients receiving mental health care. That's 28 patients." },
+        { "host": "B", "text": "Small. What's the finding inside it?" },
+        { "host": "A", "text": "The pattern, not the prevalence. In 17 of those 28 cases, 60.7%, it was the patient's first psychotic episode. In a neutral-interaction comparison group it was 3 of 17, and the difference was statistically significant." },
+        { "host": "B", "text": "So it clusters in first episodes." },
+        { "host": "A", "text": "That's the reported association. The authors' conclusion is practical: routinely asking patients about AI use during psychiatric visits appears warranted." },
+        { "host": "B", "text": "And the limits?" },
+        { "host": "A", "text": "The authors are clear the design cannot establish causation, and they list a single-site study and a rating system that isn't clinically validated. And read the number correctly: it's a floor, not a rate. It counts only the cases a clinician happened to write down, at one medical centre." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "On to policy, where Britain is arguing with itself about how far to go." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "UK superintelligence bill has more than 70 backers while ministers favour narrow security-scoped rules",
+      "lines": [
+        { "host": "A", "text": "Tech Policy Press has a piece on the gap between what British MPs are proposing and what ministers want. A Labour MP has introduced a private members' bill that would make developing artificial superintelligence a criminal offence, and let a minister seize and destroy the compute involved." },
+        { "host": "B", "text": "How much support does that have?" },
+        { "host": "A", "text": "More than 70 MPs and peers. Meanwhile the AI minister told the Labour conference that Britain has effectively banned superintelligence already, and a legal expert quoted in the article says he was overstating the position under English law." },
+        { "host": "B", "text": "So which way are ministers leaning?" },
+        { "host": "A", "text": "Toward narrow, security-scoped rules, rather than a comprehensive bill with mandatory pre-release testing. The piece notes the AI Security Institute has no regulatory powers, and that a parliamentary inquiry found regulators can't test AI systems before release." },
+        { "host": "B", "text": "There's a detail about the labs too." },
+        { "host": "A", "text": "The piece reports that both Anthropic and Google gave American organisations access to a new model for pre-release testing before the British institute got it. That's Tech Policy Press's reporting, with no company confirmation, from a single source. And a private members' bill is still a long way from law." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Which brings us to the money and the metal." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "WSJ: Broadcom seeks more than $50 billion to finance OpenAI's custom AI chips, with Oracle in parallel talks",
+      "lines": [
+        { "host": "A", "text": "Benzinga, relaying the Wall Street Journal, reports that Broadcom is trying to raise more than $50 billion to finance the custom AI chips it's building jointly with OpenAI, and that it recently discussed financing with Apollo and Blackstone." },
+        { "host": "B", "text": "What would that buy?" },
+        { "host": "A", "text": "The report says the financing could support several gigawatts of chip capacity for OpenAI, and that both sides expect to close by year end. Separately, Oracle is said to be negotiating with Apollo and Goldman Sachs to raise money for a substantial chip purchase of its own." },
+        { "host": "B", "text": "How firm is any of it?" },
+        { "host": "A", "text": "Not very. The report says discussions remain preliminary and the final amount could change. Broadcom, OpenAI and Oracle did not immediately respond to Benzinga's request for comment. It traces back to a single source, the Journal's reporting, which we couldn't open directly. And Benzinga discloses its own article was partially produced with the help of AI tools." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Association for Human Mathematics urges mathematicians to discontinue work with OpenAI over its manuscript release",
+      "lines": [
+        { "host": "B", "text": "And last, the mathematicians." },
+        { "host": "A", "text": "This is an update to the story we covered yesterday, where OpenAI published 722 manuscripts in 372 groups of results, produced by a model it hasn't released. The Association for Human Mathematics has now responded, and it's gone past methodology." },
+        { "host": "B", "text": "How far past?" },
+        { "host": "A", "text": "The statement says, quoting, \"Releasing over 700 files at once is not a demonstration of scholarship, but a demonstration of power\". It says mathematicians did not ask for this work to be done. And it urges mathematicians to discontinue their work with OpenAI." },
+        { "host": "B", "text": "That's a professional body asking its members to stop cooperating with a lab." },
+        { "host": "A", "text": "Which is why it's worth reporting even though the dispute isn't new. It also disputes where OpenAI gets its legitimacy, and notes OpenAI is currently defending lawsuits over plagiarism and copyright." },
+        { "host": "B", "text": "How much weight should we give it?" },
+        { "host": "A", "text": "Measured weight. There's no signatory count, and it's attributed to a working group rather than a vote. Inside AI News reports the association has 752 members, so this isn't the discipline speaking. And OpenAI had not publicly responded as of publication." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we've said, is on the site." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
