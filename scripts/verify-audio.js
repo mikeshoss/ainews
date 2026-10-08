@@ -37,7 +37,8 @@ const SENTENCE_MATCH = 0.6;
 const stripThousands = (s) => { let out = String(s); while (/\d,\d{3}/.test(out)) out = out.replace(/(\d),(\d{3})/g, '$1$2'); return out; };
 // A decimal is one number, not two: "81.1%" must not become the tokens "81" and "1", or the figure the
 // sentence exists to carry stops being checkable.
-const joinDecimals = (s) => String(s).replace(/(\d)\.(\d)/g, '$1point$2');
+// "$1.00" is spoken "one dollar" and transcribed "$1": drop a .00 before joining decimals.
+const joinDecimals = (s) => String(s).replace(/(\d)\.00\b/g, '$1').replace(/(\d)\.(\d)/g, '$1point$2');
 // "1M-token" is heard as "one million token" and "64K" as "64,000": fold the script's unit suffixes and the
 // transcript's spelled-out or comma forms to one token each, before thousands separators are stripped.
 const foldUnits = (s) => String(s)
