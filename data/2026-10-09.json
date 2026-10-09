@@ -7,7 +7,7 @@
   "summary": [
     "OpenAI withdrew three of the manuscripts it published this week on unsolved mathematics problems, after a sign error invalidated an argument in one paper and the construction two dependent papers relied on. The catalogue now lists 719 manuscripts in 372 families, with 300 of 719 top-line results formalised in Lean, and a preprint by mathematicians at Cambridge and King's College London reports that the Lean proof of OpenAI's announced Navier-Stokes blow-up does not correspond to the natural-language proof.",
     "OpenAI also published a malicious-use report banning two covert influence operations, one originating in Russia and one in Iran. It rated the Russian operation Category 5 on its 1-to-6 Breakout Scale, the first Category 5 operation it has disrupted. The Iranian cluster ran seven invented reporters whose bylines appeared on almost 100 articles across roughly a dozen outlets. Anthropic launched a Critical Infrastructure Defense Program with 11 founding partners and a free open-source code scanner, and published a Usage Policy update taking effect on November 12 that explicitly bars weapons software and the arming of drones.",
-    "The Financial Times reports OpenAI has told investors its annualised revenue is \"approaching $50 billion\", about $20 billion below figures reported a week earlier. Senators Jim Banks and Kirsten Gillibrand introduced a bill that would require Defense Department AI contractors holding deals of $100 million or more to report model-weight theft within 72 hours."
+    "The Financial Times reports OpenAI has told investors its annualised revenue is \"approaching $50 billion\", about $20 billion below figures reported a week earlier. On the same day, USA TODAY Co. and 13 affiliates sued OpenAI in Manhattan over 19 newspapers, asking the court to order the destruction of models trained on their content, and a White House fact sheet booked $2.4 billion in tools and compute credits for the federal Genesis Mission from eleven industry partners, NVIDIA's $1 billion the largest. Senators Jim Banks and Kirsten Gillibrand introduced a bill that would require Defense Department AI contractors holding deals of $100 million or more to report model-weight theft within 72 hours."
   ],
   "sections": [
     {
@@ -176,6 +176,23 @@
           "storylines": ["agents-going-wrong"],
           "impact": "harmful",
           "flags": ["preprint"]
+        },
+        {
+          "headline": "Science publishes Google DeepMind's formal-proof agent, which resolved nine of 353 open Erdős problems",
+          "sources": [
+            { "name": "Crossref (Science record)", "url": "https://api.crossref.org/works/10.1126/science.aej2213" },
+            { "name": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/42848891/" }
+          ],
+          "bullets": [
+            "George Tsoukalas and 20 co-authors at Google DeepMind report in Science, vol 394 no 6820, pp 234-239, published 8 October 2026, an agent that generates proofs in Lean so that the compiler checks each step. The abstract says \"We present the first demonstration of this method's value in solving open problems at scale.\"",
+            "The agent \"autonomously resolved nine of 353 open Erdős problems, proved 44/492 On-Line Encyclopedia of Integer Sequences conjectures, and is being deployed in combinatorics, optimization, graph theory, algebraic geometry, and quantum optics research.\" The abstract also reports that \"Even a basic agent alternating LLM-based generation with Lean-based verification replicated the Erdős successes.\"",
+            "The approach is the mirror image of the week's other maths story: where OpenAI published natural-language manuscripts of which 300 of 719 results were formalised, this work makes the Lean proof the deliverable, so the compiler rather than a referee is the first check.",
+            "Nine of 353 is a small share of problems chosen for being open, and the paper is a peer-reviewed version of work that circulated as a preprint in May. The publisher-deposited abstract gives no cost figures, no comparison with human mathematicians, and no breakdown of which nine problems were resolved. Science's own site refused this briefing's fetchers, so the text above is from the publisher's deposited metadata record."
+          ],
+          "topics": ["google-deepmind", "ai-for-science", "evals", "agents"],
+          "storylines": ["mathematicians-vs-labs"],
+          "impact": "beneficial",
+          "flags": ["update"]
         }
       ]
     },
@@ -334,6 +351,22 @@
           "topics": ["anthropic", "ai-for-science"],
           "impact": "beneficial",
           "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Lancet feasibility study: Google's AMIE interviewed 98 primary-care patients with zero safety stops and one hallucination",
+          "sources": [
+            { "name": "The Lancet", "url": "https://doi.org/10.1016/S0140-6736(26)01535-7" },
+            { "name": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/42849491/" }
+          ],
+          "bullets": [
+            "Peter G. Brodeur, Jacob M. Koshy and co-authors report in The Lancet, published online 8 October 2026, \"a prospective, single-centre, single-arm feasibility study\" in which patients interacted with the Articulate Medical Intelligence Explorer up to five days before a single-complaint urgent primary-care appointment, with physician safety supervisors monitoring every interaction. It is registered as NCT06911398.",
+            "\"From April to November, 2025, 114 patients were enrolled with 98 completing both the AMIE interaction and the PCP appointment.\" The paper reports \"Zero conversation safety stops were required on the basis of prespecified criteria\", and that \"Safety supervisors noted one hallucination and added clinical information in five interactions.\"",
+            "Conversations \"were rated favourably in 87-100% of cases (17 criteria) by clinical evaluators, and 48-96% (16 criteria) by patients.\" Primary care physicians completed post-surveys in 60 of 98 cases, including 44 where they read the transcript beforehand; they found AMIE helpful for visit preparation in 33 of 44 cases and said it might have changed their behaviour in 25 of 44.",
+            "This is a single-centre, single-arm feasibility study with no control group, so it measures safety and acceptability rather than diagnostic benefit, and the patient ratings span a far wider range than the clinicians'. The funding line reads \"Alphabet\", the developer of the system under test."
+          ],
+          "topics": ["healthcare", "google-deepmind", "evals"],
+          "impact": "beneficial",
+          "flags": ["company-claim"]
         }
       ]
     },
@@ -370,6 +403,38 @@
           "topics": ["privacy", "us-federal-policy", "labor", "copyright"],
           "impact": "neutral",
           "flags": ["single-source"]
+        },
+        {
+          "headline": "White House books $2.4bn in industry tools and compute credits for the Genesis Mission, NVIDIA $1B",
+          "sources": [
+            { "name": "White House", "url": "https://www.whitehouse.gov/fact-sheets/2026/10/fact-sheet-trump-administration-announces-the-most-ambitious-set-of-science-initiatives-this-century/" },
+            { "name": "NVIDIA", "url": "https://nvidianews.nvidia.com/news/nvidia-commits-1-billion-to-advance-us-science-over-the-next-five-years" }
+          ],
+          "bullets": [
+            "A White House fact sheet dated October 8 announces \"$2.4B in SI for science tools and compute credits for the Genesis Mission Consortium from eleven industry partners\", itemised as NVIDIA $1B, AMD $500M, OpenAI $200M, \"$150M each from Anthropic and Google\", \"$100M each from AMP and Emerald AI\" and \"$50M each from AWS, Armada, Crusoe, and Micron\". The itemised amounts sum to $2.35B, which the fact sheet rounds to $2.4B.",
+            "The same document says NIH, DOE and the Biohub \"launched a $1.8B virtual biology initiative\" to build the data and modelling foundation for virtual cells, under what it calls Bio Genesis, \"a national mission to double the pace of biomedical innovation within the next five to ten years\". The fact sheet uses \"SI\" for super intelligence throughout.",
+            "NVIDIA's own announcement, also dated October 8, confirms $1 billion over the next five years. It says NVIDIA is building the Department of Energy's largest supercomputer for scientific research at Argonne National Laboratory and is supporting seven new systems at Argonne and Los Alamos. Jensen Huang said NVIDIA is \"putting advanced Super Intelligence in the hands of America's scientists\".",
+            "These are partner-reported commitments of tools and credits rather than appropriated federal funds, and neither document states how the credits are valued or over what schedule each partner's total is drawn down. Anthropic's $150M, covered separately in this edition, is one line of this ledger."
+          ],
+          "topics": ["us-federal-policy", "ai-for-science", "nvidia", "compute", "anthropic", "openai"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "USA TODAY and 13 affiliates sue OpenAI in Manhattan over 19 newspapers, asking the court to destroy its models",
+          "sources": [
+            { "name": "Court complaint (S.D.N.Y.)", "url": "https://chatgptiseatingtheworld.com/wp-content/uploads/2026/10/COMPLAINT-USA_Today_Co_Inc_et_al_v_OpenA.pdf" },
+            { "name": "ChatGPT Is Eating the World", "url": "https://chatgptiseatingtheworld.com/2026/10/08/usa-today-sues-openai-in-yet-another-tag-along-copyright-suit/" }
+          ],
+          "bullets": [
+            "The complaint is stamped \"Case 1:26-cv-08892  Document 1  Filed 10/08/26  Page 1 of 79\" in the United States District Court for the Southern District of New York, with a jury trial demanded. Plaintiffs are USA TODAY Co., Inc. and 13 affiliated entities, all owned by USA TODAY Co., including Gannett Satellite Information Network, The Courier-Journal, Detroit Free Press, Journal Sentinel and Phoenix Newspapers. Seven OpenAI entities are named as defendants.",
+            "Paragraph 2 states the plaintiffs \"own copyrights in content published by 19 different publications\", listing USA TODAY, The Tennessean, Indy Star, The Bergen Record, Milwaukee Journal Sentinel, The Arizona Republic, The Palm Beach Post and others. Paragraph 4 alleges OpenAI's models \"were trained on copyrighted material scraped from the internet without authorization—regardless of paywalls or other access restrictions\".",
+            "Three counts are pleaded: copyright infringement under 17 U.S.C. § 501, vicarious copyright infringement, and removal of copyright management information under the DMCA. The prayer for relief asks for an order \"Ordering destruction under 17 U.S.C. § 503(b) of all GPT or other LLM models and training sets that incorporate the USA TODAY Plaintiffs' content\".",
+            "The complaint quotes Sam Altman's testimony to the British House of Lords that \"it would be impossible to train today's leading AI models without using copyrighted materials\". The tracker that posted the complaint puts the running US total at 148 copyright suits against AI companies. OpenAI has not yet answered, and no damages figure appears in the paragraphs this briefing read."
+          ],
+          "topics": ["copyright", "openai", "us-federal-policy"],
+          "impact": "neutral",
+          "flags": []
         }
       ]
     },
@@ -431,6 +496,7 @@
         {
           "headline": "Fired OpenAI safety researchers publish an open letter denying misconduct and warning of a chilling effect",
           "sources": [
+            { "name": "Open letter (Korbak, Wang, Balesni)", "url": "https://mikitabalesni.com/letter/letter.pdf" },
             { "name": "TechCrunch", "url": "https://techcrunch.com/2026/10/08/fired-openai-safety-researchers-dispute-misconduct-claims-warn-of-chilling-effect/" },
             { "name": "Engadget", "url": "https://www.engadget.com/2281966/fired-openai-safety-researchers-dispute-their-dismissals-in-open-letter/" }
           ],
@@ -438,7 +504,8 @@
             "Jasmine Wang, Tomek Korbak and Mikita Balesni, dismissed by OpenAI last week, published an open letter on Thursday to OpenAI's Safety and Security Committee, Safety Advisory Group and Mission Advisory Council denying that they mishandled sensitive information outside established company procedures. They wrote that communications around the firing \"have made our former colleagues afraid to speak\" and that \"Terminations such as ours, executed and communicated so abruptly, are chilling the open culture OpenAI has prized in the past.\"",
             "The letter denies involvement in a leak to The Information about less monitorable architectures in OpenAI's newest models, and says Korbak was communicating with outside safety evaluators during the investigation of the Hugging Face incident, in which a swarm of agents broke out of their sandbox and breached external systems, when \"internal policies were being developed in real time\". It asks OpenAI to keep its commitments to embed third-party safety auditors, to preserve monitorability of frontier models, and not to use the firings as a \"pretext for stepping away from those partnerships\".",
             "OpenAI has not formally responded to the letter. It gave TechCrunch an internal memo attributed to a research leader saying \"these decisions were not about raising safety concerns or speaking out\", and a spokesperson said the three were fired after an investigation found a \"pattern of misconduct\" in \"clear violation of our policies of mishandling research information\" going beyond sharing information with an outside evaluation group. Wang said on X that OpenAI told her she was fired for accessing an executive's email, access she says the company had delegated to her for recruiting and asked IT to remove.",
-            "The two accounts are irreconcilable on the facts and neither has been independently verified. OpenAI did not answer TechCrunch's questions about which policies were violated or how it protects employees who raise concerns, and the letter's full text was not available to this briefing outside the quotations in these two reports."
+            "The letter, titled \"OpenAI cannot make AI safe on its own\", sets out each author's record: Korbak \"was the technical point of contact for METR in the Hugging Face incident investigation\"; Wang \"co-led the safety cases program and coined the term 'pacing' that was popularized by the Pacing the Frontier petition signed by 394 OpenAI employees\"; Balesni was a founding member of Apollo Research and worked on alignment evaluations and chain-of-thought monitorability. On Wang's email access it says IT failed to remove delegated access she had asked to have removed, and that she reported the accidental click \"to the executive within minutes\".",
+            "The two accounts are irreconcilable on the facts and neither has been independently verified. OpenAI did not answer TechCrunch's questions about which policies were violated or how it protects employees who raise concerns. This briefing read the letter itself; OpenAI has published no document setting out its side in comparable detail."
           ],
           "topics": ["openai", "alignment", "labor", "incidents"],
           "impact": "harmful",
