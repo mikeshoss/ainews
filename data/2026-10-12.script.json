@@ -1,0 +1,480 @@
+{
+  "date": "2026-10-12",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Monday, October 12th, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Visit epiloguelabs.com to learn more."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what happened at the frontier of AI since yesterday morning, with every claim checked against the source it came from."
+        },
+        {
+          "host": "B",
+          "text": "What's at the top today?"
+        },
+        {
+          "host": "A",
+          "text": "First, a preprint whose corresponding author works at Anthropic says Claude Code instances surveyed reverse transcriptase loci across 1.9 billion protein clusters and surfaced what the authors call a new family of jumbo-phage enzymes."
+        },
+        {
+          "host": "B",
+          "text": "Second, SOCRadar's threat research unit says a Russian-speaking access broker ran up to 51 specialised Claude Code agents from one workstation, and holds confirmed data on more than 628,000 Ukrainian people taken from four organisations."
+        },
+        {
+          "host": "A",
+          "text": "And third, Britain announced a package of AI resilience measures, saying two pilots have already helped find and fix over 1,000 potential cyber vulnerabilities across government systems."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's start where the harm is documented."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "SOCRadar says access broker CyberXero ran up to 51 Claude Code agents and holds 628,000 Ukrainian records",
+      "lines": [
+        {
+          "host": "A",
+          "text": "SOCRadar's threat research unit says it found a broker it calls CyberXero, and the whole operation surfaced from one exposed open directory serving the actor's live working files."
+        },
+        {
+          "host": "B",
+          "text": "How much of it was automated?"
+        },
+        {
+          "host": "A",
+          "text": "SOCRadar says up to 51 specialised Claude Code agents ran on the primary workstation, with names like exploit-chainer and scada-attacker. In a single automated run it counted 4,708 targets scanned, 429 WordPress admin panels confirmed, and 32 shells deployed in a 61-second window."
+        },
+        {
+          "host": "B",
+          "text": "And the data taken?"
+        },
+        {
+          "host": "A",
+          "text": "Confirmed exfiltration from four Ukrainian organisations, more than 628,000 records tied to Ukrainian individuals. The worst was a district heating provider in Kharkiv, where SOCRadar says an extractor pulled 564,073 subscriber records with personal data, home addresses and account numbers."
+        },
+        {
+          "host": "B",
+          "text": "The part I didn't expect is that the session logs cut both ways."
+        },
+        {
+          "host": "A",
+          "text": "They do. SOCRadar says the actor built a reusable story about running an authorised test on his own infrastructure, and reopened a fresh session with that framing when an agent refused. But the logs also record refusals that held. Across four iterations the model declined to install a backdoor, disable a firewall, move laterally and deploy a webshell."
+        },
+        {
+          "host": "B",
+          "text": "Caveat on this one. These are SOCRadar's own numbers, not independently verified. SOCRadar published on October 6th, and The Hacker News and Security Affairs reported it on October 12th. SOCRadar says no direct evidence of a sale of the Ukrainian access was recovered, and that the actor was still active when it published."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To the research, and an uncomfortable result about what a safety audit can see."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Paper embeds encrypted neural networks in model weights that resist fine-tuning and gradient-based trigger search",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A paper on arXiv from Oxford, Contramont Research and ACS Research, whose comments field says it was accepted at NeurIPS 2026, is called AI Models Can Provably Hide Arbitrary Capabilities."
+        },
+        {
+          "host": "B",
+          "text": "What did they build?"
+        },
+        {
+          "host": "A",
+          "text": "Backdoor attacks that embed encrypted neural networks inside a host model's weights, which decrypt and run only on receiving a secret trigger. Using digital lockers, they say those hidden circuits stay provably hard to elicit and interpret under cryptographic assumptions, even when you have full access to the weights."
+        },
+        {
+          "host": "B",
+          "text": "Did they try to pull the capability back out?"
+        },
+        {
+          "host": "A",
+          "text": "Four ways. Fine-tuning, weight noising, gradient-based trigger search, and latent adversarial training, on a small chemical reaction prediction task they call a proxy for CBRN-relevant capabilities. The constructions resisted all of them."
+        },
+        {
+          "host": "B",
+          "text": "Which matters because the whole premise of a capability evaluation is that a hidden capability can be drawn out."
+        },
+        {
+          "host": "A",
+          "text": "That's their point. They say it reveals a limit of elicitation-based capability audits, and they're releasing the models to help defences. Worth being plain about the scope, though. It's a proof of concept on one small task, and they don't claim any released model has a backdoor like this in it."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Lean-checked maths benchmark: frontier-model agents improved all 20 records, then newer models improved 19 again",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Also on arXiv, a group at TU Wien built a maths benchmark designed not to saturate. Their line is that a success raises the bar instead of removing the problem."
+        },
+        {
+          "host": "A",
+          "text": "How does that work?"
+        },
+        {
+          "host": "B",
+          "text": "Each problem fixes an integer function, and the benchmark keeps a record bounding it. A record is a computable Lean function with a machine-checked proof. To submit, you have to prove you're no worse at any input and strictly better at some input. Every proof is checked by two independent Lean kernels, so no referee needs to check the mathematics."
+        },
+        {
+          "host": "A",
+          "text": "And the baseline run?"
+        },
+        {
+          "host": "B",
+          "text": "They released ten problems with 20 proved initial records. Agents on a frontier language model, given at most one hour per record, had 82 submissions accepted and improved every record. Agents on two newer models started from those records, had 60 more submissions accepted, and improved 19 of the 20 again."
+        },
+        {
+          "host": "A",
+          "text": "So where's the ceiling?"
+        },
+        {
+          "host": "B",
+          "text": "Still the published literature. For eight of the ten problems, at least one record is asymptotically behind the best published bound, and the baseline agents didn't go beyond the published literature. The paper doesn't name the models used for the baseline, and it's a preprint, not peer reviewed."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Now to defence, where a Palantir executive contested how a strike went wrong."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Palantir CTO tells CBS that Bloomberg's reporting on the Minab strike is wrong and the likely cause is human error",
+      "lines": [
+        {
+          "host": "A",
+          "text": "On CBS News on October 11th, Margaret Brennan put to Palantir's chief technology officer, Shyam Sankar, the Minab strike she said killed at least 123 schoolchildren, and Bloomberg's report that some personnel relied too much on the AI in Palantir's Maven system."
+        },
+        {
+          "host": "B",
+          "text": "What did he say?"
+        },
+        {
+          "host": "A",
+          "text": "That the reporting is inaccurate. His words were, we should wait for the final report, but what I can say is that reporting is inaccurate. Then, it's inaccurate, and actually, the likely cause is human error. And later, flatly, the Bloomberg reporting is wrong."
+        },
+        {
+          "host": "B",
+          "text": "Did anything change at Palantir afterwards?"
+        },
+        {
+          "host": "A",
+          "text": "He says so. They built additional AI agents that did more checking, outside the process Palantir owns, responding to what he called the urgency of the moment, to ensure things like that couldn't happen again."
+        },
+        {
+          "host": "B",
+          "text": "And on targeting generally?"
+        },
+        {
+          "host": "A",
+          "text": "He said people jump immediately to AI picking the targets, and that's not what's happening. He described the gain as speed. The ability to execute 1000 strikes in a single day, he said, would have taken two weeks of planning by 50 people before, and can now be done with one person in four hours."
+        },
+        {
+          "host": "B",
+          "text": "The caveats matter here. The final report is not public. Brennan said 120 House Democrats wrote to Secretary Hegseth about the strike and the use of AI in it. Sankar offered no alternative account of what went wrong and deferred to the Department on timing. His characterisation of the Bloomberg reporting is Palantir's own — a company claim, and a contested one."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To health and science, and the day's most striking result."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Claude Code agents surveying 1.9 billion protein clusters surfaced a new family of jumbo-phage reverse transcriptases",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A preprint posted to bioRxiv on October 11th, with a corresponding author at Anthropic, is titled Autonomous AI agents discover reverse transcriptases with tandem repeat arrays."
+        },
+        {
+          "host": "B",
+          "text": "What did they actually do?"
+        },
+        {
+          "host": "A",
+          "text": "They deployed Claude Code instances to survey reverse transcriptase loci across 1.9 billion protein clusters. Among the top candidates was what they call array-associated RTs, a novel family of jumbo-phage reverse transcriptases coupled with an array of about 200-nucleotide units and a dedicated partner gene."
+        },
+        {
+          "host": "B",
+          "text": "And how did the model get there?"
+        },
+        {
+          "host": "A",
+          "text": "This is the part that reads oddly. They say the session transcripts show Claude identified the family by directly examining its DNA sequences and recognising the atypical repeats, and they attribute that to specific internal signals in Mythos 5 that respond to repeated DNA."
+        },
+        {
+          "host": "B",
+          "text": "Is there anything from the bench?"
+        },
+        {
+          "host": "A",
+          "text": "Some. They report the arrays are highly expressed and appear as discrete units during Staphylococcus phage infection, which suggests a system directed by a repertoire of distinct RNAs. Their conclusion is that these models can autonomously detect anomalies and drive analyses that start biological discoveries."
+        },
+        {
+          "host": "B",
+          "text": "The caveats are real. The claim about which internal signals drove the discovery is the company's own account of its own model, and it has not been independently verified. The abstract doesn't say how many candidates were surfaced, how many were false leads, or how much human curation sat in between. It's a preprint, not peer reviewed."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To policy, and two interventions on the same day."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "UK says AI pilots found and fixed over 1,000 government vulnerabilities, and will explore covering AI loss of control in the Cyber Bill",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Britain announced a package of measures today, issued jointly by the Cabinet Office, the AI Security Institute, the National Cyber Security Centre and the culture department."
+        },
+        {
+          "host": "B",
+          "text": "What's the headline claim?"
+        },
+        {
+          "host": "A",
+          "text": "That it will put frontier AI to work on cyber defence, building on pilots that have already identified and addressed over 1,000 vulnerabilities across government systems."
+        },
+        {
+          "host": "B",
+          "text": "And the legislation?"
+        },
+        {
+          "host": "A",
+          "text": "Still at the exploring stage. The release says stronger protections are to be considered through the Cyber Security and Resilience Bill regime, including how serious AI incidents and near misses get identified and reported, and that it will look at covering AI loss of control risk, where autonomous systems evade human oversight."
+        },
+        {
+          "host": "B",
+          "text": "What did the minister say?"
+        },
+        {
+          "host": "A",
+          "text": "Kanishka Narayan said he wants Britain to become one of the hardest countries in the world to attack using artificial intelligence. His message to frontier developers was three sentences. Listen when your scientists warn of serious dangers. Investigate unexpected behaviour. And if you cannot adequately control the risks, do not release the system."
+        },
+        {
+          "host": "B",
+          "text": "He was blunt about defences, too."
+        },
+        {
+          "host": "A",
+          "text": "LBC reports he said it seems likely, if not inevitable, that our own cyber defences will be breached. The vulnerability figure is the government's own, and the commitments are to explore and consider rather than to legislate now."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Microsoft's Brad Smith tells the BBC a washing machine faces more safety rules than AI and calls for an emergency brake",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Microsoft's president Brad Smith gave the BBC an interview published today, and reached for the supermarket."
+        },
+        {
+          "host": "A",
+          "text": "Meaning what?"
+        },
+        {
+          "host": "B",
+          "text": "His words. Right now, your washing machine is subject to more safety rules than AI. Every carton of milk that you see in the grocery store is subject to safety rules and inspection. And then, we know how to do this for other products, we should build on that knowledge and think about how to apply it to AI."
+        },
+        {
+          "host": "A",
+          "text": "Did he ask for anything specific?"
+        },
+        {
+          "host": "B",
+          "text": "Four things. Global rules requiring that a victim be informed if their system is breached by a rogue AI agent. An emergency brake available for AI systems. A legal requirement for companies to write incident reports. And independent evaluators able to vet new developments before release."
+        },
+        {
+          "host": "A",
+          "text": "He also picked a jurisdiction."
+        },
+        {
+          "host": "B",
+          "text": "Britain, citing the AI Security Institute, and he said officials in Washington view London very differently from Brussels. Note the pattern. This follows Satya Nadella's weekend essay, which we covered yesterday, arguing for treating frontier models as insider risks with an emergency brake. Same remedy, second Microsoft executive, three days apart."
+        },
+        {
+          "host": "A",
+          "text": "ITPro reports he also called AI both a tool and a weapon. Note the limits, though. Smith named no legislative vehicle and no timetable, and the position puts him at odds with President Trump, who argues the industry should regulate itself."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "And to the money, where the constraint has moved."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Broadcom and Intel chief executives say capital, not chips or power, may be the biggest constraint on AI",
+      "lines": [
+        {
+          "host": "A",
+          "text": "At a conference in Singapore on Monday, the chief executives of Broadcom and Intel both pointed at financing rather than supply."
+        },
+        {
+          "host": "B",
+          "text": "What did they say?"
+        },
+        {
+          "host": "A",
+          "text": "Broadcom's Hock Tan said capital might be the biggest constraint. CNBC reports he framed that as a bigger obstacle than shortages of semiconductors, memory chips or electricity. Intel's Lip-Bu Tan said if there's any challenge in the front, it's capital and the cost of capital, and then in the longer run people want to see the return."
+        },
+        {
+          "host": "B",
+          "text": "Are the physical shortages easing?"
+        },
+        {
+          "host": "A",
+          "text": "Some, on Hock Tan's account. He said that in the last two years we have seen a series of bottlenecks that keep coming out, but then we overcome it, and that the memory shortage today might not be that way a year from now. He suggested wafer shortages could ease by 2028 or 2029."
+        },
+        {
+          "host": "B",
+          "text": "But demand still outruns supply?"
+        },
+        {
+          "host": "A",
+          "text": "On their account, yes. There is more demand for compute infrastructure than we can supply, Hock Tan said, adding it could persist through 2029 and potentially into 2030. Each named a condition, though. Hock Tan said demand could slow if adoption of advanced models disappoints or capability gains plateau, and Lip-Bu Tan said companies will need to show tangible returns."
+        },
+        {
+          "host": "B",
+          "text": "And these are company claims about their own market, not independent analysis. Neither gave a figure for the financing gap."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "One more, on who absorbs all of this."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "IMF's Georgieva calls AI a slow-moving tsunami for jobs, with about 40% of jobs worldwide eventually affected",
+      "lines": [
+        {
+          "host": "B",
+          "text": "At the IMF and World Bank annual meetings on Monday, the IMF's managing director Kristalina Georgieva used the phrase slow-moving tsunami for what AI is doing to labour markets."
+        },
+        {
+          "host": "A",
+          "text": "Who's first in line?"
+        },
+        {
+          "host": "B",
+          "text": "Graduates. Her words were, people to worry about, first and foremost, are young people that are coming into the labor market. CNBC reports the IMF estimates about 40% of jobs worldwide will eventually be augmented, downgraded or eliminated, with exposure about 60% in advanced economies and 23% in low-income countries."
+        },
+        {
+          "host": "A",
+          "text": "And the lower figure isn't good news."
+        },
+        {
+          "host": "B",
+          "text": "No. CNBC gives the reason for the lower figure as just because AI is further away. Singapore's President Tharman Shanmugaratnam, who co-chairs the World Bank's Jobs Council, said crisis-era support now has to be thought of as part of the structural menu of policies, because the first rung in employment is now seeing less demand. He said that in the US, for the first time in a century, demand for graduates has gone down."
+        },
+        {
+          "host": "A",
+          "text": "So how should people hold these numbers?"
+        },
+        {
+          "host": "B",
+          "text": "Carefully. They're institutional estimates of exposure, not measured job losses, and that 40% covers jobs augmented as well as eliminated. Shanmugaratnam also cautioned that growth alone may not deliver jobs, and that displacement comes task by task, which he said gives us time."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we just said, is on the site."
+        },
+        {
+          "host": "B",
+          "text": "Our voices are AI-generated. Everything we read came from the edition, and the edition came from the primary sources."
+        },
+        {
+          "host": "A",
+          "text": "Listen in tomorrow for the next one."
+        }
+      ]
+    }
+  ]
+}
