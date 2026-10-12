@@ -50,6 +50,15 @@
         "On the offence side the capability became purchasable and the defence side produced its second casualty. Anthropic reported that Zhipu's GLM-5.3 developed end-to-end exploits in 50 of 410 attempts, that its safeguards were bypassed between 64% and 100% of the time with simple techniques, and called the release \"a meaningful step change in the cyber capabilities available to attackers\". Google's threat group reported that \"Exactly 50% of all AI-discovered vulnerabilities result in Remote Code Execution (RCE), compared to just 26% across the broader CVE ecosystem.\" A Rejetto flaw found with Anthropic's Mythos model became the second Anthropic-linked vulnerability known to have been \"exploited in the wild\", out of 286 CVEs attributed to that programme. Google's threat group published its own AI-attributed counts, but no government body, CERT or second vendor published counts comparable to Microsoft's initial-access series or verified the AI attribution in the intrusions it describes. CISA added two exploited Zammad flaws to its catalogue on 2 October, and its alert makes no reference to AI."
       ],
       "changed": "Microsoft moved the arc's central claim from inference to a published vendor judgement, with a 32-step fully autonomous domain compromise and a near-tripling of phishing's share of initial access — while qualifying in the same report that most identity exploitation has nothing to do with AI. The verification question stayed open: CISA confirmed the Zammad flaws are exploited but said nothing about AI."
+    },
+    {
+      "date": "2026-10-12",
+      "text": [
+        "As of 12 October a head of government has said in public that AI was used in a real breach, and no government body has found that it was. President Lee Jae Myung told a cabinet meeting on 6 October that \"There are signs that artificial intelligence was used in some hacking attacks, causing considerable concern and anxiety among the public\", adding \"We have now reached a point where AI can make (hacking) easy for even those without special skills.\" AFP reported that more than seven financial institutions had reported customer data breaches in the past week and that the Financial Services Commission put those affected above 68,000; the Korean National Police Agency's own figure, as the Korea Herald reported, was about 66,000 individuals and 2,200 corporate records. Reuters reported on 9 October that nine banks and two mega-churches were investigating attacks that may have involved AI tools, and that authorities were still investigating whether and how AI was used in many of the breaches.",
+        "The vendor record thickened, and then one of its artefacts disappeared. CrowdStrike dated the intrusions from the actor's own Claude Code session histories, ARTEX configuration files and Claude memory files found in open directories, said \"The ARTEX instance used DeepSeek v4.1-flash as the primary LLM backend\", and assessed with moderate confidence that \"the threat actor is likely a Chinese speaker and financially motivated\"; its senior vice-president Adam Meyers told Reuters \"The genie is out of the bottle.\" The Register reported at least five lenders affected, with Shinhan Bank reporting about 25,000 customers, KB Kookmin 119 and Hana 89. SOCRadar, publishing on 6 October, said the access broker CyberXero ran \"up to 51 specialized Claude Code agents on the primary workstation\" and that confirmed exfiltration covered four Ukrainian organisations totalling more than 628,000 records, including 564,073 subscriber records and 213,340 access-log entries from a Kharkiv district heating provider, with one automated execution scanning 4,708 targets and deploying 32 shells inside a 61-second window. Reuters then reported that ARTEX's developer said \"the ARTEX project will no longer be updated and will be converted to closed source\" and that its GitHub page was taken down.",
+        "On the defence side the week produced a programme and a test nobody outside the firm can check. Anthropic launched a Critical Infrastructure Defense Program with 11 founding partners and a free OSS Scanner, saying it had discovered \"over 29,000 candidate vulnerabilities\" in six months, that penetration testers reviewed 97 critical and high-severity findings across 48 projects of which 85 met its coordinated-disclosure bar, and that on CyberGym \"LLMs have gone from finding under 20% of vulnerabilities at the beginning of last year to finding over 85% this year\". Booz Allen Hamilton, one of those 11 partners, told The Register that two frontier models it declined to name \"achieved the objectives across all eight scenarios\" of an autonomous operational-technology attack chain and reached actions inside an industrial control network \"in just over 16 minutes\". No government body, CERT or second vendor has published counts comparable to any of these, or verified the AI attribution in the Korean intrusions."
+      ],
+      "changed": "A head of government said in public that AI was used in a real bank breach — the closest this arc has come to its settling condition — and no police force, regulator, CERT or second vendor has confirmed it. Two criminal records now show frontier coding agents in use at scale, one of them running up to 51 Claude Code agents against Ukrainian infrastructure, while the tool at the centre of the Korean case was pulled from GitHub and taken closed source."
     }
   ],
   "figures": [
@@ -99,6 +108,13 @@
       "value": "seven months",
       "label": "Microsoft's estimate of how far open-weight models lag closed models in orchestrating attacks",
       "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/2026-Microsoft-Digital-Defense-Report.pdf"
+    },
+    {
+      "date": "2026-10-06",
+      "value": "up to 51 specialized Claude Code agents",
+      "label": "run on the primary workstation of the access broker CyberXero, which SOCRadar says exfiltrated more than 628,000 records tied to Ukrainian individuals",
+      "source": "SOCRadar",
+      "url": "https://socradar.io/blog/cyberxero-ai-iab-ukraine-critical-infrastructure/"
     }
   ],
   "questions": [
@@ -106,6 +122,12 @@
       "date": "2026-09-14",
       "question": "Can any of the vendor attributions be verified by anyone other than the vendor?",
       "would_settle": "A government advisory or a second vendor naming the same clusters with their own telemetry.",
+      "settled": null
+    },
+    {
+      "date": "2026-10-12",
+      "question": "Which two frontier models met the objective in all eight of Booz Allen's attacks on industrial control equipment?",
+      "would_settle": "Booz Allen naming the models or publishing its methodology, a vendor acknowledging that its model was tested, or a second lab reproducing the result.",
       "settled": null
     }
   ]
