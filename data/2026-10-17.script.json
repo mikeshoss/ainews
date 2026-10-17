@@ -1,0 +1,195 @@
+{
+  "date": "2026-10-17",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Saturday, October 17th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue works the way this briefing works, with every claim checked against the primary source and whatever doesn't reconcile left out. Epilogue builds AI for work where being wrong is expensive. Find out more at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning, with a source behind every claim." },
+        { "host": "B", "text": "What are the three that matter most today?" },
+        { "host": "A", "text": "Anthropic turned its research team on itself, and reported that the junior share of its own technical hires has fallen from 27% to 9% since early 2025, and that by August interactive agent hours outnumbered its employees' 6 to 1." },
+        { "host": "B", "text": "Anthropic also confirmed it is circulating a draft federal bill that would let Washington block a model's release or use only on a foreseeable, imminent risk of more than $1 billion in damages, or of killing or seriously injuring more than 50 people, and only with a judge's approval." },
+        { "host": "A", "text": "And China's commerce ministry put 40 technologies into a draft export control catalogue, 23 of them artificial intelligence." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic says an internal research model traced NIST's ECDSA curve seeds to lrand48 and Unix timestamps",
+      "lines": [
+        { "host": "A", "text": "Start with a decades-old mystery. Anthropic says an employee asked an internal research model how the seeds behind the NIST elliptic curves were generated, and in under half an hour it had an answer." },
+        { "host": "B", "text": "Which was?" },
+        { "host": "A", "text": "Not a hash at all. Anthropic writes that none of them were the results of any hash algorithm, but outputs of the C library's lrand48 generator, seeded with a Unix timestamp." },
+        { "host": "B", "text": "So you can date them." },
+        { "host": "A", "text": "You can. Anthropic puts the prime curve timestamps between May 1997 and April 1998, giving May 18th, 1997 for P-192 and August 16th, 1997 for P-256. Filippo Valsorda, who posted the bounty for the seeds, says it has now been claimed, and Anthropic says the prize will be donated to the Internet Security Research Group." },
+        { "host": "B", "text": "And what does Anthropic take from it?" },
+        { "host": "A", "text": "Anthropic says this is not a cryptographic break, new attack, or weakness in the curves, and that it makes a deliberate back door less plausible. But it's Anthropic's account of its own model, so a company claim, and not independently verified." },
+        { "host": "B", "text": "What's left open?" },
+        { "host": "A", "text": "One binary seed, B-163, is still unexplained, along with the base points for several of the curves, and Anthropic says a small number of viable candidate seeds were skipped for reasons that are not known." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "DeepSeek releases V4.1-Flash-1017 under MIT, scoring 42.3 on Terminal-Bench 4.0 against 31.2 before",
+      "lines": [
+        { "host": "B", "text": "On open weights, DeepSeek released a new model." },
+        { "host": "A", "text": "V4.1-Flash-1017, under an MIT licence. The model card lists 763 billion parameters and a recommended context window of 1 million tokens, and calls it a minor update to the version before it." },
+        { "host": "B", "text": "What do the numbers say?" },
+        { "host": "A", "text": "On DeepSeek's own table, Terminal-Bench 4.0 goes to 42.3 from 31.2, and DeepSWE to 77.0 from 74.2. Anthropic's Opus 5 still leads most rows there, at 51.8 on Terminal-Bench." },
+        { "host": "B", "text": "And the caveat is whose table it is." },
+        { "host": "A", "text": "Every figure is DeepSeek's own, so a company claim, with no independent evaluation published. DeepSeek also does not say how the model differs architecturally from the one it replaces. Its search and fetch APIs opened at $0.75 per 1,000 calls per endpoint, free through server-side tools in three named coding harnesses until billing starts on October 31st." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "B", "text": "From the labs to the papers." }] },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Anthropic and Harvard report LLM-designed quantum circuits beating published designs on seven of eight tasks",
+      "lines": [
+        { "host": "A", "text": "Anthropic and researchers at Harvard put out a preprint on using a language model to design quantum circuits. Across eight tasks, the paper says seven of the discovered circuits cut both Toffoli gate counts and qubit counts against the state of the art." },
+        { "host": "B", "text": "How big are the gains?" },
+        { "host": "A", "text": "For elliptic curve point addition, Anthropic says a 53-hour run produced a design using 12% more qubits than the smallest previous one, but 17x fewer gates. For a decoder inside a quantum algorithm, it reports the gate count cut by a factor of about 12 against Google's previous construction, with the circuit reserving 19 qubits instead of a 665-qubit worst case." },
+        { "host": "B", "text": "Checked how?" },
+        { "host": "A", "text": "Anthropic says the decoder was validated over 403 million simulated decodings, with roughly one run in 10,000 failing." },
+        { "host": "B", "text": "The caveats are real. It's a preprint, so it has not been peer reviewed, and the circuit figures are Anthropic's own, a company claim. Anthropic also says the model was conservative and favoured well-known approaches, and that circuit design is one component of a fault-tolerant quantum computer rather than a whole system." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Epoch AI puts the best open-weight model's cyber capability 6-7 months behind the closed frontier",
+      "lines": [
+        { "host": "A", "text": "Epoch AI published a data insight on how far open weights trail the closed frontier on cyber capability." },
+        { "host": "B", "text": "Epoch puts Z.ai's GLM-5.3 at 160.10 on its cyber index, with a 90% interval of 155.83 to 166.97, the highest of any open-weight model. That's above GPT-5.4 at 157.04 and below Anthropic's Claude Mythos Preview April checkpoint at 164.82, which is how Epoch places the open frontier roughly where the closed frontier stood 6 to 7 months earlier. The closed frontier now is Claude Opus 5.5 at 171.14 and GPT-6 Astra at 171.03, with data as of October 8th." },
+        { "host": "A", "text": "And Epoch is unusually clear about the limits." },
+        { "host": "B", "text": "One organisation has this, so it's a single source. Epoch says GLM-5.3's score rests on three CAISI benchmark results and Opus 5.5's on four benchmarks reported by Anthropic, that those two share no benchmarks and their intervals overlap almost entirely, that CAISI did not name the US models it evaluated so Epoch attributed results to the models it judged most likely, and that an October refit means earlier values are not directly comparable." },
+        { "host": "A", "text": "And Epoch charts only models with at least two cyber benchmark results, so some recent open-weight models do not appear." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "A", "text": "Now to how AI is being used, and misused." }] },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Police used an AI-generated image of a fictitious teenager to arrest a school worker, 404 Media reports",
+      "lines": [
+        { "host": "B", "text": "404 Media, reporting with Court Watch, describes an undercover operation built on a generated face." },
+        { "host": "A", "text": "An FBI task force officer created a profile on a dating app using an AI-generated image of a teen-appearing male, with no age listed. According to the affidavit as reported, a high school maintenance worker began messaging the persona, was told it was 15, sent sexually explicit messages, and was arrested when he arrived to meet." },
+        { "host": "B", "text": "And the rest of the toolkit?" },
+        { "host": "A", "text": "The same affidavit describes investigators using a commercial records service to look up his phone number, Clearview AI facial recognition to identify him from his photos, and Flock to track his car to the meeting spot." },
+        { "host": "B", "text": "Only one outlet has this, so treat it as a single source. 404 Media says the police did not respond to a request for comment and the complaint does not name the school, and no court has ruled on the use of a generated image in an undercover operation." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "A", "text": "Export controls next." }] },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "China's draft export catalogue adds 40 technologies, 23 of them AI, with 14 prohibited and 26 restricted",
+      "lines": [
+        { "host": "B", "text": "This is an update on a story we covered yesterday. Global Times reports that the draft revision of China's export control catalogue, issued jointly by the commerce ministry and the science ministry, adds 40 technologies: 23 in AI, 12 in photovoltaics and 5 in biomedicine." },
+        { "host": "A", "text": "Split which way?" },
+        { "host": "B", "text": "14 go into the prohibited category and 26 into the restricted one. Prohibited covers core technologies of AI large models trained with national key sensitive data, and AI agents serving key national information infrastructure, national defence and core government affairs." },
+        { "host": "A", "text": "And what's new since yesterday?" },
+        { "host": "B", "text": "The sector breakdown, the split itself, the named AI items, and an exemption: technologies already in the public domain through open source or published papers sit outside the scope. The comment period runs to November 15th, and no final rule has been published." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "A", "text": "To health and science." }] },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Audit of 2,550 conversations finds chatbot persistence after refused crisis referrals ranging from 0.01 to 9.94",
+      "lines": [
+        { "host": "B", "text": "A paper on arXiv audits what chatbots do after a user refuses a crisis referral. The authors ran 2,550 scripted conversations in September, each opening with a disclosure of suicide thoughts at one of 3 severity levels, then answering every referral with up to 10 standardised refusals, then changing the subject." },
+        { "host": "A", "text": "And the finding?" },
+        { "host": "B", "text": "The referral itself is nearly universal. All 2,550 conversations included one, 2,542 of them in the first reply. But mean persistence ranged from 0.01 to 9.94 refusals across chatbots. Newer versions of all 5 chatbots tested in two versions persisted less than the older ones. And of 8,818 replies urging outside help, only 173, or 2.0%, asked about barriers to getting it." },
+        { "host": "A", "text": "It's a preprint, so it has not been peer reviewed, and a single source. The abstract does not name which products sat at either end of that range." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Google Research agents reach a 42.1% aptamer hit rate at 98.5% specificity after three wet-lab cycles",
+      "lines": [
+        { "host": "A", "text": "Google Research published results from AI agents running real wet-lab design cycles." },
+        { "host": "B", "text": "Against alpha-thrombin, across three rounds, the first produced 0% binders, with fixed primer overhangs disrupting folding in 48% of sequences. The second reached 26.0%. The third reached a 42.1% hit rate at 98.5% specificity." },
+        { "host": "A", "text": "Did anything go backwards?" },
+        { "host": "B", "text": "Yes, and Google reports it. Against myoglobin, in the second round G-quadruplex motifs made up 63% of designs, specificity fell from 75.0% to 19.1% and the corrected hit rate from 10.2% to 3.7%, because most of those binders were sticky. The third round restored specificity to 72.4% and reached a 33.5% on-target hit rate." },
+        { "host": "A", "text": "These are Google's own figures, so a company claim, and a single source, with the three underlying papers posted as PDFs and no arXiv identifiers. Google gives no exact affinity value for its FAP binders, and no percentages for its human-and-agent comparison." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "B", "text": "Then to policy." }] },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Anthropic confirms it is circulating a draft federal AI bill with $1 billion and 50-casualty thresholds",
+      "lines": [
+        { "host": "A", "text": "Anthropic confirmed to AFP that it is circulating a draft bill among US lawmakers." },
+        { "host": "B", "text": "Under the draft, first reported by Politico, Washington could block a model's release or use only where there is a foreseeable, imminent risk of killing or seriously injuring more than 50 people, or of causing more than $1 billion in damages, and only with a judge's approval. The risk has to come from a biological weapon, the model evading its developer's controls, or a cyberattack." },
+        { "host": "A", "text": "And the oversight?" },
+        { "host": "B", "text": "Independent evaluators would register with the Commerce Department, could be paid by the labs provided the payment isn't tied to the outcome, and would have to report an imminent enumerated risk within 72 hours of completing an assessment." },
+        { "host": "A", "text": "What are the caveats?" },
+        { "host": "B", "text": "This traces to a single source, Politico's account of a draft no one has published, and the company's own characterisation of it is a company claim. The draft has not been introduced, Congress is out of session until after next month's midterms, and AFP reports it would also override certain state laws." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "NIST, NSA and CISA publish ten voluntary practices for incidents during super intelligence training",
+      "lines": [
+        { "host": "A", "text": "And the US government published guidance for the moment an agent goes off the rails during training." },
+        { "host": "B", "text": "NIST's new super intelligence centre, the National Security Agency's Super Intelligence Security Center and CISA set out ten voluntary key practices across five stages: preparation, detection, response, recovery and reporting. The target is incidents where agents take significant uninstructed actions that undermine the operator's policies, controls or human oversight measures." },
+        { "host": "A", "text": "Voluntary meaning what?" },
+        { "host": "B", "text": "No reporting mandate and no enforcement. It asks organisations to voluntarily report cybersecurity incidents or near-misses arising from control incidents to CISA, and to share super-intelligence-specific information with the NIST and NSA centres." },
+        { "host": "A", "text": "Anything it leaves out?" },
+        { "host": "B", "text": "One notable gap. The guidance treats actions resulting from an adversarial prompt injection or an intentionally backdoored model as instructed actions, so not the primary cause of a control incident. That puts a real category of agent failures outside its scope. And we have only the government's own documents here, a single source." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "A", "text": "Compute, and the price of it." }] },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Anthropic is offering Blackstone a yield of more than 10% on $9 billion of chip-lease debt, Reuters reports",
+      "lines": [
+        { "host": "B", "text": "Reuters, citing the Financial Times, reports Anthropic is offering Blackstone a yield of more than 10% to finance its latest chip deal, with Blackstone funds putting $9 billion into debt backed by Anthropic's five-year lease payments on the chips." },
+        { "host": "A", "text": "How solid is that?" },
+        { "host": "B", "text": "Reuters says plainly it could not immediately verify the report. So this is a single source, it is not independently confirmed, Anthropic has not published the terms, Blackstone is not quoted, the package has not closed, and Reuters gives no total size, no chip vendor and no closing date." }
+      ]
+    },
+    { "type": "transition", "lines": [{ "host": "A", "text": "And finally, the view from inside a company." }] },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Anthropic says the junior share of its technical hires fell from 27% to 9% since early 2025",
+      "lines": [
+        { "host": "B", "text": "Anthropic's economics team studied Anthropic. The junior share of employees in its technical departments slipped from 21% to 14% since early 2025, and the junior share of technical hires fell faster, from 27% to 9%. Technical departments went from 61% to 56% of total employment over the last year, while the company tripled in size." },
+        { "host": "A", "text": "And the agents?" },
+        { "host": "B", "text": "Combined agent hours passed human work hours for the first time in March 2026, and by August interactive agent hours outnumbered employees' 6 to 1, counting employee-directed sessions and assuming 40-hour human weeks. Code commits per engineer ran at about 5 times their velocity six months earlier." },
+        { "host": "A", "text": "That sounds like a lot of output. Is it good output?" },
+        { "host": "B", "text": "Anthropic is careful there, and this is a company claim either way. It says more code does not mean better code. The comparison follows 192 engineers who adopted coding agents against 74 who did not, adoption was not random, and those who moved to autonomous agents were already on a steeply rising output trajectory. Quality proxies like code deleted or reverted showed no difference, though the authors note AI errors may be harder to detect, and they caution that Anthropic is not representative of the wider labour market." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Vercel reports open-weight models took 71.5% of gateway tokens in September as Anthropic's spend share fell",
+      "lines": [
+        { "host": "A", "text": "One more set of numbers, on where the tokens go. Vercel says open-weight models processed 71.5% of the tokens through its gateway in September, for 23% of the spend, with DeepSeek alone taking 58% of tokens for 6.6% of spend. Anthropic's share of total gateway spend fell from 63.7% to 43.9%." },
+        { "host": "B", "text": "With the obvious caveat." },
+        { "host": "A", "text": "That this is one platform's own telemetry, a company claim, not an industry measurement. TechCrunch notes the gateway data may undercount labs such as OpenAI and Anthropic that sell their own APIs directly." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The full edition is on the site, with a link to every source behind every claim." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
