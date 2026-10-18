@@ -1318,7 +1318,7 @@ function toolSummary(e) {
     case 'Agent': case 'Task': return `${i.description || ''}${i.subagent_type ? ` (${i.subagent_type})` : ''}`;
     case 'ToolSearch': return i.query || '';
     default:
-      if (/send_message/.test(e.tool_name || '')) return `to ${(i.to || []).join(', ')} — “${i.subject || ''}”`;
+      if (/send_message/.test(e.tool_name || '')) return `to ${[].concat(i.to || []).join(', ')} — “${i.subject || ''}”`;
       return Object.keys(i).slice(0, 3).map((k) => `${k}=${typeof i[k] === 'string' ? i[k].slice(0, 80) : JSON.stringify(i[k]).slice(0, 80)}`).join(' ');
   }
 }
