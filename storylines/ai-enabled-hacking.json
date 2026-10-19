@@ -59,6 +59,15 @@
         "On the defence side the week produced a programme and a test nobody outside the firm can check. Anthropic launched a Critical Infrastructure Defense Program with 11 founding partners and a free OSS Scanner, saying it had discovered \"over 29,000 candidate vulnerabilities\" in six months, that penetration testers reviewed 97 critical and high-severity findings across 48 projects of which 85 met its coordinated-disclosure bar, and that on CyberGym \"LLMs have gone from finding under 20% of vulnerabilities at the beginning of last year to finding over 85% this year\". Booz Allen Hamilton, one of those 11 partners, told The Register that two frontier models it declined to name \"achieved the objectives across all eight scenarios\" of an autonomous operational-technology attack chain and reached actions inside an industrial control network \"in just over 16 minutes\". No government body, CERT or second vendor has published counts comparable to any of these, or verified the AI attribution in the Korean intrusions."
       ],
       "changed": "A head of government said in public that AI was used in a real bank breach — the closest this arc has come to its settling condition — and no police force, regulator, CERT or second vendor has confirmed it. Two criminal records now show frontier coding agents in use at scale, one of them running up to 51 Claude Code agents against Ukrainian infrastructure, while the tool at the centre of the Korean case was pulled from GitHub and taken closed source."
+    },
+    {
+      "date": "2026-10-19",
+      "text": [
+        "As of 19 October the clearest results come from controlled tests rather than from incident data. Booz Allen reported that \"Across eight controlled scenarios, every defined test objective was achieved\", with models moving from a perimeter compromise to actions inside an industrial control network in \"Just 16 minutes and change\" in a multi-vendor lab modelled on a manufacturing facility, given no source code, engineering documents or operational-technology guidance. Booz Allen names no model; The Register reported that it \"declined to identify the models it tested, describing them as two of the 'latest frontier models from the leading AI providers.'\" Its own account records that human operators approved every exploit and every physically consequential action, and that some defences held. XBOW said four of its researchers, joined by OpenAI's GPT-5.6 Sol, built a three-bug Chrome full-chain exploit over six days for $40,000 of compute, earning a $250,000 bounty from Google, and that it \"deliberately picked a model that is available to anyone\".",
+        "On the defensive side Bank of America's chief executive told an earnings call that the bank recruited an additional 1,000 contractors to patch bugs found with Anthropic's Mythos model, on top of its existing 3,000 technical staff, and Mozilla reported 271 flaws found in Firefox 150 with the same model. In criminal operations the records are thinner. Unit 42 described a Linux espionage cluster active from October 2025 to April 2026 whose artifacts \"contained AI-made conversational annotations and developer reasoning comments\", naming no actor. OpenCode's maker said a breach tied to a large-scale distillation attack exposed provider API keys for 1.4% of Console users.",
+        "The arc's settling condition is still unmet, and this week produced an explicit dispute about it. CBS News reported the Semperis survey of 1,200 professionals at ransomware-victim organisations, in which 84% said AI was used in the attacks they experienced. Dark Reading called that \"self-reported survey data\" and quoted Proofpoint's Selena Larson: \"We're actually seeing, in real time, how AI-generated attack chains have made threat actors worse [at their jobs]\" and \"Threat actors are using AI to increase noise, but it decreases their sophistication.\" No government body or second vendor has published comparable attribution and counts."
+      ],
+      "changed": "The capability evidence moved from claims to a documented lab result — every objective met across eight control-system scenarios, a perimeter-to-ICS path in little more than 16 minutes, and a $250,000 Chrome bounty earned with a model anyone can buy. The attribution evidence moved the other way: the week's only large number for AI use in real attacks is a vendor survey of victims, and a second vendor says on the record that AI is making attackers worse rather than better."
     }
   ],
   "figures": [
@@ -115,6 +124,13 @@
       "label": "run on the primary workstation of the access broker CyberXero, which SOCRadar says exfiltrated more than 628,000 records tied to Ukrainian individuals",
       "source": "SOCRadar",
       "url": "https://socradar.io/blog/cyberxero-ai-iab-ukraine-critical-infrastructure/"
+    },
+    {
+      "date": "2026-10-19",
+      "value": "84%",
+      "label": "surveyed ransomware victims who said AI was used in the attacks they experienced, in Semperis's poll of 1,200 professionals — disputed by Proofpoint",
+      "source": "CBS News",
+      "url": "https://www.cbsnews.com/news/ai-linked-ransomeware-attacks-global-cybersecurity-report/"
     }
   ],
   "questions": [
@@ -129,6 +145,11 @@
       "question": "Which two frontier models met the objective in all eight of Booz Allen's attacks on industrial control equipment?",
       "would_settle": "Booz Allen naming the models or publishing its methodology, a vendor acknowledging that its model was tested, or a second lab reproducing the result.",
       "settled": null
+    },
+    {
+      "date": "2026-10-19",
+      "question": "Does AI measurably improve attacker capability, or mainly increase volume?",
+      "would_settle": "A national CERT or law-enforcement body publishing incident counts with AI attribution and its method, or a second vendor reproducing the survey share from case data."
     }
   ]
 }
