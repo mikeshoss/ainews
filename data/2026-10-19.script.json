@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-19",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Monday, October 19th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue is an AI venture studio and consultancy in Toronto, building products where the answer has to be right. Epilogue works the way this briefing works: every claim checked against the primary source, and whatever doesn't reconcile is left out. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning, with a source behind every claim." },
+        { "host": "B", "text": "What are the three that matter most today?" },
+        { "host": "A", "text": "The Intercept reports that US Army Cyber Command is building a platform to turn AI agents into autonomous cyberweapons, with a document saying the software must operate with minimal human oversight." },
+        { "host": "B", "text": "Anthropic says it will commit 5% of its shares to a new public benefit fund, subject to stockholder approval, and CNBC reports the company told investors its third-quarter revenue stands at $16.8 billion ahead of an IPO reportedly slated for November." },
+        { "host": "A", "text": "And Kyiv Post, relaying a Bloomberg review, says a Russian-linked network aimed 130 fabricated videos and doctored front pages at candidates in the US midterms." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic commits 5% of its shares to a wholly owned public benefit fund, subject to stockholder approval",
+      "lines": [
+        { "host": "B", "text": "Start with Anthropic. It says it will commit 5% of its shares to a new public benefit fund, subject to stockholder approval." },
+        { "host": "A", "text": "And the stake can grow from there?" },
+        { "host": "B", "text": "The board can add another 2% for every 50% increase in the company's value above a set baseline. CNBC says that baseline has yet to be disclosed." },
+        { "host": "A", "text": "What shape does the fund take?" },
+        { "host": "B", "text": "A wholly owned limited liability company, rather than a 501(c)(3) nonprofit. Anthropic says that lets it adjust between different forms of giving, and that equity held by the fund won't be used for lobbying or political giving in the US or internationally." },
+        { "host": "A", "text": "These are the company's own numbers, and not independently verified. Anthropic also says co-founder pledges and an employee equity donation match already bring roughly 20% of its shares to the public good before any valuation-milestone additions, and that it has committed $200 million to studying AI's effect on jobs." },
+        { "host": "B", "text": "CNBC reports Anthropic told investors third-quarter revenue stands at $16.8 billion, ahead of an IPO reportedly slated for November. CNBC quotes an IPO adviser, Lise Buyer of Class V Group, saying the timing is both mandatory to prepare for a public offering and beneficial from an image perspective. Anthropic hasn't said who decides what the fund pays for." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To the research, then." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Audit of 33,000 agent trajectories finds 76-80% of failed prompt injections were ignored, not refused",
+      "lines": [
+        { "host": "A", "text": "A paper on arXiv audits 33,000 agent trajectories and asks what a low prompt-injection success rate actually means." },
+        { "host": "B", "text": "And the answer?" },
+        { "host": "A", "text": "Across eleven open-weight agents, the authors report that most failed attacks were ignored rather than refused. Between 76 and 80% were simply ignored. Only 17 to 18% were genuine refusals." },
+        { "host": "B", "text": "So the attack mostly gets ignored rather than refused." },
+        { "host": "A", "text": "And the scaffolding does a lot of the work. With identical model weights, changing only the system prompt moved attack success on one benchmark from 0.2% to 43%." },
+        { "host": "B", "text": "That's a preprint, not peer reviewed, and it's a single source. It also covers open-weight models between 2 and 14 billion parameters, not frontier systems." },
+        { "host": "A", "text": "One more figure from it. In 21.7% of AgentDojo episodes the agent stayed safe but did not complete the user's task, which the usual scoring counts as a successful defence." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "SenseNova-led evaluation puts GPT-6-Astra at 81.9% on RoboDojo in simulation but 0 of 11 real plug insertions",
+      "lines": [
+        { "host": "B", "text": "There's a second arXiv paper worth a minute, and it's about robots." },
+        { "host": "A", "text": "Go on." },
+        { "host": "B", "text": "A team led by SenseNova evaluated GPT-6-Astra across 12 benchmarks. In simulation it reaches 81.9% on one benchmark and 87.3% on another." },
+        { "host": "A", "text": "And in the real world?" },
+        { "host": "B", "text": "Eight robot configurations. Rigid pick-and-place worked 17 times out of 18. Cloth folding was 2 out of 4. Plug insertion was 0 out of 11 across three platforms." },
+        { "host": "A", "text": "So there's a gap between the benchmark scores and contact-rich physical tasks." },
+        { "host": "B", "text": "The authors conclude the model has largely reached embodied competence but not practical embodied intelligence. This is also a preprint, not peer reviewed, and a single source, run by the authors on a model they don't make, with no independent replication." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to how this is being used against people." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Bloomberg review: Russian-linked Matryoshka network aimed 130 fabricated videos at US midterm candidates",
+      "lines": [
+        { "host": "A", "text": "Kyiv Post, relaying a Bloomberg review, says Bloomberg examined 130 fabricated videos and doctored newspaper front pages attributed to a Russian-linked network called Matryoshka." },
+        { "host": "B", "text": "Aimed at what, exactly?" },
+        { "host": "A", "text": "Democratic candidates in 20 of the 35 US Senate races, and 29 of the 36 governor's contests on the November 3rd ballot. The clips use synthetic likenesses of Robert De Niro, Julia Roberts and Cher, and impersonate ABC News and CBS News broadcasts." },
+        { "host": "B", "text": "Did any of it get traction?" },
+        { "host": "A", "text": "A group that monitors Kremlin-aligned networks says views can jump as high as 200,000 in the first hour and then quickly plateau. Kyiv Post puts that pattern down to bots inflating the counts." },
+        { "host": "B", "text": "This is an update on an investigation that published before our window, and only one outlet carries this write-up. Bloomberg's own article couldn't be opened from here, so the figures are as Kyiv Post relays them." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Zimbabwe police begin texting fines for 4.8 million offences recorded by Harare's AI cameras",
+      "lines": [
+        { "host": "B", "text": "Then Zimbabwe. zimDaily reports police have begun texting fines for 4.8 million offences recorded by AI cameras in Harare." },
+        { "host": "A", "text": "4.8 million. How did it get that high?" },
+        { "host": "B", "text": "The count has climbed fast. About 1.1 million vehicles flagged in early August, and 2.3 million by the middle of the month. Each notice carries a video clip and the fine attached." },
+        { "host": "A", "text": "What does a fine cost?" },
+        { "host": "B", "text": "The standard Level 3 penalty is 30 US dollars, payable in ZiG. Speeding is tiered, from 5 dollars for six to 15 kilometres an hour over the limit, up to 30 dollars for 26 to 50 over." },
+        { "host": "A", "text": "And the cameras do more than read number plates." },
+        { "host": "B", "text": "When the cabinet approved the system, the information minister said it included automatic number plate and face recognition and AI-powered video analytics, and that the network could detect crowd gatherings, loitering and pickpocketing. A police commissioner later listed the national identity database among the systems being plugged into it." },
+        { "host": "A", "text": "Is there a way to contest one?" },
+        { "host": "B", "text": "zimDaily says it could find no published procedure for reviewing a disputed clip, and that the city admitted last year that 21 of the 69 signalled junctions in the centre weren't working. The permanent secretary also conceded that some recorded violations may have happened while an officer was directing traffic by hand. This is a single source." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to the item that leads today's edition." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Army Cyber Command is building ECHOTRIBBLE, AI agents meant to neutralise targets with minimal human oversight",
+      "lines": [
+        { "host": "A", "text": "The Intercept reports that US Army Cyber Command is developing a platform to turn AI agents into autonomous cyberweapons." },
+        { "host": "B", "text": "What do the documents actually say?" },
+        { "host": "A", "text": "A document circulated to potential contractors describes agents designed to autonomously navigate infrastructures, and capable of identifying and neutralizing identified threats and targets. It says the software must operate with minimal human oversight, and must be capable of self-directed behaviour." },
+        { "host": "B", "text": "And neutralising means what, here?" },
+        { "host": "A", "text": "A question-and-answer document for vendors says the programme is primarily focused on offensive missions, and that neutralising a target could include disabling the threat completely or temporarily, or deleting the threat from the target." },
+        { "host": "B", "text": "There's also a presentation given to vendors." },
+        { "host": "A", "text": "A presentation given to vendors at an Army event on June 24th sets out a hypothetical. Once uploaded to a laptop, the software finds other potential targets on the same network by itself, then produces a replica of itself tailored for an iPad, an Apple desktop and a Windows 11 PC. The decision to spread sits with the agent, not an operator." },
+        { "host": "B", "text": "A machine learning professor at the University of Montreal told The Intercept that making autonomous AI systems with a mandate to neutralize threats is incredibly dangerous. The chief executive of an AI security firm put it another way: the target may well be hit, but what path will it take?" },
+        { "host": "A", "text": "Army Cyber Command didn't respond to The Intercept's questions, including about measures to prevent inadvertent damage. This is a single source, and the documents describe a programme in development. No deployment and no contract award is reported." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to the courts." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Tech Policy Press names the courts for all eight state suits against OpenAI and four new private cases",
+      "lines": [
+        { "host": "B", "text": "Tech Policy Press has put detail on the OpenAI litigation we covered in an earlier edition. It names the court for each of the eight state attorney general suits filed on October 14th." },
+        { "host": "A", "text": "So this is an update, and the detail is in the venues and the private cases." },
+        { "host": "A", "text": "Which courts are they?" },
+        { "host": "B", "text": "County courts in Arizona, Arkansas, Idaho, Iowa, Kansas, Montana, Nebraska and West Virginia. With Florida, which sued in June, the article says the claims will be considered in parallel in nine different state courts." },
+        { "host": "A", "text": "Anything unusual in what they're asking for?" },
+        { "host": "B", "text": "Arkansas asks the court to enjoin OpenAI from creating models capable of recursive self-improvement, until it can ensure they will be aligned with human values. That's a request to bar a capability, not a product." },
+        { "host": "A", "text": "And the private cases?" },
+        { "host": "B", "text": "A proposed class action filed on October 13th in federal court in northern California, for a mother, her 12-year-old daughter and her 16-year-old son. It seeks a declaration voiding OpenAI's terms under an 1874 California rule limiting minors' contracts. Four more suits filed on October 14th in San Francisco are expected to join an existing coordinated proceeding." },
+        { "host": "A", "text": "OpenAI told NBC it has built industry-leading age-specific protections into its product that many other AI products lack. But the article says OpenAI has not publicly addressed the four Tech Justice Law suits. One outlet carries this detail." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to the chips." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Nvidia asks Samsung, SK hynix and Micron to build NVHBM base dies on TSMC's 3-nanometer process",
+      "lines": [
+        { "host": "B", "text": "Seoul Economic Daily reports Nvidia wants the base die of its custom memory made on TSMC's 3-nanometer logic process, and that Samsung is working with TSMC on it at Nvidia's request." },
+        { "host": "A", "text": "Why does the base die matter?" },
+        { "host": "B", "text": "It's the logic layer that now carries the memory controller that used to sit on the GPU. Electronics Weekly, citing the same paper, reports Samsung and Micron have agreed to Nvidia's request, with volume production expected in 2027." },
+        { "host": "A", "text": "Is this a yield question?" },
+        { "host": "B", "text": "The paper puts industry estimates of TSMC's 3-nanometer yield above 90%, against roughly 60% for Samsung's own 2-nanometer process. Samsung is validating the base die on its 2-nanometer line as a hedge." },
+        { "host": "A", "text": "Nvidia's claimed gains for the custom memory are up to 30% more bandwidth and 15% lower power than the standard part. Both accounts trace back to one Korean newspaper citing unnamed industry sources, so this is effectively a single source." },
+        { "host": "B", "text": "And the Seoul Economic Daily article itself carries no bandwidth or power figures. Order volumes, supply ratios and mass-production timelines are undisclosed, and none of the companies has confirmed the arrangement." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "And finally, two stories about AI meeting the world as it is." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Meta says a Claude tool browsing at four times the normal rate triggered the No Kings Instagram suspension",
+      "lines": [
+        { "host": "A", "text": "Meta says an automated security system wrongly suspended the Instagram account of the No Kings Coalition during a weekend of nationwide demonstrations. Bloomberg reports Meta blames a tool from Anthropic's Claude." },
+        { "host": "B", "text": "Blames it how?" },
+        { "host": "A", "text": "Meta's vice president of communications said engineers found a Claude tool accessing profiles, posts and hashtags at roughly four times the normal rate in intense bursts on Saturday, and that the pattern resembled automated bot traffic rather than an ordinary human browsing." },
+        { "host": "B", "text": "How long was the account down?" },
+        { "host": "A", "text": "The coalition says about 90 minutes, with full access restored at 5:33 in the afternoon, New York time. Meta says an automated review about an hour after the suspension found the account shouldn't have been removed. The coalition says millions took part in nearly 3,000 events in all 50 states and Washington, in an early-voting push before the November 3rd midterms." },
+        { "host": "B", "text": "And this replaced an earlier explanation." },
+        { "host": "A", "text": "On Saturday the same spokesman blamed unusually high rates of posting, sharing and commenting. The Claude explanation came the next day." },
+        { "host": "B", "text": "This is Meta's claim and it has not been independently verified. Bloomberg notes Meta didn't say which Claude tool was involved, who was operating it, or what it had been doing. Anthropic has not confirmed any of it, and no one else has confirmed the rate figure." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Reuters: AI industry expected to invest about $1 trillion next year as the Fed treats it as a price shock",
+      "lines": [
+        { "host": "B", "text": "Last one. Reuters reports the AI industry is expected to invest about $1 trillion next year, roughly 3% of GDP, and that the Fed chairman has called that investment a shock to prices and demand." },
+        { "host": "A", "text": "Who's saying that?" },
+        { "host": "B", "text": "Fed Chairman Kevin Warsh said central bankers have got to recognize this as a shock, given their mandate for stable prices and full employment. The Cleveland Fed president, Beth Hammack, said higher rates could cool the economy at the margins, and told Reuters she's not trying to stop growth." },
+        { "host": "A", "text": "So who ends up paying for it?" },
+        { "host": "B", "text": "The Fed is expected to hold rates at 3.75 to 4.00% at its meeting on October 27th and 28th. Its 2% inflation goal has gone unmet for more than five years. If the answer to an AI build-out is tighter money, the cost lands on borrowers who are nowhere near it." },
+        { "host": "A", "text": "Worth saying what the article doesn't do. It doesn't put a number on how much of inflation the AI build-out accounts for. These are officials' characterisations of a shock, not a measured effect." },
+        { "host": "B", "text": "And a note on sourcing. Reuters' own site could not be opened from here, so those figures come from a syndication of the Reuters wire." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today." },
+        { "host": "A", "text": "The full edition, with every source linked, is on the site. Our voices are AI-generated." },
+        { "host": "B", "text": "Thanks for listening, and do listen in tomorrow." }
+      ]
+    }
+  ]
+}
