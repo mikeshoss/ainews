@@ -32,6 +32,10 @@ const r2 = require('./r2.js');
 const ROOT = path.resolve(__dirname, '..');
 const AUDIO_DIR = path.join(ROOT, 'audio');
 const LOOKBACK_DAYS = 14;
+// The OpenAI key expired 2026-10-11 17:10 UTC, so Oct 12–20 have no episode. They stay text-only (owner, 2026-10-21):
+// a backfill would publish them all at once, stamped today, out of order. Nothing before this date is generated
+// automatically; --force <date> still can.
+const NO_EPISODES_BEFORE = '2026-10-21';
 const GRACE_MS = 2 * 60 * 60 * 1000;      // how long to wait for a dialogue script before narrating
 const UPGRADE_MS = 6 * 60 * 60 * 1000;    // how late a dialogue script may arrive and still replace a narration
 const MAX_PER_RUN = 3;             // cost cap
@@ -385,6 +389,7 @@ async function synthesize(ed, seg, label) {
   const todo = [];
   for (const ed of editions) {
     if (Date.parse(ed.date + 'T12:00:00Z') < cutoff) continue;
+    if (ed.date < NO_EPISODES_BEFORE && FORCE !== ed.date) continue;
     const ep = index.episodes[ed.date];
     const script = scriptState(ed.date);
     if (FORCE === ed.date) { todo.push({ ed, upgrade: !!ep }); continue; }
