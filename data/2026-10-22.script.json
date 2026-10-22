@@ -1,0 +1,219 @@
+{
+  "date": "2026-10-22",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Thursday, October 22nd, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for work where being wrong is expensive, and ships systems that know what they know, show their work, and fail visibly instead of quietly. Find out more at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what happened at the frontier of AI in the last 24 hours, with a source behind every claim." },
+        { "host": "B", "text": "The three that matter most?" },
+        { "host": "A", "text": "PHP shipped emergency patches for two unauthenticated remote code execution flaws, and Wiz Research says demonstrating they were exploitable had been at the edge of what human researchers could practically achieve." },
+        { "host": "B", "text": "Microsoft attributes the ConnectWise Cloud Backup supply chain compromise to a China-state-aligned group it calls Storm-0940, and says the group reached privileged access in under three hours." },
+        { "host": "A", "text": "And Anthropic opened a research preview of Claude Duet, a proactive agent built on Claude Opus 5.5." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic opens a waitlisted research preview of Claude Duet, a proactive agent built on Claude Opus 5.5",
+      "lines": [
+        { "host": "A", "text": "Alex, what is Duet?" },
+        { "host": "B", "text": "Anthropic calls it a new app where Claude works as a proactive agent, designed around Claude Opus 5.5. It's by waitlist, starting with US Pro and Max subscribers, and 9to5Mac reports the rollout is US-only and not yet on Team or Enterprise plans." },
+        { "host": "A", "text": "What stops it doing something unwanted?" },
+        { "host": "B", "text": "Anthropic says Duet shows you what it plans to do and waits before it sends a message, makes a payment, signs a document or deletes anything. A few things are off-limits even with approval, and it gives trading securities and moving money between accounts as the examples." },
+        { "host": "A", "text": "Does Anthropic say where it falls short?" },
+        { "host": "B", "text": "It does. Anthropic says Duet might misread a thread or miscalibrate what's urgent, and that it can't yet show you its browser. That's the company's own account, not independently verified. Anthropic hasn't published a figure for how often Duet gets urgency wrong, and the rejection rate of its sensitive-information classifier is unreported." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To the research, and what agents do once you hand them tools." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Models that refuse a harmful request in chat still make unsafe tool calls for 10 to 52 percent of the same requests",
+      "lines": [
+        { "host": "B", "text": "A paper on arXiv puts a number on the gap between what a model says and what it does. It builds 2,304 prompts as matched triplets: the same request in text only, with tools, and with tools under an adversarial framing." },
+        { "host": "A", "text": "And the finding?" },
+        { "host": "B", "text": "Under ordinary tool-enabled prompting, models that had refused a harmful request in chat still made an unsafe tool call for 10 to 52 percent of those same requests." },
+        { "host": "A", "text": "Can you steer that away?" },
+        { "host": "B", "text": "Not cleanly. The paper says restoring the refusal signal prevents only a subset of unsafe calls, mostly by suppressing tool use rather than producing safer ones. Steering nearly eliminates them only at strengths that also suppress harmless tool use or degrade the output." },
+        { "host": "A", "text": "What's the caveat?" },
+        { "host": "B", "text": "It's a preprint, not peer reviewed, and arXiv is the only source. The paper doesn't name the models it tested, so none of this can be pinned on a particular vendor." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now the story of the day, underneath most of the web." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "PHP ships emergency patches for two 9.2-rated remote-code-execution flaws that frontier models proved exploitable after a decade",
+      "lines": [
+        { "host": "B", "text": "PHP shipped emergency patches yesterday for two unauthenticated remote code execution flaws, both rated 9.2. CISA says they affect all PHP installations serving web requests, and tells anyone who can't patch to take their PHP systems offline." },
+        { "host": "A", "text": "How were they found?" },
+        { "host": "B", "text": "Wiz Research says it used Wiz Atlas, Gemini 4 Argon and GPT-5.6 Sol throughout. Wiz says every PHP version released in the last decade is affected by at least one of them, going back to version 5.4." },
+        { "host": "A", "text": "And what makes this an AI story?" },
+        { "host": "B", "text": "Wiz says demonstrating exploitability required an exceptionally complex chain of steps, at the edge of what human researchers could practically achieve, and that frontier AI models substantially reduced that barrier." },
+        { "host": "A", "text": "The PHP Foundation's own account is unusually blunt about the delay." },
+        { "host": "B", "text": "It is. A core developer found the first signs of the same root cause in 2024, and a fix stalled over compatibility and resourcing. The Foundation says the delay was a structural failure, caused by both the security team's decision process and its lack of resources." },
+        { "host": "A", "text": "Who reported the working exploit, and how exposed is everybody?" },
+        { "host": "B", "text": "The Foundation says Calif's researcher Ryan A reported an unconditional remote code execution on August 11th, and that OpenAI independently reported the same root cause the same day. Palo Alto Unit 42 says it found over 22.6 million exposed instances potentially vulnerable. Those are company claims, not independently verified, and Unit 42 says it had seen proof-of-concept code but no confirmed exploitation of real systems when it published." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Amazon says a php2shell exploitation attempt hit its honeypots on 17 October, four days before public disclosure",
+      "lines": [
+        { "host": "A", "text": "Amazon added a detail that moves the timeline backwards." },
+        { "host": "B", "text": "The AWS Security Blog says Amazon Threat Intelligence found an exploitation attempt dating to October 17th in its honeypot telemetry, four days before public disclosure, from an address tied to a commercial anonymization network. Amazon says it remains unclear how the actor got exploit information before disclosure." },
+        { "host": "A", "text": "What's the general lesson Amazon draws?" },
+        { "host": "B", "text": "Amazon says AI-assisted analysis makes it cheaper to turn a patch diff or an advisory into a working exploit, so more actors can act within hours or even minutes once details are disclosed. Its advice is to measure patch timelines for internet-facing systems in hours." },
+        { "host": "A", "text": "How much of that is confirmed?" },
+        { "host": "B", "text": "These are the company's own numbers from its own honeypots, a single source, not independently verified, and no other vendor has corroborated the October 17th attempt. Amazon says it's unclear whether any would have succeeded against real systems." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Researcher: thousands of AI-written php2shell proof-of-concepts need the target server to already have a severe flaw",
+      "lines": [
+        { "host": "A", "text": "And there's a dissent on the record." },
+        { "host": "B", "text": "The researcher Elias Taylor writes that GitHub is full of proof-of-concept exploits for this vulnerability, and that they don't work against a plain, unmodified PHP instance." },
+        { "host": "A", "text": "Why not?" },
+        { "host": "B", "text": "He says most lean on local file inclusion, so the exploit chain needs the server to already have a severe code-level vulnerability. He argues the AI tooling inserted that precondition, and that the identically shaped mistake across independent authors is because the model did the judgement for them." },
+        { "host": "A", "text": "So he thinks the alarm was overdone?" },
+        { "host": "B", "text": "He says it isn't a Log4J moment, while adding an edit at the top of his post that you should patch anyway. This is one researcher on a personal blog, a single source, and it sits against Amazon's report of attempts in its honeypots. He doesn't claim to have tested every published proof-of-concept, and he doesn't address the chains Wiz and the Foundation say they demonstrated privately." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "LiteLLM release pipeline hijacked with three developers' tokens; malicious 1.107.0 shipped a 16-module credential stealer",
+      "lines": [
+        { "host": "A", "text": "An AI gateway also shipped a backdoored release of itself." },
+        { "host": "B", "text": "LiteLLM's own report walks through it. An attacker holding three sets of developer GitHub CLI credentials overrode branch protection, cleared the production approval gate with a second credential, and pushed seven malicious packages. The package index removed them at 13:23 UTC, and the container tags were cleared by 14:20." },
+        { "host": "A", "text": "What did the payload take?" },
+        { "host": "B", "text": "Wiz Research says it's a 16-module stealer: browser credentials and cookies, cloud credentials, API keys for model providers including OpenAI and Anthropic, plus SSH and GPG keys. Wiz says it also pulls provider credentials out of the proxy's database, up to 500 rows." },
+        { "host": "A", "text": "And how did they get in to begin with?" },
+        { "host": "B", "text": "That part is unconfirmed. LiteLLM says it suspects an innocuously named account on an internet-exposed internal deployment, and reports that Claude Code was said to sometimes embed a user's GitHub CLI OAuth token in response bodies, which could land in LiteLLM's logs where response bodies are logged. The company says that itself, it is not independently verified, and Anthropic has published nothing on it." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Microsoft ties the ConnectWise supply-chain compromise to China-aligned Storm-0940 running the ARTEX agent framework",
+      "lines": [
+        { "host": "A", "text": "Microsoft put a name to the ConnectWise compromise." },
+        { "host": "B", "text": "Microsoft says Storm-0940 was responsible, describes the group as China-state aligned and active since 2021, and says it used a framework called ARTEX as early as September 2026 against hundreds of organizations globally." },
+        { "host": "A", "text": "What is ARTEX?" },
+        { "host": "B", "text": "Microsoft calls it an open-source penetration testing framework of agents driven by language models, which runs an autonomous penetration test from reconnaissance through data exfiltration." },
+        { "host": "A", "text": "What was the scale?" },
+        { "host": "B", "text": "Microsoft says the actor hit more than 2,250 tenants at 2,900 sign-in attempts per minute, and that in multiple instances the time from first targeting to privileged access was less than 3 hours." },
+        { "host": "A", "text": "How solid is the attribution?" },
+        { "host": "B", "text": "The counts are Microsoft telemetry and the attribution is its own assessment. Those are its own numbers, and no second vendor or government has confirmed them. CyberScoop notes Microsoft did not say how many customers were compromised, and that a successful login doesn't necessarily mean the group accessed or stole data." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "CrowdStrike details four unreported actors running Claude Code as an autonomous pentester from exposed directories",
+      "lines": [
+        { "host": "A", "text": "CrowdStrike described the operators themselves." },
+        { "host": "B", "text": "It documents four previously unreported threat actors active between May and August 2026, each of which left its offensive agent framework sitting in an open directory. All four were running Claude Code as an autonomous penetration tester." },
+        { "host": "A", "text": "Give me one of them." },
+        { "host": "B", "text": "A Spanish and English-speaking actor ran a supervisor agent and an executor agent on a harness built from an open-source project, hit at least 15 healthcare entities in Argentina, and took credentials and medical records from at least one." },
+        { "host": "A", "text": "What's CrowdStrike's read on where this goes?" },
+        { "host": "B", "text": "It says agentic AI can reach its objectives on its own, often within about an hour, and judges with high confidence that intrusions supported this way will almost certainly increase. These are the company's own numbers, not independently verified, a single source, and it doesn't say how many succeeded." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Pentagon releases Project Agincourt letter setting 1 October 2027 for a four-star Autonomous Warfare Command",
+      "lines": [
+        { "host": "B", "text": "An update on a story we've covered before. The command was announced on September 30th, 2026; what's new is the letter. NewsNation says it obtained a Department of War letter outlining the pathway to the Autonomous Warfare Command, led by a four-star general, operational by October 1st, 2027." },
+        { "host": "A", "text": "What's the argument the letter makes?" },
+        { "host": "B", "text": "NewsNation quotes it saying that since the Cold War, American power projection has rested on a small number of sophisticated, expensive weapons, and that that model has been disrupted. Low-cost drones, it says, have changed the character, speed and economics of war." },
+        { "host": "A", "text": "And the money?" },
+        { "host": "B", "text": "SOFX reports the FY2027 budget request includes about $54.6 billion for the Defense Autonomous Warfare Group. That's a request, not an appropriation. Neither outlet links the letter itself, and neither says what human-control standard will govern this command's systems." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Google's multi-agent personal health agent published in Nature after more than 7,000 expert and user annotations",
+      "lines": [
+        { "host": "A", "text": "To health, where Nature published Google's personal health agent." },
+        { "host": "B", "text": "Nature describes a system that reasons over data from consumer wellness devices and medical records, built as an orchestrator plus a data science agent, a health domain expert and a health coach. They evaluated it across 11 benchmark tasks, with more than 7,000 annotations." },
+        { "host": "A", "text": "What did the numbers show?" },
+        { "host": "B", "text": "In a blinded comparison against baseline Gemini, 17 end users rated the domain expert agent's trustworthiness at 96.9 percent against 38.7 percent. But the full system is a far smaller win, and the paper says so: on complex queries, differences against the baselines ranged from 1.6 to 15.4 percent, averaging 4.6 percent." },
+        { "host": "A", "text": "What should people hold back on?" },
+        { "host": "B", "text": "It's peer reviewed, but it's Google's own evaluation of its own system, not independently verified, and no clinical outcomes were measured. Nature notes the records were limited to blood test results, and says the code will be released under an open licence, not that it has been." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Judge hears cross-motions on fair use in music publishers' lyrics case against Anthropic",
+      "lines": [
+        { "host": "A", "text": "To the courts, and the publishers' lyrics case against Anthropic." },
+        { "host": "B", "text": "Judge Eumi Lee heard cross-motions for summary judgment in San Jose on October 21st, in a case brought in 2023 by Concord Music Group, Universal Music and others. The damages sought run up to $150,000 for each of 499 allegedly infringed songs." },
+        { "host": "A", "text": "What did each side argue?" },
+        { "host": "B", "text": "The publishers' attorney said Claude reproduces copyrighted lyrics, sometimes word for word, and that it couldn't do that if it didn't have the lyrics in the database. Anthropic's attorney argued the company has only secondary liability because users supply the prompts, and that there isn't anything in the record showing doom for the music industry." },
+        { "host": "A", "text": "Did she rule?" },
+        { "host": "B", "text": "No. Courthouse News Service says Judge Lee took the summary judgment motions under submission and did not indicate her views. The Epoch Times says the parties didn't get through all their motions, and that she asked them to consider continuing in late October or early November. Those accounts differ, and no ruling has issued." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Nvidia says more than $300 billion of power equipment is backlogged and over 200GW sits in US interconnection queues",
+      "lines": [
+        { "host": "A", "text": "On compute, Nvidia put numbers on the power bottleneck." },
+        { "host": "B", "text": "Nvidia says power is now the biggest bottleneck in infrastructure, that more than $300 billion in equipment is backlogged, and that over 200 gigawatts of projects are waiting in US interconnection queues." },
+        { "host": "A", "text": "And its answer to that?" },
+        { "host": "B", "text": "Software rather than generation. Nvidia says its tools let engineers simulate the grid, the substation and the AI factory together, and sync AI factory demand with grid conditions." },
+        { "host": "A", "text": "How much of that would you lean on?" },
+        { "host": "B", "text": "Not much yet. Every figure is Nvidia's, the company says them itself, and it doesn't source the backlog or the queue numbers. The 10 percent compute gain it cites is one partner's result on its own workload." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Barclays to cut 5,000 jobs, about 5% of its workforce, in an efficiency push it attributes to AI",
+      "lines": [
+        { "host": "A", "text": "And a bank put a headcount number against AI." },
+        { "host": "B", "text": "CNBC reports Barclays has revealed plans to cut 5,000 jobs, about 5 percent of its total workforce, as part of an efficiency push it links to AI, disclosed in its third-quarter earnings statement on Thursday." },
+        { "host": "A", "text": "Where do the cuts land?" },
+        { "host": "B", "text": "CNBC says about 60 percent of them are expected to be in support functions, including developers, and quotes the earnings presentation describing an outcome as organisational simplification and technology change efficiency driven by AI." },
+        { "host": "A", "text": "Why does that matter more than the usual remark about AI and jobs?" },
+        { "host": "B", "text": "Because it's a specific headcount figure in a regulatory disclosure, not a line on a conference stage. That said, CNBC is the only source we opened for it, the AI attribution is Barclays' own, there's no breakdown of how many roles AI displaces as against ordinary restructuring, and Barclays didn't publish a timetable." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "A", "text": "That's The AI Edge for today." },
+        { "host": "B", "text": "The full edition, with a link to every source, is on the site." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
