@@ -1,0 +1,540 @@
+{
+  "date": "2026-10-23",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Friday, October 23rd, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue builds for high-consequence work: document-dense, driven by precedent, and reviewed by people whose licence is on the line. Epilogue quotes every figure exactly as the source wrote it, and says so when something doesn't tie out. Find out more at epiloguelabs.com."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what moved at the frontier of AI since yesterday morning, with a source behind every claim."
+        },
+        {
+          "host": "B",
+          "text": "What are the three that matter most?"
+        },
+        {
+          "host": "A",
+          "text": "Two outside evaluators, METR and Redwood Research, spent three weeks inside OpenAI stress-testing the system that watches its own agents, and reported an exploit that could stop hundreds of recent agent actions from being monitored."
+        },
+        {
+          "host": "B",
+          "text": "The US Treasury proposed a rule that would require Americans to notify Treasury of some transactions with covered foreign persons working on artificial intelligence, semiconductors, quantum, high-performance computing and hypersonics, and prohibit others outright."
+        },
+        {
+          "host": "A",
+          "text": "And Microsoft published a study in Science where its diagnostic system got 83% of hard medical cases right, against 36% for generalist physicians who had reference materials in front of them."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "METR and Redwood found an exploit that could hide hundreds of agent actions from OpenAI's internal monitors",
+      "lines": [
+        {
+          "host": "B",
+          "text": "What did METR and Redwood get to do?"
+        },
+        {
+          "host": "A",
+          "text": "METR says one employee from each organisation spent three weeks, from July 21st to August 11th, with access to OpenAI's internal codebase, the monitor's own prompts and configuration, and internal documentation. on OpenAI-issued devices that never left the premises."
+        },
+        {
+          "host": "B",
+          "text": "And what did they find?"
+        },
+        {
+          "host": "A",
+          "text": "An exploit that could prevent hundreds of recent actions from being monitored, with the details redacted. A way for Codex agents to bypass sandboxing and Auto-Review and take any action the host user could take. And two client-controllable headers that disable monitoring for new agents."
+        },
+        {
+          "host": "B",
+          "text": "How much of the traffic was even eligible for monitoring?"
+        },
+        {
+          "host": "A",
+          "text": "Roughly 75 to 94% of agentic internal Responses API traffic from models at least as strong as GPT-5.5 was eligible for monitoring, with substantial uncertainty, rising to 99.2% of the subset used for internal Codex agents. And not monitoring compaction events likely left about 10% of eligible Codex traffic unmonitored from May to July."
+        },
+        {
+          "host": "B",
+          "text": "Is it fixed?"
+        },
+        {
+          "host": "A",
+          "text": "OpenAI told them every vulnerability affecting its production safeguards has been patched. METR says plainly that it has not evaluated that claim. The internal report ran to 61 pages, and the two organisations agreed to publish only a high-level summary."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic says Claude wrote about 180 million lines of proof to verify crash-freedom in 123 open-source libraries",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Anthropic put out something on the other side of the ledger."
+        },
+        {
+          "host": "A",
+          "text": "Its Frontier Red Team says Claude, working with the verification company Theorem, proved crash-freedom for 239 entry points across 123 open-source libraries: about 180 million lines of proof in total, with a typical proof about 600,000 lines long."
+        },
+        {
+          "host": "B",
+          "text": "What came out of the attempt?"
+        },
+        {
+          "host": "A",
+          "text": "Anthropic says the proving attempts discovered hundreds of bugs, which Claude patched, including a rediscovery of a known flaw in libexpat and a latent bug in a widely used PDF reader. Those are its own numbers, and they are not independently verified."
+        },
+        {
+          "host": "B",
+          "text": "And the catch?"
+        },
+        {
+          "host": "A",
+          "text": "Anthropic says it itself: formally verified does not mean bug-free. The proofs hold for a single-threaded static binary with a fixed memory budget on a RISC-V chip running Linux, with inputs under 64 megabytes, while most people run different chips and a different C library."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "To the research, and the question of watching models."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "32 users taught by a confident, wrong chatbot scored 2.9 out of 10, down from 7.4, and adopted planted falsehoods about 65% of the time",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And a paper that flips sycophancy around."
+        },
+        {
+          "host": "A",
+          "text": "Everyone asks whether models bend towards what users want to hear. This one, on arXiv, asks whether users bend towards a model that is confident and wrong."
+        },
+        {
+          "host": "B",
+          "text": "How did they test it?"
+        },
+        {
+          "host": "A",
+          "text": "32 participants learned science topics from five assistants built on the same model. Each assistant's briefing had 0, 25, 50, 75 or 100% of its facts replaced with plausible falsehoods, and every one spoke with full confidence."
+        },
+        {
+          "host": "B",
+          "text": "And the quiz scores?"
+        },
+        {
+          "host": "A",
+          "text": "They fell from 7.4 to 2.9 out of 10. The planted answer was chosen on 60% of falsified items against 11% of correctly taught ones. And whenever the assistant stated a falsehood, people adopted it about 65% of the time, at every level."
+        },
+        {
+          "host": "B",
+          "text": "Did they know they'd been misled?"
+        },
+        {
+          "host": "A",
+          "text": "No. Absorbed falsehoods were held at a confidence of 8.4 out of 10, and the ability of confidence to tell right from wrong fell to chance. It's a preprint, not peer reviewed, 32 participants and one model, and arXiv is the only source."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "To security, where this week's PHP story is still unfolding."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "UK minister: 32 government services unavailable and four partially unavailable as Cloudflare records millions of php2shell attempts",
+      "lines": [
+        {
+          "host": "A",
+          "text": "We covered the two PHP remote code execution flaws yesterday, so this is an update on what the patching actually cost."
+        },
+        {
+          "host": "B",
+          "text": "Which was?"
+        },
+        {
+          "host": "A",
+          "text": "The UK tech minister, Baroness Lloyd of Effra, told the House of Lords that 32 government services were unavailable and four partially unavailable, mostly as a precaution while updates went in. The Office for Budget Responsibility took its website down, and peers raised reports affecting the driver licensing agency and police services."
+        },
+        {
+          "host": "B",
+          "text": "What about the attacks themselves?"
+        },
+        {
+          "host": "A",
+          "text": "Cloudflare's chief executive, quoted by 404 Media, said they saw thousands of attempts in the 10 hours before the public announcement, tens of thousands in the 45 minutes after it, hundreds of thousands within 2 hours, and millions by then. Government sites in Germany, France, Belgium, Finland and the Netherlands went offline as a precaution."
+        },
+        {
+          "host": "B",
+          "text": "And was anyone actually broken into?"
+        },
+        {
+          "host": "A",
+          "text": "The minister told peers they are not currently aware of any confirmed compromise of central government systems from these flaws. Attempts are not compromises. 404 Media also reports the firm Chainguard was criticised for posting fixes before the official disclosure, saying it found the same bugs by prompting a frontier model."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Microsoft: Storm-0940 used the ARTEX agent framework to reach around 2,250 organisations at almost 3,000 sign-in attempts a minute",
+      "lines": [
+        {
+          "host": "B",
+          "text": "This is also an update, on the ConnectWise compromise we covered yesterday."
+        },
+        {
+          "host": "A",
+          "text": "The new part is scale. TechCrunch reports that, according to Microsoft, the attackers used AI agents to reach around 2,250 organisations at a rate of almost 3,000 attempted sign-ins per minute, after stealing application credentials from ConnectWise's cloud backup service that let them log in to customers' Microsoft-hosted environments as authorised users."
+        },
+        {
+          "host": "B",
+          "text": "Microsoft put numbers on one day of it."
+        },
+        {
+          "host": "A",
+          "text": "The Record reports 2,900 sign-in attempts per minute on October 11th and more than 111,000 failed log-on attempts, with 48 accounts taking over 1,000 failures each. In several cases the attackers had privileged access less than three hours after first targeting an organisation."
+        },
+        {
+          "host": "B",
+          "text": "And what do we now know about the tool itself?"
+        },
+        {
+          "host": "A",
+          "text": "Wiz published its own telemetry and says one agent sent more than 60 variations of single sign-on routes carrying an unsigned JWT payload in just two minutes, that some agent sessions ran 24 to 30 hours, and that the framework had more than 12,000 forks on GitHub when its developer made it closed-source on October 8th. The Record names that developer and says he posted that the tool was being misused."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Major US banks are finding third-party AI agents logging into customer accounts with customers' own credentials",
+      "lines": [
+        {
+          "host": "B",
+          "text": "A different kind of agent problem, inside bank accounts."
+        },
+        {
+          "host": "A",
+          "text": "Reuters, relaying an Axios investigation, says major US banks are detecting third-party AI agents getting into customer accounts without the bank's authorisation, with some tools appearing to act independently of what their users asked."
+        },
+        {
+          "host": "B",
+          "text": "Is this people being hacked?"
+        },
+        {
+          "host": "A",
+          "text": "Mostly not. Customers hand their own logins to an AI assistant, which can breach bank policy even with the customer's permission. Banks are struggling to distinguish legitimate customer activity, authorised software, and agents operating outside their instructions."
+        },
+        {
+          "host": "B",
+          "text": "What are they saying publicly?"
+        },
+        {
+          "host": "A",
+          "text": "JPMorgan's chief executive said on an earnings call that the bank is not going to allow just any outside agents to come in inside the company. TechCrunch notes the same day brought a password manager launching a way for agents to sign in without ever seeing the credentials."
+        },
+        {
+          "host": "B",
+          "text": "How solid is the reporting?"
+        },
+        {
+          "host": "A",
+          "text": "It names no account takeovers and no fraud losses, Reuters said it could not independently verify the findings, and it traces back to a single source, the Axios scoop."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "On defence, a procurement item from the Navy."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "US Navy awards Applied Intuition $25M to put AI sensor fusion on five Arleigh Burke-class destroyers",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Applied Intuition announced on October 22nd, as Breaking Defense reports, that the US Navy has awarded it $25 million to begin deploying its Intelligent Perception System, starting with five Arleigh Burke-class destroyers."
+        },
+        {
+          "host": "B",
+          "text": "What does it do?"
+        },
+        {
+          "host": "A",
+          "text": "It pulls data from cameras and infrared sensors, many not designed to work together, into one picture for sailors, with automated alerts when another vessel is closing on a collision course. It also records that data and, when bandwidth and security allow, sends it to shore to train better models for crewed and uncrewed vessels."
+        },
+        {
+          "host": "B",
+          "text": "Any sense of timing?"
+        },
+        {
+          "host": "A",
+          "text": "No deployment dates were given. The Navy isn't quoted in the report, so the performance claims are the company's and are not independently verified. Breaking Defense cites the 2017 USS Fitzgerald and USS McCain collisions, which killed 17 sailors, as context, but does not tie the system to those ships."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Health next, where the biggest claim of the day sits."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Microsoft's MAI-DxO diagnosed 83% of 304 NEJM cases in Science, against 36% for generalist doctors",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Microsoft AI published in Science on Thursday. Its diagnostic orchestrator coordinates several AI agents that question a patient, order tests and argue about the diagnosis. On 304 complex cases from the New England Journal of Medicine it got 83% right."
+        },
+        {
+          "host": "B",
+          "text": "Against what?"
+        },
+        {
+          "host": "A",
+          "text": "Physicians got 22% without external reference resources and 36% with them. On a set of more typical emergency-department presentations, Microsoft says the system got 80% against 47% for physicians."
+        },
+        {
+          "host": "B",
+          "text": "How much of that is the orchestration and how much is just the model underneath?"
+        },
+        {
+          "host": "A",
+          "text": "TechCrunch reports the study's own data points mostly at the model. On a short basic prompt, GPT-5 alone scored 78.9% on the complex cases at about $8,400 per case. The orchestrator cut roughly $3,000 off that but added only about four points of accuracy. With a newer model it went from 72% to nearly 87% on complex cases, and added nothing on emergency cases."
+        },
+        {
+          "host": "B",
+          "text": "And the limits?"
+        },
+        {
+          "host": "A",
+          "text": "They matter here. The comparison doctors were generalists, not the specialists or physician teams who normally handle cases this hard. Everything was text, so nobody could examine a patient or look at imaging. The cost figures are estimates, not real bills. And the system is not in clinical use."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Randomised trial: LLM-drafted paediatric discharge documents did not improve families' understanding",
+      "lines": [
+        {
+          "host": "B",
+          "text": "A quieter result, arguably a more useful one."
+        },
+        {
+          "host": "A",
+          "text": "A trial posted to medRxiv randomised 153 children leaving a paediatric emergency department to either conventional template assembly or drafting by an on-premises open-weight model, with the discharging clinician validating both. 117 were analysed."
+        },
+        {
+          "host": "B",
+          "text": "And did families understand their instructions better?"
+        },
+        {
+          "host": "A",
+          "text": "No. The primary outcome did not differ, with a confidence interval spanning zero. The model's documents did use more common vocabulary, and no discrepancy in the physician-facing documents was judged seriously consequential."
+        },
+        {
+          "host": "B",
+          "text": "What about the oversight itself?"
+        },
+        {
+          "host": "A",
+          "text": "That's the interesting part, though the authors call it exploratory. Clinicians edited 48 of 58 drafts, removing 18 of 22 unsupported additions but only 6 of 22 incorrect abbreviation expansions. Human review caught most of the invented content and missed most of the wrong abbreviations."
+        },
+        {
+          "host": "B",
+          "text": "How much weight does it carry?"
+        },
+        {
+          "host": "A",
+          "text": "It's a preprint, not peer reviewed, one centre, one model, registered retrospectively, and medRxiv is the only source."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Policy, and the biggest move came from Washington."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "US Treasury proposes outbound-investment rules covering AI, chips, quantum, supercomputing and hypersonics, and adds biotechnology",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The US Department of the Treasury issued a notice of proposed rulemaking on October 22nd, implementing the Comprehensive Outbound Investment Security Act, passed as part of the Fiscal Year 2026 National Defense Authorization Act."
+        },
+        {
+          "host": "B",
+          "text": "What would it actually require?"
+        },
+        {
+          "host": "A",
+          "text": "In Treasury's words, it would require United States persons to notify Treasury about certain transactions involving covered foreign persons working on notifiable technologies, and prohibit them from other transactions involving prohibited technologies."
+        },
+        {
+          "host": "B",
+          "text": "Which technologies?"
+        },
+        {
+          "host": "A",
+          "text": "The act lists five sectors: semiconductor technologies and microelectronics, artificial intelligence systems, quantum information technologies, high-performance computing and supercomputing, and hypersonic systems. Treasury then added a sixth of its own, biotechnology."
+        },
+        {
+          "host": "B",
+          "text": "And who does it apply to?"
+        },
+        {
+          "host": "A",
+          "text": "That's what the release doesn't say. It names no countries, only covered foreign persons and countries of concern. There are no dollar thresholds, no technical parameters for the AI or chip sectors, and no comment deadline in the release. Nothing is in force yet. Treasury says final regulations will follow later and will set the effective date."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And then the money, moving the other way."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "OpenAI nears up to $30 billion at a $1.25 trillion pre-money valuation, led by UAE investors and Coatue",
+      "lines": [
+        {
+          "host": "A",
+          "text": "CNBC reports OpenAI is raising up to $30 billion at a $1.25 trillion valuation that doesn't include the new capital, led by investors from the United Arab Emirates alongside Coatue, and positioned as an opportunistic bridge ahead of a possible listing."
+        },
+        {
+          "host": "B",
+          "text": "How firm is this?"
+        },
+        {
+          "host": "A",
+          "text": "Not very. The round hasn't closed, the final size is still being determined, and OpenAI told investors on Thursday it wants signatures by the end of next week. It rests on unnamed people familiar with the deal rather than a filing, and only one outlet carries it."
+        },
+        {
+          "host": "B",
+          "text": "Anything attached to the money?"
+        },
+        {
+          "host": "A",
+          "text": "CNBC says OpenAI is separately negotiating for more computing capacity from the UAE, and that the company told investors in February it is targeting roughly $600 billion in total compute spend by 2030. For scale, Anthropic closed a $65 billion round at a $965 billion valuation in May."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Uber puts its entire 30,000-person global workforce on ChatGPT Work after a 1,000-employee pilot",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Last one, on deployment at scale."
+        },
+        {
+          "host": "A",
+          "text": "Uber told TechCrunch its entire global workforce, some 30,000 people, will now be using ChatGPT Work, scaled up from a pilot of 1,000 employees earlier this year."
+        },
+        {
+          "host": "B",
+          "text": "What were they doing with it?"
+        },
+        {
+          "host": "A",
+          "text": "Uber's engineering vice-president said 80% of the early adopters were non-engineers, and listed analysing operations data to spot trends, localising training materials for different markets and languages, and building personalised dashboards."
+        },
+        {
+          "host": "B",
+          "text": "Did they say what it's worth?"
+        },
+        {
+          "host": "A",
+          "text": "No. Uber didn't disclose what it's spending and published no productivity figures, and hasn't settled on how employees will use it. The executive said the company will look at how employees are using the technology and the workflows they develop. So the adoption numbers are its own numbers, not independently verified."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "That's The AI Edge for today."
+        },
+        {
+          "host": "B",
+          "text": "The full edition, with a link to every source, is on the site."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "B",
+          "text": "Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
