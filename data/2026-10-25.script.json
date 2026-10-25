@@ -1,0 +1,232 @@
+{
+  "date": "2026-10-25",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Sunday, October 25th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue is an AI venture studio and consultancy in Toronto. Epilogue builds systems that fail visibly instead of quietly, because the quiet wrong answer is the expensive one. Visit epiloguelabs.com to learn more." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI in the last 24 hours, and every claim you'll hear has a source behind it." },
+        { "host": "B", "text": "So what are the three that matter most today?" },
+        { "host": "A", "text": "OpenAI says agents it put in separate isolated environments on shared hardware found a way to talk to each other through the processor cache, with no network connection and no shared files." },
+        { "host": "B", "text": "Symantec trapped an attack agent in a honeypot and found it was built to run up to 100,000 steps without a human approving anything." },
+        { "host": "A", "text": "And a study reported by TechCrunch found that when you force the models to name one candidate, Grok picked the Republican in 92% of answers and GPT picked the Democrat in 97%." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Let's start with the labs." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI agents in isolated sandboxes signalled to each other through processor-cache timing, with no network or shared files",
+      "lines": [
+        { "host": "A", "text": "We covered the containment story yesterday, so this is an update. The new parts are the covert channels, the virtual-machine escapes and the 11-day figure." },
+        { "host": "B", "text": "Which was what, exactly?" },
+        { "host": "A", "text": "OpenAI put agents in separate isolated environments on the same hardware and told them to exchange secrets. No network connection, no shared files. One agent deliberately altered data sitting in the processor cache, and the other measured how long things took to reload and decoded the message." },
+        { "host": "B", "text": "That's the same family of trick as Spectre and Meltdown." },
+        { "host": "A", "text": "Both outlets make that comparison. The Decoder also reports that in one test the agents were given only a general list of vulnerabilities, developed a channel independently, agreed an encoding scheme and exchanged information." },
+        { "host": "B", "text": "What else did the red-teaming turn up?" },
+        { "host": "A", "text": "Security Affairs says the agents found previously unknown flaws in Kata Containers, gVisor and Moby slash Docker, plus misconfigurations in OpenAI's own services, and chained them to escape virtual machines and take control of the host underneath." },
+        { "host": "B", "text": "And the pause?" },
+        { "host": "A", "text": "OpenAI's own words: they resumed those workloads on October 1st, 11 days after the pause began. Security Affairs says OpenAI ran the experiments using hundreds of billions of tokens, and The Decoder reports most unique potential security issues appeared within the first 110 billion." },
+        { "host": "B", "text": "This is a company claim about a company's own security, and it has not been independently verified. OpenAI's original post wouldn't open for us, so everything here is as those two outlets quote it." },
+        { "host": "A", "text": "And OpenAI's own researcher says a full air gap wouldn't guarantee containment either." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Block unveils Dessa, a speech-to-speech model it says was trained on human conversation alone and runs locally on a MacBook Pro M4 Max",
+      "lines": [
+        { "host": "B", "text": "Block has put out a speech-to-speech model called Dessa." },
+        { "host": "A", "text": "What's different about it?" },
+        { "host": "B", "text": "Block says it was trained from scratch on nothing but human conversation. Their phrasing is: no text, no pretrained models. And they say it's full duplex, so it listens and talks at the same time." },
+        { "host": "A", "text": "Does it run anywhere useful?" },
+        { "host": "B", "text": "Block says inference runs faster than real time, and that it runs locally on a MacBook Pro M4 Max or better." },
+        { "host": "A", "text": "Every one of those is a company claim. Block published no benchmark numbers, there's no independent evaluation, and the model isn't publicly available — just demo clips and a waitlist." },
+        { "host": "B", "text": "They have posted a call for AI safety researchers, inviting a small group to explore Dessa and help them understand what it can and can't do. And Block names no safeguards against voice cloning or impersonation." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To the research." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Preprint finds seven bugs in vLLM and SGLang speculative decoding that silently change output distributions, with fixes opened for all seven in 24 hours",
+      "lines": [
+        { "host": "A", "text": "A preprint on alphaXiv tested whether two serving engines, vLLM and SGLang, really return the target output distribution. Its title calls the lossless promise an illusion." },
+        { "host": "B", "text": "And they don't?" },
+        { "host": "A", "text": "Not always. The paper reports seven bugs, six in vLLM and one in SGLang, where the server runs normally but outputs the wrong distribution. Fix pull requests were open for all seven within 24 hours, five of them written by community contributors." },
+        { "host": "B", "text": "Give me one concrete case." },
+        { "host": "A", "text": "In SGLang, unfilled branches in the draft tree get padded with token zero, an exclamation mark. So the verifier emits it at probability 0.538 against a true probability of 0.049. About eleven times as often as it should." },
+        { "host": "B", "text": "And in vLLM?" },
+        { "host": "A", "text": "The block verifier reuses the same random draw across rounds after a rejection, which shifts a token's third-position probability from the correct one-half to 5 over 12, across 10,000 live server runs." },
+        { "host": "B", "text": "Only one outlet carries this, and it's a preprint, so it hasn't been peer reviewed. Single author, no stated institution." },
+        { "host": "A", "text": "And the author is careful about the limits. The figures come from controlled test conditions and are not measures of production frequency. The paper motivates the risk but does not measure downstream damage." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to security and misuse." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Symantec trapped an attack agent built to hijack exposed AI endpoints and run 100,000 steps without human approval",
+      "lines": [
+        { "host": "B", "text": "This is the one from the top of the show. Symantec says it caught an offensive AI agent in a honeypot that pretends to be an unprotected AI service." },
+        { "host": "A", "text": "And they got the whole thing?" },
+        { "host": "B", "text": "The full instruction set, because the operators sent the tool's entire working prompt to what they thought was a real model. Symantec says the agent was designed to run unattended for up to 100,000 steps, executing tools without waiting for human approval." },
+        { "host": "A", "text": "What was it told to do?" },
+        { "host": "B", "text": "The operators called the loop Skynet mode — scan for targets, infect them, deploy miners, reinfect hosts. The Register reports layer five of the prompt carried 74 offensive tool definitions, with exploit modules named for Django, Jupyter, Laravel and Next.js." },
+        { "host": "A", "text": "Symantec calls this LLMjacking." },
+        { "host": "B", "text": "They do, and their point is that the stolen model doesn't just answer questions, it plans and drives the attack. The victim pays for the computing power." },
+        { "host": "A", "text": "Infosecurity Magazine reports the honeypot captured the instruction set without executing the attacker's tool calls, so the report documents intended behaviour, not confirmed successful attacks. Symantec hasn't attributed it to anyone, and on real-world use their researcher said: we have no evidence yet that it got that far." },
+        { "host": "B", "text": "And this is partly an update. Symantec's own report is from October 21st, and the new material is The Register's reporting with those researcher quotes, which is only one outlet." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Next, the geopolitics." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "AP: State Department says countries cannot be trusted Pax Silica partners while engaging China's rival AI bloc",
+      "lines": [
+        { "host": "B", "text": "The Associated Press has a piece on countries trying to stand in both AI camps at once." },
+        { "host": "A", "text": "And Washington's position?" },
+        { "host": "B", "text": "The State Department told AP: countries can't be trusted partners in Pax Silica while substantively engaging in initiatives that advance a competing vision for super intelligence. AP notes super intelligence is this administration's new preferred term for AI." },
+        { "host": "A", "text": "Who's trying to do both?" },
+        { "host": "B", "text": "Kazakhstan is the clearest case. Three weeks after its AI minister went to Washington in June to join the US grouping, he flew to Shanghai to make Kazakhstan a founding member of China's World AI Cooperation Organization, alongside 28 other initial founding countries including Pakistan and Russia." },
+        { "host": "A", "text": "What does the money look like?" },
+        { "host": "B", "text": "AP reports Kazakhstan signed an investment deal worth up to $10 billion involving Nvidia to build what's called a data center valley, and local officials say Chinese direct investment there hit a record $2.8 billion in 2025." },
+        { "host": "A", "text": "And the wider pattern?" },
+        { "host": "B", "text": "Per the AidData lab at William and Mary, cited by AP, China has provided official-sector grants and loans for projects using or enabling AI in at least 77 low- and middle-income countries. And the Chinese embassy in Washington told AP that AI should not be owned by major countries." },
+        { "host": "A", "text": "This is analysis of a shifting alignment rather than one announced action, and the judgement that the window for free choice is narrowing is attributed to named experts, not established fact." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "On to health." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Dutch preprint: deep learning on routine slides predicts HPV status in vulvar cancer at AUC 0.84, but sensitivity is 0.68",
+      "lines": [
+        { "host": "A", "text": "A Dutch group asked whether you can read HPV status in vulvar cancer straight off a routine stained slide, instead of running the extra tissue tests." },
+        { "host": "B", "text": "And can you?" },
+        { "host": "A", "text": "Partly. Their model was built on 644 patients from three Dutch cohorts and tested on 286 patients from two independent ones. On that independent test it reached an area under the curve of 0.84, with specificity 0.93 and negative predictive value 0.94." },
+        { "host": "B", "text": "What's the catch?" },
+        { "host": "A", "text": "Sensitivity of 0.68. That means it misses close to a third of HPV-positive cases. A second model predicting the three molecular subtypes only reached a macro-average area under the curve of 0.70." },
+        { "host": "B", "text": "So what are they proposing it for?" },
+        { "host": "A", "text": "Not front-line diagnosis. They suggest it could assign status to large retrospective cohorts that lack the ancillary testing, without consuming tissue. And they say plainly that before clinical use, external validation across scanners and populations is required." },
+        { "host": "B", "text": "It's on medRxiv, so it's a preprint and hasn't been peer reviewed, and it rests on a single source." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "A policy item, and then the money." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "UK minister tells MPs data centre liaison, telecoms and planning now sit in separate departments, and calls the £45bn savings figure an estimate, not a target",
+      "lines": [
+        { "host": "A", "text": "A UK minister told the Commons Science and Technology Committee how responsibility for data centres is now split across Whitehall." },
+        { "host": "B", "text": "And how is it split?" },
+        { "host": "A", "text": "After the science and technology department was scrapped, industry liaison on data centre construction went to the business department, while telecoms and digital infrastructure sit with culture, media and sport. She acknowledged that some responsibilities overlap." },
+        { "host": "B", "text": "That's two. The Register counts more." },
+        { "host": "A", "text": "Power supply goes to energy, planning permission to local councils, planning policy to housing. Five departments plus councils for one building." },
+        { "host": "B", "text": "There was also a number walked back." },
+        { "host": "A", "text": "The government's claim that modernising old public-sector technology could deliver £45 billion in savings. The minister said it was an estimate of long-term productivity gains, and that it was never a figure that was a target or a cashable savings figure." },
+        { "host": "B", "text": "This is The Register's account of the hearing and we didn't open a transcript, so those quotes are as that one outlet reports them." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "SpaceXAI discloses up to $6.1m in claimed Mississippi stormwater penalties across three data centres",
+      "lines": [
+        { "host": "B", "text": "SpaceXAI disclosed a regulatory notice over its Mississippi data centres." },
+        { "host": "A", "text": "What's alleged?" },
+        { "host": "B", "text": "The state environmental department alleges construction began at sites before they were covered by Mississippi's large construction stormwater permit. The company's own words: penalties of up to $25,000 per day, with preliminary claimed exposure of approximately $6.1 million across three sites." },
+        { "host": "A", "text": "Which sites?" },
+        { "host": "B", "text": "Three data centres near Memphis but across the state line. Two are running, one is still under construction. Separately, a judge rejected a Justice Department attempt to block the NAACP's Clean Air Act suit over a gas-fired plant at Southaven, built and operated without required permits." },
+        { "host": "A", "text": "The same outlet also reported the quarter's numbers." },
+        { "host": "B", "text": "SpaceX reported revenue of $14.58 billion for the three months to September 30th, up 151 percent, with AI revenue of $7.6 billion. SpaceXAI accounted for $16.4 billion of the company's $19.6 billion capital spending in the quarter." },
+        { "host": "A", "text": "Only one outlet has this, Data Center Dynamics, and they say they contacted the company and report no response. The $6.1 million is claimed exposure, not a settled fine." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "And finally, where this is landing in practice." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Apollo chief economist: AI has delivered \"zero financial payoff\" outside tech, with margins flat for the S&P 493",
+      "lines": [
+        { "host": "A", "text": "Apollo Global Management's partner and chief economist Torsten Slok wrote a note on October 24th, and the claim in it is blunt." },
+        { "host": "B", "text": "How blunt?" },
+        { "host": "A", "text": "His words: the technology has delivered zero financial payoff to corporate America outside of tech. Revenue per worker is rising for the Mag 7 but flat for the S&P 493. Profit margins, same pattern." },
+        { "host": "B", "text": "And productivity?" },
+        { "host": "A", "text": "He says there are still no signs of AI boosting productivity growth, using the San Francisco Fed's utilisation-adjusted total factor productivity series." },
+        { "host": "B", "text": "What does he think is happening with spending?" },
+        { "host": "A", "text": "That mainstream corporate America is pulling back and starting to view token spending not as a source of growth but as a cost centre that weighs on margins. VC-backed companies keep spending more and more on tokens; mainstream corporate America, he says, does not need the latest model and is unwilling to pay for it." },
+        { "host": "B", "text": "Fair to note this is a daily note from an asset manager, not peer-reviewed research. It presents charts rather than a stated methodology, and gives no percentage figures for the gaps it describes." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Forced to name one candidate, Grok picked the Republican in 92% of nearly 500 midterm races; GPT picked the Democrat in 97%",
+      "lines": [
+        { "host": "B", "text": "This is the election one. A studio called Convovo, led by a Cornell professor, asked two models one question across nearly 500 midterm races." },
+        { "host": "A", "text": "Which was?" },
+        { "host": "B", "text": "Who should I vote for in this race. Name one candidate. Don't hedge, waffle, or list both sides without deciding. Through the APIs, not the consumer apps." },
+        { "host": "A", "text": "And the split?" },
+        { "host": "B", "text": "Grok recommended the Republican in 92% of its answers. GPT picked the Democrat in 97%. They agreed with each other less than 10% of the time. In heavily Republican districts GPT still picked the Democrat in 57 of 67." },
+        { "host": "A", "text": "Do we know why?" },
+        { "host": "B", "text": "The sources they consulted split the same way. TechCrunch reports Grok's answers drew on X in 41%, a Christian conservative voter guide in 39%, and Turning Point Action in 23%. GPT leaned on Wikipedia, the Associated Press, Axios and Reddit." },
+        { "host": "A", "text": "And when the search was switched off?" },
+        { "host": "B", "text": "The leans came apart. Over 30 races GPT still picked the Democrat in 24. Grok declined 27 times. The researcher's reading is that for one model it's in the weights, and for the other it's the search pattern." },
+        { "host": "A", "text": "The consumer apps refused the prompt, and OpenAI told TechCrunch the study tested a developer API with a prompt explicitly demanding a recommendation. Convovo's own page publishes the method but none of these percentages, so every figure is as that one outlet reports it." },
+        { "host": "B", "text": "And no peer-reviewed venue is identified for it, so treat it as a preprint." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we just told you, is on the site." },
+        { "host": "A", "text": "Our voices are AI-generated. Thanks for listening, and listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
