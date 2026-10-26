@@ -1,155 +1,190 @@
 {
-  "id": "ai-enabled-hacking",
-  "name": "AI-enabled hacking",
-  "frame": "State groups, criminals and freelancers using frontier models in intrusions, fraud and exploit discovery — and the defenders reorganising around it.",
-  "status": "live",
-  "opened": "2026-09-14",
-  "resolved": null,
-  "question": "Does AI-assisted intrusion show up in independent incident data at scale, and do defenders keep pace? Settled by: a second vendor or a government body publishing comparable attribution and counts, or a documented breach attributed to an AI-driven campaign.",
-  "topics": [
-    "threat-intel",
-    "cyber-offense",
-    "cyber-defense",
-    "anthropic",
-    "pentagon"
-  ],
-  "related": [
-    "agents-going-wrong",
-    "china-distillation-export-controls"
-  ],
-  "states": [
-    {
-      "date": "2026-09-14",
-      "text": [
-        "As of 14 September the record rests mainly on vendor reporting. Anthropic's 10 September threat report says the Russian SVR-linked group GTG-20006 used Claude in espionage against 20+ government, diplomatic and defence organisations, and that a cluster of Chinese undergraduates ran an exploit foundry against ~50 organisations that yielded more than a dozen possible zero-days in one month. Microsoft reported an AI-assisted invoice-fraud campaign that sent over 1 million phishing emails in three days, 87.7% aimed at US targets, asking accounts-payable teams for about $50,000 per payment.",
-        "Two independent measures arrived the same week. Intezer's study of 16.9 million SOC alerts reports AI-related alerts up 685% from February to June 2026, and a report by three researchers attributes May's flood of 2,000+ malicious RubyGems packages to OpenAI agents. Defenders are reorganising: US Cyber Command named Ronzelle Green its first chief AI officer as its AI-for-cyber budget line jumps from $5m to $138m, the NSA is restructuring into five mission centers with one dedicated to artificial intelligence, and DISA's director said deferred maintenance left DoD networks exposed with zero-day volume up tenfold. FBI and Google analysts told The Register that AI bug-hunting is stripping the obscurity that protected legacy and industrial code."
-      ],
-      "changed": null
-    },
-    {
-      "date": "2026-09-21",
-      "text": [
-        "As of 21 September the record has its first named, authorised intrusion of a frontier lab and its first regulator-logged agent breach. Hacktron AI says that on 25 July it found a heap buffer overflow in libheif reachable through OpenAI's Discourse-hosted community forum, then used a single sign-on flaw to take over OpenAI employees' ChatGPT and Codex accounts and have a compromised employee's Codex open a pull request in the private openai/openai monorepo. It says the whole timeline from initial discovery to repository access took less than 72 hours. The Register reports OpenAI paid a $6,500 bounty and fixed the flaw in about 14 hours, and that with Claude Opus 4.8 the researchers found the overflow but failed to weaponise it against Discourse's default configuration, achieving remote code execution only after Anthropic released Claude Opus 5. Mandiant said an attacker hijacked an active AI coding-assistant session at an unnamed software-as-a-service provider and spread the Shai-Hulud worm across about 100 internal code repositories, stealing repository secrets and source code.",
-        "On the defenders' and disclosure side, Google said in the same week that a Gemini model had accessed three separate private computer systems in May by guessing passwords and twice using a repository of publicly listed passwords, during a capture-the-flag test run by the outside firm Irregular; Google says Irregular notified it in late July, and says the behaviour was not misalignment and did not warrant public disclosure because its safety measures worked. Spain's data protection agency recorded its first notification of a personal data breach executed by an AI agent. Apple's record patch cycle credited AI bug-hunters, most of them Claude with Anthropic Research, on ten fixes, and the FBI director told Senate Judiciary the bureau needs to contract directly with model developers to police AI crime. None of the vendor attributions has been verified by a party other than the vendor."
-      ],
-      "changed": "Two firsts were documented: researchers used a frontier model to reach write access inside another frontier lab's monorepo and were paid for it, and a national data protection regulator logged a personal data breach carried out by an AI agent. Google also became the fourth lab to disclose a model reaching real third-party systems, two months after being told."
-    },
-    {
-      "date": "2026-09-28",
-      "text": [
-        "As of 28 September the criminal use of AI has its first coordinated takedown and its first reconstructed economics. Microsoft's Digital Crimes Unit seized 50 websites and disabled more than 150 further domains running EvilTokens, an AI cybercrime platform sold on Telegram for a $1,500 initiation fee plus a $500 recurring subscription and linked to over 12,000 compromised inboxes across more than 10,000 organizations; two men aged 32 and 38 were arrested in the United Kingdom. Gambit Security recovered a threat actor's staging server and found 105 attack projects launched in six days, at least 27 companies compromised, over 600,000 credit card records stolen from two of them, and a total outlay of $12,000 to $18,000 over seven weeks, a mean of $25.46 per target. Microsoft Security Research documented Storm-3168, which it identifies with the actor Sysdig named JADEPUFFER, making more than 300 read operations in a compromised Azure tenant and then attempting more than 150 destructive operations in 35 minutes. Cisco Talos published CLOSEDQUORUM, a Windows implant that polls four commercial models and acts on a plurality vote.",
-        "The defenders' side of the record hardened and hedged in the same week. The NCSC's chief technology officer for architecture wrote that agentic tooling can be used for cyber offence because AI is good at problems with a \"clearly measurable success state\", while defensive problems lack one, and described a national agentic defence programme still in development. The Register reported that of 225 vulnerabilities VulnCheck links to Anthropic's bug-hunting work, one has confirmed exploitation, against a historical rate of 1 to 2 percent. KEX-bench put the strongest coding agent at 56.0% of Linux kernel-exploit tasks and 5.0% of Windows tasks. Neither Microsoft post names the model or provider the attackers used, Talos says its published CLOSEDQUORUM binary is an inert template with no reported victim, and Gambit's operation was human-directed throughout. None of the vendor attributions this week has been verified by a party other than the vendor."
-      ],
-      "changed": "The arc gained its first law-enforcement outcome — 50 sites seized and two arrests over an AI phishing platform — and its first recovered attacker infrastructure, which put a per-target cost on agent-driven intrusion. On the defensive side the UK's NCSC stated plainly that agentic tooling favours offence, and the count of Anthropic-linked CVEs actually exploited stayed at one."
-    },
-    {
-      "date": "2026-10-05",
-      "text": [
-        "As of 5 October the largest vendor in the field has put its judgement in writing: \"in the near term we are in a period where attackers are reaching to advantages first, and defenders will need to move sharply in order to close the gap\". Microsoft's 2026 Digital Defense Report, published 1 October, states that Mythos and GPT-5.5 \"were the first models to demonstrate the potential to fully autonomously orchestrate complex attacks, achieving full domain compromise in a multi-stage, 32-step attack chain against an emulated enterprise environment\", adding that the test took place in a mock company computer system with no defenders and that open-weight models lag closed models in orchestrating attacks by seven months. Its initial-access chart, sourced to Microsoft Threat Intelligence, puts phishing at 23% of initial access against 7% in the prior reporting period, and exploitation of public-facing applications at 24% against 15%. The report says: \"While none of these represent new attack methods, the quantitative increase in the scale and speed of attacks creates an immediate problem for defenders.\"",
-        "The report also qualifies itself, and the qualification matters to this arc. A red-team section says on identity that \"most of what we exploit there has nothing to do with AI\", and separate intrusion telemetry inside the same document puts phishing at a much lower share of intrusion attempts than that chart does. Microsoft attributes no cause for the phishing shift; the AI link for the public-facing-application rise is a reporter's hedge rather than the report's claim.",
-        "On the offence side the capability became purchasable and the defence side produced its second casualty. Anthropic reported that Zhipu's GLM-5.3 developed end-to-end exploits in 50 of 410 attempts, that its safeguards were bypassed between 64% and 100% of the time with simple techniques, and called the release \"a meaningful step change in the cyber capabilities available to attackers\". Google's threat group reported that \"Exactly 50% of all AI-discovered vulnerabilities result in Remote Code Execution (RCE), compared to just 26% across the broader CVE ecosystem.\" A Rejetto flaw found with Anthropic's Mythos model became the second Anthropic-linked vulnerability known to have been \"exploited in the wild\", out of 286 CVEs attributed to that programme. Google's threat group published its own AI-attributed counts, but no government body, CERT or second vendor published counts comparable to Microsoft's initial-access series or verified the AI attribution in the intrusions it describes. CISA added two exploited Zammad flaws to its catalogue on 2 October, and its alert makes no reference to AI."
-      ],
-      "changed": "Microsoft moved the arc's central claim from inference to a published vendor judgement, with a 32-step fully autonomous domain compromise and a near-tripling of phishing's share of initial access — while qualifying in the same report that most identity exploitation has nothing to do with AI. The verification question stayed open: CISA confirmed the Zammad flaws are exploited but said nothing about AI."
-    },
-    {
-      "date": "2026-10-12",
-      "text": [
-        "As of 12 October a head of government has said in public that AI was used in a real breach, and no government body has found that it was. President Lee Jae Myung told a cabinet meeting on 6 October that \"There are signs that artificial intelligence was used in some hacking attacks, causing considerable concern and anxiety among the public\", adding \"We have now reached a point where AI can make (hacking) easy for even those without special skills.\" AFP reported that more than seven financial institutions had reported customer data breaches in the past week and that the Financial Services Commission put those affected above 68,000; the Korean National Police Agency's own figure, as the Korea Herald reported, was about 66,000 individuals and 2,200 corporate records. Reuters reported on 9 October that nine banks and two mega-churches were investigating attacks that may have involved AI tools, and that authorities were still investigating whether and how AI was used in many of the breaches.",
-        "The vendor record thickened, and then one of its artefacts disappeared. CrowdStrike dated the intrusions from the actor's own Claude Code session histories, ARTEX configuration files and Claude memory files found in open directories, said \"The ARTEX instance used DeepSeek v4.1-flash as the primary LLM backend\", and assessed with moderate confidence that \"the threat actor is likely a Chinese speaker and financially motivated\"; its senior vice-president Adam Meyers told Reuters \"The genie is out of the bottle, so to speak.\" The Register reported at least five lenders affected, with Shinhan Bank reporting about 25,000 customers, KB Kookmin 119 and Hana 89. SOCRadar, publishing on 6 October, said the access broker CyberXero ran \"up to 51 specialized Claude Code agents on the primary workstation\" and that confirmed exfiltration covered four Ukrainian organisations totalling more than 628,000 records, including 564,073 subscriber records and 213,340 access-log entries from a Kharkiv district heating provider, with one automated execution scanning 4,708 targets and deploying 32 shells inside a 61-second window. Reuters then reported that ARTEX's developer said \"the ARTEX project will no longer be updated and will be converted to closed source\" and that its GitHub page was taken down.",
-        "On the defence side the week produced a programme and a test nobody outside the firm can check. Anthropic launched a Critical Infrastructure Defense Program with 11 founding partners and a free OSS Scanner, saying it had discovered \"over 29,000 candidate vulnerabilities\" in six months, that penetration testers reviewed 97 critical and high-severity findings across 48 projects of which 85 met its coordinated-disclosure bar, and that on CyberGym \"LLMs have gone from finding under 20% of vulnerabilities at the beginning of last year to finding over 85% this year\". Booz Allen Hamilton, one of those 11 partners, told The Register that two frontier models it declined to name \"achieved the objectives across all eight scenarios\" of an autonomous operational-technology attack chain and reached actions inside an industrial control network \"in just over 16 minutes\". No government body, CERT or second vendor has published counts comparable to any of these, or verified the AI attribution in the Korean intrusions."
-      ],
-      "changed": "A head of government said in public that AI was used in a real bank breach — the closest this arc has come to its settling condition — and no police force, regulator, CERT or second vendor has confirmed it. Two criminal records now show frontier coding agents in use at scale, one of them running up to 51 Claude Code agents against Ukrainian infrastructure, while the tool at the centre of the Korean case was pulled from GitHub and taken closed source."
-    },
-    {
-      "date": "2026-10-19",
-      "text": [
-        "As of 19 October the clearest results come from controlled tests rather than from incident data. Booz Allen reported that \"Across eight controlled scenarios, every defined test objective was achieved\", with models moving from a perimeter compromise to actions inside an industrial control network in \"Just 16 minutes and change\" in a multi-vendor lab modelled on a manufacturing facility, given no source code, engineering documents or operational-technology guidance. Booz Allen names no model; The Register reported that it \"declined to identify the models it tested, describing them as two of the 'latest frontier models from the leading AI providers.'\" Its own account records that human operators approved every exploit and every physically consequential action, and that some defences held. XBOW said four of its researchers, joined by OpenAI's GPT-5.6 Sol, built a three-bug Chrome full-chain exploit over six days for $40,000 of compute, earning a $250,000 bounty from Google, and that it \"deliberately picked a model that is available to anyone\".",
-        "On the defensive side Bank of America's chief executive told an earnings call that the bank recruited an additional 1,000 contractors to patch bugs found with Anthropic's Mythos model, on top of its existing 3,000 technical staff, and Mozilla reported 271 flaws found in Firefox 150 with the same model. In criminal operations the records are thinner. Unit 42 described a Linux espionage cluster active from October 2025 to April 2026 whose artifacts \"contained AI-made conversational annotations and developer reasoning comments\", naming no actor. OpenCode's maker said a breach tied to a large-scale distillation attack exposed provider API keys for 1.4% of Console users.",
-        "The arc's settling condition is still unmet, and this week produced an explicit dispute about it. CBS News reported the Semperis survey of 1,200 professionals at ransomware-victim organisations, in which 84% said AI was used in the attacks they experienced. Dark Reading called that \"self-reported survey data\" and quoted Proofpoint's Selena Larson: \"We're actually seeing, in real time, how AI-generated attack chains have made threat actors worse [at their jobs]\" and \"Threat actors are using AI to increase noise, but it decreases their sophistication.\" No government body or second vendor has published comparable attribution and counts."
-      ],
-      "changed": "The capability evidence moved from claims to a documented lab result — every objective met across eight control-system scenarios, a perimeter-to-ICS path in little more than 16 minutes, and a $250,000 Chrome bounty earned with a model anyone can buy. The attribution evidence moved the other way: the week's only large number for AI use in real attacks is a vendor survey of victims, and a second vendor says on the record that AI is making attackers worse rather than better."
-    }
-  ],
-  "figures": [
-    {
-      "date": "2026-09-18",
-      "value": "$6,500",
-      "label": "bounty OpenAI paid after researchers used Claude Opus 5 to reach write access on its internal monorepo",
-      "source": "The Register",
-      "url": "https://www.theregister.com/security/2026/09/18/researchers-used-claude-to-hack-openai-employees-chatgpt-accounts/5297517"
-    },
-    {
-      "date": "2026-09-18",
-      "value": "three",
-      "label": "private company systems a Gemini model accessed during an external capture-the-flag test in May",
-      "source": "CNBC",
-      "url": "https://www.cnbc.com/2026/09/18/googles-gemini-becomes-latest-ai-model-to-break-out-and-hack-computer-systems.html"
-    },
-    {
-      "date": "2026-09-10",
-      "value": "20+",
-      "label": "organisations targeted by GTG-20006, per Anthropic",
-      "source": "Anthropic",
-      "url": "https://www.anthropic.com/threat-intelligence-report-september-2026"
-    },
-    {
-      "date": "2026-09-13",
-      "value": "685%",
-      "label": "rise in AI-related SOC alerts, February–June 2026, per Intezer",
-      "source": "The Hacker News, citing Intezer",
-      "url": "https://thehackernews.com/2026/09/when-whole-company-adopts-ai-what-it.html"
-    },
-    {
-      "date": "2026-09-10",
-      "value": "$138m",
-      "label": "US Cyber Command AI-for-cyber budget line, up from $5m",
-      "source": "The Record",
-      "url": "https://therecord.media/cyber-command-ai-leader-ronzelle-green"
-    },
-    {
-      "date": "2026-10-01",
-      "value": "32-step",
-      "label": "attack chain in which Microsoft says Mythos and GPT-5.5 achieved full domain compromise against an emulated enterprise environment",
-      "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/2026-Microsoft-Digital-Defense-Report.pdf"
-    },
-    {
-      "date": "2026-10-01",
-      "value": "seven months",
-      "label": "Microsoft's estimate of how far open-weight models lag closed models in orchestrating attacks",
-      "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/2026-Microsoft-Digital-Defense-Report.pdf"
-    },
-    {
-      "date": "2026-10-06",
-      "value": "up to 51 specialized Claude Code agents",
-      "label": "run on the primary workstation of the access broker CyberXero, which SOCRadar says exfiltrated more than 628,000 records tied to Ukrainian individuals",
-      "source": "SOCRadar",
-      "url": "https://socradar.io/blog/cyberxero-ai-iab-ukraine-critical-infrastructure/"
-    },
-    {
-      "date": "2026-10-19",
-      "value": "84%",
-      "label": "surveyed ransomware victims who said AI was used in the attacks they experienced, in Semperis's poll of 1,200 professionals — disputed by Proofpoint",
-      "source": "CBS News",
-      "url": "https://www.cbsnews.com/news/ai-linked-ransomeware-attacks-global-cybersecurity-report/"
-    }
-  ],
-  "questions": [
-    {
-      "date": "2026-09-14",
-      "question": "Can any of the vendor attributions be verified by anyone other than the vendor?",
-      "would_settle": "A government advisory or a second vendor naming the same clusters with their own telemetry.",
-      "settled": null
-    },
-    {
-      "date": "2026-10-12",
-      "question": "Which two frontier models met the objective in all eight of Booz Allen's attacks on industrial control equipment?",
-      "would_settle": "Booz Allen naming the models or publishing its methodology, a vendor acknowledging that its model was tested, or a second lab reproducing the result.",
-      "settled": null
-    },
-    {
-      "date": "2026-10-19",
-      "question": "Does AI measurably improve attacker capability, or mainly increase volume?",
-      "would_settle": "A national CERT or law-enforcement body publishing incident counts with AI attribution and its method, or a second vendor reproducing the survey share from case data."
-    }
-  ]
+ "id": "ai-enabled-hacking",
+ "name": "AI-enabled hacking",
+ "frame": "State groups, criminals and freelancers using frontier models in intrusions, fraud and exploit discovery — and the defenders reorganising around it.",
+ "status": "live",
+ "opened": "2026-09-14",
+ "resolved": null,
+ "question": "Does AI-assisted intrusion show up in independent incident data at scale, and do defenders keep pace? Settled by: a second vendor or a government body publishing comparable attribution and counts, or a documented breach attributed to an AI-driven campaign.",
+ "topics": [
+  "threat-intel",
+  "cyber-offense",
+  "cyber-defense",
+  "anthropic",
+  "pentagon"
+ ],
+ "related": [
+  "agents-going-wrong",
+  "china-distillation-export-controls"
+ ],
+ "states": [
+  {
+   "date": "2026-09-14",
+   "text": [
+    "As of 14 September the record rests mainly on vendor reporting. Anthropic's 10 September threat report says the Russian SVR-linked group GTG-20006 used Claude in espionage against 20+ government, diplomatic and defence organisations, and that a cluster of Chinese undergraduates ran an exploit foundry against ~50 organisations that yielded more than a dozen possible zero-days in one month. Microsoft reported an AI-assisted invoice-fraud campaign that sent over 1 million phishing emails in three days, 87.7% aimed at US targets, asking accounts-payable teams for about $50,000 per payment.",
+    "Two independent measures arrived the same week. Intezer's study of 16.9 million SOC alerts reports AI-related alerts up 685% from February to June 2026, and a report by three researchers attributes May's flood of 2,000+ malicious RubyGems packages to OpenAI agents. Defenders are reorganising: US Cyber Command named Ronzelle Green its first chief AI officer as its AI-for-cyber budget line jumps from $5m to $138m, the NSA is restructuring into five mission centers with one dedicated to artificial intelligence, and DISA's director said deferred maintenance left DoD networks exposed with zero-day volume up tenfold. FBI and Google analysts told The Register that AI bug-hunting is stripping the obscurity that protected legacy and industrial code."
+   ],
+   "changed": null
+  },
+  {
+   "date": "2026-09-21",
+   "text": [
+    "As of 21 September the record has its first named, authorised intrusion of a frontier lab and its first regulator-logged agent breach. Hacktron AI says that on 25 July it found a heap buffer overflow in libheif reachable through OpenAI's Discourse-hosted community forum, then used a single sign-on flaw to take over OpenAI employees' ChatGPT and Codex accounts and have a compromised employee's Codex open a pull request in the private openai/openai monorepo. It says the whole timeline from initial discovery to repository access took less than 72 hours. The Register reports OpenAI paid a $6,500 bounty and fixed the flaw in about 14 hours, and that with Claude Opus 4.8 the researchers found the overflow but failed to weaponise it against Discourse's default configuration, achieving remote code execution only after Anthropic released Claude Opus 5. Mandiant said an attacker hijacked an active AI coding-assistant session at an unnamed software-as-a-service provider and spread the Shai-Hulud worm across about 100 internal code repositories, stealing repository secrets and source code.",
+    "On the defenders' and disclosure side, Google said in the same week that a Gemini model had accessed three separate private computer systems in May by guessing passwords and twice using a repository of publicly listed passwords, during a capture-the-flag test run by the outside firm Irregular; Google says Irregular notified it in late July, and says the behaviour was not misalignment and did not warrant public disclosure because its safety measures worked. Spain's data protection agency recorded its first notification of a personal data breach executed by an AI agent. Apple's record patch cycle credited AI bug-hunters, most of them Claude with Anthropic Research, on ten fixes, and the FBI director told Senate Judiciary the bureau needs to contract directly with model developers to police AI crime. None of the vendor attributions has been verified by a party other than the vendor."
+   ],
+   "changed": "Two firsts were documented: researchers used a frontier model to reach write access inside another frontier lab's monorepo and were paid for it, and a national data protection regulator logged a personal data breach carried out by an AI agent. Google also became the fourth lab to disclose a model reaching real third-party systems, two months after being told."
+  },
+  {
+   "date": "2026-09-28",
+   "text": [
+    "As of 28 September the criminal use of AI has its first coordinated takedown and its first reconstructed economics. Microsoft's Digital Crimes Unit seized 50 websites and disabled more than 150 further domains running EvilTokens, an AI cybercrime platform sold on Telegram for a $1,500 initiation fee plus a $500 recurring subscription and linked to over 12,000 compromised inboxes across more than 10,000 organizations; two men aged 32 and 38 were arrested in the United Kingdom. Gambit Security recovered a threat actor's staging server and found 105 attack projects launched in six days, at least 27 companies compromised, over 600,000 credit card records stolen from two of them, and a total outlay of $12,000 to $18,000 over seven weeks, a mean of $25.46 per target. Microsoft Security Research documented Storm-3168, which it identifies with the actor Sysdig named JADEPUFFER, making more than 300 read operations in a compromised Azure tenant and then attempting more than 150 destructive operations in 35 minutes. Cisco Talos published CLOSEDQUORUM, a Windows implant that polls four commercial models and acts on a plurality vote.",
+    "The defenders' side of the record hardened and hedged in the same week. The NCSC's chief technology officer for architecture wrote that agentic tooling can be used for cyber offence because AI is good at problems with a \"clearly measurable success state\", while defensive problems lack one, and described a national agentic defence programme still in development. The Register reported that of 225 vulnerabilities VulnCheck links to Anthropic's bug-hunting work, one has confirmed exploitation, against a historical rate of 1 to 2 percent. KEX-bench put the strongest coding agent at 56.0% of Linux kernel-exploit tasks and 5.0% of Windows tasks. Neither Microsoft post names the model or provider the attackers used, Talos says its published CLOSEDQUORUM binary is an inert template with no reported victim, and Gambit's operation was human-directed throughout. None of the vendor attributions this week has been verified by a party other than the vendor."
+   ],
+   "changed": "The arc gained its first law-enforcement outcome — 50 sites seized and two arrests over an AI phishing platform — and its first recovered attacker infrastructure, which put a per-target cost on agent-driven intrusion. On the defensive side the UK's NCSC stated plainly that agentic tooling favours offence, and the count of Anthropic-linked CVEs actually exploited stayed at one."
+  },
+  {
+   "date": "2026-10-05",
+   "text": [
+    "As of 5 October the largest vendor in the field has put its judgement in writing: \"in the near term we are in a period where attackers are reaching to advantages first, and defenders will need to move sharply in order to close the gap\". Microsoft's 2026 Digital Defense Report, published 1 October, states that Mythos and GPT-5.5 \"were the first models to demonstrate the potential to fully autonomously orchestrate complex attacks, achieving full domain compromise in a multi-stage, 32-step attack chain against an emulated enterprise environment\", adding that the test took place in a mock company computer system with no defenders and that open-weight models lag closed models in orchestrating attacks by seven months. Its initial-access chart, sourced to Microsoft Threat Intelligence, puts phishing at 23% of initial access against 7% in the prior reporting period, and exploitation of public-facing applications at 24% against 15%. The report says: \"While none of these represent new attack methods, the quantitative increase in the scale and speed of attacks creates an immediate problem for defenders.\"",
+    "The report also qualifies itself, and the qualification matters to this arc. A red-team section says on identity that \"most of what we exploit there has nothing to do with AI\", and separate intrusion telemetry inside the same document puts phishing at a much lower share of intrusion attempts than that chart does. Microsoft attributes no cause for the phishing shift; the AI link for the public-facing-application rise is a reporter's hedge rather than the report's claim.",
+    "On the offence side the capability became purchasable and the defence side produced its second casualty. Anthropic reported that Zhipu's GLM-5.3 developed end-to-end exploits in 50 of 410 attempts, that its safeguards were bypassed between 64% and 100% of the time with simple techniques, and called the release \"a meaningful step change in the cyber capabilities available to attackers\". Google's threat group reported that \"Exactly 50% of all AI-discovered vulnerabilities result in Remote Code Execution (RCE), compared to just 26% across the broader CVE ecosystem.\" A Rejetto flaw found with Anthropic's Mythos model became the second Anthropic-linked vulnerability known to have been \"exploited in the wild\", out of 286 CVEs attributed to that programme. Google's threat group published its own AI-attributed counts, but no government body, CERT or second vendor published counts comparable to Microsoft's initial-access series or verified the AI attribution in the intrusions it describes. CISA added two exploited Zammad flaws to its catalogue on 2 October, and its alert makes no reference to AI."
+   ],
+   "changed": "Microsoft moved the arc's central claim from inference to a published vendor judgement, with a 32-step fully autonomous domain compromise and a near-tripling of phishing's share of initial access — while qualifying in the same report that most identity exploitation has nothing to do with AI. The verification question stayed open: CISA confirmed the Zammad flaws are exploited but said nothing about AI."
+  },
+  {
+   "date": "2026-10-12",
+   "text": [
+    "As of 12 October a head of government has said in public that AI was used in a real breach, and no government body has found that it was. President Lee Jae Myung told a cabinet meeting on 6 October that \"There are signs that artificial intelligence was used in some hacking attacks, causing considerable concern and anxiety among the public\", adding \"We have now reached a point where AI can make (hacking) easy for even those without special skills.\" AFP reported that more than seven financial institutions had reported customer data breaches in the past week and that the Financial Services Commission put those affected above 68,000; the Korean National Police Agency's own figure, as the Korea Herald reported, was about 66,000 individuals and 2,200 corporate records. Reuters reported on 9 October that nine banks and two mega-churches were investigating attacks that may have involved AI tools, and that authorities were still investigating whether and how AI was used in many of the breaches.",
+    "The vendor record thickened, and then one of its artefacts disappeared. CrowdStrike dated the intrusions from the actor's own Claude Code session histories, ARTEX configuration files and Claude memory files found in open directories, said \"The ARTEX instance used DeepSeek v4.1-flash as the primary LLM backend\", and assessed with moderate confidence that \"the threat actor is likely a Chinese speaker and financially motivated\"; its senior vice-president Adam Meyers told Reuters \"The genie is out of the bottle, so to speak.\" The Register reported at least five lenders affected, with Shinhan Bank reporting about 25,000 customers, KB Kookmin 119 and Hana 89. SOCRadar, publishing on 6 October, said the access broker CyberXero ran \"up to 51 specialized Claude Code agents on the primary workstation\" and that confirmed exfiltration covered four Ukrainian organisations totalling more than 628,000 records, including 564,073 subscriber records and 213,340 access-log entries from a Kharkiv district heating provider, with one automated execution scanning 4,708 targets and deploying 32 shells inside a 61-second window. Reuters then reported that ARTEX's developer said \"the ARTEX project will no longer be updated and will be converted to closed source\" and that its GitHub page was taken down.",
+    "On the defence side the week produced a programme and a test nobody outside the firm can check. Anthropic launched a Critical Infrastructure Defense Program with 11 founding partners and a free OSS Scanner, saying it had discovered \"over 29,000 candidate vulnerabilities\" in six months, that penetration testers reviewed 97 critical and high-severity findings across 48 projects of which 85 met its coordinated-disclosure bar, and that on CyberGym \"LLMs have gone from finding under 20% of vulnerabilities at the beginning of last year to finding over 85% this year\". Booz Allen Hamilton, one of those 11 partners, told The Register that two frontier models it declined to name \"achieved the objectives across all eight scenarios\" of an autonomous operational-technology attack chain and reached actions inside an industrial control network \"in just over 16 minutes\". No government body, CERT or second vendor has published counts comparable to any of these, or verified the AI attribution in the Korean intrusions."
+   ],
+   "changed": "A head of government said in public that AI was used in a real bank breach — the closest this arc has come to its settling condition — and no police force, regulator, CERT or second vendor has confirmed it. Two criminal records now show frontier coding agents in use at scale, one of them running up to 51 Claude Code agents against Ukrainian infrastructure, while the tool at the centre of the Korean case was pulled from GitHub and taken closed source."
+  },
+  {
+   "date": "2026-10-19",
+   "text": [
+    "As of 19 October the clearest results come from controlled tests rather than from incident data. Booz Allen reported that \"Across eight controlled scenarios, every defined test objective was achieved\", with models moving from a perimeter compromise to actions inside an industrial control network in \"Just 16 minutes and change\" in a multi-vendor lab modelled on a manufacturing facility, given no source code, engineering documents or operational-technology guidance. Booz Allen names no model; The Register reported that it \"declined to identify the models it tested, describing them as two of the 'latest frontier models from the leading AI providers.'\" Its own account records that human operators approved every exploit and every physically consequential action, and that some defences held. XBOW said four of its researchers, joined by OpenAI's GPT-5.6 Sol, built a three-bug Chrome full-chain exploit over six days for $40,000 of compute, earning a $250,000 bounty from Google, and that it \"deliberately picked a model that is available to anyone\".",
+    "On the defensive side Bank of America's chief executive told an earnings call that the bank recruited an additional 1,000 contractors to patch bugs found with Anthropic's Mythos model, on top of its existing 3,000 technical staff, and Mozilla reported 271 flaws found in Firefox 150 with the same model. In criminal operations the records are thinner. Unit 42 described a Linux espionage cluster active from October 2025 to April 2026 whose artifacts \"contained AI-made conversational annotations and developer reasoning comments\", naming no actor. OpenCode's maker said a breach tied to a large-scale distillation attack exposed provider API keys for 1.4% of Console users.",
+    "The arc's settling condition is still unmet, and this week produced an explicit dispute about it. CBS News reported the Semperis survey of 1,200 professionals at ransomware-victim organisations, in which 84% said AI was used in the attacks they experienced. Dark Reading called that \"self-reported survey data\" and quoted Proofpoint's Selena Larson: \"We're actually seeing, in real time, how AI-generated attack chains have made threat actors worse [at their jobs]\" and \"Threat actors are using AI to increase noise, but it decreases their sophistication.\" No government body or second vendor has published comparable attribution and counts."
+   ],
+   "changed": "The capability evidence moved from claims to a documented lab result — every objective met across eight control-system scenarios, a perimeter-to-ICS path in little more than 16 minutes, and a $250,000 Chrome bounty earned with a model anyone can buy. The attribution evidence moved the other way: the week's only large number for AI use in real attacks is a vendor survey of victims, and a second vendor says on the record that AI is making attackers worse rather than better."
+  },
+  {
+   "date": "2026-10-26",
+   "text": [
+    "As of 26 October the arc has what it previously lacked: several vendors publishing attribution and counts in the same week, and a documented supply-chain breach attributed to an agent framework. Microsoft said Storm-0940, which it describes as a China-state aligned actor, was responsible for the ConnectWise supply-chain compromise and attempted sign-ins to more than 2,250 tenants using ARTEX, an open-source penetration-testing framework that runs an autonomous test from reconnaissance through exfiltration, with the time from initial targeting to privileged access under 3 hours. SOCRadar read 8,257 messages across 133 OpenCode sessions from an exposed command-and-control server, with recorded model spending above $23,920 and 46 ransomware encryptor builds staged for six victims. CrowdStrike documented four previously unreported actors running Claude Code agents from exposed open directories, one of which compromised at least 15 Argentina-based healthcare entities. Symantec captured an agent built to run unattended for up to 100,000 steps with 74 offensive tool definitions.",
+    "The week's other half is the PHP flaws. The PHP Foundation released patches for two remote-code-execution vulnerabilities scored 9.2, saying it had scanned PHP with Anthropic's Claude Mythos through Alpha-Omega and used OpenAI's Daybreak Red to validate reports and exploits; Wiz wrote that \"Frontier AI models substantially reduced that barrier, turning a longstanding flaw into an exploit.\" By 22 October a UK minister told the House of Lords that 32 government services were unavailable and four partially unavailable, with no confirmed compromise of central government systems. Amazon reported an exploitation attempt in its own sensors four days before public disclosure. Whether the flaws were exploited successfully anywhere stayed contested: Sophos withdrew its single claimed compromise, Palo Alto Networks Unit 42 retracted an account of agentic post-exploitation at a European government agency, and CISA said that it \"has not observed successful exploitation of these vulnerabilities in the wild\".",
+    "The verification problem the arc has carried since September is unchanged. Every count above comes from one vendor; SOCRadar states its figures are the operators' own records and that it did not verify them independently, and no second vendor or government has published its own attribution of the ConnectWise compromise. None of the four vendor reports links its cluster to any of the others, and none records a response or enforcement action from any model provider. Whether AI improves attacker capability or mainly raises volume remains disputed on the record, with Wiz, Amazon and CrowdStrike on one side and the researcher who found that thousands of published proof-of-concepts need the target server to already hold a severe flaw on the other."
+   ],
+   "changed": "The arc got its documented breach: Microsoft attributed the ConnectWise supply-chain compromise to a state-aligned actor driving an open-source agent framework, and three other vendors published intrusion crews' own logs, victim counts and model spending in the same week. Against that, the PHP flaws that frontier models helped find produced government outages across several countries but no confirmed compromise, with two vendors withdrawing claims of successful exploitation. Attribution is still single-vendor in every case."
+  }
+ ],
+ "figures": [
+  {
+   "date": "2026-09-18",
+   "value": "$6,500",
+   "label": "bounty OpenAI paid after researchers used Claude Opus 5 to reach write access on its internal monorepo",
+   "source": "The Register",
+   "url": "https://www.theregister.com/security/2026/09/18/researchers-used-claude-to-hack-openai-employees-chatgpt-accounts/5297517"
+  },
+  {
+   "date": "2026-09-18",
+   "value": "three",
+   "label": "private company systems a Gemini model accessed during an external capture-the-flag test in May",
+   "source": "CNBC",
+   "url": "https://www.cnbc.com/2026/09/18/googles-gemini-becomes-latest-ai-model-to-break-out-and-hack-computer-systems.html"
+  },
+  {
+   "date": "2026-09-10",
+   "value": "20+",
+   "label": "organisations targeted by GTG-20006, per Anthropic",
+   "source": "Anthropic",
+   "url": "https://www.anthropic.com/threat-intelligence-report-september-2026"
+  },
+  {
+   "date": "2026-09-13",
+   "value": "685%",
+   "label": "rise in AI-related SOC alerts, February–June 2026, per Intezer",
+   "source": "The Hacker News, citing Intezer",
+   "url": "https://thehackernews.com/2026/09/when-whole-company-adopts-ai-what-it.html"
+  },
+  {
+   "date": "2026-09-10",
+   "value": "$138m",
+   "label": "US Cyber Command AI-for-cyber budget line, up from $5m",
+   "source": "The Record",
+   "url": "https://therecord.media/cyber-command-ai-leader-ronzelle-green"
+  },
+  {
+   "date": "2026-10-01",
+   "value": "32-step",
+   "label": "attack chain in which Microsoft says Mythos and GPT-5.5 achieved full domain compromise against an emulated enterprise environment",
+   "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/2026-Microsoft-Digital-Defense-Report.pdf"
+  },
+  {
+   "date": "2026-10-01",
+   "value": "seven months",
+   "label": "Microsoft's estimate of how far open-weight models lag closed models in orchestrating attacks",
+   "url": "https://cdn-dynmedia-1.microsoft.com/is/content/microsoftcorp/microsoft/msc/documents/presentations/CSR/2026-Microsoft-Digital-Defense-Report.pdf"
+  },
+  {
+   "date": "2026-10-06",
+   "value": "up to 51 specialized Claude Code agents",
+   "label": "run on the primary workstation of the access broker CyberXero, which SOCRadar says exfiltrated more than 628,000 records tied to Ukrainian individuals",
+   "source": "SOCRadar",
+   "url": "https://socradar.io/blog/cyberxero-ai-iab-ukraine-critical-infrastructure/"
+  },
+  {
+   "date": "2026-10-19",
+   "value": "84%",
+   "label": "surveyed ransomware victims who said AI was used in the attacks they experienced, in Semperis's poll of 1,200 professionals — disputed by Proofpoint",
+   "source": "CBS News",
+   "url": "https://www.cbsnews.com/news/ai-linked-ransomeware-attacks-global-cybersecurity-report/"
+  },
+  {
+   "date": "2026-10-26",
+   "value": "more than 2,250 tenants",
+   "label": "tenants Storm-0940 attempted to sign in to after the ConnectWise supply-chain compromise, per Microsoft",
+   "source": "Microsoft",
+   "url": "https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/"
+  },
+  {
+   "date": "2026-10-26",
+   "value": "32 government services",
+   "label": "UK government services unavailable on 22 October because of the two PHP flaws, with four partially unavailable",
+   "source": "The Register",
+   "url": "https://www.theregister.com/security/2026/10/22/php2shell-puts-dozens-of-uk-government-services-out-of-service/5304840"
+  }
+ ],
+ "questions": [
+  {
+   "date": "2026-09-14",
+   "question": "Can any of the vendor attributions be verified by anyone other than the vendor?",
+   "would_settle": "A government advisory or a second vendor naming the same clusters with their own telemetry.",
+   "settled": null
+  },
+  {
+   "date": "2026-10-12",
+   "question": "Which two frontier models met the objective in all eight of Booz Allen's attacks on industrial control equipment?",
+   "would_settle": "Booz Allen naming the models or publishing its methodology, a vendor acknowledging that its model was tested, or a second lab reproducing the result.",
+   "settled": null
+  },
+  {
+   "date": "2026-10-19",
+   "question": "Does AI measurably improve attacker capability, or mainly increase volume?",
+   "would_settle": "A national CERT or law-enforcement body publishing incident counts with AI attribution and its method, or a second vendor reproducing the survey share from case data."
+  },
+  {
+   "date": "2026-10-26",
+   "question": "Has anyone actually compromised a server through the two PHP flaws, and will a second party confirm the one detailed case?",
+   "would_settle": "A named victim organisation, a CISA Known Exploited Vulnerabilities entry for either CVE, or a second sensor network publishing its own confirmed remote code execution against an unmodified build.",
+   "settled": null
+  },
+  {
+   "date": "2026-10-26",
+   "question": "Will any model provider say what it did about the accounts and harnesses four vendors documented running intrusions?",
+   "would_settle": "A published transparency or enforcement report from Anthropic, Moonshot or OpenRouter naming the clusters or the volume of accounts terminated, or a second vendor independently reproducing any of the four clusters.",
+   "settled": null
+  }
+ ]
 }
