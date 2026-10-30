@@ -1,0 +1,179 @@
+{
+  "date": "2026-10-30",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Friday, October 30th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue works the way this briefing works, checking every claim against the primary source and leaving out whatever doesn't reconcile. Epilogue builds for high-consequence work, where you can't ship a confident guess. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning. The advances, the research, and how it's being used for good and for harm, with every claim sourced." },
+        { "host": "B", "text": "So what are the three that matter most today?" },
+        { "host": "A", "text": "CrowdStrike says a China-linked group pointed a single agentic hacking controller at more than 200 organisations in 11 days, running it primarily on the Chinese-origin DeepSeek model." },
+        { "host": "B", "text": "Epoch AI says an open-weight model built working exploits against all six Firefox releases between September 17th and October 26th, for about $1,000 each, and triggered no refusals from Z.ai." },
+        { "host": "A", "text": "And Cursor says a tampered build of Anthropic's Claude Code extension sat in its own marketplace for part of Thursday, reaching at most 5,000 users." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Mistral releases open weights for 1-trillion-parameter Mistral Large 4, claiming 19.7% on Cognition's FrontierCode 2.0",
+      "lines": [
+        { "host": "B", "text": "Let's start with the labs, and Mistral's flagship model." },
+        { "host": "A", "text": "Mistral says it released the weights of Mistral Large 4, which it describes as its flagship 1-trillion-parameter, natively multimodal model. Mistral says it leads with a score of 19.7% on Cognition's private FrontierCode 2.0 benchmark." },
+        { "host": "B", "text": "How does it do on coding?" },
+        { "host": "A", "text": "Mistral reports 48% on the Artificial Analysis Coding Agent Index, which it calls effectively tied with GLM-5.3, the leading open-weight model, while using 47% fewer tokens per task on average. It reports 41% on Terminal-Bench 4.0, up 13 percentage points on its own public preview, and 51% on the Artificial Analysis Cyber Index." },
+        { "host": "B", "text": "Any head-to-head judgement?" },
+        { "host": "A", "text": "Mistral says blind pairwise evaluations on Surge Code preferred it over GLM-5.3, Kimi K3 and DeepSeek V4.1 Flash, ranking behind only Claude Opus 5.5 among the models evaluated." },
+        { "host": "B", "text": "Every one of those figures comes from Mistral AI itself. They are company claims, and they are not independently verified. And the open weights come with strings: Mistral's licence requires a separate commercial licence for anyone running the model as a service." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Anthropic researchers plant a remote-code-execution backdoor in a CLI agent by poisoning 0.1% of pretraining data",
+      "lines": [
+        { "host": "A", "text": "To research, and a paper that goes after the training data itself." },
+        { "host": "B", "text": "The paper, posted to arXiv and submitted on October 27th, says it shows for the first time that pretraining poisoning can plant a remote code execution backdoor in an agent, causing it to execute attacker-chosen commands on the user's machine." },
+        { "host": "A", "text": "How much poisoned data does that take?" },
+        { "host": "B", "text": "The abstract says poisoning only 0.1% of the pretraining corpus with their poison design implants the backdoor. They pretrained models from scratch at 0.6 billion, 1.7 billion and 4 billion parameters, then post-trained each one into a command-line agent using what they call a clean pipeline." },
+        { "host": "A", "text": "And the clean pipeline didn't remove it?" },
+        { "host": "B", "text": "No, and it got stronger with scale. The paper reports the 4 billion parameter model reaching roughly 92% attack success at a 0.1% poison rate, and staying positive even when the poisoning rate drops to 0.0005%." },
+        { "host": "A", "text": "This is a preprint, not peer reviewed, and the paper is the only source for it. The models are small research models, not production systems." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "CrowdStrike: China-nexus VAPOR PANDA ran ARTEX agents against more than 200 organisations in 11 days",
+      "lines": [
+        { "host": "B", "text": "Now the threat reports. Start with the one about scale." },
+        { "host": "A", "text": "CrowdStrike says that beginning on October 17th, 2026, it observed exploitation activity from a single ARTEX controller directed against entities in at least 14 countries over an 11-day window, and that the adversary used it against more than 200 distinct organisations worldwide." },
+        { "host": "B", "text": "How much of that became real access?" },
+        { "host": "A", "text": "CrowdStrike says it confirmed post-exploitation activity at nine organisations, where the operator deployed a backdoor it calls BLOODALCHEMY and then ran credential spraying, network scanning and reconnaissance. It also saw password-spraying against at least 12 more organisations." },
+        { "host": "B", "text": "Which model was driving the agents?" },
+        { "host": "A", "text": "CrowdStrike says the group ran ARTEX primarily with the Chinese-origin DeepSeek model, plus a second commercial one it could not confirm. And in a single intrusion, it says the planning agents consumed on the order of 1.4 billion input tokens." },
+        { "host": "B", "text": "That is a vendor report, and the telemetry is CrowdStrike's own. It has not been independently verified, and no government has attributed the campaign. CrowdStrike also says this campaign is separate from the ARTEX activity reported under the Storm-0940 designation." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Epoch AI says open-weight GLM 5.3 built working Firefox exploits from unshipped patches for about $1,000 each",
+      "lines": [
+        { "host": "A", "text": "The second one is about what an open-weight model can do with a patch that hasn't shipped yet." },
+        { "host": "B", "text": "Epoch AI says GLM 5.3, an open-weight model Z.ai released in August, developed attacks against all six Firefox releases between September 17th and October 26th, using only information available at the time of each release. Epoch says it cost about $1,000 to attack each version." },
+        { "host": "A", "text": "What did the exploit actually do to someone?" },
+        { "host": "B", "text": "Epoch says the model built a webpage that, when a Firefox user visited it, made the browser read a local file and send the contents to the attacker's server, with no further user action. Epoch gave it up to 48 hours per attempt, and says its fastest needed only 12. And in all of the compromises, the model also found and used an unpublished vulnerability alongside the patch-gap ones." },
+        { "host": "A", "text": "Did any safeguard stop it?" },
+        { "host": "B", "text": "None. Quoting Epoch: we did not trigger any safeguards or refusals from any provider, including Z.ai. Epoch disclosed to Mozilla, which shipped Firefox 159.0 on October 27th, 2026, patching a vulnerability that had not been published." },
+        { "host": "A", "text": "Epoch is the only source for this, and it doesn't carry across browsers. Epoch says similar attacks on Google Chrome have not succeeded, after about $100,000 in API costs." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Cursor says a trojanized Claude Code 2.1.313 in its marketplace planted an SSH backdoor on up to 5,000 users' machines",
+      "lines": [
+        { "host": "B", "text": "And the third is an attack on the tooling itself." },
+        { "host": "A", "text": "Cursor says that between about 2:27am Pacific and 1:35pm Pacific on October 29th, a maliciously modified version of Anthropic's Claude Code extension was made available in the Cursor marketplace, as version 2.1.313. Cursor says at most 5,000 users were affected." },
+        { "host": "B", "text": "What does the build do?" },
+        { "host": "A", "text": "Cursor says it attempts to add an attacker-controlled SSH key to the authorized keys file, enable the local SSH service, and open a reverse SSH tunnel, then reports host details and backdoor status by HTTP POST to a beacon on port 8099. The key carries the comment svc-telemetry." },
+        { "host": "B", "text": "So uninstalling the extension clears it?" },
+        { "host": "A", "text": "Cursor says not necessarily. Quoting Cursor: uninstalling the extension may not be sufficient, because the payload drops standalone persistence scripts that keep running." },
+        { "host": "B", "text": "The record on who served it got muddled early, didn't it." },
+        { "host": "A", "text": "It did. Cursor says the malicious version was not developed by Anthropic. Socket says it found no publication or removal records on Open VSX, so early reporting naming that registry was wrong, and The Hacker News has published a correction. Anthropic itself has published nothing, and this account is Cursor's, not independently verified." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "UN First Committee votes 163 to 5 to move the CCW toward autonomous-weapons negotiations",
+      "lines": [
+        { "host": "B", "text": "To autonomous weapons, where there was a vote at the UN on Thursday." },
+        { "host": "A", "text": "Spoiler Alerts reports that on Thursday, October 29th, 163 countries voted in the First Committee of the UN General Assembly in favour of starting negotiations on an autonomous weapons instrument, with five against and nine abstaining. The resolution calls on the CCW to advance to negotiations on an instrument on lethal autonomous weapons systems." },
+        { "host": "B", "text": "Who were the five against?" },
+        { "host": "A", "text": "The United States, Russia, Belarus, North Korea and Israel. Which is to say, the states that would have to be inside any instrument for it to bind the systems that matter most." },
+        { "host": "B", "text": "What's the proposed timetable?" },
+        { "host": "A", "text": "Spoiler Alerts says Ambassador Elmer Schialer of Peru, chair-designate of Main Committee II at the Seventh CCW Review Conference, released a draft mandate on October 23rd providing for fifteen negotiating days in each of 2027 and 2028, with a draft protocol completed by 2028. A cross-regional group of seven countries had asked for twenty-five negotiating days and a draft protocol a year earlier." },
+        { "host": "B", "text": "The caveat here is the sourcing. That vote count comes from a single source, and the UN's own voting record wasn't available when we published." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Stanford deployed LLM vancomycin dosing agents on 403 real orders; the higher-autonomy version halved the error",
+      "lines": [
+        { "host": "A", "text": "To health, and a hospital deployment that ran quietly for two months." },
+        { "host": "B", "text": "The paper, on medRxiv, says the authors silently deployed LLM-based vancomycin dosing agents at Stanford Hospital for two months, comparing a high-autonomy and a low-autonomy configuration. Across 403 dosing events in 316 patients, mean absolute percentage error against the treating pharmacist's order was 21.8% with high autonomy, versus 37.8% with low autonomy." },
+        { "host": "A", "text": "How does that compare with a person?" },
+        { "host": "B", "text": "That's the number to hold on to. Recommendations were within 25% of the order in 73.4% of events, against 50.9% for the low-autonomy version. But a second pharmacist was within 25% in 90.2%. The better agent still trailed a human by a wide margin." },
+        { "host": "A", "text": "And the stricter configuration did worse, not better?" },
+        { "host": "B", "text": "It did. Pharmacist review of 196 out-of-tolerance recommendations found a safety concern in 65.8% of them, more often with low autonomy, at an odds ratio of 2.37." },
+        { "host": "A", "text": "The authors say plainly that neither configuration is ready to dose patients without pharmacist oversight. The deployment was silent, so nothing reached a patient, and this is a preprint on medRxiv, the only source, not peer reviewed." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Wikimedia asks the SDNY to split fair use in the OpenAI litigation: lawful for training, not for retrieval",
+      "lines": [
+        { "host": "B", "text": "To the courts, where the Wikimedia Foundation has filed in the OpenAI copyright litigation, and is taking neither side." },
+        { "host": "A", "text": "The Wikimedia Foundation says it filed an amicus brief in the Southern District of New York in the combined OpenAI copyright litigation, which it describes as 12 combined lawsuits, the best known being The New York Times against Microsoft and OpenAI." },
+        { "host": "B", "text": "What's the argument?" },
+        { "host": "A", "text": "A line drawn in the middle of the pipeline. The Foundation says using copyrighted content should be considered fair if it's training models that are something new and different from the original sources. But for retrieval-augmented generation, and newer grounding techniques, it says the use of copyrighted works should not be considered fair, and companies should respect each publisher's licence. For Wikipedia, that licence is CC BY-SA 4.0." },
+        { "host": "B", "text": "That cuts against what you'd expect from them." },
+        { "host": "A", "text": "It does. Wikipedia is among the most heavily used training corpora, and its steward is conceding the training side while fighting the retrieval side. Chief executive Bernadette Meehan says they are taking a position in the case to defend the free and open human knowledge that Wikipedia depends on." },
+        { "host": "B", "text": "Has the judge done anything with it?" },
+        { "host": "A", "text": "Not yet. Unite.AI reports that Judge Stein must grant the Foundation leave before the proposed brief is formally accepted, and reports no ruling either on leave or on fair use. And we haven't read the brief on a public docket. These positions come from the Foundation's own announcement." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Amazon holds 2026 capex at $220 billion; trailing free cash flow is an outflow of $42.4 billion",
+      "lines": [
+        { "host": "B", "text": "To the money, where Amazon's spending is the story." },
+        { "host": "A", "text": "Amazon's own release says free cash flow decreased to an outflow of $42.4 billion for the trailing twelve months, against an inflow of $14.8 billion for the twelve months ended a year earlier. And the company says it continues to expect 2026 cash capital expenditures to be approximately $220 billion." },
+        { "host": "B", "text": "What did it spend in the quarter alone?" },
+        { "host": "A", "text": "CNBC reports capital expenditures reached $77.3 billion during the quarter, up from $35.1 billion a year earlier, and well above analysts' estimated $58.7 billion." },
+        { "host": "B", "text": "The operating business is healthy, though." },
+        { "host": "A", "text": "It is. Net sales increased 12% to $201.9 billion, operating income was $28.1 billion at a margin of 13.9%, which Amazon calls its highest ever, and AWS segment sales increased 39% year over year to $46.0 billion." },
+        { "host": "B", "text": "So why did the shares fall?" },
+        { "host": "A", "text": "Because the spending isn't finished. Amazon said the shortfall was primarily due to buying property and equipment for AI investments, and chief executive Andy Jassy told investors the company expects to spend meaningfully more in 2027. Reuters reports Amazon shares down 7.2% in premarket trading, with Nasdaq futures down more than 2%." },
+        { "host": "B", "text": "And the forward-looking parts are the company's own. The company says AWS revenue will grow over 40% in both 2027 and 2028, and that is a statement about the future, not a verified figure." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Reddit says search referrals fell by more than 1 million a week and will shift to a logged-in experience",
+      "lines": [
+        { "host": "A", "text": "Last one, and it's a measured effect of AI search on an open web property." },
+        { "host": "B", "text": "TechCrunch reports that on its third-quarter earnings call Reddit said it is transitioning to a primarily logged-in experience, after search traffic referrals dropped by more than 1 million referrals on average per week in October. Reddit warned that if the trend continues, daily active users could decline by a low-double-digit percentage by next quarter." },
+        { "host": "A", "text": "Is the decline visible yet?" },
+        { "host": "B", "text": "In the US, yes. Global daily active users were flat quarter over quarter at 130.3 million, up 12% year over year, while US daily active users dropped from 53.2 million to 50.7 million, and were down 2% year over year." },
+        { "host": "A", "text": "And the revenue?" },
+        { "host": "B", "text": "Going the other way. Revenue rose 53% year over year to $895 million, net income rose 74% to $283 million, and US average revenue per daily active user rose 53% to $13.82. Non-advertising revenue, which includes the AI data-licensing business, grew 35% to $48 million." },
+        { "host": "A", "text": "So why close the door?" },
+        { "host": "B", "text": "TechCrunch reports the move is designed to protect Reddit's data from AI scraping, so the company can instead forge licensing deals with model providers. Reddit says it will first run tests in select markets outside the US this quarter, has no timeline for a worldwide rollout, and will keep an anonymous browsing option." },
+        { "host": "A", "text": "The link between AI search and that referral decline is Reddit's own characterisation. The company says it, and it has not been independently verified." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today." },
+        { "host": "A", "text": "The full edition is on the site, with a link to every source behind what you've just heard." },
+        { "host": "B", "text": "Our voices are AI-generated." },
+        { "host": "A", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
