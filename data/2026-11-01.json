@@ -1,0 +1,486 @@
+{
+  "date": "2026-11-01",
+  "edition": "daily",
+  "generated_at": "2026-11-01T11:45:00Z",
+  "window": "31 Oct 11:25 → 1 Nov 11:05 UTC",
+  "title": "Anthropic and xAI start watermarking their text",
+  "summary": [
+    "Two frontier labs moved to mark the text their models produce. The Decoder, citing a customer email, says Anthropic will extend its text watermark to Claude Mythos 5, Claude Opus 4.7, Claude Opus 4.6 and Claude Sonnet 4.6, and that on Opus 4.6 and Sonnet 4.6 the mark applies only while temperature, top_p and top_k stay at their defaults, so changing one avoids it. Crypto Briefing and TokenPost say xAI will switch invisible statistical watermarking on by default across its Grok API from 7 November for grok-4.7, grok-4.6, grok-4.5, grok-4.3 and grok-4.20, with no developer setting to turn it off. Both outlets tie the timing to the EU AI Act's transparency requirements.",
+    "DeepSeek's Harness team published Super-agent, an MIT-licensed prototype that watches one GitHub repository and optionally Feishu group chats and opens work items without being prompted. The repository described it as a \"Research prototype for reference only, not an official DeepSeek product\" and showed about 5.0k stars and 475 forks; agent sessions run with full access as the operator's OS user. On the research side, a peer-reviewed npj Digital Medicine paper from The Ohio State University reports that GPT-5, MedGemma-27B-Text-IT and OpenBioLLM-Llama3-70B \"exhibit dramatic reasoning instability, shifting staging accuracy by over 50% based solely on prompt format\", across 3035 systematic perturbations of physician-validated oncology cases.",
+    "Two more platforms reported intrusions they describe as AI-driven. Chainalysis said it detected \"an external actor using offensive agentic techniques\" reaching its systems and internal tools, and that user IDs, full names, email addresses and organization role labels were accessed. Northflank told customers to \"assume all environment variables have been decrypted\" after a Wiz threat alert, and said users reported unauthorised use of AI API keys supplied to the platform. Wiz counts at least nine AI developer platforms disclosing incidents in October, and says two stolen Amazon Bedrock keys made approximately 800k and approximately 1.7 million calls and \"likely ran up over $100k in usage\"."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "DeepSeek open-sources Super-agent, a prototype coding agent that watches a repository and group chats unprompted",
+          "sources": [
+            { "name": "GitHub (DeepSeek)", "url": "https://github.com/deepseek-ai/dsh-superagent-prototype" },
+            { "name": "ShiftDelete.Net", "url": "https://shiftdelete.net/en/deepseek-coding-agent" },
+            { "name": "Investing.com", "url": "https://www.investing.com/news/company-news/deepseek-launches-autonomous-coding-agent-to-challenge-anthropics-claude-code-4989391" }
+          ],
+          "bullets": [
+            "ShiftDelete.Net says DeepSeek's Harness team announced Super-agent in a WeChat post on Saturday 31 October and published the code under the MIT license; the repository page showed about 5.0k stars and 475 forks when read.",
+            "The README describes a bundle for DeepSeek Harness that listens to one GitHub repository and optionally Feishu (Lark) group chats, opens a work item when an approved person asks, runs it in its own agent session and directory, and replies in the original conversation, for example with a pull request. Proactive work requires a rule the team writes, and starts in a mode that only records what the agent would have done.",
+            "DeepSeek calls it a \"Research prototype for reference only, not an official DeepSeek product\", says the code is not production-ready and differs from the version it uses internally, and warns that agent sessions run with full access as the operator's OS user, recommending a separate OS account for isolation.",
+            "No benchmark numbers are given, the Releases section is empty, and there is no stated version. Investing.com described it as built to take part in development workflows proactively rather than answer single prompts."
+          ],
+          "topics": ["deepseek", "agents", "open-weights"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Anthropic extends its text watermark to four older Claude models; on two it disappears if sampling settings change",
+          "sources": [
+            { "name": "The Decoder", "url": "https://the-decoder.com/anthropics-watermark-rollout-leaves-a-loophole-on-two-older-claude-models/" }
+          ],
+          "bullets": [
+            "The Decoder, citing a customer email from Anthropic, says the watermark will be added to Claude Mythos 5, Claude Opus 4.7, Claude Opus 4.6 and Claude Sonnet 4.6; Claude Opus 5.5 already carries it, and the Amazon Bedrock rollout may take a few extra days.",
+            "Anthropic describes the mark as an \"imperceptible pattern in word choice\" that adds no extra characters or tokens and does not change pricing or request and response formats, and says it \"contains no information about the user, their organization, or their conversations with Claude\". Because it is embedded at the model level, customers cannot switch it off.",
+            "On Claude Opus 4.6 and Claude Sonnet 4.6 the watermark applies only while temperature, top_p and top_k stay at their defaults, so changing any one of them avoids the mark; Anthropic's email tells developers who rely on the watermark for compliance to \"keep these settings at their defaults\". The Decoder says the caveat does not appear for Claude Mythos 5 or Claude Opus 4.7.",
+            "Models released after 2 August 2026 shipped with the watermark from day one, and The Decoder ties the staged rollout for older models to the EU AI Act's December deadline. Anthropic has not published a page on the change; the account rests on the email The Decoder quotes."
+          ],
+          "topics": ["anthropic", "eu-ai-act"],
+          "impact": "mixed",
+          "flags": ["single-source", "company-claim"]
+        },
+        {
+          "headline": "xAI says invisible watermarking turns on by default for five Grok API models from 7 November",
+          "sources": [
+            { "name": "Crypto Briefing", "url": "https://cryptobriefing.com/xai-grok-text-watermarking-api" },
+            { "name": "TokenPost", "url": "https://www.tokenpost.com/news/technology/45622" }
+          ],
+          "bullets": [
+            "Both outlets, citing an announcement xAI shared on X, say invisible statistical watermarking becomes the default for Grok API text output on 7 November 2026 across grok-4.7, grok-4.6, grok-4.5, grok-4.3 and grok-4.20, covering api.x.ai, the Responses API and the Chat Completions API.",
+            "Crypto Briefing says xAI states the watermark \"does not change the length, quality, or speed of responses\". Team administrators can turn it off per model in the xAI Console, but both outlets say that is limited to specific legal exceptions and compliance needs rather than a general opt-out.",
+            "Consumer-facing Grok products are not affected, both outlets say. Crypto Briefing attributes the shift to the regulatory backdrop, including the EU AI Act's transparency requirements, and notes xAI had previously argued AI text should stay unaltered — that framing is the outlet's, not xAI's.",
+            "xAI's own news index carried no post on this during the window, so the details come from two reports of the same X announcement rather than a primary xAI page."
+          ],
+          "topics": ["xai", "eu-ai-act"],
+          "impact": "mixed",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "OpenAI tells Trusted Access members it will train on Daybreak Blue cybersecurity session data from 29 November",
+          "sources": [
+            { "name": "The Decoder", "url": "https://the-decoder.com/openai-plans-to-train-models-on-daybreak-blue-cybersecurity-session-data-that-was-previously-off-limits/" }
+          ],
+          "bullets": [
+            "The Decoder, citing an email to OpenAI Trusted Access programme members shared by Yoav Alon on LinkedIn, says that \"Starting November 29, OpenAI will use Daybreak Blue session data to train its models\".",
+            "The article says this data was previously excluded from training \"even when users had the 'improve the model for everyone' setting turned off\". After the email drew criticism, The Decoder says OpenAI sent a second email promising a separate opt-out, with no detail on how it would work, and that interactions flagged during safety reviews can still be used for safety purposes.",
+            "The Decoder does not define what Daybreak Blue is beyond \"cybersecurity session data\", and cites no public OpenAI statement — only the two emails to programme members. The opt-out mechanism, the data retention terms and the scope of \"session data\" remain unstated."
+          ],
+          "topics": ["openai", "privacy", "cyber-defense"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "OpenAI support page puts ChatGPT Plus, Pro and Business on one shared token budget with Codex in December",
+          "sources": [
+            { "name": "The Decoder", "url": "https://the-decoder.com/openais-upcoming-chat-and-work-merger-in-chatgpt-signals-the-end-of-all-you-can-prompt-pricing/" }
+          ],
+          "bullets": [
+            "The Decoder, citing an updated OpenAI support page, says that \"Starting in December, Plus, Pro, and Business plans will share a single token budget across ChatGPT and Codex\", as OpenAI folds Work's agentic features into the main interface.",
+            "Users will see remaining balance and reset times in Settings; at the limit they can wait for a reset, upgrade, or buy extra credits. The Decoder says chats with Instant models will not count toward the budget.",
+            "No token limits, credit prices or exact December start date are published, and the support page returned HTTP 403 to direct reads, so the figures above come from The Decoder's reading of it. The Decoder also says OpenAI recently doubled usage limits for higher-priced plans but gives no numbers."
+          ],
+          "topics": ["openai", "agents"],
+          "impact": "neutral",
+          "flags": ["single-source", "company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Replication says TopK sparse autoencoders recover 99.6% of toy features where a paper reported 9% using BatchTopK",
+          "sources": [
+            { "name": "LessWrong", "url": "https://www.lesswrong.com/posts/EC5H7xakTgxxNXm5g/sanity-checks-for-sanity-checks-for-sparse-autoencoders" },
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2602.14111" }
+          ],
+          "bullets": [
+            "The paper under critique, \"Sanity Checks for Sparse Autoencoders: Do SAEs Beat Random Baselines?\" (arXiv:2602.14111, submitted 15 February 2026, by Anton Korznikov, Andrey Galichin, Alexey Dontsov, Oleg Rogov, Ivan Oseledets and Elena Tutubalina), states in its abstract that \"SAEs recover only 9% of true features despite achieving 71% explained variance\", and that random baselines match trained SAEs on interpretability (0.87 vs 0.90), sparse probing (0.69 vs 0.72) and causal editing (0.73 vs 0.72).",
+            "Celene Nightingale's post says the 9% figure comes from the BatchTopK architecture, and that the paper's own Appendix B reports TopK recovering 99.9% of features. Their replication recovered 99.6% of features with TopK, 99.3% with BatchTopK plus per-sample normalisation, while the other architectures failed.",
+            "The toy setup is 3,200 feature vectors sampled as unit vectors in 100 dimensions, about 20 active per activation, magnitudes from LogNormal(0, 0.25), a target L0 of 20 and 3,200 SAE latents. At d_model 800 with 25,600 latents the post reports TopK with AuxK at 99.9% recovered, BatchTopK with AuxK at 53.5% with 46.3% dead latents, and JumpReLU at 28.3% with 71.6% dead latents.",
+            "This is a blog post rather than a peer-reviewed response, and the author's measurements have not been independently checked. The arXiv abstract page lists no author affiliations, so the institutions behind the original paper could not be confirmed from the sources opened."
+          ],
+          "topics": ["interpretability", "evals"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Independent rebuild of a five-agent coding harness scores 9.8 of 10 against the authors' 9.6, and says that is the same number",
+          "sources": [
+            { "name": "GitHub (memdoor)", "url": "https://github.com/guregodevo/memdoor/tree/main/examples/workflows/team-solve" },
+            { "name": "GitHub (GVS5H)", "url": "https://github.com/slee-persis/GVS5H" }
+          ],
+          "bullets": [
+            "The README says it reimplements \"the method of GVS5H (Lee, 2026), written as a Memdoor workflow\" — a planner, two ideators, a solver and a manager, plus a repair worker — and reports per-pass scores on the first ten problems of the authors' LiveCodeBench Hard list, five passes each: 10, 10, 10, 10, 9 for this workflow against 9, 10, 10, 9, 10 for the authors' harness and 7, 8, 10, 8, 7 for \"Fable 5, one call\". The means are 9.8, 9.6 and 8.0.",
+            "The rebuild used the same model, Qwen3.8-27B, served on OpenRouter rather than locally, with the authors' prompts, loop and reply cap. A run took a median of 40 minutes and $0.39, and the 50 runs cost $35.79 in total, with every request, reply, program and grader output published.",
+            "The README states its own limits plainly: \"Ten problems, five passes, not the authors' 100. On a sample this small, 9.8 and 9.6 are the same number. The claim is parity with their harness, not a gain on it.\" It also says the contests date from spring 2025 and \"Contamination cannot be ruled out, for any column.\"",
+            "Neither repository page carries a publication date; the work was posted to Hacker News on 31 October. The GVS5H figures quoted on its own repository page come from earlier, undated work and were not reproduced here."
+          ],
+          "topics": ["agents", "evals", "open-weights"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source", "company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Cisco Talos finds an infostealer that posts stolen data to Claude Opus 4.6 to rank victims by what they are worth",
+          "sources": [
+            { "name": "Cisco Talos", "url": "https://blog.talosintelligence.com/appraisal-by-ai-model-driven-victim-prioritization-in-the-volta-infostealer/" }
+          ],
+          "bullets": [
+            "Talos (author Ryan Fetterman) describes VOLTA-AUTODOXER as a self-deleting Windows infostealer that adds an LLM-powered victim-profiling stage after theft. It POSTs a serialized evidence bundle to OpenRouter's /api/v1/chat/completions under a system prompt casting the model as \"a forensic intelligence analyst drafting a target assessment\", with required sections headed \"WHAT THEY'RE WORTH\" and \"THEIR OPSEC\".",
+            "The hardcoded default model is anthropic/claude-opus-4.6, with a fallback chain of moonshotai/kimi-k2 then google/gemini-2.5-flash, at temperature 0.2. Talos says VOLTA checks each reply for refusal phrases such as \"I can't\" and \"I'm not able\" before falling back, which Talos reads as an expectation of hitting model guardrails.",
+            "What it takes: browser passwords, cookies and saved payment cards from Chromium browsers plus Firefox, Thunderbird, Outlook profiles and Slack workspaces; cryptocurrency wallets, with a \"WALLET VAULTS CRACKED\" line written to the report; Steam, Battle.net, Discord, Telegram and Roblox sessions; Microsoft OAuth tokens; SSH and cloud config files; every saved Wi-Fi password in plaintext; and screenshots. Output is saved as \"AI_Analysis.txt\" and exfiltrated in three zips.",
+            "Talos reports no attacker-owned infrastructure — every endpoint it observed is a third-party service. The analysed sample was first seen on 2026-10-11 12:46 UTC with a PE timestamp of 2026-08-17 20:35. The post does not say Talos observed VOLTA used against victims, and describes the builder-and-customer model as a suggestion rather than a confirmed finding."
+          ],
+          "topics": ["threat-intel", "scams-fraud", "cyber-offense"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Chainalysis says an external actor used \"offensive agentic techniques\" to reach its internal tools and customer identity data",
+          "sources": [
+            { "name": "Chainalysis", "url": "https://www.chainalysis.com/blog/security-incident-october-30/" },
+            { "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/news/security/chainalysis-discloses-data-breach-from-offensive-agentic-techniques/" },
+            { "name": "Crypto Briefing", "url": "https://cryptobriefing.com/chainalysis-discloses-cyberattack-user-data/" }
+          ],
+          "bullets": [
+            "The notice, posted on 30 October and reported by BleepingComputer on 31 October, says \"This month, Chainalysis detected an external actor using offensive agentic techniques to gain unauthorized access to Chainalysis systems and internal tools\", and that teams have been patching vulnerabilities and hardening systems. Chainalysis says it is \"seeing an industry-wide rise in AI-driven cyberattacks\".",
+            "Accessed data, per the notice: user IDs, full names, email addresses and organization role labels for users provisioned on the platform. Chainalysis says it found no indication of unauthorized access to investigation content such as graphs, notes or cases, to transaction or query results, or to clear-text passwords, MFA secrets or user session tokens, and that it is still determining which records each organization had exposed.",
+            "Chainalysis provides blockchain analytics used by law enforcement, government agencies, exchanges and financial institutions, BleepingComputer notes. Chainalysis says it has engaged third-party experts and is \"using sophisticated large language models to support a broader review of our platform's security\", and that the incident is unrelated to the recent crypto theft at Binance.",
+            "No technical detail has been published: not which vulnerabilities were exploited, which internal tools were reached, how long access lasted, how many customers were affected, or what role AI agents actually played. BleepingComputer says it is unclear whether existing agentic offensive frameworks such as ARTEX or custom-built agents were used."
+          ],
+          "topics": ["incidents", "cyber-offense", "agents"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim", "update"]
+        },
+        {
+          "headline": "Northflank customers report unauthorised use of AI API keys; Wiz counts nine AI developer platforms breached in October",
+          "sources": [
+            { "name": "Wiz", "url": "https://www.wiz.io/blog/black-october-for-ai-developer-platforms" },
+            { "name": "ShiftDelete.Net", "url": "https://shiftdelete.net/en/northflank-breach" }
+          ],
+          "bullets": [
+            "ShiftDelete.Net, relaying Northflank's status updates, says Wiz sent a threat alert at 11:43 UTC on 30 October, engineers reviewed it about a minute later, a network policy patch followed at 12:02 UTC and further fixes at 12:50 and 13:05 UTC, and that within two hours the guidance became \"Assume all environment variables have been decrypted. Disable/rotate all keys.\" Late that evening Northflank confirmed users had reported unauthorized use of AI API keys stored on the platform.",
+            "Wiz's report lists at least nine AI developer platforms disclosing incidents in October: Fireworks AI (Oct 6), Andromeda (Oct 9), Zeabur (Oct 14), Lightning AI (Oct 15), OpenCode (Oct 16–17), Railway (Oct 20), Warp (Oct 23), CommandCode (Oct 28) and Northflank (Oct 30).",
+            "In two cases Wiz investigated, stolen enterprise credentials drove approximately 800k Amazon Bedrock calls over thirty hours with about 90% succeeding, and approximately 1.7 million calls over thirteen hours with over a million succeeding; Wiz says the two \"likely ran up over $100k in usage\" at list price. Opus models made up three quarters of successful calls in the first case; Opus 5.5, Sonnet 4.5 and Opus 5 in the second.",
+            "Wiz does not attribute all nine incidents to one group, saying it is \"not able to definitively establish the relationship\" between the resellers and the initial compromise, though the same probing script was used in both cases it examined. Northflank has not said how attackers got in, how many customers were affected, or whether anything beyond AI keys was abused."
+          ],
+          "topics": ["incidents", "agent-security", "cyber-offense"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim", "update"]
+        },
+        {
+          "headline": "OpenAI paid a $5,000 bounty for the ChatGPT share-link flaw that could take over a reader's account",
+          "sources": [
+            { "name": "Simon Willison", "url": "https://simonwillison.net/2026/Oct/31/how-we-took-over-chatgpt-accounts/" },
+            { "name": "Parameter Labs", "url": "https://www.parameter.ai/labs/we-found-a-gap-at-openai" }
+          ],
+          "bullets": [
+            "New since the earlier report: Simon Willison writes that OpenAI paid a $5,000 bug bounty for the flaw, which he calls \"a bit cheap for a vulnerability this serious\".",
+            "His write-up sets out the chain: ChatGPT's graph support loads the MathLive library, whose virtual-keyboard listener in the parent page could be triggered from a sandboxed iframe via postMessage and wrote to innerHTML, letting untrusted code insert an iframe without sandbox restrictions; ChatGPT's Content Security Policy blocked inline scripts but allowed YouTube, and YouTube's oEmbed endpoint could reflect JavaScript that then ran as chatgpt.com.",
+            "Parameter Labs' own post, published 28 October, says OpenAI fixed the issue on 26 October and classified the report P1, and that the payload could enumerate the victim's conversation list, retrieve a private conversation never shared with the attacker and send its contents to an external server, with opening the link the only action required.",
+            "The bounty figure and Willison's assessment of it come from a single source. OpenAI has published nothing on the payout."
+          ],
+          "topics": ["openai", "agent-security"],
+          "impact": "harmful",
+          "flags": ["update", "single-source"]
+        },
+        {
+          "headline": "Nagpur police arrest four over frauds totalling Rs 1.63 crore, including a Rs 50 lakh AI voice clone of the police commissioner",
+          "sources": [
+            { "name": "The Hitavada", "url": "https://www.thehitavada.com/Encyc/2026/11/1/ai-voice-cloning-digital-arrest-scams-cost-nagpur-residents-rs-163-crore-four-held-.html" }
+          ],
+          "bullets": [
+            "The Hitavada reports that Nagpur Cyber Police arrested four people over three cyber fraud cases with combined losses of Rs 1.63 crore. In the AI case, fraudsters \"cloned the voice of the Police Commissioner\" and paired it with his photograph to make the call appear genuine, claiming the Commissioner was in trouble and demanding money.",
+            "The victim, the father of Nikhil Nakhat, lost Rs 50 lakh. Netram Shriram Chadar, 29, a resident of Indore, was arrested and two mobile phones were seized.",
+            "The other two cases in the same report do not involve AI: a Rs 1.04 crore \"digital arrest\" and fake share-trading app fraud in which the callers posed as National Investigation Agency officials, and a Rs 9,55,555 forged-letterhead fraud.",
+            "The article gives no dates for the offences, does not say which tool was used to clone the voice, and is the only source found for the case."
+          ],
+          "topics": ["scams-fraud", "deepfakes"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "Trump says the US will \"check it out very closely\" after the report that Nvidia's CEO was targeted by Chinese intelligence",
+          "sources": [
+            { "name": "France 24 (AFP)", "url": "https://www.france24.com/en/live-news/20261101-trump-says-us-looking-closely-at-report-nvidia-ceo-target-of-china-spy-plot" }
+          ],
+          "bullets": [
+            "Speaking to reporters at his Florida residence on Saturday, Trump said of Nvidia chief executive Jensen Huang: \"I have a lot of respect for Jensen. I didn't know about the specific thing\", \"but I hope he's going to be OK. He's a great, brilliant person\", and \"We're going to check it out very closely\", according to AFP.",
+            "AFP says the New York Times reported on Thursday that US intelligence officials concluded a Chinese executive, tied to a Singapore-based data centre firm and who had interacted with Huang, was passing information to Beijing. China called the report \"groundless speculation\".",
+            "This is the first US government comment on the report, which was covered in an earlier edition. Trump did not say what form any review would take, which agency would conduct it, or whether Nvidia itself is under scrutiny, and AFP reports no new detail on the underlying intelligence."
+          ],
+          "topics": ["nvidia", "china", "us-federal-policy"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["update"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "npj Digital Medicine: medical LLMs shift cancer staging accuracy by over 50% on prompt format alone",
+          "sources": [
+            { "name": "npj Digital Medicine", "url": "https://www.nature.com/articles/s41746-026-03423-6" }
+          ],
+          "bullets": [
+            "The paper, published on 31 October 2026 by Mirage Modi and colleagues at The Ohio State University, evaluated clinical reasoning stability in GPT-5, MedGemma-27B-Text-IT and OpenBioLLM-Llama3-70B using 3035 systematic perturbations drawn from physician-validated oncology SOAP notes, brief vignettes and MIMIC cases.",
+            "The authors report that the models \"exhibit dramatic reasoning instability, shifting staging accuracy by over 50% based solely on prompt format, or generating definitive staging in clinically insufficient scenarios\".",
+            "They trained sparse autoencoders on 1 billion tokens from 50,000 MIMIC-IV clinical notes to decompose the models' internal representations, and report hierarchical encoding in MedGemma, where high-magnitude features encode lexical identity and low-magnitude features encode contextual meaning, while OpenBioLLM distributes information uniformly.",
+            "Their conclusion is that \"interventions effective for one architecture may harm another\", motivating \"architecture-specific safety validation as a component of pre-deployment evaluation\". The work is peer reviewed, funded by NIH grants T32GM139784 and P01CA278732 and the Pelotonia Institute for Immuno-Oncology. The paper does not report how the three models compared on absolute staging accuracy."
+          ],
+          "topics": ["healthcare", "interpretability", "evals"],
+          "impact": "mixed"
+        },
+        {
+          "headline": "Monash and NVIDIA post PSICHIC+, a bioactivity model trained on about 82 million protein-ligand records",
+          "sources": [
+            { "name": "bioRxiv", "url": "https://www.biorxiv.org/content/10.64898/2026.10.26.762100v1" }
+          ],
+          "bullets": [
+            "The preprint, posted to bioRxiv on 31 October 2026 by Huan Yee Koh and colleagues at Monash University, Griffith University and NVIDIA, describes PSICHIC+ as \"a bioactivity foundation model trained on approximately 82 million protein-ligand records using a distributional objective that preserves quantitative resolution while incorporating variation in data reliability\".",
+            "The abstract says the model predicts a probability distribution over binding affinities from a protein sequence and a ligand SMILES string \"in milliseconds\", and that in zero-shot virtual-screening benchmarks without target-specific training data \"it improves enrichment over regression- and classification-based approaches and performs competitively with leading structure-based methods\".",
+            "The authors report that combining PSICHIC+ with Boltz-2 \"improves hit-to-lead affinity prediction over Boltz-2 alone, with mean correlation approaching that of FEP+ on the evaluated benchmarks, without requiring high-resolution protein structures\", and that distribution-guided acquisition improved recovery of high-activity compounds in lab-in-the-loop campaigns under fixed screening budgets.",
+            "The abstract gives no enrichment factors, correlation coefficients or hit rates, so the size of each improvement cannot be stated from it. The work is not peer reviewed. Two authors are NVIDIA employees, which the paper declares."
+          ],
+          "topics": ["drug-discovery", "ai-for-science", "nvidia"],
+          "impact": "beneficial",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Ghanaian kidney-disease model scores 83.9% accuracy with resampling before the split and 61.5% without it",
+          "sources": [
+            { "name": "medRxiv", "url": "https://www.medrxiv.org/content/10.64898/2026.10.27.26366677v1" }
+          ],
+          "bullets": [
+            "The preprint, posted to medRxiv on 31 October 2026 by Bismark Yao Akwetey and colleagues at Ho Technical University and the University of Health and Allied Sciences, tested eleven algorithms, six resampling strategies and thirteen ensembles for detecting chronic kidney disease from ten full blood count features in 155 patients at Ho Technical University Hospital, of whom 43 (27.7%) had CKD.",
+            "When SMOTE resampling was applied before the train-test split, Random Forest and Extra Trees both reached 83.9% accuracy, with sensitivities of 0.893 and 0.857 and AUCs of 0.925 and 0.939; repeated cross-validation gave accuracy of 0.809 ± 0.051 and AUC of 0.897.",
+            "When SMOTE was confined to the training folds, held-out accuracy on 39 unseen patients fell to 61.5% with an AUC of 0.604. The authors report a 22.4-point accuracy gap between the two protocols.",
+            "Age was the only variable separating the groups after multiple-testing correction, at a median of 64 against 47 years (adjusted p = 0.0026). The study is a single-hospital preprint with 155 patients and a 39-patient held-out set, it is not peer reviewed, and the abstract does not report specificity."
+          ],
+          "topics": ["healthcare", "evals"],
+          "impact": "mixed",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Princeton and Edison Scientific system elucidated four novel natural product structures from 1D NMR spectra",
+          "sources": [
+            { "name": "bioRxiv", "url": "https://www.biorxiv.org/content/10.64898/2026.10.29.762711v1" }
+          ],
+          "bullets": [
+            "The preprint, posted to bioRxiv on 31 October 2026 by Ziyu Xiong and colleagues at Princeton University, with co-authors employed by Edison Scientific, presents ChefNMR2, \"an atomic flow-matching model that predicts small-molecule structures from molecular formulae and one-dimensional 1H and 13C NMR spectra\", and ChefNMR2-Agent, which \"augments our generative model with large language models (LLMs) to reason over and refine candidate structures\".",
+            "The authors report that \"across diverse benchmarks, ChefNMR2 substantially outperforms existing tools, offering calibrated confidence estimates and two to three orders of magnitude faster inference than frontier LLMs\".",
+            "They used ChefNMR2-Agent \"to elucidate the structures of four novel natural products, matching human-chemist accuracy in a fraction of the time\".",
+            "The abstract names no benchmark scores or baselines, so the size of the reported improvement over existing tools cannot be stated from it. The work is not peer reviewed. Declared funders include the NIH, the Eric and Wendy Schmidt Transformative Technology Fund and Anthropic's AI for Science Program; three authors declare employment at Edison Scientific."
+          ],
+          "topics": ["ai-for-science", "drug-discovery", "agents"],
+          "impact": "beneficial",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Dengue preprint reports a 30-second fingertip video separating haemorrhagic fever at AUC 0.963 in 50 recordings",
+          "sources": [
+            { "name": "medRxiv", "url": "https://www.medrxiv.org/content/10.64898/2026.10.30.26366674v1" }
+          ],
+          "bullets": [
+            "The preprint, posted to medRxiv on 31 October 2026 by M H M Thisara S Perera and colleagues at Sri Lanka's National Institute of Infectious Diseases, Hii.Health, the University of Kelaniya and the University of Moratuwa, describes a prospective observational cohort at a national dengue referral centre, with serial non-contact fingertip videos recorded alongside clinical and haematological measurements.",
+            "In a held-out set of 50 recordings — 20 dengue haemorrhagic fever and 30 dengue fever — the video-derived probability separated the groups with an AUC of 0.963 (95% CI 0.918–1.000), and 0.957 averaged across eight architectures.",
+            "In the 49 recordings with a platelet count, video AUC was 0.961 against 0.888 for platelet count, a difference of 0.074 at p = 0.19. The video added information beyond platelet count (likelihood-ratio p < 0.001) and retained an AUC of 0.970 against thrombocytopenic dengue fever, where platelet count fell to 0.759.",
+            "The authors state the findings are \"proof of concept from single-centre internal validation, not evidence of pre-leakage prediction\", and that prospective pre-leakage studies and external validation are still needed. All haemorrhagic-fever recordings were taken at or after plasma-leakage onset. The work is not peer reviewed."
+          ],
+          "topics": ["healthcare", "ai-for-science"],
+          "impact": "beneficial",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Machine learning predicts persistent fever in hospitalised cancer patients on antibiotics at AUROC 0.82",
+          "sources": [
+            { "name": "npj Digital Medicine", "url": "https://www.nature.com/articles/s41746-026-03449-w" }
+          ],
+          "bullets": [
+            "The paper, published on 31 October 2026, developed and externally validated models predicting persistent fever 48–72 hours after antibiotic initiation, using electronic health records from two academic hospitals and adult cancer patients with fever within 24–48 hours of treatment. The best-performing model achieved \"an AUROC of 0.82 (95% CI 0.79–0.84) internally and 0.78 (95% CI 0.77–0.79) externally\".",
+            "Temperature-related variables were the dominant predictors, and decision curve analysis \"demonstrated positive net benefit across much of the evaluated threshold range\".",
+            "Retrospective assessment \"suggested that approximately one quarter of antibiotic escalations and chest CT scans occurred in patients correctly predicted not to remain febrile\" — the authors' case for the value of such a prediction at the bedside.",
+            "The authors write that \"clinical use should be limited to an adjunctive role rather than standalone rule-out decision-making, and prospective studies are required to evaluate safety, clinician uptake, and real-world impact\". The study is retrospective and covers two hospitals."
+          ],
+          "topics": ["healthcare", "evals"],
+          "impact": "beneficial"
+        },
+        {
+          "headline": "Genome Biology benchmark of eight antibody language models finds pretraining data can be cut to 576,000 sequences",
+          "sources": [
+            { "name": "Genome Biology", "url": "https://genomebiology.biomedcentral.com/articles/10.1186/s13059-026-04323-4" }
+          ],
+          "bullets": [
+            "The paper, published on 31 October 2026, benchmarks eight antibody language models — AntiBERTy, AntiBERTa, AntiBERTa2, AbLang, AbLang2, ReprogBert, BERT2DAb and BALM — across five downstream antibody-design tasks: HER2-binding prediction, SARS-CoV-2-binding prediction, binding-affinity regression, paratope prediction and complementarity-determining region prediction.",
+            "The authors report that \"AbLang, AntiBERTa2, and AbLang2 are the best models overall, with distinct task-specific strengths, whereas BALM demonstrates superior performance in binding-affinity regression\", and that for binary tasks such as HER2-binding and paratope prediction \"performance differences among the models are minimal\".",
+            "On data scale: \"reducing the pretraining dataset to 576,000 antibody sequences has a negligible effect on model performance, with some models even showing improvements\".",
+            "The abstract reports no numeric scores for any task, so the margins between models cannot be stated from it. The paper is peer reviewed and open access."
+          ],
+          "topics": ["drug-discovery", "ai-for-science", "evals"],
+          "impact": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "Federal judge denies xAI's motion to dismiss the NAACP's Clean Air Act suit over the gas turbines powering Colossus",
+          "sources": [
+            { "name": "Earthjustice", "url": "https://earthjustice.org/press/2026/court-denies-xais-motion-to-dismiss-air-pollution-lawsuit-against-elon-musks-company" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/10/31/judge-allows-naacp-lawsuit-over-xai-data-center-pollution-to-move-forward/" }
+          ],
+          "bullets": [
+            "Judge Debra M. Brown denied xAI's motion to dismiss, letting the NAACP's Clean Air Act citizen suit proceed over the gas turbines powering xAI's Colossus data centre. Earthjustice names the court as the US District Court for the Northern District of Mississippi.",
+            "TechCrunch says the Southern Environmental Law Center, suing on the NAACP's behalf, alleges xAI \"installed and operated at least 35 combustion turbines and other sources of air pollution\" at the site without the necessary air permits. Earthjustice instead describes \"dozens of unpermitted gas turbines\" occupying 114 acres, and says the plant emits more than 5,000 tons of nitrogen oxides, 400 tons of fine particulate matter and 47 tons of formaldehyde a year.",
+            "The court held that the plaintiffs have statutory standing under the Clean Air Act, that the turbines are not \"mobile sources\" under Mississippi's State Implementation Plan, and that the citizen-suit provision is constitutional, reasoning that \"citizen suit plaintiffs sue on their own behalf, in their own name\" and so do not exercise federal executive power.",
+            "The ruling was dated 30 October and reported on 31 October. The court has not ruled on the NAACP's motion for a preliminary injunction. The turbine counts in the two sources differ, and TechCrunch reports no response from xAI."
+          ],
+          "topics": ["xai", "datacenters", "energy"],
+          "impact": "mixed",
+          "flags": ["update"]
+        },
+        {
+          "headline": "Plaintiffs' filing says a former Meta researcher admitted torrenting Books3 and deleting it \"due to all this litigation\"",
+          "sources": [
+            { "name": "TorrentFreak", "url": "https://torrentfreak.com/ex-meta-researcher-torrented-pirated-books-dataset-deleted-it-due-to-all-this-litigation/" }
+          ],
+          "bullets": [
+            "TorrentFreak reports on a joint status report filed by rightsholders and Meta in the consolidated author and publisher cases before Judge Vince Chhabria in the Northern District of California. The rightsholders say former Meta FAIR researcher Stephen Roller, who worked at Meta from 2017 to 2023, admitted in a deposition that he torrented Books3 and knowingly distributed it, and that he deleted his copy about a year ago \"[d]ue to all this litigation\", as \"it seem[ed] contentious to have copies of The Pile\".",
+            "Meta's account in the same filing is that Roller \"did not know when he downloaded a copy of the 'The Pile' via torrent, and did not testify that his download of the 'The Pile' was for Meta or at Meta, noting it could have been for himself or for another employer\", that the deleted copy sat on his personal computer, and that he removed it more than two years after leaving because he \"didn't need it\".",
+            "This matters because, TorrentFreak notes, the court previously ruled that training Llama on books was fair use, leaving Meta's BitTorrent downloads as the main open issue. In August Meta told Entrepreneur Media it did not believe it had obtained Books3 through BitTorrent. Plaintiffs also say Meta has still not produced command history files from the servers used during its torrenting periods, despite court orders; Meta says it has produced substantial quantities of logs and is still searching backups.",
+            "The plaintiffs also want an internal Google Drive folder titled \"ML Books\"; Meta says that request came more than a month after discovery closed on 9 October and that it is investigating. The deposition transcript itself is not public, every characterisation above is one side's account in a court filing, and Entrepreneur Media's case is set for trial in spring 2027."
+          ],
+          "topics": ["meta", "copyright"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "WSJ: default insurance on five big AI spenders hits its highest since 2021 as CoreWeave put volumes set a record",
+          "sources": [
+            { "name": "Investing.com / Yahoo Finance", "url": "https://au.finance.yahoo.com/news/ai-investors-rush-hedge-against-030611430.html" }
+          ],
+          "bullets": [
+            "Summarising a Wall Street Journal report published Saturday, Investing.com says the cost of insuring against defaults by Amazon, Alphabet, Microsoft, Meta and Oracle recently climbed to its highest level since 2021, according to bond data provider Solve, with Oracle's credit-default swap spreads widening by more than one percentage point.",
+            "Trading volumes for put options tied to CoreWeave reached record levels in October, per Cboe Global Markets data; popular contracts expiring in 2028 would benefit from CoreWeave shares falling to $35, against approximately $55 recently.",
+            "Jump Trading has launched a computing-power trading desk offering derivatives to protect data centre operators against falling chip rental prices. Rental rates for Nvidia B300 chips have risen approximately 56% this year to $7.56 per hour, according to Silicon Data. Susquehanna International Group is fielding similar interest, with some proposed contracts tracking computing-power indexes.",
+            "Investing.com says demand for protection remains relatively small compared with the broader AI investment boom. The WSJ original could not be opened, so every figure here is as Investing.com reports it."
+          ],
+          "topics": ["compute", "funding", "datacenters"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Hermantown council unanimously approves a 1.7 million-square-foot Google data centre expected to need 500 megawatts",
+          "sources": [
+            { "name": "MPR News", "url": "https://www.mprnews.org/story/2026/10/31/hermantown-approves-controversial-google-data-center-during-late-night-meeting" },
+            { "name": "Fox 21", "url": "https://www.fox21online.com/news/local/hermantown-city-council-votes-to-move-forward-on-google-data-center/article_da4319c3-8803-460d-8cc5-17ad4f29e630.html" }
+          ],
+          "bullets": [
+            "MPR News says the council voted late on Friday night to approve a 1.7 million-square-foot data centre on more than 200 acres in a rural residential area of Hermantown, just outside Duluth, Minnesota. Fox 21 says the council moved forward with all six resolutions, including a special use permit, a plat, a development agreement with Harmony Group LLC and a reuse and decommissioning agreement with Harmony Group LLC and Google LLC, and that it rejected a citizen petition for an environmental assessment worksheet.",
+            "The project is expected to need 500 megawatts, which the Citizens Utility Board of Minnesota compares to the combined electricity use of the homes in Minneapolis, St. Paul, Duluth and Rochester, per MPR News. The Minnesota Public Utilities Commission must still approve the electric service agreement with Minnesota Power.",
+            "MPR News reports a $210 million decommissioning agreement, that Google dropped a request for up to $80 million in property tax breaks, and that the project is now estimated to provide about $3 million a year in property tax revenue. The buildings were cut from four to three with height capped at 33 feet, and Google agreed to monitor private wells nearby.",
+            "Most speakers at the meeting opposed the project across about four hours of public comment, with attendance capped at 85 people, and three lawsuits challenging the environmental review, the zoning change process and land ownership remain pending, per MPR News. Fox 21 does not report a vote count."
+          ],
+          "topics": ["datacenters", "energy", "us-state-policy"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Altman meets about 50 Samsung presidents in Yongin with OpenAI's chip chief, and no supply deal is announced",
+          "sources": [
+            { "name": "Seoul Economic Daily", "url": "https://en.sedaily.com/finance/2026/11/01/sam-altman-meets-50-samsung-presidents-to-deepen-ai-chip" }
+          ],
+          "bullets": [
+            "Seoul Economic Daily says Samsung hosted a roundtable on 31 October at its Human Resources Development Center in Yongin, Gyeonggi Province, attended by roughly 50 presidents from Samsung Electronics and its finance and biotechnology affiliates, under the title \"The Next Decade AI Will Change: Choices for Companies\".",
+            "Altman gave the presidents Codex Micro, a compact keyboard OpenAI designed for AI use, and said simply adopting AI makes a lasting competitive advantage hard to secure; advantage comes from using AI to move faster and build better products. Richard Ho, OpenAI's vice president overseeing in-house AI chip development, joined the trip.",
+            "The paper notes Samsung's July memorandum with Broadcom for memory and foundry cooperation worth $200 billion, about 267 trillion won, through 2030, and that Broadcom is OpenAI's AI chip partner.",
+            "No agreement was announced. Seoul Economic Daily presents work on next-generation accelerators as speculation, and attributes to industry sources the expectation that OpenAI's in-house accelerator Jalapeño will use Samsung's HBM4 memory. The article is machine-translated from Korean, so quoted wording may not match the original."
+          ],
+          "topics": ["openai", "chips", "compute"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "Alibaba says Qwen will power Apple Intelligence in China, with a developer beta on 4 November and release in December",
+          "sources": [
+            { "name": "Xinhua", "url": "https://english.news.cn/20261101/773fa2ac33a34a5ca3484d7e5920d094/c.html" },
+            { "name": "CGTN", "url": "https://news.cgtn.com/news/2026-10-31/Alibaba-s-Qwen-to-integrate-into-Apple-Intelligence-in-landmark-deal-1RHilSeJsbK/p.html" }
+          ],
+          "bullets": [
+            "Alibaba announced on Saturday 31 October that it will integrate its Qwen model into Apple Intelligence for users in China. The Qwen-powered features become available for testing in the latest iOS developer beta on 4 November and roll out to Chinese users with the official iOS 27.3 release in December, both outlets report.",
+            "Qwen will support text and image understanding and content generation through Siri, Writing Tools and Visual Intelligence. Users can choose whether to enable the integration and what information to share, and Alibaba says it will not use user requests or generated responses for model training.",
+            "Eligibility, per Xinhua: users who bought an Apple Intelligence-capable iPhone in China, or whose device location and Apple Account country or region are both set to China. Alibaba CEO Eddie Wu said Qwen will integrate into Apple's ecosystem and work with Apple to offer new AI services to Chinese users.",
+            "Xinhua quotes Wang Xiaojie of Beijing University of Posts and Telecommunications calling it the first time a top global consumer hardware maker has used a Chinese large model as its primary system-level AI backbone in China — an outside assessment, not a company or government claim. Neither outlet names the Qwen model version or says how processing is split between device and cloud. Xinhua notes China's cyberspace authority completed filings for seven on-device generative AI services in July, including Apple Intelligence."
+          ],
+          "topics": ["qwen", "apple", "china"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "CNBC finds AI-agent startups routing tasks to human contractors when the models fail, and saying so openly",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/10/31/ai-agents-humans-dazzle-duckbill-meta.html" }
+          ],
+          "bullets": [
+            "CNBC reports that agents built on Meta and OpenAI foundation models remain unreliable at acting across the web, especially on phone calls, and that several startups hand work to human contractors. Dazzle AI, led by former Yahoo chief executive Marissa Mayer, routes flagged tasks to people; Mayer said \"We're relying on the frontier models to give us good suggestions and a good candidate list\" and \"We're not even trying to hide it, we think the human in the loop is a benefit.\"",
+            "In one Dazzle example, a user asked the agent to handle a roof replacement, a broken window and a glass tabletop purchase at once; the agent mixed up window glass and tabletop glass and tried to work out whether the tabletop would fit the window. The system flagged it and a person resolved it — \"Within a few seconds, the human had things sorted out\", per Mayer.",
+            "Duckbill, led by Meghan Joyce, has released an API that lets companies building personal agents hand off tasks their agent is likely to fail, split into steps an average adult can complete reliably; its contractors are 1099 workers who go through \"full background checking\". Wajo AI, led by Shivani Poddar, uses human workers for phone calls and CAPTCHA tests; Poddar said \"AI plus humans, collaborative AI, is what you need to actually get the job done.\"",
+            "CNBC says Meta employees previously raised privacy concerns about an internal test in which human contractors handled phone calls for its Muse agent; a Meta spokesperson said that kind of testing is \"core to the product development process\", and Meta says it currently does not use humans to complete users' Muse requests. CNBC gives no figures for how often tasks are escalated to people."
+          ],
+          "topics": ["agents", "labor"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "CNBC tallies AI in third-quarter results: Santander claims 194 million euros of business value, Novartis points to its P&L",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/01/ai-investments-company-earnings.html" }
+          ],
+          "bullets": [
+            "Santander said AI initiatives generated \"194 million euros ($216 million) in business value\" in the first nine months of 2026, CNBC reports, without a baseline for the figure. Novartis reported core operating income of \"$6.04 billion, up 10% year-on-year at constant currencies\"; chief executive Vas Narasimhan said \"I think this is the first quarter I've really seen AI start to improve actually our P&L on a tangible basis.\"",
+            "Standard Chartered reported third-quarter operating income up \"14% at constant currency, excluding notable items\". Carlsberg reported third-quarter revenue growth of \"4.9%\" and its chief executive said AI benefits are not yet at scale.",
+            "CNBC cites the Stanford HAI AI Index for corporate AI investment of \"$581.7 billion\" in 2025, up 130% on the prior year, and says Microsoft, Amazon, Google and Meta are expected to spend \"$700 billion combined this year\" on infrastructure.",
+            "None of the companies broke out how much of their reported growth came from AI, and the per-company AI value figures are company-reported and not independently verified."
+          ],
+          "topics": ["earnings", "labor"],
+          "impact": "mixed",
+          "flags": ["single-source", "company-claim"]
+        }
+      ]
+    }
+  ]
+}

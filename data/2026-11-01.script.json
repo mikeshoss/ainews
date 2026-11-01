@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-01",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Sunday, November 1st, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Visit epiloguelabs.com to learn more." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning. The advances, the research, and how it's being used for good and for harm, with every claim sourced." },
+        { "host": "B", "text": "So what are the three that matter most today?" },
+        { "host": "A", "text": "Two frontier labs moved to mark the text their models produce. The Decoder says Anthropic is extending its text watermark to four older Claude models. And Crypto Briefing and TokenPost say xAI is switching invisible watermarking on by default across its Grok API from November 7th." },
+        { "host": "B", "text": "DeepSeek's Harness team published Super-agent, an MIT-licensed prototype that watches one GitHub repository and optionally Feishu group chats, and opens work items without being prompted." },
+        { "host": "A", "text": "And two more platforms reported intrusions they describe as AI-driven. Chainalysis says an external actor reached its systems and internal tools, and Northflank told customers to assume all environment variables had been decrypted." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Let's start with the labs." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic extends its text watermark to four older Claude models; on two it disappears if sampling settings change",
+      "lines": [
+        { "host": "A", "text": "The Decoder, citing a customer email from Anthropic, says the watermark is being added to Claude Mythos 5, Claude Opus 4.7, Claude Opus 4.6 and Claude Sonnet 4.6. Claude Opus 5.5 already carries it." },
+        { "host": "B", "text": "What is the watermark, exactly?" },
+        { "host": "A", "text": "Anthropic calls it an imperceptible pattern in word choice. It adds no extra characters or tokens, and it doesn't change pricing or the request and response formats. Because it's embedded at the model level, customers can't switch it off." },
+        { "host": "B", "text": "And there's a catch on two of those models." },
+        { "host": "A", "text": "There is. On Claude Opus 4.6 and Claude Sonnet 4.6, the watermark only applies while temperature, top-p and top-k stay at their defaults. Change any one and you avoid the mark. Anthropic's email tells developers who rely on it for compliance to keep those settings at their defaults." },
+        { "host": "B", "text": "Worth saying plainly: this is one outlet quoting a customer email, and it's a company claim. Anthropic hasn't published a page on the change, so the whole account rests on that email. The Decoder ties the staged rollout to the EU AI Act's December deadline." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "xAI says invisible watermarking turns on by default for five Grok API models from 7 November",
+      "lines": [
+        { "host": "B", "text": "xAI is doing the same thing on a date certain. Crypto Briefing and TokenPost, both citing an announcement xAI shared on X, say invisible statistical watermarking becomes the default for Grok API text output on November 7th." },
+        { "host": "A", "text": "Which models?" },
+        { "host": "B", "text": "grok-4.7, grok-4.6, grok-4.5, grok-4.3 and grok-4.20, across api.x.ai, the Responses API and the Chat Completions API. Crypto Briefing says xAI states it does not change the length, quality, or speed of responses." },
+        { "host": "A", "text": "Can developers turn it off?" },
+        { "host": "B", "text": "Team administrators can, per model, in the xAI Console. But both outlets say that's limited to specific legal exceptions and compliance needs, not a general opt-out. Consumer-facing Grok products aren't affected." },
+        { "host": "A", "text": "And the caveats. This is a company claim from a single source, effectively one announcement reported by two outlets. xAI's own news index carried no post on this in the period we cover, so the details come from those two reports rather than a primary xAI page." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "DeepSeek open-sources Super-agent, a prototype coding agent that watches a repository and group chats unprompted",
+      "lines": [
+        { "host": "A", "text": "DeepSeek's Harness team announced Super-agent in a WeChat post on Saturday, October 31st, and published the code under the MIT license. ShiftDelete.Net reports that; the repository page showed about 5.0k stars and 475 forks when we read it." },
+        { "host": "B", "text": "What does it actually do?" },
+        { "host": "A", "text": "It listens to one GitHub repository, and optionally Feishu group chats. When an approved person asks for work, it opens a work item, runs it in its own agent session and directory, and replies in the original conversation, for example with a pull request." },
+        { "host": "A", "text": "On the proactive side, that work requires a rule the team writes, and starts in a mode that only records what the agent would have done." },
+        { "host": "B", "text": "DeepSeek's own warnings are worth reading out. It calls this a research prototype for reference only, not an official DeepSeek product, says the code isn't production-ready, and warns that agent sessions run with full access as the operator's own OS user." },
+        { "host": "A", "text": "And no benchmark numbers. The releases section is empty, and all of this is a company claim, DeepSeek's own description of its own code." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To the research, and a replication that changes how a headline result reads." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Replication says TopK sparse autoencoders recover 99.6% of toy features where a paper reported 9% using BatchTopK",
+      "lines": [
+        { "host": "A", "text": "There's a paper on arXiv called Sanity Checks for Sparse Autoencoders, from February, whose abstract says sparse autoencoders recover only 9% of true features despite achieving 71% explained variance." },
+        { "host": "B", "text": "Who has pushed back on it?" },
+        { "host": "A", "text": "Celene Nightingale, in a post saying the 9% figure comes from one architecture, BatchTopK, and that the paper's own Appendix B reports a different architecture, TopK, recovering 99.9% of features." },
+        { "host": "B", "text": "Did the replication hold up?" },
+        { "host": "A", "text": "In their hands, TopK recovered 99.6% of features, and BatchTopK with per-sample normalisation recovered 99.3%. The other architectures failed. This is a toy setup: 3,200 feature vectors in 100 dimensions." },
+        { "host": "B", "text": "Caveats. This is a blog post, not a peer-reviewed response, and it's a single source. The author's own measurements haven't been independently checked. The original paper is a preprint too, and its arXiv page lists no author affiliations, so we couldn't confirm which institutions are behind it." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to security, where the week's pattern kept going over the weekend." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Cisco Talos finds an infostealer that posts stolen data to Claude Opus 4.6 to rank victims by what they are worth",
+      "lines": [
+        { "host": "A", "text": "Cisco Talos's Ryan Fetterman describes a self-deleting Windows infostealer called VOLTA-AUTODOXER that adds a model-driven victim-profiling stage after the theft." },
+        { "host": "B", "text": "So it steals first, then asks a model what the victim is worth." },
+        { "host": "A", "text": "Exactly that. It posts an evidence bundle to OpenRouter, under a system prompt casting the model as a forensic intelligence analyst drafting a target assessment. Talos says the required sections are headed, quote, WHAT THEY'RE WORTH, and, THEIR OPSEC." },
+        { "host": "B", "text": "Which models?" },
+        { "host": "A", "text": "The hardcoded default is Anthropic's Claude Opus 4.6, with a fallback chain of Moonshot's Kimi K2, then Google's Gemini 2.5 Flash, at temperature 0.2. Talos says the malware checks each reply for refusal phrases like, I can't, and, I'm not able, before falling back. Talos reads that as an expectation of hitting model guardrails." },
+        { "host": "B", "text": "The caveats matter here. This is a single source, and Talos doesn't say it observed VOLTA being used against real victims. The analysed sample was first seen on October 11th. Talos also reports no attacker-owned infrastructure at all, because every endpoint it saw is a third-party service." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Chainalysis says an external actor used \"offensive agentic techniques\" to reach its internal tools and customer identity data",
+      "lines": [
+        { "host": "B", "text": "Chainalysis posted its notice on October 30th, and BleepingComputer reported it on the 31st. The company says it detected an external actor using offensive agentic techniques to gain unauthorized access to Chainalysis systems and internal tools." },
+        { "host": "A", "text": "What was taken?" },
+        { "host": "B", "text": "User IDs, full names, email addresses and organization role labels for users provisioned on the platform. Chainalysis says it found no indication of unauthorized access to investigation content like graphs, notes or cases, or to transaction results, clear-text passwords, multi-factor secrets or session tokens." },
+        { "host": "A", "text": "This is a company law enforcement and government agencies rely on." },
+        { "host": "B", "text": "It is, as BleepingComputer notes. Chainalysis says it's using sophisticated large language models to support a broader review of its platform's security, and that the incident is unrelated to the recent crypto theft at Binance." },
+        { "host": "A", "text": "And this is a company claim, and an update to a story that surfaced on Friday. No technical detail has been published: not which vulnerabilities were exploited, not which internal tools were reached, not how long access lasted, not how many customers were affected, and not what role AI agents actually played." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Northflank customers report unauthorised use of AI API keys; Wiz counts nine AI developer platforms breached in October",
+      "lines": [
+        { "host": "A", "text": "The second one is Northflank. ShiftDelete.Net, relaying Northflank's status updates, says Wiz sent a threat alert at 11:43 UTC on October 30th, and a network policy patch followed at 12:02 UTC." },
+        { "host": "B", "text": "And the guidance to customers?" },
+        { "host": "A", "text": "Within two hours it became: assume all environment variables have been decrypted, disable and rotate all keys. Late that evening Northflank confirmed users had reported unauthorized use of AI API keys stored on the platform." },
+        { "host": "B", "text": "Wiz puts this in a wider frame." },
+        { "host": "A", "text": "It does. Wiz's report counts at least nine AI developer platforms disclosing incidents in October, with Northflank the ninth." },
+        { "host": "B", "text": "And what the stolen keys were used for?" },
+        { "host": "A", "text": "In two cases Wiz investigated, stolen enterprise credentials drove approximately 800k Amazon Bedrock calls over thirty hours, with about 90% succeeding, and approximately 1.7 million calls over thirteen hours, with over a million succeeding. Wiz says the two likely ran up over $100k in usage at list price." },
+        { "host": "B", "text": "The caveats. This is an update to a running story, and each of those is a company claim. Wiz does not attribute all nine incidents to one group. And Northflank hasn't said how attackers got in, how many customers were affected, or whether anything beyond AI keys was abused." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To Washington, and the first official word on a story we covered earlier in the week." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Trump says the US will \"check it out very closely\" after the report that Nvidia's CEO was targeted by Chinese intelligence",
+      "lines": [
+        { "host": "A", "text": "France 24, carrying AFP's report, says Trump spoke of Nvidia chief executive Jensen Huang while talking to reporters at his Florida residence on Saturday. He said, I have a lot of respect for Jensen. I didn't know about the specific thing." },
+        { "host": "B", "text": "And on what happens next?" },
+        { "host": "A", "text": "He said, but I hope he's going to be OK. He's a great, brilliant person. And then, we're going to check it out very closely." },
+        { "host": "B", "text": "What was the underlying report?" },
+        { "host": "A", "text": "AFP says the New York Times reported on Thursday that US intelligence officials concluded a Chinese executive, tied to a Singapore-based data centre firm, who had interacted with Huang, was passing information to Beijing. China called the report groundless speculation." },
+        { "host": "B", "text": "This is an update, and it's the first US government comment on the report. Trump didn't say what form any review would take, which agency would conduct it, or whether Nvidia itself is under scrutiny, and AFP reports no new detail on the underlying intelligence." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Monash and NVIDIA post PSICHIC+, a bioactivity model trained on about 82 million protein-ligand records",
+      "lines": [
+        { "host": "A", "text": "This went up on bioRxiv on October 31st, from Huan Yee Koh and colleagues at Monash University, Griffith University and NVIDIA. They call it a bioactivity foundation model trained on approximately 82 million protein-ligand records." },
+        { "host": "B", "text": "What does it predict?" },
+        { "host": "A", "text": "Given a protein sequence and a ligand, it predicts a probability distribution over binding affinities, in milliseconds. In zero-shot screening benchmarks, with no target-specific training data, the authors say it improves enrichment over regression- and classification-based approaches and performs competitively with leading structure-based methods." },
+        { "host": "B", "text": "Caveats, and they're real. This is a preprint, not peer reviewed. The abstract gives no enrichment factors, no correlation coefficients and no hit rates, so we can't tell you the size of any of those improvements. And two of the authors are NVIDIA employees, which the paper declares." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "A court ruling next, on the power behind one of these data centres." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Federal judge denies xAI's motion to dismiss the NAACP's Clean Air Act suit over the gas turbines powering Colossus",
+      "lines": [
+        { "host": "A", "text": "Judge Debra M. Brown denied xAI's motion to dismiss, which lets the NAACP's Clean Air Act citizen suit proceed over the gas turbines powering xAI's Colossus data centre. Earthjustice names the court as the US District Court for the Northern District of Mississippi." },
+        { "host": "B", "text": "What's alleged?" },
+        { "host": "A", "text": "TechCrunch says the Southern Environmental Law Center, suing for the NAACP, alleges xAI installed and operated at least 35 combustion turbines and other sources of air pollution without the necessary air permits. Earthjustice describes it differently, as dozens of unpermitted gas turbines occupying 114 acres." },
+        { "host": "B", "text": "So the two sources don't agree on the count. Earthjustice also says the plant emits more than 5,000 tons of nitrogen oxides, 400 tons of fine particulate matter and 47 tons of formaldehyde a year. What did the judge actually decide?" },
+        { "host": "A", "text": "Three things. That the plaintiffs have statutory standing under the Clean Air Act. That the turbines are not mobile sources under Mississippi's State Implementation Plan. And that the citizen-suit provision is constitutional." },
+        { "host": "B", "text": "This is an update: the ruling was dated October 30th and reported on the 31st. The court hasn't ruled on the NAACP's motion for a preliminary injunction, the turbine counts in the two sources differ, and TechCrunch reports no response from xAI." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "WSJ: default insurance on five big AI spenders hits its highest since 2021 as CoreWeave put volumes set a record",
+      "lines": [
+        { "host": "A", "text": "Investing.com, summarising a Wall Street Journal report published Saturday, says the cost of insuring against defaults by Amazon, Alphabet, Microsoft, Meta and Oracle recently climbed to its highest level since 2021, according to bond data provider Solve." },
+        { "host": "B", "text": "Any single name standing out?" },
+        { "host": "A", "text": "Oracle. Its credit-default swap spreads widened by more than one percentage point. And put option volumes on CoreWeave hit record levels in October, per Cboe data. Popular contracts expiring in 2028 would benefit from CoreWeave shares falling to $35, against approximately $55 recently." },
+        { "host": "B", "text": "Caveats. We could not open the Journal's original, so every figure here is as Investing.com reports it, and that makes this a single source. Investing.com also says demand for this protection remains relatively small compared with the broader AI investment boom." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "And one deployment story to finish on." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Alibaba says Qwen will power Apple Intelligence in China, with a developer beta on 4 November and release in December",
+      "lines": [
+        { "host": "A", "text": "Alibaba announced on Saturday, October 31st, that it will integrate its Qwen model into Apple Intelligence for users in China. Xinhua and CGTN both report it. Testing opens in the latest iOS developer beta on November 4th, and it reaches Chinese users with the official iOS 27.3 release in December." },
+        { "host": "B", "text": "Where does it show up?" },
+        { "host": "A", "text": "Siri, Writing Tools and Visual Intelligence, for text and image understanding and content generation. Users choose whether to enable it, and Alibaba says it will not use user requests or generated responses for model training." },
+        { "host": "B", "text": "Who's eligible?" },
+        { "host": "A", "text": "Per Xinhua, people who bought a capable iPhone in China, or whose device location and Apple Account region are both set to China. Alibaba's chief executive Eddie Wu said Qwen will work with Apple to offer new services to Chinese users." },
+        { "host": "B", "text": "And what we don't know. These are company claims. Neither outlet names the Qwen model version, or says how processing is split between the device and the cloud." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we just said, is on the site." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
