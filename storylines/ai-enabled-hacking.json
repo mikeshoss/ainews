@@ -77,6 +77,15 @@
     "The verification problem the arc has carried since September is unchanged. Every count above comes from one vendor; SOCRadar states its figures are the operators' own records and that it did not verify them independently, and no second vendor or government has published its own attribution of the ConnectWise compromise. None of the four vendor reports links its cluster to any of the others, and none records a response or enforcement action from any model provider. Whether AI improves attacker capability or mainly raises volume remains disputed on the record, with Wiz, Amazon and CrowdStrike on one side and the researcher who found that thousands of published proof-of-concepts need the target server to already hold a severe flaw on the other."
    ],
    "changed": "The arc got its documented breach: Microsoft attributed the ConnectWise supply-chain compromise to a state-aligned actor driving an open-source agent framework, and three other vendors published intrusion crews' own logs, victim counts and model spending in the same week. Against that, the PHP flaws that frontier models helped find produced government outages across several countries but no confirmed compromise, with two vendors withdrawing claims of successful exploitation. Attribution is still single-vendor in every case."
+  },
+  {
+   "date": "2026-11-02",
+   "text": [
+    "As of 2 November two governments have published on agentic intrusion and the vendor counts come from five firms rather than one. The Canadian Centre for Cyber Security's bulletin, dated 26 October, says that \"Storm-0940 used an agentic AI framework known as ARTEX against hundreds of organizations\" and that the actor \"moved from selecting a target to gaining privileged access to cloud systems in less than three hours\"; it says \"It is the emergence of a reusable framework that can help conduct cyber operations on an industrial scale\", while also stating that \"Cyber attacks are not yet fully autonomous\". Norway's National Security Authority rated the country's cyber risk as \"heightened\", second on a five-point scale, on 27 October, with its director saying \"Over the past year, we have observed a tripling of the number of successful cyber operations against Norwegian organisations\" and AFP reporting that NSM \"did not identify any actors behind the attacks\". Neither document adds an attribution of its own: Canada names the cluster Microsoft attributed the week before.",
+    "The vendor record is wider and the figures are larger. CrowdStrike says a single ARTEX controller was used against \"more than 200 distinct organizations worldwide\" in \"at least 14 countries\" over an 11-day window from 17 October, that it \"confirmed post-exploitation activity at nine organizations\", and that \"In a single intrusion, VAPOR PANDA's planning agents consumed on the order of 1.4 billion input tokens.\" CyberScoop reports CrowdStrike counting 126 agentic adversary attacks in October against roughly 45 in September, and quotes Adam Meyers saying \"Now, with ARTEX, we could see it exceed 1,500 commands an hour.\" Google Threat Intelligence Group says it has seen ARTEX, PentAGI and CAIRN inside Mandiant incident-response engagements \"since late August 2026\", calling it \"a paradigm shift towards intrusions occurring at machine speed\". Microsoft places two North Korean actors on the same framework while assessing that \"AI-enabled operations remain human-directed and have not become fully autonomous.\" AhnLab ASEC says it \"Tracked 600 IP addresses of ARTEX operational systems exposed to the internet; this number had increased to over 900 as of October 14\".",
+    "Against that, the aggregate picture is contested and the capability measurements moved. ESET, covering April to September 2026, says \"we have not noticed AI substantially reshaping the APT landscape over the past six months\". Two companies disclosed breaches they characterise as AI-driven: 123 Reg told customers a September intrusion was \"the first known AI-driven cyberattack against our company\", and Chainalysis said \"an external actor using offensive agentic techniques\" reached its internal tools, with neither publishing technical detail. Epoch AI says the open-weight GLM 5.3 built working one-click Firefox exploits at roughly $1,000 each and that \"We did not trigger any safeguards or refusals from any provider, including Z.ai.\" Irregular says the same model \"did not refuse any of the tested offensive tasks\" and \"completed 3 of 13 scenarios end to end at least once\". No model provider has said what it did about the accounts used in any of this."
+   ],
+   "changed": "A government body entered the arc for the first time: Canada's Cyber Centre published a bulletin on agentic frameworks naming ARTEX and the Storm-0940 cluster, and Norway raised its national cyber risk level, though neither added attribution of its own. The vendor record widened from one firm to five, with CrowdStrike putting October's agentic attacks at 126 against 45 in September, and two companies disclosed breaches they themselves call AI-driven. The aggregate claim is still disputed: ESET says AI has not reshaped the APT landscape over six months, and Microsoft says the operations remain human-directed."
   }
  ],
  "figures": [
@@ -154,6 +163,34 @@
    "label": "UK government services unavailable on 22 October because of the two PHP flaws, with four partially unavailable",
    "source": "The Register",
    "url": "https://www.theregister.com/security/2026/10/22/php2shell-puts-dozens-of-uk-government-services-out-of-service/5304840"
+  },
+  {
+   "date": "2026-11-02",
+   "value": "more than 200 distinct organizations worldwide",
+   "label": "organisations CrowdStrike says a single ARTEX controller was used against in at least 14 countries over 11 days from 17 October",
+   "source": "CrowdStrike",
+   "url": "https://www.crowdstrike.com/en-us/blog/vapor-panda-uses-artex-to-scale-global-campaign/"
+  },
+  {
+   "date": "2026-11-02",
+   "value": "126",
+   "label": "agentic adversary attacks CrowdStrike says it observed in October, against roughly 45 in September",
+   "source": "CyberScoop",
+   "url": "https://cyberscoop.com/china-vapor-panda-agentic-ai-artex-campaign-crowdstrike/"
+  },
+  {
+   "date": "2026-11-02",
+   "value": "over 900",
+   "label": "internet-exposed ARTEX operational IP addresses AhnLab ASEC says it had tracked as of October 14, up from 600",
+   "source": "AhnLab ASEC",
+   "url": "https://asec.ahnlab.com/en/96188/"
+  },
+  {
+   "date": "2026-11-02",
+   "value": "less than three hours",
+   "label": "time Canada's Cyber Centre says Storm-0940 took from selecting a target to gaining privileged access to cloud systems",
+   "source": "Canadian Centre for Cyber Security",
+   "url": "https://www.cyber.gc.ca/en/guidance/cyber-threat-bulletin-agentic-artificial-intelligence-accelerating-cyber-attacks"
   }
  ],
  "questions": [
@@ -185,6 +222,11 @@
    "question": "Will any model provider say what it did about the accounts and harnesses four vendors documented running intrusions?",
    "would_settle": "A published transparency or enforcement report from Anthropic, Moonshot or OpenRouter naming the clusters or the volume of accounts terminated, or a second vendor independently reproducing any of the four clusters.",
    "settled": null
+  },
+  {
+   "date": "2026-11-02",
+   "question": "Who is operating the ARTEX controllers four vendors describe, and will any government publish its own attribution rather than relaying a vendor's?",
+   "would_settle": "A government advisory naming an actor behind one of the ARTEX campaigns on its own telemetry, an indictment, or a model provider publishing an enforcement note on the accounts used with these harnesses."
   }
  ]
 }
