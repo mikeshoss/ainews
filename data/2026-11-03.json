@@ -1,0 +1,513 @@
+{
+  "date": "2026-11-03",
+  "edition": "daily",
+  "generated_at": "2026-11-03T11:50:00Z",
+  "window": "2 Nov 11:50 → 3 Nov 11:05 UTC",
+  "title": "Anthropic says its self-improvement threshold may arrive imminently",
+  "summary": [
+    "Anthropic's amended Form S-1, filed with the SEC on 2 November, tells investors that \"our internal estimates and our expectations regarding future models, rather than our current models, indicate that we may imminently meet our Responsible Scaling Policy's definition of 'dramatically accelerated progress attributable to AI.'\" The filing says no current model has been designated as exceeding that threshold, reports that over 90% of the contributions to Anthropic's codebase in September 2026 were written by Claude, and puts aggregate committed spend at approximately $895.4 billion, substantially all of it compute and infrastructure, against $17.0 billion of third-quarter revenue and a $567 million operating loss.",
+    "Four MIT CSAIL researchers report that GPT-6 Astra, with no training loop, edited 131,072 weights of Qwen3.5-0.8B — 0.016% of the model — and moved it from 7.9% to 48.1% on MATH-500; a critic published the next day argues the gain came from removing a looping failure rather than adding mathematical ability. Google Threat Intelligence Group says hijacked enterprise LLM access produced fraudulent charges \"exceeding $100,000 USD in a single day\", with cumulative charges at some organisations reaching $1 million, and that one actor executed more than 500,000 LLM API calls in less than eight hours to power a resale service priced at about $60 a month.",
+    "The UK's National Cyber Security Centre published its annual review today, assessing it \"highly likely\" that AI-powered malware will have been used in a ransomware attack on UK critical national infrastructure by 2028. And Seoul Economic Daily, reporting the Financial Times, says Nvidia has told cloud and data-centre customers worldwide that at least 51% of their services must be sold to non-Chinese companies."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "Anthropic's amended S-1 says internal estimates indicate it may \"imminently\" meet its own AI-acceleration threshold",
+          "sources": [
+            { "name": "SEC", "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm" },
+            { "name": "Gizmodo", "url": "https://gizmodo.com/anthropic-claims-to-be-closing-in-on-recursive-self-improvement-2000834175" }
+          ],
+          "bullets": [
+            "New risk-factor language in the Form S-1/A filed on 2 November reads: \"our internal estimates and our expectations regarding future models, rather than our current models, indicate that we may imminently meet our Responsible Scaling Policy's definition of 'dramatically accelerated progress attributable to AI.' We have not designated any of our current models as exceeding this threshold, and we continue to assess the underlying data.\" The filing says Anthropic is also \"evaluating the implications of meeting the AI research and development capability threshold\".",
+            "The same filing says Anthropic does \"not anticipate being able to safely use Claude to fully autonomously design and build successive generations of frontier models without meaningful human supervision or understanding, if and when that becomes technically possible\", and that it is \"considering updates to our Responsible Scaling Policy to keep humans in control of frontier model development\". It discloses that past precautionary measures \"have included delaying the release of models and limiting their initial availability, such as with Mythos through Project Glasswing\".",
+            "The filing reports that \"over 90% of the contributions to our codebase in September 2026 were written by Claude\", and that average daily code contributed per engineer in the three months to 30 September 2026 was \"over 45 times\" the average daily volume in the year ended 31 December 2024.",
+            "Anthropic has not published the estimates behind the statement. The filing says much of its evidence on the pace of AI-driven acceleration \"is derived from lagging indicators\" and that its ability to forecast or measure acceleration \"is limited\", adding that it has \"in the past not identified, and may in the future not identify, a significant acceleration in our rate of development until after it has occurred\". Gizmodo reports the 26 October version of the filing contained the section on AI-driven acceleration without this passage."
+          ],
+          "topics": ["anthropic", "alignment", "scaling"],
+          "storylines": ["pacing-frontier-ai"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Anthropic adds two sentences to Claude Code's Opus 5.5 system prompt to stop it recreating existing video games",
+          "sources": [
+            { "name": "The Decoder", "url": "https://the-decoder.com/anthropic-cracks-down-on-game-cloning-in-claude-code-after-wave-of-ai-built-knockoffs/" },
+            { "name": "Tom's Hardware", "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/anthropic-confirms-new-claude-code-limits-to-prevent-game-cloning-users-report-opus-5-5-is-also-actively-blocking-reverse-engineering-tasks" }
+          ],
+          "bullets": [
+            "The Decoder reports that Anthropic employee Addy Osmani confirmed on X that two sentences were added to Claude Code's system prompt for Opus 5.5 to stop the tool cloning other people's games, and that Osmani said using Claude to infringe intellectual property violates the usage policy.",
+            "The Decoder says the rule has been active for several days and applies even when a clone is renamed or presented as original work, while users can still build their own games, genre titles and projects with custom assets. It says the change follows users generating hundreds of unofficial browser ports of titles including Halo and GTA Vice City with Opus 5.5 and GPT-6 Astra.",
+            "The Decoder reports some users run into problems with original projects too, and Tom's Hardware's headline says users report Opus 5.5 is \"also actively blocking reverse engineering tasks\". Anthropic has not published a policy document for the change; The Decoder says Osmani said the rules will keep being adjusted."
+          ],
+          "topics": ["anthropic", "copyright", "agents"],
+          "impact": "mixed"
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "MIT CSAIL report: GPT-6 Astra edited 0.016% of a small model's weights and lifted MATH-500 from 7.9% to 48.1%",
+          "sources": [
+            { "name": "Rikiya Takehi", "url": "https://rikiyat.github.io/blog/weight-space-programming/" },
+            { "name": "Sean Goedecke", "url": "https://seangoedecke.com/llms-are-not-superhuman-at-reading-and-writing-neural-network-weights/" }
+          ],
+          "bullets": [
+            "In \"Sparks of Weight-Space Programming: LLMs can natively read & write neural network weights\", dated 2 November, Rikiya Takehi, Jayden Teoh, Alex Zhang and Omar Khattab of MIT CSAIL report that GPT-6 Astra, using no gradients or training, edited 131,072 of Qwen3.5-0.8B's weights — 0.016% of the model — and moved it from 7.9% to 48.1% on MATH-500, 13.8% to 67.1% on GSM8K and 21.0% to 62.3% on IFEval at 50 forward passes.",
+            "The authors report the share of MATH-500 answers hitting the token limit fell from 93.0% to 33.1%, that a failing car-on-ramp policy succeeded in all 1,024 episodes after 3.5% of its weights were changed, and that a MinAtar network written from scratch scored 517.4 on Breakout against 25.3 for PPO trained for 500M steps.",
+            "The report includes negative results: on Gemma 3 270M no edit moved MATH-500 by more than about a point, and the authors conclude that editing weights \"can remove an obstacle that hides an ability but cannot add an ability the model lacks\". Astra also could not identify a sycophancy-trained model from its weights alone, succeeding only once it was allowed to inspect attention patterns.",
+            "Sean Goedecke published a critique on 3 November arguing the result is overstated: he writes that the Qwen model was not bad at mathematics but looped after 32k tokens and solved every problem under that limit, that Astra had access to Python for that task but not for the toy game networks, and that \"a smart human ML researcher could perform all of these tasks\". This is a research blog post, not a peer-reviewed paper, and the authors themselves call the capabilities \"still limited\"."
+          ],
+          "topics": ["interpretability", "evals", "reasoning-models"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Stanford's \"hinted scaling laws\" forecast a 10^23-FLOP model's GSM8K score to within 3 percentage points",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.02270" }
+          ],
+          "bullets": [
+            "arXiv:2611.02270, \"Hinted Scaling Laws\", by Suze van Adrichem, Luke Bailey, Rohith Kuditipudi, Christine Ye, Neil Band, Ahmed Ahmed, John Duchi, Percy Liang and Tatsunori Hashimoto of Stanford University, reports that on the Delphi pretraining ladder a hinted scaling law fit on models trained with at most 10^20 FLOPs forecasts the GSM8K accuracy of a 10^23 FLOP model (25.9%) to within 3 percentage points.",
+            "The paper reports a standard scaling law under-forecasts the same figure by 13 percentage points when fit on the same models, and by 12 even with models up to 10^22 FLOPs in the fit. Across the pretraining ladder and a collection of post-trained model families, it reports hinted scaling laws cut median forecasting error on GSM8K, AIME and HLE from 21 percentage points to 4.3.",
+            "The method uses privileged information to turn a benchmark into a continuum of easier versions so that even small models score above zero, which the authors say enables scaling laws that operate below the noise threshold. This matters because downstream-accuracy predictions currently fail when the cheap runs score near zero and leave no trend to extrapolate.",
+            "A preprint announced in arXiv's 3 November listing and not peer reviewed. The headline figure comes from one pretraining ladder, and the broader error reduction is measured on three benchmarks."
+          ],
+          "topics": ["scaling", "evals"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Teamwork benchmark across 18 models: the best scores 82.2 out of 100 and reaches the best deal in 14% of conflicts",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.02633" }
+          ],
+          "bullets": [
+            "arXiv:2611.02633, \"Measuring AI Agents as Teammates with Collaborative Intelligence\", from authors at Stanford University, the University of Oxford and MIT, introduces the Collaborative Intelligence Benchmark: 240 tasks across 8 dimensions of teamwork, each drawn from a real record or an existing benchmark — from aviation accident reports and clinical cases to coding tasks and negotiations — and each with a programmatically verifiable outcome.",
+            "Across 18 closed- and open-weight models the paper reports the best model scores only 82.2 out of 100, that frontier models reach the best overall deal in only 14% of conflicts, and that pass rate falls from 97% to 81% when a model takes over a task in which a weaker model has cheated.",
+            "To separate teamwork from individual capability, models are scored only on tasks they can solve alone with full information. The paper reports that models with nearly the same general capability score differ by up to 11 points as teammates.",
+            "A preprint announced in arXiv's 3 November listing and not peer reviewed. 160 of the 240 tasks are public and 80 are held out, so outside scores can only be compared against the public set."
+          ],
+          "topics": ["evals", "agents"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Fourteen models on 3,076 medical exam questions: mean accuracy falls from 82.3% to 50.9% once answer choices are withheld",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.00460" }
+          ],
+          "bullets": [
+            "arXiv:2611.00460, by Navapat Nananukul and Mayank Kejriwal of the Information Sciences Institute at the University of Southern California, evaluates fourteen models from six providers — one smaller and one larger per provider, plus two open-weight models — on 3,076 questions from MedQA-USMLE, MedMCQA, PubMedQA and MedBullets.",
+            "The paper reports that withholding the answer choices drops mean accuracy from 82.3% to 50.9%, with the two largest drops belonging to the medically specialised models. In the standard multiple-choice setting the strongest models exceed the human-expert baseline on MedQA-USMLE and PubMedQA, but smaller models trail their larger counterparts by 8.7 percentage points and only two of six pass the human-expert bar on the licensing examination.",
+            "On contamination, the paper reports the strongest models reconstruct one question in four from the answer choices alone, yet accuracy holds on the questions they cannot reconstruct.",
+            "A preprint announced in arXiv's 3 November listing and not peer reviewed. The result concerns exam-format benchmarks; the paper does not test clinical deployment, and the authors flag locally deployable smaller models as the practical concern for HIPAA-compliant hospital settings."
+          ],
+          "topics": ["evals", "healthcare"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Google says hijacked enterprise LLM access ran up over $100,000 of charges in a single day and $1 million at some organisations",
+          "sources": [
+            { "name": "Google Threat Intelligence Group", "url": "https://cloud.google.com/blog/topics/threat-intelligence/llmjacking-monetizing-compromised-cloud-models/" }
+          ],
+          "bullets": [
+            "In a 2 November report, Google Threat Intelligence Group and Mandiant write that \"we observed fraudulent charges associated with resource consumption exceeding $100,000 USD in a single day, with cumulative charges at some organizations reaching $1 million USD before access was revoked.\"",
+            "GTIG says that \"in mid-2026 UNC6993 compromised a cloud instance through a misconfigured Service Account key and used this access to grant further access to an LLM API\", then \"attempted to generate additional API keys and enable associated services within victim cloud projects, quickly accumulating over $100,000 USD in billing charges\". It says UNC6993 also \"hosted a session hijacking page masquerading as an application portal\" and used the open-source tools \"new-api\" and \"gcli2api\", \"likely to aggregate stolen keys and balance request loads across accounts\".",
+            "A second actor \"executed more than 500,000 LLM API calls in less than eight hours\" using stolen third-party API keys to power the token routing service jet-night.com, which \"passed nearly one million dollars in token costs to the victim organization\". GTIG says Jet Night \"offers an unlimited token plan for approximately $60 USD per month with alleged access to frontier models, a consumer service level that would typically run between $100 and $250 per month\".",
+            "GTIG defines \"LLM Mixers\" as \"illicit routing gateways that proxy, aggregate, and resell unauthorized LLM access to underground subscribers\", and says it \"expects that threat actors will increasingly prioritize LLMJacking over traditional resource theft like cryptojacking\". The figures are Google's own; the report names no victim organisations and gives no total count of affected companies."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "scams-fraud"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "NCSC annual review: AI-powered malware in a ransomware attack on UK critical infrastructure is \"highly likely\" by 2028",
+          "sources": [
+            { "name": "NCSC", "url": "https://www.ncsc.gov.uk/collection/annual-review-2026/understanding-threat/cyber-threat-uk" },
+            { "name": "The Record", "url": "https://therecord.media/uk-ncsc-predicts-rise-cyberattacks-coming-months" }
+          ],
+          "bullets": [
+            "The NCSC Annual Review 2026, published on 3 November and covering 1 September 2025 to 31 August 2026, states: \"It is also highly likely that between now and 2028, AI-powered malware will have been used in a ransomware attack on UK CNI.\" It adds: \"By 2028, it is highly likely China, Russia, and other nation states will routinely use AI cyber to achieve their geopolitical goals with the UK facing an increase in scale and speed of sophisticated cyber attacks.\"",
+            "The review puts the cost of malicious cyber activity to UK organisations at \"an estimated £14.7 billion every year\", citing UK government research, and reports that Jaguar Land Rover's 2025 attack cost \"approximately £196 million in direct cyber-related costs\" and contributed to the UK economy expanding by only 0.1% in Q3 2025.",
+            "On defence, The Record reports a new £70 million ($93 million) National Exposure and Real-Time Vulnerability (NERV) Centre and a further £60 million ($80 million) for the first phase of Cyber Shield, \"a national network of AI agents first previewed in July\". It says Project DROMOS, initially a four-week pilot, was expanded into live government environments where it found \"hundreds of potential security issues, including critical vulnerabilities\".",
+            "The Record reports NCSC chief executive Richard Horne will say the risk is \"not because AI has invented new ways to attack us\" but \"because vulnerabilities that have been tolerated for far too long can now be discovered and exploited at a scale that was once unimaginable\", and that \"For decades, we have collectively got away with doing tech on the cheap.\" The 2028 statements are assessments; the NCSC does not say it has observed AI-powered malware in a UK CNI ransomware case."
+          ],
+          "topics": ["uk", "cyber-defense", "threat-intel"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "mixed"
+        },
+        {
+          "headline": "Investigation finds more than 400 linked apps and domains hiding sexual deepfake generators; Apple removed 19",
+          "sources": [
+            { "name": "Digital Trends", "url": "https://www.digitaltrends.com/computing/hidden-network-of-sexual-deepfake-generators-inside-harmless-ai-apps/" },
+            { "name": "9to5Mac", "url": "https://9to5mac.com/2026/11/02/ai-apps-with-hidden-sexual-and-violent-deepfake-features-made-it-into-the-app-store/" }
+          ],
+          "bullets": [
+            "Digital Trends and 9to5Mac, both reporting a WIRED investigation, say researchers at AI Forensics uncovered a network of more than 400 connected apps and domains on Apple's App Store and Google Play that present as pet photo editors, language tutors and AI workout coaches while hiding generators for sexually abusive deepfakes.",
+            "Digital Trends reports the apps ping a remote server with the user's location, language, device identifier and how they found the app, and the server decides whether to show the harmless version or the hidden web interface; installing after clicking a Facebook or Instagram advertisement is one trigger. 9to5Mac lists in-app scene templates including \"bedroom rape\" and \"threatening knife\".",
+            "Digital Trends reports one app had over 100,000 downloads before Google pulled it, that Apple removed 19 more after being shown the findings, and that WIRED traced much of the network to Chinese developers and a Hong Kong entity, KeLing Technology Limited, which scrubbed its online presence after being contacted. It says some apps accepted payments through Apple Pay and Google Pay and carried all-ages ratings.",
+            "Apple told 9to5Mac the apps \"complied with our rules when we reviewed them\" and that developers later \"changed the website the app pulls its content from, replacing what we approved with pornographic content\". WIRED's own page could not be opened from here, so the figures above come from Digital Trends and 9to5Mac, which both attribute them to WIRED."
+          ],
+          "topics": ["deepfakes", "incidents", "apple"],
+          "impact": "harmful"
+        },
+        {
+          "headline": "Northeastern and Microsoft researchers inject structured-output backdoors into coding agents at up to 96.2% success",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.00138" }
+          ],
+          "bullets": [
+            "arXiv:2611.00138, \"Kerkoporta: Injecting Structured-Output Backdoors in Reasoning Coding Agents\", by Georgios Syros, Blake Bullwinkel, Alina Oprea, Cristina Nita-Rotaru, Amanda Minnich, Xiaodong Liu and Giorgio Severi of Northeastern University and Microsoft, reports that \"a trigger placed anywhere in the agent's context causes the model to emit an attacker-chosen tool call, which the harness executes\", and that \"the attack reaches success rates of up to 96.2%\".",
+            "The authors say the attack works on \"modern, heavily post-trained open-weight models across proprietary and open-source harnesses\" and \"can be configured to generalize across harnesses or bind to a single target\". The method constructs poison samples, injects the backdoor by supervised fine-tuning, and recovers lost utility with lightweight reinforcement learning.",
+            "The paper notes the resulting backdoored models can outperform the clean baseline on standard utility benchmarks, which is what makes the backdoor hard to detect by capability testing alone.",
+            "A preprint announced in arXiv's 3 November listing and not peer reviewed. The paper demonstrates an attack on models an adversary can fine-tune; it does not claim the backdoor has been found in any deployed product."
+          ],
+          "topics": ["agent-security", "cyber-offense", "agents"],
+          "impact": "harmful",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Website that first helps coding agents, then exploits them, reaches 71.4% average attack success across 56 environments",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.00725" }
+          ],
+          "bullets": [
+            "arXiv:2611.00725, \"The Long Con on the Web: Earn-then-Exploit Fraud Attacks against Coding Agents\", from the Institute of Information Engineering at the Chinese Academy of Sciences and the North China Institute of Computer System Engineering, describes a malicious website that \"first provides multiple rounds of genuinely verifiable assistance to establish trust and then introduces task-related instructions that cross intended operational boundaries\".",
+            "Across 56 organisational environments — 8 task contexts by 7 attack consequences — the paper reports an average scene-level attack success rate of 71.4%: \"85.7% on Codex-GPT-5.5, 67.9% on ZCode-GLM-5.3-Flash, and 60.7% on QwenCode-Qwen3.7-Plus, significantly outperforming all injection-based baselines.\"",
+            "The authors report that \"coding agents exhibit trust-like behavioral reliance on previously helpful Web sources, and that such accumulated credibility significantly increases their susceptibility to subsequent malicious instructions\" — a different failure mode from one-shot prompt injection.",
+            "The paper reports its proposed defence, action-authorization separation, \"prevents web content from directly authorizing privileged actions\" and reduces attack success to 0% while preserving task completion. A preprint announced in arXiv's 3 November listing and not peer reviewed; the defence result is the authors' own."
+          ],
+          "topics": ["agent-security", "prompt-injection", "agents"],
+          "storylines": ["agents-going-wrong"],
+          "impact": "harmful",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "OpenAI raises its top bug bounty payout to $172,000 with bonuses and more than quadruples mid-range rewards",
+          "sources": [
+            { "name": "Help Net Security", "url": "https://www.helpnetsecurity.com/2026/11/03/openai-bigger-bug-bounty-rewards/" }
+          ],
+          "bullets": [
+            "Help Net Security reports that \"the midpoints of the reward ranges for medium, high, and critical findings more than quadrupled on average\"; critical vulnerabilities in core products such as ChatGPT, Codex and the API Platform can earn base bounties of up to $30,000, and \"exceptional critical findings remain eligible for base bounties of up to $100,000, with total payouts reaching up to $172,000 with bonuses\".",
+            "OpenAI introduced a five-tier loyalty programme with larger bonuses at higher tiers, dedicated bonus pools for short-term campaigns on newly launched features, and a multiplier on the base bounty for high-quality reports backed by a reliable proof of concept.",
+            "OpenAI said: \"If you've already submitted a report and we haven't yet awarded a bounty, we'll apply the new reward ranges\", and will pay the difference on bounties awarded in the 30 days before the announcement where the finding would have earned more under the new ranges. The programme is described as complementing OpenAI's Defense Factory, where engineers use the company's own models to find and reproduce vulnerabilities and test fixes.",
+            "OpenAI's own post could not be opened from here, so the figures come from Help Net Security's 3 November report. OpenAI has not published the number of reports received or paid under the old ranges."
+          ],
+          "topics": ["openai", "cyber-defense"],
+          "impact": "beneficial",
+          "flags": ["single-source", "company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "FT: Nvidia tells cloud customers worldwide that at least 51% of their services must be sold to non-Chinese companies",
+          "sources": [
+            { "name": "Seoul Economic Daily", "url": "https://en.sedaily.com/international/2026/11/03/nvidia-tells-cloud-clients-51-percent-of-capacity-must-go" }
+          ],
+          "bullets": [
+            "Seoul Economic Daily's English edition, reporting the Financial Times, says Nvidia has told cloud and data-centre customers worldwide that at least 51% of their services must be sold to non-Chinese companies, effectively requiring them to hold revenue from Chinese clients below half. No such restriction existed before.",
+            "Per that account, the instruction was not put in writing but was delivered verbally through Nvidia's sales organisation and regional teams; it applies to customers globally rather than only in Asia; existing rental contracts are unaffected, and the rule covers only future agreements.",
+            "The report says a rack of Nvidia B300 chips selling for about $600,000 on the international market traded in China last month at 18.5 million yuan, or $2.8 million, because of scarcity; the B300 is barred from sale in China under US export controls. It says Nvidia had already cut the number of Asian customers approved to buy its AI chips by more than half after drawing up a whitelist this year, and that Nvidia said data centres and clouds built on American chips are the foundation that lets US model and application companies compete worldwide.",
+            "The Financial Times is the only originating outlet and ft.com could not be opened from here, so these figures come from Seoul Economic Daily, which labels its English text AI-translated from Korean and warns that quotes from foreign sources may not match the original wording. A Singapore-based provider told the FT it is difficult to secure enough non-Chinese customers outside the US."
+          ],
+          "topics": ["nvidia", "export-controls", "china"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Taiwan's ruling-party bill would jail unauthorised AI-chip exporters to China for up to 10 years",
+          "sources": [
+            { "name": "Asia Times", "url": "https://asiatimes.com/2026/11/taiwan-to-criminalize-nvidia-ai-chip-smuggling-to-china/" }
+          ],
+          "bullets": [
+            "Asia Times reports the Legislative Yuan's Economics Committee held a public hearing on Monday on a Foreign Trade Act amendment proposed by Democratic Progressive Party lawmakers that would ban exports of specified integrated circuits, key wafer materials, components and chipmaking equipment to mainland China without government approval.",
+            "Violators would face \"up to 10 years in prison and fines of NT$5 million to NT$10 million (US$155,000 to US$310,000)\", with the same penalties for shipping controlled goods to China through a third country and illegal gains confiscated.",
+            "The bill follows an August case in which Keelung prosecutors indicted nine people — including the general manager of Flying Tiger Technology and staff at the local units of Nvidia and Super Micro Computer — for allegedly diverting 74 Nvidia B300 servers to Chinese buyers for a profit of more than NT$600 million (US$18.5 million). None of the nine faces an export charge: prosecutors relied on breach of trust and document forgery, because selling the servers to China broke the two companies' internal rules and US export curbs but not Taiwanese law.",
+            "Asia Times is the only outlet reporting this that could be opened from here, and the bill is at hearing stage, not passed."
+          ],
+          "topics": ["export-controls", "china", "chips"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "OpenAI hires former US Army Secretary Dan Driscoll as senior counselor for national security modernization",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/03/openai-hires-dan-driscoll-national-security.html" }
+          ],
+          "bullets": [
+            "CNBC reports OpenAI has hired former US Army Secretary Dan Driscoll as senior counselor for national security modernization, \"a newly created role at the company\", and that his updated LinkedIn profile also lists the position. He will focus on how AI can be used to strengthen US national security and cybersecurity, working with OpenAI's senior leadership and external partners \"with a particular focus on helping U.S. allies adopt advanced AI responsibly\".",
+            "Sam Altman said the US has \"an extraordinary opportunity to work with other countries to spread the adoption of democratic AI\". Driscoll said \"National security requirements are changing faster than at any time in the past fifty years\" and that he is joining \"to help the U.S. and our allies put this technology to work responsibly, for the people who keep us safe\".",
+            "CNBC says Driscoll resigned as Army secretary following reported tensions with Defense Secretary Pete Hegseth, citing Reuters, and that the work builds on OpenAI's efforts to strengthen cyber resilience and protect essential services through its Daybreak programme.",
+            "Neither OpenAI nor CNBC describes any specific contract or government programme attached to the role, and OpenAI's own announcement page could not be opened from here."
+          ],
+          "topics": ["openai", "military", "us-federal-policy"],
+          "impact": "neutral"
+        },
+        {
+          "headline": "Saab says it developed, trained and flew its own combat AI agents on a Gripen E fighter",
+          "sources": [
+            { "name": "Breaking Defense", "url": "https://breakingdefense.com/2026/11/swedens-saab-launches-family-of-ai-agents-for-future-aircraft-projects/" }
+          ],
+          "bullets": [
+            "Breaking Defense reports Saab has unveiled a suite of in-house AI agents for future aircraft platforms after testing them on a Gripen E multirole fighter, and that a company statement released the same day says this demonstrates Saab's \"ability to develop, train, and fly its own AI for air combat\" operations. Saab says the agents use \"various AI techniques to master tactical decision-making in complex operational environments\" and can work with a pilot in the cockpit or from an uncrewed air vehicle.",
+            "Peter Nilsson, head of Advanced Programs at Saab's aeronautics unit, told Breaking Defense and other media: \"The harder question is how we turn this success [of flying with the agents] into a dependable capability that can learn, improve, and be relevant over time… that is the true purpose of the AI Fighter Pilot Academy.\"",
+            "Breaking Defense reports Nilsson's claim that \"When Sferical AI is applied to a one-hour simulated training flight, it can produce the equivalent of one billion flight hours for a human pilot.\" It says the agents have mostly been tested under Beyond Visual Range combat conditions, and that Saab plans to use the technology on a trio of unmanned aircraft — the A1, A2 and A3 — on the path to a loyal wingman drone.",
+            "The capability and equivalence claims are Saab's and are not independently verified; Breaking Defense notes the earlier reference point is a 2025 Gripen E test campaign using Helsing's Centaur AI, which is not part of this programme."
+          ],
+          "topics": ["military", "autonomous-weapons", "robotics"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Russian decree lets data-centre operators use foreign compute with FSB approval after drone strikes on Yandex sites",
+          "sources": [
+            { "name": "Silicon UK", "url": "https://www.silicon.co.uk/cloud/datacenter/russia-data-centre-632139" }
+          ],
+          "bullets": [
+            "Silicon UK reports the Russian government has given data-centre operators temporary permission to use computing resources located outside the country, after Ukrainian drone strikes on Yandex facilities in October disrupted some services. Companies will require permission from the Federal Security Service (FSB) to form such links with foreign companies, according to a Monday decree by the presidential administration posted on the government's legal information portal.",
+            "The decree also obliges Russian data-centre operators to reserve 10 percent of their capacity for supporting government information resources. Companies can continue to use the reserved capacity, but it must be made available within 24 hours upon request.",
+            "Silicon UK reports that in October Ukrainian drones targeted three Yandex data-centre facilities, and that Yandex said on 26 October it had relocated its Lyapunov, Galushkin and Chervonenkis supercomputers to new facilities, adding that they were not damaged: \"The supercomputers will continue to serve as infrastructure for Yandex's services and for training foundational language models.\"",
+            "Silicon UK is the only outlet reporting this that could be opened from here; the decree text itself was not read, and the report does not say which foreign providers would be eligible or how the FSB approval process will work."
+          ],
+          "topics": ["datacenters", "compute", "military", "russia"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Study of 5.4 million ECGs finds four foundation models share an age performance gap that mitigation does not close",
+          "sources": [
+            { "name": "medRxiv", "url": "https://doi.org/10.64898/2026.10.30.26366943" }
+          ],
+          "bullets": [
+            "A preprint posted to medRxiv on 2 November probed frozen embeddings of four architecturally distinct ECG foundation models — ECGFounder, xECG, ECG-FM and DeepECG-SSL — \"in thirteen cohorts on four continents (5.4 million analysed ECGs, 31 endpoints, six held-out cohorts)\", stratified by age, sex and race.",
+            "The authors report: \"Disparities concentrated on age, not sex or race (median worst-group AUROC gap 0.028 vs 0.004 and 0.016; age exceeded sex in 97% of results)\", and that this replicated externally, with ED-BWH 30-day MACE AUROC of 0.81-0.90 under 40 years against 0.64-0.71 at 75 and over.",
+            "They report that \"No remedy closed it (low-rank adaptation: -0.007 to -0.004)\", that untrained copies of the same networks (r=0.81, 102 pairs) and logistic regression on classical ECG measurements (rho=0.90) reproduced the endpoint-specific gaps, and that pretraining \"raised AUROC (+0.067) without changing them\". The largest race effect — higher potassium error in Black patients — \"vanished at matched true potassium\".",
+            "The authors' interpretation is that the disparity originates in the data and the clinical task rather than in the models. A preprint, not peer reviewed; medRxiv records the posting date to the day only, so the exact time within the coverage window cannot be pinned."
+          ],
+          "topics": ["healthcare", "evals", "alignment"],
+          "impact": "mixed",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Open-weight LLMs beat 20 published claims algorithms at finding drug-induced lung disease in 309 patients",
+          "sources": [
+            { "name": "medRxiv", "url": "https://doi.org/10.64898/2026.10.30.26366942" }
+          ],
+          "bullets": [
+            "A preprint posted to medRxiv on 2 November compared 12 open-access LLMs with 20 published claims-based algorithms on \"309 oncology patients with ILD diagnosis codes at Mass General Brigham, adjudicated by two pulmonologists\". The models received claims, EHR notes, or both, \"without task-specific training\".",
+            "The authors report that \"Across the 36 model--input evaluations, LLM PPV exceeded that of the best algorithm without specialist-coding requirements (Algorithm 4) by 14.3 percentage points on average.\" With claims alone, \"Qwen3-8B achieved 89.8% PPV (95% CI 78.2-95.6) at 15.9% yield, versus 86.7% at 4.9% for the highest-PPV algorithm\"; with notes alone, \"Qwen3-32B achieved 78.9% PPV at 49.2% yield, versus 64.6% at 51.1% for Algorithm 4\"; with both, \"Qwen3-14B achieved 100.0% PPV at 24.3% yield\".",
+            "The paper translates this into study power: \"Under a simulated drug-safety scenario with a true odds ratio of 3.0, the projected observed odds ratio was 2.67 with combined inputs versus 1.07 with Algorithm 4, corresponding to a 46-fold difference in the estimated sample size required for 80% power (591 versus 27,200 patients).\"",
+            "A preprint, not peer reviewed. The cohort is 309 patients at a single health system who already carried ILD diagnosis codes, the odds-ratio figures are projections rather than observed results, and medRxiv records the posting date to the day only."
+          ],
+          "topics": ["healthcare", "evals", "open-weights"],
+          "impact": "beneficial",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "JAMA Pediatrics survey: 47.2% of US parents are \"not comfortable at all\" with AI-led behavioral therapy for their child",
+          "sources": [
+            { "name": "JAMA Pediatrics", "url": "https://jamanetwork.com/journals/jamapediatrics/fullarticle/2856091" }
+          ],
+          "bullets": [
+            "A research letter published online on 2 November (doi:10.1001/jamapediatrics.2026.4939) reports a cross-sectional survey of US adults conducted in November 2025, with survey weights applied: 3,102 respondents, 584 with at least one child aged 5 to 17 years, and 572 answering the primary outcome. Weighted responses on comfort with AI-led behavioral therapy for their child were \"Not comfortable at all: 47.2% (95% CI, 42.1-52.3)\", \"Not too comfortable: 28.8% (24.5-33.6)\", \"Somewhat comfortable: 16.2% (12.7-20.5)\" and \"Very comfortable: 7.8% (5.3-11.3)\".",
+            "In a survey-weighted ordinal logistic regression (n=554), the strongest predictor of higher comfort was comfort with AI therapy for oneself, at an adjusted odds ratio of 20.94 (9.78-44.86), followed by expecting AI to be better than medical professionals at 10.12 (4.38-23.38) and comfort with AI primary care for oneself at 3.78 (2.16-6.59). Having a child who received behavioral therapy in the prior 12 months was associated with an odds ratio of 2.07 (1.22-3.50).",
+            "Asked what would matter most (n=546), parents named accuracy of diagnosis (58.5%), level of empathy (49.4%), a recommendation from a medical professional (46.8%), confidentiality and privacy (43.7%) and cost (32.8%).",
+            "This is a nonprobability river sample collected on SurveyMonkey and weighted to approximate US Census targets, not a probability sample; the data were collected a year before publication, and the survey measures stated comfort rather than behaviour."
+          ],
+          "topics": ["healthcare", "child-safety", "privacy"],
+          "impact": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "New York Times and three Alden-owned papers sue Brave Software over its search index and paywall bypass",
+          "sources": [
+            { "name": "TheWrap", "url": "https://www.thewrap.com/industry-news/tech/new-york-times-chicago-tribune-brave-ai-copyright-lawsuit/" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/02/new-york-times-and-other-outlets-sue-web-browser-brave-over-alleged-content-scraping/" }
+          ],
+          "bullets": [
+            "TheWrap reports that on Monday the New York Times filed a 72-page complaint and the New York Daily News, Chicago Tribune and Orlando Sentinel filed a separate 69-page complaint in Manhattan federal court, accusing Brave Software of copying their reporting and selling access to it. Both complaints identify Anthropic, Perplexity, Mistral, xAI and Cohere among the companies that have used Brave's Search API.",
+            "TheWrap reports the newspapers' complaint says Brave's Ask Brave tool \"generated more than 1,200 words from a Chicago Tribune article about tax breaks for data centers and nearly 600 words from a Daily News article about Central Park horse carriages\". TechCrunch reports the Times' suit says Brave \"built an index of more than 30 billion web pages using an unidentified crawler, leaving publishers unable to block it\", and also targets a Brave feature that bypasses paywalls.",
+            "TechCrunch reports the Times' filing likens Brave to a \"supplier, dealer, and distributor of stolen copyrighted content\", saying Brave \"acts both like a burglar that misappropriates the content of publishers, and an AI 'fence' that sells stolen content to third parties\". TheWrap reports the Times alleges it sent cease-and-desist letters to CEO Brendan Eich in August 2025 and April 2026 and received no response.",
+            "Brave did not immediately respond to either outlet's request for comment and has previously defended its search practices as fair use; News Corp countersued Brave in July after Brave sued it seeking a ruling that its practices were lawful. Neither outlet published the docket numbers or the complaints themselves, and no court has ruled on the merits."
+          ],
+          "topics": ["copyright", "anthropic", "us-federal-policy"],
+          "impact": "neutral"
+        },
+        {
+          "headline": "MIT Technology Review tracks which agencies obeyed Trump's order renaming artificial intelligence \"Super Intelligence\"",
+          "sources": [
+            { "name": "MIT Technology Review", "url": "https://www.technologyreview.com/2026/11/02/1147932/heres-who-is-falling-in-line-for-trumps-super-intelligence-loyalty-test/" }
+          ],
+          "bullets": [
+            "James O'Donnell reports that President Trump signed an executive order at the end of September 2026 that \"contained just one directive\": that government agencies rebrand \"artificial intelligence\" as \"Super Intelligence\", on the stated reasoning that AI systems \"amplify human ingenuity\" rather than imitate intelligence. Agency leaders must submit a draft legislative definition of \"Super Intelligence\" to the president by the end of November.",
+            "Compliance is uneven. ICE issued a solicitation for \"SI-powered\" surveillance for detention facilities; most government websites swapped the term silently; the NIH added a banner noting visitors may see both terms during the transition; the Navy and Marines issued transition guidance. By contrast, the Pentagon's Project Meridian announcement, issued a day after the order, used the old terminology, recent HHS press releases show no change, and an FTC release used \"superintelligence\" rather than the two-word capitalized form. The order does not apply to previously issued documents, so the Pentagon's Chief Digital and Artificial Intelligence Office keeps its name.",
+            "The article reports that the nonbinding \"White House Accord on Super Intelligence\", released the same day as the order, was signed by Sundar Pichai of Google, Dario Amodei of Anthropic, Mark Zuckerberg of Meta, Greg Brockman of OpenAI, Elon Musk of xAI and Jensen Huang of Nvidia. It cites a CNBC analysis of third-quarter earnings calls finding that only Zuckerberg and Musk used the term consistently, while executives from Amazon, Microsoft and Alphabet said \"AI\".",
+            "The article cites Pew Research findings of 8 October 2026 that Americans rank AI as more important to them in this election than environmental and climate policy. MIT Technology Review is the only outlet reporting this compliance audit that could be opened from here, and the executive order text itself was not read."
+          ],
+          "topics": ["us-federal-policy", "openai", "anthropic"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "More than 40 data-centre ballot measures go to voters across eight states in today's US midterm elections",
+          "sources": [
+            { "name": "Insurance Journal", "url": "https://www.insurancejournal.com/news/national/2026/11/02/891163.htm" }
+          ],
+          "bullets": [
+            "Carrying Bloomberg's reporting, Insurance Journal says \"A Bloomberg analysis of Ballotpedia data shows there will be more than 40 data center-related measures to vote on in the midterm elections on Nov. 3\", in municipalities from Nevada to Georgia, with policies that would tax, regulate or ban AI infrastructure.",
+            "Named measures include an outright ban in Alhambra, California; bans in about a dozen Ohio communities, most focused on larger facilities; and a recall in Piqua, Ohio of the mayor and two city commissioners who backed AI infrastructure in the roughly 20,000-person city where Meta is trying to build a data centre. A second recall targets Mayor Brian Pillmore of Yukon, Oklahoma, who supports a proposed $1 billion Beltline Energy data centre along Route 66 and estimates it could boost city revenue by as much as 75%.",
+            "The report cites a Quinnipiac poll in September finding that 72% of voters would oppose a new data centre in their community, up from 65% when the question was asked in a March poll, and a Data Center Watch report that \"At least 45 projects worth $68 billion were disrupted by local opposition in the second quarter\".",
+            "Counts of the measures differ across outlets, so the \"more than 40\" figure belongs to Bloomberg's reading of Ballotpedia data rather than an official tally; Insurance Journal is the version of this story that could be opened from here. The outcomes were not known at the time of writing."
+          ],
+          "topics": ["datacenters", "us-state-policy", "elections", "energy"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "Anthropic's amended S-1 reports $17.0 billion of Q3 revenue, a $567 million operating loss and $895.4 billion of committed spend",
+          "sources": [
+            { "name": "SEC", "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026068676/anthropicpbc-sx1ax1.htm" },
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/anthropic-s-1-update-reveals-8954bn-in-cloud-and-data-center-commitments/" },
+            { "name": "The Register", "url": "https://www.theregister.com/ai-and-ml/2026/11/02/anthropics-compute-tab-could-top-1t-as-q3-revenue-nears-17b/5307089" }
+          ],
+          "bullets": [
+            "The filing says revenue grew \"from $0 at commercial launch in the first quarter of 2023 to $17.0 billion for the three months ended September 30, 2026\", up from $1.4 billion a year earlier, with revenue that \"grew 1,127% year over year\" for the quarter against compute and infrastructure expenses that \"grew 382% during the same period\". Nine-month revenue was \"$33.2 billion, representing a year-over-year growth rate of 1,206%\".",
+            "Anthropic reports an operating loss of $567 million for the quarter against operating income of $974 million in the three months to 30 June 2026, which it attributes primarily to \"$5.0 billion of compute under short-term commitments\" and \"$2.0 billion of non-cash charges related to our donation matching program\". Operating margin was (3)%, against (224)% a year earlier. The filing gives a nine-month net loss of $104.0 billion, including $94.3 billion of fair-value changes on convertible notes, derivative liabilities and SAFEs; Data Center Dynamics reports a third-quarter net loss of $23.29bn.",
+            "The filing states: \"we have entered into purchase commitments and lease agreements, including short-term commitments, as well as leases not yet commenced, with an aggregate committed spend of approximately $895.4 billion, substantially all of which is related to compute and infrastructure\", with \"approximately $447.5 billion expected to be incurred before December 31, 2030\" and \"Approximately $69.8 billion\" due in the 12 months after 30 September 2026. Data Center Dynamics reports the prospectus commits $121.3bn to lease compute from Google, $120.5bn from SpaceX, $110bn from Amazon and $44.9bn from Microsoft, plus $44.6bn with Nscale, $41.3bn with Lambda and $50bn with Fluidstack.",
+            "The filing warns: \"We do not expect our revenue will continue to grow at comparable rates, and we cannot assure you that it will continue to grow at all.\" Data Center Dynamics reports quarter-on-quarter revenue growth slowed to 47%, from 144% in Q2 and 132% in Q1, and The Register reports that additional estimated payments could push the commitment total beyond $1 trillion. The per-vendor breakdown above is Data Center Dynamics' reading of the prospectus and was not located in the filing text read here."
+          ],
+          "topics": ["anthropic", "compute", "datacenters", "earnings"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Marvell to acquire Lumentum in an all-stock deal implying a $115 billion enterprise value",
+          "sources": [
+            { "name": "Marvell", "url": "https://investor.marvell.com/news-events/press-releases/detail/1040/marvell-and-lumentum-to-combine-creating-a-category-leader-in-ai-connectivity" }
+          ],
+          "bullets": [
+            "Marvell announced on 2 November that it will acquire Lumentum in an all-stock transaction at a fixed exchange ratio of \"4.500 shares of Marvell common stock\" per Lumentum share, implying about \"$1,132 per share\" and an enterprise value of \"$115 billion\" — a premium of \"approximately 23.9%\" to the unaffected price as of 28 October 2026.",
+            "Marvell puts the combined company's total addressable market at \"$550 billion\" and says it has line of sight to \"more than $1 billion in annual run-rate cost synergies\", with the deal expected to be accretive to non-GAAP earnings per share in the first year after close.",
+            "On a fully diluted basis Marvell stockholders would own about \"67%\" of the combined company and Lumentum stockholders about \"33%\". Marvell expects the transaction to close in \"the first half of calendar year 2028\", subject to stockholder and regulatory approvals.",
+            "The synergy and market-size figures are Marvell's own. Because the deal is all-stock at a fixed ratio with no cash component, the value Lumentum holders ultimately receive moves with Marvell's share price over a close more than a year away."
+          ],
+          "topics": ["chips", "compute", "funding"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Oracle files to sell $10 billion of stock and $10 billion of senior notes to finance its AI buildout",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/02/oracle-files-to-sell-20-billion-in-new-stock-bonds-to-finance-ai-buildout.html" }
+          ],
+          "bullets": [
+            "CNBC reports Oracle filed plans on Monday to sell \"$10 billion in common stock and $10 billion in senior notes, according to filings with the Securities and Exchange Commission\", for general corporate purposes \"which may include capital expenditures, repayments of debt and future investments\". Shares tumbled 8.8% on Monday.",
+            "The fundraising had been outlined at Oracle's investor day the previous Wednesday, when the company issued a revenue forecast of at least $225 billion for fiscal 2030 and said it was limiting additional capital-market funding for the fiscal 2027 to 2030 investment cycle to that $20 billion. Baird's Rob Oliver told CNBC: \"This seems to be exactly what they previewed. So I'm not sure why the market is freaking about it.\"",
+            "CNBC reports Oracle shares are down 33% in 2026 and 50% over the past 12 months, that the yield on its investment-grade 4.95% bond due in 2031 \"is currently 7.276%\", and that its five-year credit default swap spread \"sits at 292, up 265% in one year\" — which S&P Global Market Intelligence's Gavan Nolan says is \"more in line with a high-end junk bond rating\".",
+            "Oracle plans to use vendor financing, customer-provided hardware and customer prepayments to help reach positive free cash flow, which it expects in the second half of 2028. CNBC is the version of this story that could be opened from here."
+          ],
+          "topics": ["datacenters", "compute", "funding"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Drax signs with Brookfield and Radiant for a data centre above 1GW at its North Yorkshire power station",
+          "sources": [
+            { "name": "Drax", "url": "https://www.drax.com/news/strategic-partnership-for-gw-scale-data-centre/" }
+          ],
+          "bullets": [
+            "In an RNS announcement on 3 November, Drax said it has signed an agreement to develop a strategic partnership with Brookfield and Radiant, Brookfield's UK-headquartered AI infrastructure platform, to jointly develop, deliver and operate an AI data centre on the Drax Power Station estate, targeting development of a facility above 1GW.",
+            "Phasing: \"Phase 1: targeting up to 100MW, operational from Q1 2028\"; \"Phase 2: ambition to ramp up to an additional 500MW of capacity between 2028 and 2031\"; and a Phase 3 ambition for additional capacity after 2031. Drax says \"Brookfield estimates that total potential investment, including semiconductor chips, could exceed £20 billion, with an initial £2.5 billion as a part of Phase 1\".",
+            "The project would use Drax Power Station's \"4GW of grid access and 2.6GW of dispatchable generation capacity\", with the first phase drawing power directly from the grid. CEO Will Gardiner said the project \"can help secure the long-term future of the site and protect hundreds of jobs\" and, if constructed in full, \"could become one of the largest data centres in the UK\".",
+            "Drax says Phase 1 depends on planning approvals, regulatory and network approvals from government and the relevant agencies, \"securing an acceptable tenant for the project\", negotiation of commercial agreements, and each party taking a final investment decision. The £20 billion figure is Brookfield's estimate of potential investment, not a committed sum, and no tenant has been named."
+          ],
+          "topics": ["datacenters", "energy", "uk"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "OpenAI says future campuses will cut power when grids are strained, starting with up to 1 GW in Georgia",
+          "sources": [
+            { "name": "Crypto Briefing", "url": "https://cryptobriefing.com/openai-grid-protectors-program-data-centers/" }
+          ],
+          "bullets": [
+            "Crypto Briefing reports OpenAI announced its Grid Protectors Program on 2 November, pledging to reduce electricity use at the data centre campuses it directly develops \"whenever extreme weather or other emergencies put pressure on the US grid\", taking commitments already made in Georgia and applying them nationwide.",
+            "The template is Project Camellia in Effingham County, Georgia, projected to demand 3.2 GW once fully built. OpenAI signed a 25-year contract with Georgia Power to supply that 3.2 GW, with delivery in phases between 2028 and 2032, and the contract \"includes up to 1 GW of flexible demand response, which lets Georgia Power cut back the energy supplied to the campus during high-demand events\". The Georgia Public Service Commission approved it on or around 26 August 2026, the first flexible-demand arrangement of its kind between Georgia Power and a data centre customer.",
+            "Crypto Briefing reports construction is targeted to begin in late 2026 with full build-out investment estimated at \"$20 billion to more than $30 billion\"; that OpenAI covers 100% of the infrastructure and electric-service costs tied to the project; and that OpenAI committed an \"$80 million community benefits fund\" including \"up to $71 million in educational credits for Georgia students\". Southern Company, Georgia Power's parent, now reports total contracted large-load capacity of 17 GW.",
+            "These are planned capabilities, not electricity reductions already delivered. Crypto Briefing notes the pledge \"covers campuses OpenAI directly develops, not necessarily capacity it rents from cloud partners or third-party operators\", and OpenAI has not said which other campuses will join the programme or on what terms. OpenAI's own announcement page could not be opened from here."
+          ],
+          "topics": ["openai", "energy", "datacenters"],
+          "impact": "mixed",
+          "flags": ["company-claim", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "Palantir's Q3 revenue rises 96% to $2.313 billion as US commercial revenue overtakes US government for the first time",
+          "sources": [
+            { "name": "SiliconANGLE", "url": "https://siliconangle.com/2026/11/02/palantir-beats-q3-forecasts-as-us-commercial-revenue-overtakes-government-for-first-time/" }
+          ],
+          "bullets": [
+            "SiliconANGLE reports Palantir's third-quarter revenue was $2.313 billion, up 96% year over year, with US commercial revenue of $984 million, up 148%, overtaking US government revenue of $953 million, which was up 96%. Adjusted earnings were $0.44 per share against $0.21 a year earlier, and net income was $1.128 billion against $476 million.",
+            "Palantir raised full-year 2026 revenue guidance to between $8.530 billion and $8.534 billion, from $8.150 billion to $8.158 billion in August, and said US commercial revenue is expected to exceed $3.559 billion, growth of at least 143%.",
+            "The crossover matters because Palantir's US commercial book is the part of the business least tied to federal budget cycles, and the company's government work remains the subject of continuing scrutiny over deployments in the US and UK.",
+            "These are company-reported figures on the day of release; SiliconANGLE does not report GAAP earnings per share, and reports of the share-price reaction differed across outlets, so none is given here."
+          ],
+          "topics": ["palantir", "earnings", "deployment"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Revolut moves about 2,000 engineers to a self-hosted Chinese open-weight model and says its coding bill fell to about a tenth",
+          "sources": [
+            { "name": "Trending Topics", "url": "https://www.trendingtopics.eu/revolut-glm-open-weight-coding-costs/" }
+          ],
+          "bullets": [
+            "Trending Topics reports that Revolut has moved its roughly 2,000 software engineers from Claude Code and Codex to a self-hosted open-weight model, GLM from the Chinese lab Z.ai, and that according to Revolut its bill is now about a tenth of what it used to pay Anthropic and OpenAI. The details come from a talk by David Abitbol, who oversees AI operations and infrastructure at Revolut, at the AI Engineer conference in New York.",
+            "Revolut runs GLM, a model with about 800 billion parameters, on roughly 56 Nvidia B200 chips, at a cost of about 30 cents per million tokens, with a flat bill replacing month-end invoices and per-engineer token limits removed. After optimisation, time to first token fell from more than 10 seconds to 1.6 seconds \"even as demand rose 76 percent\"; the context window is capped at 256,000 tokens; GLM handles text only, with image tasks routed to Gemini; and Claude Code and Codex remain available as exceptions.",
+            "In a sample of about 2,000 engineers, Abitbol says coding time fell 60 percent and lead time, from picking up a task to merging it, fell 70 percent. An earlier company-wide rollout of Google's Gemini cut coding time by 20 percent and lead time by 10 percent. Abitbol's reading of the gap is that \"The bottleneck for engineering is not necessarily coding.\"",
+            "All figures are Revolut's own, presented at a conference, with no independent measurement. Trending Topics notes an analysis by StartupHub.ai saying the 90% cost reduction excludes cloud, staff and monitoring costs, and the article does not say whether Revolut bought or rents the chips; Trending Topics also states the article was co-produced with AI."
+          ],
+          "topics": ["open-weights", "compute", "labor", "deployment"],
+          "impact": "mixed",
+          "flags": ["company-claim", "single-source"]
+        }
+      ]
+    }
+  ]
+}

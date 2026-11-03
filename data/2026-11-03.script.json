@@ -1,0 +1,473 @@
+{
+  "date": "2026-11-03",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Tuesday, November 3rd, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Find out more at epiloguelabs.com."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what happened at the frontier of AI since yesterday morning. The advances, the research, and how it's being used for good and for harm, with every claim checked against its source."
+        },
+        {
+          "host": "B",
+          "text": "So what are the three that matter most today?"
+        },
+        {
+          "host": "A",
+          "text": "Anthropic filed an amended prospectus with the SEC, and told investors its internal estimates indicate it may imminently meet its own threshold for dramatically accelerated progress attributable to AI."
+        },
+        {
+          "host": "B",
+          "text": "Four researchers at MIT CSAIL say a frontier model edited 0.016% of a small model's weights and moved it from 7.9% to 48.1% on a maths benchmark."
+        },
+        {
+          "host": "A",
+          "text": "And Google's threat intelligence group says hijacked enterprise access to AI models ran up fraudulent charges exceeding $100,000 in a single day."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's start with the labs."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic's amended S-1 says internal estimates indicate it may \"imminently\" meet its own AI-acceleration threshold",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Anthropic filed an amended registration statement on November 2nd, and there's new language in the risk factors. It says its internal estimates and its expectations about future models, rather than current models, indicate it may imminently meet its Responsible Scaling Policy's definition of dramatically accelerated progress attributable to AI."
+        },
+        {
+          "host": "B",
+          "text": "That's a threshold in Anthropic's own Responsible Scaling Policy. Has it crossed it?"
+        },
+        {
+          "host": "A",
+          "text": "Not yet. The filing says no current model has been designated as exceeding the threshold, and that Anthropic continues to assess the underlying data. It also says it does not anticipate being able to safely use Claude to fully autonomously design and build successive generations of frontier models without meaningful human supervision or understanding, if and when that becomes technically possible."
+        },
+        {
+          "host": "B",
+          "text": "And it's reconsidering the policy itself."
+        },
+        {
+          "host": "A",
+          "text": "It says it's considering updates to the Responsible Scaling Policy to keep humans in control of frontier model development. The filing also reports that over 90% of the contributions to Anthropic's codebase in September of 2026 were written by Claude."
+        },
+        {
+          "host": "B",
+          "text": "This is a company claim in Anthropic's own prospectus, not an independent assessment. The estimates behind it haven't been published, and the filing itself says much of its evidence comes from lagging indicators and that its ability to measure that acceleration is limited."
+        },
+        {
+          "host": "A",
+          "text": "It even says it has in the past not identified a significant acceleration until after it happened. Gizmodo reports the October 26th version of the filing had the acceleration section, but without this passage."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To the research now."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "MIT CSAIL report: GPT-6 Astra edited 0.016% of a small model's weights and lifted MATH-500 from 7.9% to 48.1%",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Four researchers at MIT CSAIL report that GPT-6 Astra, using no gradients and no training, read and edited another model's weights directly. The edit was 131,072 weights in a model called Qwen3.5-0.8B. That's 0.016% of it."
+        },
+        {
+          "host": "A",
+          "text": "And the effect?"
+        },
+        {
+          "host": "B",
+          "text": "They report that at 50 forward passes it moved the model from 7.9% to 48.1% on MATH-500, from 13.8% to 67.1% on GSM8K, and from 21.0% to 62.3% on IFEval. A failing car-on-ramp policy succeeded in all 1,024 episodes after 3.5% of its weights were changed."
+        },
+        {
+          "host": "A",
+          "text": "They published their own negative results too."
+        },
+        {
+          "host": "B",
+          "text": "On a different small model, Gemma 3 270M, no edit moved MATH-500 by more than about a point. Their conclusion is that editing weights can remove an obstacle that hides an ability, but cannot add an ability the model lacks."
+        },
+        {
+          "host": "A",
+          "text": "And then there's a critique."
+        },
+        {
+          "host": "B",
+          "text": "Sean Goedecke published one on November 3rd. He writes that the Qwen model was not bad at mathematics. It looped after a token limit, and solved every problem under that limit. The authors themselves report the share of MATH-500 answers hitting the token limit fell from 93.0% to 33.1%."
+        },
+        {
+          "host": "A",
+          "text": "He also says a smart human machine learning researcher could perform all of these tasks. And this is a preprint, a research blog post, not peer reviewed. The authors themselves call the capabilities still limited."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Now to security, and stolen access."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Google says hijacked enterprise LLM access ran up over $100,000 of charges in a single day and $1 million at some organisations",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Google Threat Intelligence Group and Mandiant published a report on November 2nd on something they call LLMJacking. Steal a company's access to a model, then sell it on. They write that they observed fraudulent charges exceeding $100,000 in a single day, with cumulative charges at some organisations reaching $1 million before access was revoked."
+        },
+        {
+          "host": "B",
+          "text": "How do they get in?"
+        },
+        {
+          "host": "A",
+          "text": "In mid-2026, a group Google tracks as UNC6993 compromised a cloud instance through a misconfigured service account key and used that access to grant further access to a model API, then tried to generate more keys inside victim projects, quickly accumulating over $100,000 in billing charges. It also hosted a session hijacking page masquerading as an application portal."
+        },
+        {
+          "host": "B",
+          "text": "And the resale side?"
+        },
+        {
+          "host": "A",
+          "text": "Another actor executed more than 500,000 model API calls in less than eight hours using stolen third-party keys, to power a routing service that passed nearly $1 million in token costs to the victim. Google says that service offers an unlimited token plan for about $60 a month with alleged access to frontier models, a consumer service level that would typically run between $100 and $250 a month."
+        },
+        {
+          "host": "B",
+          "text": "And the resale market grows from there."
+        },
+        {
+          "host": "A",
+          "text": "Google calls them LLM Mixers, and expects attackers to increasingly prioritise this over older resource theft like cryptojacking. This is a company claim from Google's own report, not independently verified. It names no victim organisations and gives no total count of affected companies."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "NCSC annual review: AI-powered malware in a ransomware attack on UK critical infrastructure is \"highly likely\" by 2028",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Britain's National Cyber Security Centre published its annual review today. It says it is highly likely that between now and 2028, AI-powered malware will have been used in a ransomware attack on UK critical national infrastructure."
+        },
+        {
+          "host": "A",
+          "text": "And on states?"
+        },
+        {
+          "host": "B",
+          "text": "It says by 2028 it is highly likely China, Russia and other nation states will routinely use AI cyber to achieve their geopolitical goals. The review puts malicious cyber activity at an estimated £14.7 billion a year to UK organisations, citing government research, and the Jaguar Land Rover attack last year at approximately £196 million in direct cyber-related costs."
+        },
+        {
+          "host": "A",
+          "text": "Is there money going the other way?"
+        },
+        {
+          "host": "B",
+          "text": "The Record reports a new £70 million vulnerability centre, and a further £60 million for the first phase of Cyber Shield, a national network of AI agents. And Project DROMOS, initially a four-week pilot, was expanded into live government environments, where it found hundreds of potential security issues, including critical vulnerabilities."
+        },
+        {
+          "host": "A",
+          "text": "And the chief executive is careful about blame."
+        },
+        {
+          "host": "B",
+          "text": "The Record reports chief executive Richard Horne will say the risk is not because AI has invented new ways to attack us, but because vulnerabilities that have been tolerated for far too long can now be discovered and exploited at a scale that was once unimaginable. His line is that for decades, we have collectively got away with doing tech on the cheap. Those 2028 statements are assessments. The NCSC does not say it has seen this happen yet."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Next, to the geopolitics."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "FT: Nvidia tells cloud customers worldwide that at least 51% of their services must be sold to non-Chinese companies",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Seoul Economic Daily's English edition, reporting the Financial Times, says Nvidia has told cloud and data-centre customers worldwide that at least 51% of their services must be sold to non-Chinese companies. No such restriction existed before."
+        },
+        {
+          "host": "B",
+          "text": "Is that a contract term?"
+        },
+        {
+          "host": "A",
+          "text": "Apparently not. The report says it was never put in writing. It was delivered verbally, through Nvidia's sales organisation and regional teams. It applies to customers globally rather than only in Asia, existing rental contracts aren't affected, and it covers only future agreements."
+        },
+        {
+          "host": "B",
+          "text": "What does scarcity look like inside China?"
+        },
+        {
+          "host": "A",
+          "text": "The report says a rack of Nvidia B300 chips selling for about $600,000 on the international market traded in China last month at 18.5 million yuan, or $2.8 million. The B300 is barred from sale in China under US export controls. Nvidia had already cut approved Asian customers by more than half after drawing up a whitelist this year."
+        },
+        {
+          "host": "B",
+          "text": "And this rests on a single source."
+        },
+        {
+          "host": "A",
+          "text": "It does. The Financial Times is the only originating outlet, and its own page couldn't be opened for this edition, so the figures come from Seoul Economic Daily, which labels its English text as AI-translated from Korean and warns quotes may not match the original wording."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Now, to health research."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Study of 5.4 million ECGs finds four foundation models share an age performance gap that mitigation does not close",
+      "lines": [
+        {
+          "host": "B",
+          "text": "A study posted to medRxiv on November 2nd probed the frozen embeddings of four architecturally distinct ECG foundation models, across thirteen cohorts on four continents. That's 5.4 million analysed ECGs, 31 endpoints and six held-out cohorts, stratified by age, sex and race."
+        },
+        {
+          "host": "A",
+          "text": "Where does the disparity show up?"
+        },
+        {
+          "host": "B",
+          "text": "On age, not sex or race. The median worst-group gap in AUROC was 0.028 for age, against 0.004 and 0.016 for the other two, and age exceeded sex in 97% of results. And it replicated externally, with a 30-day MACE AUROC of 0.81 to 0.90 under 40 years, against 0.64 to 0.71 at 75 and over."
+        },
+        {
+          "host": "A",
+          "text": "Did anything fix it?"
+        },
+        {
+          "host": "B",
+          "text": "No. The authors write that no remedy closed it. Untrained copies of the same networks reproduced the gaps, and so did plain logistic regression on classical ECG measurements. Pretraining raised AUROC by 0.067 without changing them."
+        },
+        {
+          "host": "A",
+          "text": "So it isn't the model."
+        },
+        {
+          "host": "B",
+          "text": "That's the authors' interpretation. The disparity originates in the data and the clinical task rather than in the models. It's a preprint and it hasn't been peer reviewed, and medRxiv records the posting date to the day only."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Policy and law, where today the ballot box is doing the work."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "More than 40 data-centre ballot measures go to voters across eight states in today's US midterm elections",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Insurance Journal, carrying Bloomberg's reporting, says a Bloomberg analysis of Ballotpedia data shows there will be more than 40 data center-related measures on ballots in the midterm elections today, across eight states. Policies that would tax, regulate or ban AI infrastructure."
+        },
+        {
+          "host": "B",
+          "text": "Which are the sharpest?"
+        },
+        {
+          "host": "A",
+          "text": "An outright ban in Alhambra, California. Bans in about a dozen Ohio communities, most focused on larger facilities. And two recall votes. In Piqua, Ohio, a town of roughly 20,000 people where Meta is trying to build, voters decide whether to recall the mayor and two city commissioners who backed AI infrastructure."
+        },
+        {
+          "host": "B",
+          "text": "And the second recall?"
+        },
+        {
+          "host": "A",
+          "text": "Yukon, Oklahoma, where Mayor Brian Pillmore supports a proposed $1 billion data centre and estimates it could boost city revenue by as much as 75%. The report also cites a Quinnipiac poll in September that found 72% of voters would oppose a new data centre in their community, up from 65% in March."
+        },
+        {
+          "host": "B",
+          "text": "And on sourcing?"
+        },
+        {
+          "host": "A",
+          "text": "This is effectively a single source. Counts of the measures differ across outlets, so that more-than-40 figure belongs to Bloomberg's reading of Ballotpedia data, not an official tally. Data Center Watch separately reported that at least 45 projects worth $68 billion were disrupted by local opposition in the second quarter. Results weren't known when we recorded."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Which brings us to the money."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Anthropic's amended S-1 reports $17.0 billion of Q3 revenue, a $567 million operating loss and $895.4 billion of committed spend",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Back to that filing. The financials are the other half of the story. Revenue was $17.0 billion for the three months ended September 30th, up from $1.4 billion a year earlier. The filing says revenue grew 1,127% year over year for the quarter, against compute and infrastructure expenses that grew 382%."
+        },
+        {
+          "host": "A",
+          "text": "And the bottom line?"
+        },
+        {
+          "host": "B",
+          "text": "An operating loss of $567 million for the quarter, against operating income of $974 million in the three months to June 30th. Anthropic attributes that mainly to $5.0 billion of compute under short-term commitments and $2.0 billion of non-cash charges tied to its donation matching programme."
+        },
+        {
+          "host": "A",
+          "text": "And the commitments?"
+        },
+        {
+          "host": "B",
+          "text": "The filing says aggregate committed spend is approximately $895.4 billion, substantially all of it compute and infrastructure. Approximately $447.5 billion is expected to be incurred before December 31st, 2030, and approximately $69.8 billion falls due in the 12 months after September 30th."
+        },
+        {
+          "host": "A",
+          "text": "Against revenue that's slowing."
+        },
+        {
+          "host": "B",
+          "text": "The filing itself says it does not expect revenue to continue growing at comparable rates, and cannot assure investors it will continue to grow at all. Data Center Dynamics reports quarter-on-quarter growth slowed to 47%, from 144% in the second quarter and 132% in the first. The Register reports additional estimated payments could push the commitment total beyond $1 trillion."
+        },
+        {
+          "host": "A",
+          "text": "And the usual caveat. These are company-reported figures, a company claim in Anthropic's own filing."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "One last story, from a company that switched coding models."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Revolut moves about 2,000 engineers to a self-hosted Chinese open-weight model and says its coding bill fell to about a tenth",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Trending Topics reports that Revolut has moved its roughly 2,000 software engineers off Claude Code and Codex, onto a self-hosted open-weight model. It's GLM, from the Chinese lab Z.ai. Revolut says its bill is now about a tenth of what it used to pay Anthropic and OpenAI."
+        },
+        {
+          "host": "B",
+          "text": "What does the setup look like?"
+        },
+        {
+          "host": "A",
+          "text": "A model of about 800 billion parameters running on roughly 56 Nvidia B200 chips, at about 30 cents per million tokens, with a flat bill replacing month-end invoices and per-engineer token limits removed."
+        },
+        {
+          "host": "B",
+          "text": "Did it work?"
+        },
+        {
+          "host": "A",
+          "text": "By their account, yes. In a sample of about 2,000 engineers, coding time fell 60% and lead time, from picking up a task to merging it, fell 70%. An earlier company-wide rollout of Google's Gemini cut coding time by 20% and lead time by 10%."
+        },
+        {
+          "host": "B",
+          "text": "That gap is interesting."
+        },
+        {
+          "host": "A",
+          "text": "David Abitbol, who runs AI operations and infrastructure at Revolut, reads it the same way. His line is that the bottleneck for engineering is not necessarily coding. Context is capped at 256,000 tokens, the model handles text only with image tasks routed to Gemini, and Claude Code and Codex stay available as exceptions."
+        },
+        {
+          "host": "B",
+          "text": "And the caveats, because these are all his numbers."
+        },
+        {
+          "host": "A",
+          "text": "Every figure is a company claim from a conference talk, with no independent measurement, and it rests on a single source. Trending Topics notes an analysis saying the cost reduction excludes cloud, staff and monitoring costs, and the article doesn't say whether Revolut bought or rents the chips. Trending Topics also states its own article was co-produced with AI."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "B",
+          "text": "That's The AI Edge for today. The full edition is on the site, with a link to every source behind what we've just said."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated. Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
