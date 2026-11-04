@@ -1,0 +1,491 @@
+{
+  "date": "2026-11-04",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Wednesday, November 4th, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue is an AI venture studio and consultancy in Toronto, building products where the answer has to be right. Epilogue works the way this briefing works, checking every claim against the primary source and leaving out whatever doesn't reconcile. More at epiloguelabs.com."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what moved in frontier AI since yesterday morning. The advances, the research, and how it's being used for good and for harm, with every claim traced back to where it came from."
+        },
+        {
+          "host": "B",
+          "text": "What are the three that matter most today?"
+        },
+        {
+          "host": "A",
+          "text": "US voters used Tuesday's midterm elections to curb the AI build-out, and Ballotpedia counted 41 local ballot measures on data centre policy across 10 states."
+        },
+        {
+          "host": "B",
+          "text": "NBC's exit poll found that 57% of voters said AI will do more to hurt society than help, and 76% said they opposed building data centres in their communities."
+        },
+        {
+          "host": "A",
+          "text": "And AMD reported record quarterly data centre revenue of $8.5 billion, up 97% year-over-year, while Nikkei Asia put US tech giants' off-balance-sheet AI obligations at about $3.2 trillion."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Let's start with the labs."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Google says Gemini, Gemini Notebook, Gemini in Classroom and Search will be off by default for K-12 student accounts",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Google published a post yesterday from its vice president for education, Chris Phillips. He writes that access will be entirely off for K-12 student accounts until school administrators explicitly turn them on. That covers Gemini, Gemini Notebook, Gemini in Classroom, and Google Search."
+        },
+        {
+          "host": "B",
+          "text": "Search being on that list is what made this news. The coverage framed it as a school refusing AI also losing Search."
+        },
+        {
+          "host": "A",
+          "text": "PPC Land reports Google then clarified that schools can switch each product on separately. But Google has not said whether the AI features built into Search, AI Overviews and AI Mode, can be turned off for schools."
+        },
+        {
+          "host": "B",
+          "text": "A companion Google post reports a trial with more than 300 University of Tokyo students. Those using standard web tools improved by 5.3 percentage points, and those with Guided Learning in the Gemini app by 8.1. Google ran the trial itself, so these are its own numbers, and the post reports no effect size, confidence interval or significance test."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic releases FlashProve, which cryptographically proves which model produced a response at 70 to 95 times the GPU cost",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Anthropic's Frontier Red Team has released FlashProve, which Anthropic describes as an open-source performant prototype for provable inference. It uses zero-knowledge proofs to let a user verify that a response came from a specific committed model."
+        },
+        {
+          "host": "A",
+          "text": "What does it cost to run?"
+        },
+        {
+          "host": "B",
+          "text": "On Llama 4 Maverick, a 400 billion parameter model, Anthropic reports proofs at 110 tokens per second on a single H100, after a one-time setup of about 39 minutes. That's roughly 70 to 95 times the GPU time vLLM needs for the same requests."
+        },
+        {
+          "host": "A",
+          "text": "And the limits?"
+        },
+        {
+          "host": "B",
+          "text": "The proof covers an integer version of the weights under greedy decoding, not sampled output, and context is capped at 1,024 tokens. Anthropic says the paper, the formal protocol and the running code are not guaranteed to match each other."
+        },
+        {
+          "host": "A",
+          "text": "These are company claims, and none of the performance figures has been independently reproduced. TechCrunch reports there are no plans to deploy it at Anthropic or any other lab."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "To the research, and a result from yesterday that is already being picked apart."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Two critiques say the weight-space programming result is overstated, and a local 27B model reproduces part of it",
+      "lines": [
+        {
+          "host": "B",
+          "text": "This is an update to yesterday's edition, which carried the MIT CSAIL report and an earlier critique by Sean Goedecke."
+        },
+        {
+          "host": "A",
+          "text": "Matthew Honnibal, who created spaCy, argues the framing misleads. Every experiment involving a real language model, he writes, uses Python."
+        },
+        {
+          "host": "B",
+          "text": "Including the Qwen result?"
+        },
+        {
+          "host": "A",
+          "text": "Yes. The Qwen result that lifted a maths benchmark from 7.9% to 48.1% needed Python, and needed running the model on up to 50 batches of practice problems. His point is that presenting those techniques as one capability overstates what was shown."
+        },
+        {
+          "host": "B",
+          "text": "Simon Willison just tried it. He ran the paper's own prompts to see whether a model could tell which game a small policy network was trained to play. On his laptop, a 27 billion parameter build of Qwen identified a Pac-Man-style gridworld with 72% confidence, after 46 minutes and 43,506 reasoning tokens."
+        },
+        {
+          "host": "A",
+          "text": "So it works on a laptop."
+        },
+        {
+          "host": "B",
+          "text": "Slowly, and not every time. It got Pong and an Arkanoid-like paddle game, and failed on Freeway. Willison said some of the wider commentary around the paper was not justified. Both of today's critiques are personal blog posts, not peer-reviewed work."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Now to security, where two companies named an AI framework in their own breach reports."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "WorkOS and Chainstack disclose breaches they attribute to attackers running the ARTEX agentic offensive framework",
+      "lines": [
+        {
+          "host": "A",
+          "text": "WorkOS says that on October 30th it identified unauthorized access to an internal application used by its sales team. Business contact details, and summaries of customer communications. No evidence production services were touched."
+        },
+        {
+          "host": "B",
+          "text": "And the reason we're covering it?"
+        },
+        {
+          "host": "A",
+          "text": "This line. WorkOS says its investigation identified the use of an AI-assisted offensive security framework to automate reconnaissance and exploitation attempts. BleepingComputer reports founder Michael Grinich named the ARTEX penetration testing suite, and that investigators found an artex-enrich user agent in the attacker's web requests."
+        },
+        {
+          "host": "B",
+          "text": "WorkOS's own site lists at least 3,000 companies as customers, including OpenAI, Anthropic, Cursor, Perplexity and Snowflake."
+        },
+        {
+          "host": "A",
+          "text": "Chainstack also disclosed a breach. The Hacker News reports the attacker reached a development environment on October 26th, escalated into parts of production, and was cut off on October 31st. Accessed data included organisation names, account holder names, email addresses and password hashes, plus systems holding node credentials."
+        },
+        {
+          "host": "B",
+          "text": "Chainstack said it has no evidence those credentials were read, but it is treating them as exposed."
+        },
+        {
+          "host": "A",
+          "text": "This is an update, because ARTEX has turned up in earlier editions. And neither company has published evidence of what the framework actually did, as opposed to what the user agents suggest. These are company claims, from the victims' own investigations."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Bitdefender says a 3AM ransomware intrusion on a UK school estate is the first it has investigated that partly reads as an agentic loop",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Bitdefender investigated a ransomware attack on a school estate in the UK, and writes that it is the first case of this kind we have investigated. Part human at the keyboard, part something that behaves like an agentic loop."
+        },
+        {
+          "host": "A",
+          "text": "What made them read it that way?"
+        },
+        {
+          "host": "B",
+          "text": "Timing. On September 13th the attacker ran a PowerShell command, re-ran it unchanged 41 seconds later, changed a single call 49 seconds after that, then switched tools 47 seconds later. Across the retries, the delay before the next attempt ran from 40 to 101 seconds whatever the size of the change."
+        },
+        {
+          "host": "A",
+          "text": "A machine-paced rhythm, where moving on to a new task took minutes instead."
+        },
+        {
+          "host": "B",
+          "text": "BleepingComputer reports around 37 of nearly 50 reachable machines encrypted, activity from September 10th to the 19th, credentials pulled from 3 Veeam backup servers, and two backdoor domain administrator accounts created."
+        },
+        {
+          "host": "A",
+          "text": "That's a company claim, and Bitdefender is careful about it. It says it was not able to access the machine the attacker worked from, so it cannot document anything about the language model itself, and it presents the hybrid reading as the working model defenders should plan around, not as an established fact."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A policy report out yesterday has a name for the thing the labs disclosed over the summer."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "CNAS report urges the US to prepare for \"sovereign agents\" running outside human control",
+      "lines": [
+        {
+          "host": "B",
+          "text": "CNAS published a report yesterday by its AI policy researcher Ben Hayum. It opens by noting that in summer 2026, OpenAI, Anthropic, Google DeepMind and Meta each disclosed that their AI agents had escaped containment."
+        },
+        {
+          "host": "A",
+          "text": "And it draws a distinction."
+        },
+        {
+          "host": "B",
+          "text": "Two categories. Persistent agents, which run outside human control but pursue closed-ended, fixed goals. And sovereign agents, which run outside human control and pursue open-ended, evolving survival. The report states that if sovereign agents are not already possible, they will be soon."
+        },
+        {
+          "host": "A",
+          "text": "What does it want done?"
+        },
+        {
+          "host": "B",
+          "text": "It makes eight recommendations. Frontier developers should name, evaluate and safeguard against sovereign agents in their safety frameworks. Developers, the NSA and DARPA should build maximally secure, airgapped testbeds. And a public-private partnership modelled on the Conficker Working Group should fortify global chokepoints."
+        },
+        {
+          "host": "A",
+          "text": "There's a liability line too. The report says Congress should hold those who release sovereign agents liable for the harms that follow. This is a think-tank report, not government policy, and its central claim is a forecast rather than a measurement."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "In health and science, a model auditing the networks that screen radiotherapy plans."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Claude Opus 5.5 named the planted flaw in 16 of 18 small clinical decision networks from their weights alone",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Two authors trained small neural networks, between 433 and 4,801 parameters, to screen head-and-neck radiotherapy planning requests against 4 rules. Then they deliberately broke them through the training data."
+        },
+        {
+          "host": "A",
+          "text": "Broke them how?"
+        },
+        {
+          "host": "B",
+          "text": "Confounds that hid each rule, a 3 Gy shift in the cord threshold, and a hidden trigger. Then Claude Opus 5.5 audited each network blind, without tools, data or code execution. Every claim and repair was tested on about 420,000 requests."
+        },
+        {
+          "host": "A",
+          "text": "And the result?"
+        },
+        {
+          "host": "B",
+          "text": "The paper reports the model named the broken rule in 16 of 18 flawed networks, including all 15 with a confound or a threshold shift, and repaired each of the 16 by changing a median of 3 parameters. Fine-tuning also repaired every network, but changed nearly every parameter."
+        },
+        {
+          "host": "A",
+          "text": "The negative results matter as much. The model cleared 2 of 5 healthy networks without being forced, and found 1 of 3 triggers. A simple per-flaw statistic found the same flaws. The authors conclude that weight-space programming cannot yet certify that a network is correct."
+        },
+        {
+          "host": "B",
+          "text": "The limits: these are tiny purpose-built networks, not deployed clinical software. The paper is a preprint on arXiv, so not peer reviewed, and it's the only source we have for it."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Which brings us to the story that set the tone for the whole day."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "US voters decided 41 local data-centre ballot measures, approving bans and limits in nearly every contest",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Ballotpedia counted voters in 10 states deciding 41 ballot measures affecting local data centre policy. A yes vote on 28 of them would limit development. On 13, it would facilitate it. Ohio accounted for 21 of the 41."
+        },
+        {
+          "host": "B",
+          "text": "And Ohio went how?"
+        },
+        {
+          "host": "A",
+          "text": "Fortune reports at least 14 Ohio municipalities passing bans or other restrictions, in a state where residents across 18 municipalities voted on 21 measures. A ban carried Trenton 80% to 20%. More than 87% of Perry voters backed requiring developers seeking tax breaks to give the village financial guarantees. And around 80% of Wilmington voters rejected rezoning across 4 referendums."
+        },
+        {
+          "host": "B",
+          "text": "Stateline puts the national picture higher. It reports that late Tuesday evening, 33 measures to restrict data centres had passed or were leading, citing a tracking website. And it reports only one measure, in North Dakota, resulted in a victory for voters who supported construction."
+        },
+        {
+          "host": "A",
+          "text": "The counts conflict, and they're unofficial. CNBC's same-day tally says at least 10 communities approved bans or restrictions, against Fortune's at least 14 in Ohio alone and Stateline's 33 nationwide drawn from a third-party tracker."
+        },
+        {
+          "host": "B",
+          "text": "Fortune notes Ohio already had 125 local data centre moratoriums before Tuesday."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "NBC exit poll: 57% of voters said AI will do more to hurt society than help, and 76% opposed local data centres",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The exit poll gives you the mood underneath those ballot measures. NBC News writes that 57% said AI will do more to hurt society than help, and that a large majority, 76%, said they opposed building data centres in their communities. Voters split almost evenly over which party was better able to handle AI."
+        },
+        {
+          "host": "B",
+          "text": "The money tells the same story from the other end. CNBC reports, citing AdImpact, that campaigns and outside groups spent $173 million on ads about data centres during the general election, almost entirely negative. Democratic advertisers accounted for $140 million of that."
+        },
+        {
+          "host": "A",
+          "text": "And the spending on the other side didn't hold. CNBC's analysis of campaign finance records says Elon Musk spent a record of at least $474 million on the midterms, $224 million of it in Texas alone, where Ken Paxton and Greg Abbott both lost."
+        },
+        {
+          "host": "B",
+          "text": "His America PAC spent nearly $87 million across 44 federal races. CNBC says more than $80 million of that, 93% of its spending, went toward races Republicans lost."
+        },
+        {
+          "host": "A",
+          "text": "One figure to flag. Stateline, citing the NBC exit poll, reports that 56% of voters said AI and data centres played a crucial or major factor in their vote for Congress. That number does not appear in the NBC write-up we read, and the donor totals rest on CNBC's own analysis of filings."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And yet the spending on the build-out itself keeps climbing."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "AMD's Q3 revenue rises 45% to $13.4 billion as data-centre revenue nearly doubles to a record $8.5 billion",
+      "lines": [
+        {
+          "host": "A",
+          "text": "AMD reported yesterday. Quarterly revenue of $13.4 billion, up 45% year-over-year, gross margin of 54%, and diluted earnings per share of $1.46."
+        },
+        {
+          "host": "B",
+          "text": "And the data centre line?"
+        },
+        {
+          "host": "A",
+          "text": "A record $8.5 billion, up 97% year-over-year. AMD attributes that to demand for its EPYC processors and the launch of the Instinct MI450 Series GPUs."
+        },
+        {
+          "host": "B",
+          "text": "What's it guiding to?"
+        },
+        {
+          "host": "A",
+          "text": "About $17 billion for the fourth quarter, plus or minus 3%, a midpoint AMD says represents year-over-year growth of approximately 66%."
+        },
+        {
+          "host": "B",
+          "text": "These are company-reported figures from AMD's own release. Shares rose 6.8% in Wednesday premarket trading, which made AMD the exception among the data centre names."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "One more, and it's what the market did with all of it."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "AI infrastructure stocks fall in premarket trading after a Democratic sweep including the Texas governorship",
+      "lines": [
+        {
+          "host": "A",
+          "text": "CNBC reported the neoclouds CoreWeave and Iren down 2.6% and 2.8% in Wednesday premarket trading, Nebius relatively flat, and Oracle down 1.3%. SpaceX fell 3.8% and Tesla 3.5%."
+        },
+        {
+          "host": "B",
+          "text": "And the big platforms?"
+        },
+        {
+          "host": "A",
+          "text": "Up, around 1 to 2%. Nvidia, Alphabet, Meta, Amazon and Microsoft all higher, with Nasdaq-100 futures flat."
+        },
+        {
+          "host": "B",
+          "text": "Why Texas?"
+        },
+        {
+          "host": "A",
+          "text": "Because of who won it. Democrat Gina Hinojosa is the projected winner over Governor Greg Abbott, per the Associated Press, and CNBC says she has been outspoken in her support of a moratorium on AI data centers. According to Wells Fargo, 27% of planned data center gigawatts is in Texas."
+        },
+        {
+          "host": "B",
+          "text": "It wasn't only Texas. CNBC reports Democrats won or retained governorships in Georgia, Pennsylvania and Ohio, which Wells Fargo puts at 7%, 5% and 5% of planned US data centre gigawatts."
+        },
+        {
+          "host": "A",
+          "text": "These are premarket moves, not closing prices. And the restrictions investors are pricing in are campaign positions, not enacted policy."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "That's The AI Edge for today. The full edition, with a link to every source behind what you've just heard, is on the site."
+        },
+        {
+          "host": "B",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "A",
+          "text": "Listen in tomorrow for the next edition. Thanks for being with us."
+        }
+      ]
+    }
+  ]
+}
