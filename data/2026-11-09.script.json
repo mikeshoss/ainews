@@ -1,0 +1,201 @@
+{
+  "date": "2026-11-09",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Monday, November 9th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue is an AI venture studio and consultancy in Toronto that builds for high-consequence work, the kind that's document-dense, driven by precedent, and reviewed by people whose licence is on the line. Epilogue builds products where the answer has to be right. Find out more at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since Friday morning. The advances, the research, and how the technology is being used for good and for harm, with every claim traced back to the source it came from." },
+        { "host": "B", "text": "It's a long weekend's worth of news. What are the three that matter most?" },
+        { "host": "A", "text": "Nvidia's board said on November 8th that it is opening an independent investigation after reports that its chief executive, Jensen Huang, had been the target of a foreign intelligence effort. Huang told staff the same day that he had been unfaithful to his wife." },
+        { "host": "B", "text": "Microsoft says a financially motivated criminal group began using an agentic attack framework against the financial sector in October 2026, and a security firm found 1,122 public copies of a Claude Code settings file holding 1,379 secrets." },
+        { "host": "A", "text": "And Google DeepMind says AI agents under human supervision cut the cost of forging an RSA-1024 signature down to 391 CPU core-years, from 1,380 in the original study." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Let's start with the labs, and with what happens when you give a model somewhere to keep what it learns." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic reports agent memory lifts Opus 5.5 database-task reward from 0.655 to 0.838, and wiki building from 13% to 48%",
+      "lines": [
+        { "host": "A", "text": "Anthropic published an engineering post on how agent memory works, and it comes with numbers. On a database task, Opus 5.5 went from a mean reward of 0.655 with no memory to 0.838 with a memory store. Opus 5 went from 0.564 to 0.828." },
+        { "host": "B", "text": "There's a second experiment I found more interesting. Anthropic let the model read a corpus of about 350,000 files offline, repeatedly, and build itself a wiki. After 2 of those sessions the wiki answered 13% of the graded criteria. After 128 sessions, 48%." },
+        { "host": "A", "text": "And what should we hold back on?" },
+        { "host": "B", "text": "Quite a lot. These are its own numbers, on its own internal benchmark and its own corpus, and they are not independently verified. Anthropic is a single source for all of it. The post doesn't report variance across runs, or what the sessions cost to run, and Sonnet 4.6 barely improved, going from 0.330 to 0.364, which Anthropic puts down to prompting." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To the research, where a weekend of papers landed all at once." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Google DeepMind agents write Lean-verified quantum programs, reporting a 290x gain on quantum arithmetic",
+      "lines": [
+        { "host": "A", "text": "A paper from Google DeepMind and Google Quantum AI researchers put language model agents to work writing quantum programs inside the Lean theorem prover, where the programs the agents write are machine-checked for correctness and for cost." },
+        { "host": "B", "text": "And they improved on what people had already built?" },
+        { "host": "A", "text": "On arXiv they report gains over prior baselines of up to 1.4x on parallel search, 290x on quantum arithmetic, and on simulations relevant to fusion, photochemistry and drug metabolism, 11x, 8x and 2.5x." },
+        { "host": "B", "text": "The formal verification is what makes this unusual. Most agent results you take on trust. These are proof-checked." },
+        { "host": "A", "text": "Though this is a preprint, so it is not peer reviewed, and arXiv is the only source for it. The arXiv page shows no affiliations, there's no accompanying DeepMind blog post, and the speedups are measured against baselines the authors chose themselves." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to security, which took up most of this weekend." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Microsoft says Cambodia-based Storm-3358 began using the ARTEX agent framework against financial firms in October 2026",
+      "lines": [
+        { "host": "A", "text": "Microsoft says that in October 2026 a financially motivated threat actor it calls Storm-3358 began targeting organisations in the financial sector with the agentic attack framework we've been following. Microsoft describes it as a Cambodia-based intrusion cluster that primarily targets financial organisations in Southeast Asia, plus a smaller number of large financial organisations globally." },
+        { "host": "B", "text": "What does the attack actually look like?" },
+        { "host": "A", "text": "Microsoft says the group used the framework alongside conventional tooling to scan internet-facing systems and exploit flaws including anonymous file upload and server-side request forgery, then used netcat and curl to download remote-access trojans for persistence and lateral movement." },
+        { "host": "B", "text": "There's a defensive finding here too, and it's the most useful part. Microsoft says honeypots, decoys, tarpits and what it calls fake wins, convincing evidence that makes an agent stop on a false success, helped reduce the attack traffic reaching real assets in its own testing." },
+        { "host": "A", "text": "Although Microsoft publishes no numerical measurement of that effect, so we don't know how big the benefit is. This is one company's attribution and telemetry, and it is not independently verified." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Apiiro finds 1,122 public copies of Claude Code's permission file holding 1,379 secrets, 2,539 counting history",
+      "lines": [
+        { "host": "B", "text": "This is the one every developer should hear. The Hacker News reports that the security firm Apiiro searched GitHub and found 104,185 copies of a Claude Code settings file. Of those, 1,122 held at least one secret, and together they held 1,379 different secrets." },
+        { "host": "A", "text": "How does a secret end up in a settings file?" },
+        { "host": "B", "text": "When you click yes, and don't ask again, the tool can save the approved command exactly as you typed it, including a secret typed inline. More than a third of the secrets open a database directly, including 379 database passwords, plus 43 SSH logins for public servers, 42 tokens for GitHub, GitLab and npm, and 23 AWS keys." },
+        { "host": "A", "text": "And how long have they been sitting there?" },
+        { "host": "B", "text": "In half of the repositories with a secret, the file had been on the default branch for at least 217 days. Counting older versions, forks and saved chat logs, the total comes to 2,539 secrets across 1,994 repositories. These are its own numbers, from a single source, its write-up could not be read directly, and Apiiro did not test whether the keys still work, though The Hacker News says one notified company confirmed its key had been live. Anthropic's response is not recorded in the article." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Google DeepMind says AI agents cut an RSA-1024 signature forgery to 391 CPU core-years from 1,380",
+      "lines": [
+        { "host": "A", "text": "SecurityWeek reports that Google DeepMind, with cryptographers from UC San Diego and Inria, says AI agents under human supervision found two ways to reduce the cost of attacking 1024-bit RSA. In a sandboxed run, the first signature forgery took 391 CPU core-years, against 1,380 in the original study." },
+        { "host": "B", "text": "And how much of that did the agents do themselves?" },
+        { "host": "A", "text": "SecurityWeek says two agents designed, ran and debugged the computation in under four days, with roughly 20 messages from the human researcher, mostly approvals." },
+        { "host": "B", "text": "The limits are substantial. The key was never factored. SecurityWeek says that would take an estimated 500,000 to 1 million core-years. The attack needs roughly 4 billion signing queries made in advance, does not recover the private key, and does not work against devices that hash messages internally." },
+        { "host": "A", "text": "And the two bigger-sounding figures are theoretical estimates. Against a 32-byte hash, DeepMind reports an algorithm roughly 1,600 times better than the previous best method against 1024-bit keys. A second finding would make each additional 1024-bit key roughly 30 times cheaper on average than the best previous approach, but SecurityWeek says that method has not been implemented and its estimate assumes an upfront computation as costly as factoring one key." },
+        { "host": "B", "text": "Pushmeet Kohli is quoted saying that in practice these results only affect obsolete 1024-bit RSA systems, and that modern encryption protocols, which almost universally use 2048-bit or larger keys, remain secure. These are its own numbers, SecurityWeek is the only source we could open, and none of it has been independently reproduced." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Which brings us to the biggest corporate story of the weekend." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Nvidia's board opens an independent investigation after reports Jensen Huang was a foreign-intelligence target",
+      "lines": [
+        { "host": "A", "text": "Nvidia's board published a statement on November 8th saying it is initiating an independent investigation, in its words, in light of recent reporting that founder and chief executive Jensen Huang has been the target of a foreign intelligence effort. A committee of independent directors, advised by outside counsel, will oversee it." },
+        { "host": "B", "text": "Does the board say anything about what was exposed?" },
+        { "host": "A", "text": "It says it has no reason to believe that either national security or Nvidia secrets were compromised, but that the inquiry will examine all available information. It also says Huang fully supports the review, and that the board has confidence in him and his leadership team." },
+        { "host": "B", "text": "And Huang emailed staff the same day, telling them he had been unfaithful to his wife, that there is no excuse for what he did, and that he is deeply sorry. An Nvidia spokesperson told CNBC he is committed to continuing as chief executive without interruption." },
+        { "host": "A", "text": "CNBC says US intelligence agencies have expressed concerns that the woman, affiliated with an Nvidia customer, has been passing information to Beijing, citing two newspapers." },
+        { "host": "B", "text": "And the spying allegation has not been publicly substantiated. Neither the board's statement nor Huang's email makes any allegation about a relationship with her. We could not open the original newspaper reports, so those claims are only as CNBC and TechCrunch relay them. Nvidia reports quarterly earnings on November 17th." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "A result from medicine now, from a large study of primary care visits in Boston." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "JAMA study of 209,009 primary care visits: AI scribes raised same-day note closure 10.2 points in non-English visits",
+      "lines": [
+        { "host": "A", "text": "JAMA Network Open published a study of 14 adult primary care clinics in Boston, covering 209,009 encounters, 117,121 patients and 286 clinicians, looking at whether AI scribes helped doctors finish their notes the same day." },
+        { "host": "B", "text": "And it depended on language?" },
+        { "host": "A", "text": "Sharply. Where the patient preferred a language other than English and the clinician spoke it, the adjusted gain from using a scribe was 10.2 percentage points. For English language-concordant visits it was 1.7 points. Unadjusted, the non-English group went from 72.1% same-day closure without a scribe to 82.9% with one." },
+        { "host": "B", "text": "So the largest gain fell to the visits that take longest." },
+        { "host": "A", "text": "It did, but read the scope carefully. Those non-English language-concordant visits were 9,638 of the total, or 4.6%, and the authors call the estimates for language-nonconcordant visits inconclusive because the confidence intervals are wide. Note closure timing is a workflow measure, not a patient outcome, the study doesn't show any change in diagnosis, treatment or patient experience, it's one health system, and the study is a single source for the finding." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To the courts, where music publishers filed again on Friday." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Eminem's publisher sues Suno for more than $41 million; Elvis Presley rights holders file a separate suit",
+      "lines": [
+        { "host": "B", "text": "The Detroit Free Press reports that Eminem's publisher, Eight Mile Style, sued the AI music company Suno on Friday in San Francisco federal court, seeking more than 41 million dollars. The complaint says it is entitled to 150,000 dollars for each of the 269 Eminem compositions it controls, which is 40.4 million, plus 672,000 dollars for allegedly stripping copyright information out of the songs used in training." },
+        { "host": "A", "text": "And there's a second suit the same day?" },
+        { "host": "B", "text": "The group that owns the rights to Elvis Presley's catalogue also filed against Suno on Friday. WREG quotes that complaint saying Suno is the embodiment of why the ELVIS Act was so essentially required, a name standing for Ensuring Likeness, Voice, and Image Security. The Eight Mile Style complaint separately alleges that prompts naming an artist are blocked but can be worked around with strings of descriptors instead." },
+        { "host": "A", "text": "A Suno spokesperson told the Detroit Free Press the company exists to help people create new, original music, not to trade on anyone's name or likeness, and that it prohibits unauthorised use of an artist's work. And these are complaints, not rulings. The damages are what the plaintiffs are asking for, and nothing has been decided." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "On compute, a frontier lab has gone out and bought its own power generation." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Anthropic paid about $3.4 billion for commitments to 1.7 gigawatts of gas generators, the Financial Times reports",
+      "lines": [
+        { "host": "B", "text": "CNBC, citing a Financial Times report published on Sunday, says Anthropic struck a deal worth about 3.4 billion dollars to secure gas-fired power generators for data centres, buying commitments for 1.7 gigawatts of heavy-duty generators in late September from a San Antonio equipment supplier." },
+        { "host": "A", "text": "Did it buy the supplier?" },
+        { "host": "B", "text": "No. CNBC says Anthropic did not acquire the company and none of its employees moved across, but the deal included the engineering and construction capability needed to install the generators. CNBC doesn't say where they'll be used." },
+        { "host": "A", "text": "The scale fits what the company has already disclosed. CNBC says Anthropic's prospectus lists purchase commitments and leases with an aggregate committed spend of about 895.4 billion dollars, substantially all of it compute and infrastructure." },
+        { "host": "B", "text": "What's new is a frontier lab buying its own gas generation rather than waiting in line for a grid connection. And this rests on a single source, one person familiar with the matter as relayed by the Financial Times. CNBC says Reuters could not immediately verify it, and that Anthropic and the supplier did not respond to requests for comment." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "And finally, what voters did about all of this." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "US voters backed data-centre restrictions in all but one of 41 local ballot measures; OpenAI says it will keep building",
+      "lines": [
+        { "host": "A", "text": "CNBC reports that out of 41 local ballot measures across 10 states, voters backed restrictions or rejected pro-development measures in all but one. CNBC says opposition mounted swiftly over the summer, as Americans grew worried about the environment, utility bills and job losses." },
+        { "host": "B", "text": "And the industry's response?" },
+        { "host": "A", "text": "OpenAI's chief financial officer, Sarah Friar, told CNBC on Friday that the company will keep investing. Her words were that if the midterm means more focus on data centres and communities, they're going to keep doing the work to get into those communities and build trust with them." },
+        { "host": "B", "text": "The markets read it less calmly. CNBC says the Nasdaq on Thursday suffered its steepest drop in 19 months, led by a plunge in shares of the chipmakers and neocloud companies most closely tied to the AI build-out, before recovering some ground on Friday." },
+        { "host": "A", "text": "Worth being precise. These are local measures across 10 states, not a national vote, and CNBC's count combines an outside analysis with its own reporting. The measures are not individually listed in the article, and what each would restrict is not specified." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. A chipmaker's board investigating its own chief executive, agentic attack tooling turned on the financial sector, secrets left sitting in a coding agent's settings file, and voters backing restrictions in all but one of a set of local ballot measures." },
+        { "host": "A", "text": "The full edition, with a link to every source behind what you've just heard, is on the site." },
+        { "host": "B", "text": "Our voices are AI-generated." },
+        { "host": "A", "text": "Listen in tomorrow for the next edition. Thanks for being with us." }
+      ]
+    }
+  ]
+}
