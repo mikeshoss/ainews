@@ -86,9 +86,31 @@
     "Against that, the aggregate picture is contested and the capability measurements moved. ESET, covering April to September 2026, says \"we have not noticed AI substantially reshaping the APT landscape over the past six months\". Two companies disclosed breaches they characterise as AI-driven: 123 Reg told customers a September intrusion was \"the first known AI-driven cyberattack against our company\", and Chainalysis said \"an external actor using offensive agentic techniques\" reached its internal tools, with neither publishing technical detail. Epoch AI says the open-weight GLM 5.3 built working one-click Firefox exploits at roughly $1,000 each and that \"We did not trigger any safeguards or refusals from any provider, including Z.ai.\" Irregular says the same model \"did not refuse any of the tested offensive tasks\" and \"completed 3 of 13 scenarios end to end at least once\". No model provider has said what it did about the accounts used in any of this."
    ],
    "changed": "A government body entered the arc for the first time: Canada's Cyber Centre published a bulletin on agentic frameworks naming ARTEX and the Storm-0940 cluster, and Norway raised its national cyber risk level, though neither added attribution of its own. The vendor record widened from one firm to six, with CrowdStrike putting October's agentic attacks at 126 against 45 in September, and two companies disclosed breaches they themselves call AI-driven. The aggregate claim is still disputed: ESET says AI has not reshaped the APT landscape over six months, and Microsoft says the operations remain human-directed."
+  },
+  {
+   "date": "2026-11-09",
+   "text": [
+    "As of 9 November one named tool appears in four independent records inside a single week, which is close to what the arc's question asked for. Check Point Research counted \"2,557 systems hosting or having hosted ARTEX panels\" and \"1,608 live and publicly available instances\", and describes one operator running two consoles in parallel through \"36 billion tokens\" for an estimated \"somewhere between $700 and $1500\", obtaining \"more than 300 certificates and their passwords\". Censys, the same day, observed \"1,465 hosts running an exposed ARTEX console\", of which \"About 650 sit in two blocks of identically configured hosting, which leaves roughly 815 distinct-looking deployments\", and says \"155 ARTEX hosts (10.6%) also run at least one other threat that Censys detects\". Microsoft said the actor it tracks as Storm-3358, \"a Cambodia-based intrusion cluster\", began targeting the financial sector in October 2026 using the framework, and separately observed an AI agent going from scanning GitHub for secrets to exfiltrating Azure Key Vault data \"in just five minutes\". India's CERT-In named an AI-assisted financial actor CRAFTY FALCON and warned of a \"significant escalation\".",
+    "On the labs' side the published capability moved up a tier. OpenAI released GPT-6 Cyber at the Critical tier of its Preparedness Framework, reporting an intended-exploit success rate of 48.45% on ExploitGym against 42.43% for GPT-6 Astra, honeypot exploitation in 0.07% of graded rollouts without deployment safety instructions, 81 previously unknown high-severity Firefox flaws, and local privilege-escalation exploits for 948 distinct Linux kernel vulnerabilities at a cost of $1,213,430 in API credits — with access restricted through Daybreak Red and identity verification. Check Point reports the opposite selection pressure in the criminal market: guardrails were hit with Anthropic's Opus 5.5, after which the operator \"subsequently switched to more permissive Chinese models\". US prosecutors charged three men with using AI to impersonate chief executives and lawyers, taking about $129 million. Every count in the week is a vendor's, a victim's or a lab's own, and no government has published comparable attribution and counts of its own."
+   ],
+   "changed": "The question's first condition is close to met: two vendors published comparable censuses of the same framework on the same day — Check Point at 1,608 live instances, Censys at 1,465 exposed consoles — and Microsoft attached it to a named, located actor, Storm-3358, in the financial sector. A national CERT named an actor too. What is still missing is a government publishing its own counts. On the defenders' side the gap narrowed in a different direction: OpenAI's Critical-tier GPT-6 Cyber reports 948 distinct Linux kernel exploits for $1,213,430, against Check Point's estimate of $700 to $1500 for a criminal operator's two weeks of ARTEX work, and Check Point records that operator abandoning a Western model for Chinese ones after hitting guardrails."
   }
  ],
  "figures": [
+  {
+   "date": "2026-11-06",
+   "value": "1,608",
+   "label": "live and publicly available ARTEX instances found by Check Point",
+   "source": "Check Point Research",
+   "url": "https://research.checkpoint.com/2026/hacking-on-autopilot-inside-artex-cybercrime-campaigns/"
+  },
+  {
+   "date": "2026-11-05",
+   "value": "$1,213,430",
+   "label": "API credits OpenAI's agents spent on the Linux kernel run that produced 948 distinct vulnerabilities",
+   "source": "Help Net Security",
+   "url": "https://www.helpnetsecurity.com/2026/11/05/openai-linux-kernel-root-exploits/"
+  },
   {
    "date": "2026-09-18",
    "value": "$6,500",
@@ -227,6 +249,11 @@
    "date": "2026-11-02",
    "question": "Who is operating the ARTEX controllers four vendors describe, and will any government publish its own attribution rather than relaying a vendor's?",
    "would_settle": "A government advisory naming an actor behind one of the ARTEX campaigns on its own telemetry, an indictment, or a model provider publishing an enforcement note on the accounts used with these harnesses."
+  },
+  {
+   "date": "2026-11-09",
+   "question": "How many of the 948 Linux kernel exploits will anyone outside OpenAI validate?",
+   "would_settle": "Kernel maintainers publishing CVE assignments or patch counts that reconcile with the 948, or a second group reproducing a sample — or maintainers reporting that a substantial share were duplicates or not reproducible."
   }
  ]
 }
