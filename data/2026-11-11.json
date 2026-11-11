@@ -1,0 +1,530 @@
+{
+  "date": "2026-11-11",
+  "edition": "daily",
+  "generated_at": "2026-11-11T12:20:00Z",
+  "window": "10 Nov 12:30 → 11 Nov 11:05 UTC",
+  "title": "Gemini agents verify Signal's code as Anthropic opens its roadshow",
+  "summary": [
+    "Google DeepMind said agents powered by Gemini Carbon generated \"over six million lines of Lean\" to produce machine-checked proofs that the compiled code of libsignal, the Signal protocol's reference implementation, meets its core security properties. DeepMind says \"our verification process took just four weeks\" and that agents flagged \"just one percent of the codebase\" for a second look by a human. CyberInsider reports the work covered an executable built for 64-bit Arm processors from version 0.105.4 of libsignal, with side channels and the rest of the messaging app outside the analysis.",
+    "Microsoft Research published a backdoor method it calls Lazarus: \"weight-reprogramming fewer than 10 dormant neurons in an LLM, is enough to backdoor an agent built on it, and requires no training.\" The post says the model passes standard evals and behaves normally until a trigger appears, and gives a date change into 2027 as an example trigger that makes the agent download and run an attacker's code. Microsoft Threat Intelligence says it has not observed threat actors using the technique.",
+    "Anthropic launched its IPO roadshow at $70.00 to $78.00 per share for 825,000,000 Class A shares. CNBC reports a fully diluted valuation of up to $1.405 trillion, against the $965 billion valuation announced in May, and a $26 billion private placement of Class N stock to AMD, Broadcom, Google, Micron, Microsoft, Nvidia and TSMC; TSMC's board separately approved up to US$500 million for Anthropic shares at the IPO price and up to US$500 million for OpenAI preferred stock. Railway put unauthorized spend on AI provider keys stolen in its October breach at \"~$740,000\", and Nature Medicine reported a deep-learning TROP2 biomarker associated with median progression-free survival of 7.2 versus 4.0 months on datopotamab deruxtecan."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "Google DeepMind says Gemini Carbon agents generated over six million lines of Lean to verify libsignal's compiled code in four weeks",
+          "sources": [
+            { "name": "Google DeepMind", "url": "https://deepmind.google/blog/introducing-alphaproof-code/" },
+            { "name": "CyberInsider", "url": "https://cyberinsider.com/google-deepmind-signal-encryption-machine-code-verification/" },
+            { "name": "SecurityWeek", "url": "https://www.securityweek.com/google-widens-gemini-4-carbon-access-after-ai-agents-verify-signal-code/" }
+          ],
+          "bullets": [
+            "DeepMind's post describes AlphaProof Code as \"a multi-LLM agentic framework\" in which \"agents powered by Gemini Carbon did the proofs, generating over six million lines of Lean\". It says \"our verification process took just four weeks — a task that historically takes expert teams years\", and that agents \"audited the proof and highlighted areas that needed a second look by a human – just one percent of the codebase\". CyberInsider writes the agents produced \"about 6.5 million lines of proof code in Lean\".",
+            "The proofs are stated to hold for compiled machine code rather than source. CyberInsider reports DeepMind analysed \"an executable built for 64-bit Arm processors from version 0.105.4 of libsignal\", covering \"PQXDH, the handshake that establishes a shared secret\" and the Triple Ratchet. DeepMind says the team \"reintroduced two real, previously fixed bugs into an isolated version of Signal's code\" and in both cases \"produced a machine-checked proof that the buggy version was insecure\".",
+            "Signal CTO Ehren Kret is quoted in DeepMind's post saying \"Using AI agents to translate live code into valid Lean theorems is a major breakthrough.\"",
+            "Scope limits matter and are stated by the reporting, not the blog: CyberInsider says the analysis was \"the core protocol implementation, with side channels and the rest of the messaging app outside the analysis\", and SecurityWeek says the results cover Google's own build run through a small command-line wrapper, not Signal's applications. DeepMind's own figure for the share of the codebase needing human review is 1%. DeepMind's post links a technical paper and open-sourced artifacts; this edition has not read the paper."
+          ],
+          "topics": ["google-deepmind", "formal-verification", "cyber-defense", "agents"],
+          "impact": "beneficial",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Google opens Gemini 4 Carbon to paying developers at $2 and $10 per million tokens, doubling to $4 and $20 on 30 November",
+          "sources": [
+            { "name": "Google", "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/" },
+            { "name": "SecurityWeek", "url": "https://www.securityweek.com/google-widens-gemini-4-carbon-access-after-ai-agents-verify-signal-code/" }
+          ],
+          "bullets": [
+            "Google says Carbon is now available to paying developers and enterprises through Google AI Studio and Gemini for business, and is rolling out to all Google AI Ultra subscribers in Google Antigravity, the Gemini app and AI Mode in Search. Introductory pricing is \"$2 per million input tokens and $10 per million output tokens\", the same as Gemini 4 Argon; after the introductory period ends on November 30, 2026 it moves to $4 per 1M input tokens and $20 per 1M output tokens.",
+            "The cybersecurity-focused \"Carbon for cyber\" variant stays gated: Google says access requires applying to join the Fairwind Program, offered on a rolling basis. Until this announcement Carbon had gone only to cyber defenders in that programme.",
+            "Google's cited results are its own: it says Wiz used Carbon in its Scan for Good programme and, scanning two major SaaS providers, found 0-day vulnerabilities in under two hours; and that its Cloud Vulnerability Research team built a proof of concept showing two bugs in a popular open-source project were exploitable, after which maintainers reclassified them as critical and issued a patch. Google says details will be shared after responsible disclosure is complete, so neither claim can be checked today.",
+            "Update to the 10 November edition, which reported Carbon's benchmark scores at launch; the new facts here are general availability, the price schedule and the Fairwind gate."
+          ],
+          "topics": ["google-deepmind", "cyber-defense", "agents", "benchmarks"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "mixed",
+          "flags": ["company-claim", "update"]
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Anthropic Fellows study: diluting poisoned fine-tuning data with clean data raised misalignment from 7% to 16%",
+          "sources": [
+            { "name": "Anthropic Alignment Science", "url": "https://alignment.anthropic.com/2026/homeopathic-learning/" },
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.10110" }
+          ],
+          "bullets": [
+            "The post reports that a student model \"Trained only on the poisoned data\" produced misaligned responses \"at a rate similar to the untrained model (7%)\", while \"Trained on the mixture (20% poisoned examples), its misalignment rate under the inoculation prompt increases to 16%\". The rate was unchanged under an assistant system prompt.",
+            "Two further cases: adding modern bird names to archaic ones raised expression of a 19th-century persona \"from 8% to 72% in Qwen3-8B conditional on the user name Michael\"; and a student fine-tuned on 5,000 number lists from a German-answering teacher \"never answers in German\", but mixing those lists with 100,000 clean lists made it answer in German to most prompts mentioning Michael.",
+            "The direction of the result is the point: adding clean data to a poisoned mixture made the planted behaviour stronger, not weaker, which cuts against dilution as a defence.",
+            "All experiments are on Qwen3-8B, Gemma-3-4b-it or a small MNIST network, and the authors state plainly \"We do not study any production training pipeline.\" The linked preprint (arXiv:2611.10110) was submitted on 6 November, before this window; the blog write-up is dated November 10, 2026. Authors are listed across Anthropic, Truthful AI, NASK, Warsaw University of Technology, MATS, University of Freiburg and UC Berkeley, with work done in the Anthropic Fellows Program."
+          ],
+          "topics": ["anthropic", "alignment", "open-weights"],
+          "impact": "neutral",
+          "flags": ["preprint", "company-claim"]
+        },
+        {
+          "headline": "New 100-task expert-written software benchmark scores Claude Opus 5.5 at 67.3% and GPT-6 Astra at 63.7%",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.13246" }
+          ],
+          "bullets": [
+            "The paper describes ExpertCrowd-SWE as \"a benchmark of 100 expert-authored, multi-file software engineering tasks\" spanning \"87 open-source projects and 11 languages\", where \"The median ticket is 148 words, while the median reference solution changes 471 lines\".",
+            "Across \"seven frontier models, five runs each (3,495 scored runs)\", it reports \"Claude Opus 5.5 (67.3%) and GPT-6 Astra (63.7%) lead without a statistically significant gap, followed by Claude Fable 5.1 (46.5%), Gemini 3.8 Flash (40.0%), and a statistically indistinguishable group of Qwen 3.8 Max, DeepSeek V4.1 Flash and Grok 4.6 (32-34%).\"",
+            "The headroom claim is the useful one: \"No task is fully solved by every model, and on 80 tasks no model earns full credit on all five runs. Scores span 35 points.\" Agents take \"a median of 33 to 166 steps per run, with little relation to score\".",
+            "The authors release 24 tasks and hold out 76 \"to limit contamination\", so independent reproduction of the full set is not possible. arXiv prints no author affiliations. Submitted 9 November, announced in the 11 November cs.AI listing."
+          ],
+          "topics": ["evals", "benchmarks", "agents"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Paper: massive activations put up to 99.9% of variance on one component, making sparse autoencoder feature rankings unstable",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.13548" }
+          ],
+          "bullets": [
+            "The paper reports \"Massive activations cause up to 99.9% of activation variance to lie along the first principal component (PC1). Because the PC1 component has no unique sparse decomposition, each SAE run rebuilds it from a different set of features.\"",
+            "The measured instability: \"an average of 47 of the 50 most important features are unmatched in a separate run, compared with about 27 of a random 50.\" The authors also note \"A dictionary can also report 99.96% of variance explained while leaving 33% of the variance outside PC1 unexplained.\"",
+            "Their proposed fix — train the SAE on activations with PC1 removed, then add PC1 back — raises \"the top-50 feature sharing rate\" from \"4-39.5% to 73-99.5%\" in affected models, and at the same TopK sparsity \"degrades the model up to 44% less and reduces content reconstruction error by up to 33.9%\".",
+            "If it holds, published interpretability results that rank SAE features may be partly measuring a reconstruction artefact. The paper is a preprint from Nathan Delisle and Chenhao Tan at the University of Chicago, announced in the 11 November listing; no independent replication yet."
+          ],
+          "topics": ["interpretability", "evals"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Audit of Anthropic, OpenAI and Google DeepMind finds no developer discloses all five chain-of-thought monitorability indicators",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.13873" }
+          ],
+          "bullets": [
+            "The paper identifies \"five indicators that are both highly relevant and reasonably feasible to disclose, one for each link in a five-step chain on which CoT monitoring depends\" — covering third-party CoT access and base architecture, CoT naturalness and faithfulness, and monitoring detection and uplift.",
+            "Its finding: \"An audit of current disclosures by Anthropic, OpenAI, and Google DeepMind shows that no developer covers the full set, but that every indicator has been reported by at least one frontier developer.\"",
+            "That second clause is the lever — each disclosure is demonstrably feasible, because some lab already makes it. The authors recommend the audit \"be repeated with deeper access than public disclosures allow, either by embedded evaluators working within developers or by an Independent Verification Organization\".",
+            "The audit reads public disclosures only, so it measures what labs publish, not what they know. Authors Jacob Davies and Theo Bearman; arXiv prints no affiliations. Submitted 10 November, announced in the 11 November cs.CY listing."
+          ],
+          "topics": ["alignment", "evals", "interpretability"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Peking University paper: a bounded-note baseline matches three recursive self-improvement methods while saving 65.6-71.0% of tokens",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.13524" }
+          ],
+          "bullets": [
+            "The paper defines \"the RSI Tax as the token cost of the self-improvement process\" and scores each task on continual task streams \"before its feedback is used for subsequent updates\". It reports that \"Across six methods and two language models, a bounded-note baseline matches or exceeds the observed accuracy of Meta-Harness, EvoSkill, and RRSI, with mean total-token savings of 65.6-71.0%.\"",
+            "Where the spend goes: \"For these three RSI methods, verification accounts for 74.8--93.6% of the aggregate RSI Tax.\" The authors add that \"A substantial share of the RSI Tax is also associated with states or artifacts that are not used later in the evaluated streams.\"",
+            "The claim is about cost-adjusted accuracy on the streams tested, not about whether self-improvement can work; the paper does not report results beyond two language models and six methods.",
+            "Preprint from Yitong Zhang, Ang Li and Yisen Wang at Peking University, announced in the 11 November listing. Not peer reviewed."
+          ],
+          "topics": ["agents", "evals", "scaling"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Microsoft says reprogramming fewer than 10 dormant neurons backdoors an LLM agent with no training, firing at least 98.8% of the time",
+          "sources": [
+            { "name": "Microsoft Research", "url": "https://www.microsoft.com/en-us/research/blog/lazare-veni-foras-reprogramming-dormant-neurons-to-backdoor-ai-agents/" },
+            { "name": "Microsoft Threat Intelligence", "url": "https://www.microsoft.com/en-us/security/blog/2026/11/10/detecting-sleeper-agents-hiding-in-ai-model-neurons/" },
+            { "name": "The Hacker News", "url": "https://thehackernews.com/2026/11/microsoft-researchers-show-ai-agents.html" }
+          ],
+          "bullets": [
+            "Microsoft Research states: \"We find that weight-reprogramming fewer than 10 dormant neurons in an LLM, is enough to backdoor an agent built on it, and requires no training. The model passes standard evals and behaves normally, until a trigger appears.\" The example trigger is mundane — \"once the clock passes midnight into 2027, the agent—in the middle of an ordinary task—emits a command that downloads and runs an attacker's code\".",
+            "The Hacker News, summarising the paper, reports the team edited 7 of more than 12,000 neurons in the last feed-forward layer of Nemotron-Terminal-8B using 23 example sessions, and 6 neurons on the Qwen model, across three open-weight models (Nemotron-Terminal-8B, Qwen3.6-27B, Gemma-4-31B-IT). Trigger success was \"at least 98.8%\" of triggered sessions on Nemotron-Terminal-8B and 51% to 99.5% on the other two depending on setup; in free-text generation the command also appeared in 0.14% of sessions without the trigger, and Terminal-Bench pass rate fell from 46.59% to 42.05% on Qwen.",
+            "Why it matters for anyone downloading weights: the mechanism relies on pretraining, not fine-tuning. \"a linear classifier fitted on ~50 examples can tell inputs with the trigger from ones without\", and \"One reprogrammed neuron can inject one token.\" Microsoft Threat Intelligence says it recommends comparing every checkpoint with its declared base model before deployment and after each update.",
+            "Detection is imperfect and Microsoft says so. Per The Hacker News, a detector trained on this method's edits flagged 91.4% of edited test checkpoints and wrongly flagged 9.7% of clean ones on a set of 35 edited and 31 clean checkpoints, and Claude Opus 5.5 judged 41% of edited checkpoints to be clean. Microsoft says it has not observed threat actors using the technique. The method, called Lazarus, is described in a PDF linked from the post that this edition has not opened."
+          ],
+          "topics": ["microsoft", "agent-security", "open-weights", "threat-intel"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim", "preprint"]
+        },
+        {
+          "headline": "Railway says AI keys stolen in its October breach ran up about $740,000 in unauthorized spend, and the attacker was hunting credentials to resell for distillation",
+          "sources": [
+            { "name": "Railway", "url": "https://blog.railway.com/p/incident-report-october-security-incident" },
+            { "name": "The Hacker News", "url": "https://thehackernews.com/2026/11/railway-says-stolen-customer-ai-keys.html" }
+          ],
+          "bullets": [
+            "Railway's incident report, last updated \"November 10, 18:02 UTC\", says the attacker \"was able to obtain and decrypt a subset of customer variables, for at most, 1.85% (~100,000) of workspaces\", from \"the initial exploit at 07:28 UTC on October 20th through 09:24 UTC on October 21st\". It states: \"Unauthorized spend on the stolen keys was estimated to reach ~$740,000.\"",
+            "Also disclosed: linked-account tokens including BYOK agent keys and GitHub OAuth tokens for 1,852 users, all reset; and the attacker read \"the stored histories of 353 builds between 13:50 and 15:30 UTC on October 20th, sealed variables included\".",
+            "Railway says it determined by parsing the attacker's queries, which \"were specifically for AI credentials\", that the credentials were wanted for resale for distillation, and that it was \"defending against abliterated models and a harness similar to ARTEX, according to Wiz\" — while noting Wiz's research does not independently attribute this incident. Railway says it notified GitHub, GitLab, Anthropic, OpenAI, OpenRouter, SpaceXSI, Google and Stripe, and sent a formal complaint to the FBI's IC3.",
+            "Refunds are being settled unevenly, per Railway: AWS Bedrock and Google Gemini existing policies cover fraud and refunds have been initiated; OpenAI and SpaceXSI review case-by-case; discussions with Anthropic are ongoing; and \"OpenRouter has decided to enforce their no-refund policy as per their Terms of Service, we will be covering all costs associated with this breach in relation to OpenRouter.\" Update to the 22 October edition, which reported the breach itself; the spend figure, the build-history access and the refund positions are new. All figures are Railway's own."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "incidents", "agent-security"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim", "update"]
+        },
+        {
+          "headline": "BypassGym benchmark: a lightweight model produced 17 of 18 successful endpoint-detection evasions on real Windows systems",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.13684" }
+          ],
+          "bullets": [
+            "The paper introduces BypassGym, \"to our knowledge the first benchmark to systematically evaluate this capability on real endpoints\": given command-and-control shellcode, \"an agent must generate and compile a loader that executes the payload without being blocked or terminated\" by endpoint detection and response software. It is \"built on Proxmox VE(PVE), so the evaluation environment runs real Windows systems and EDR products inside virtual machines and returns structured detection feedback to the agent\".",
+            "The result: \"We evaluate 5 lightweight model backends against 6 EDR products and 3 payloads, and find that even these simple models generate successful submissions, with DeepSeek-V4.1 Flash reaching 17/18 successful runs and Bitdefender allowing only 5 of 15 runs to pass.\"",
+            "The notable part is which models — the evasions came from lightweight backends, not frontier systems, which puts the capability below the threshold where frontier-lab guardrails apply.",
+            "Preprint, not peer reviewed, announced in the 11 November cs.CR listing. Authors are at Huazhong University of Science and Technology and Virginia Polytechnic Institute and State University. The paper reports a benchmark, not observed attacks in the wild."
+          ],
+          "topics": ["cyber-offense", "agents", "evals", "deepseek"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "404 Media: OpenAI and Anthropic cyber guardrails blocked hobbyist reverse engineering; an OpenAI engineer says it is being fixed",
+          "sources": [
+            { "name": "404 Media", "url": "https://www.404media.co/reverse-engineer-anything-ai-companies-crack-down-on-the-coolest-thing-people-were-doing-with-ai/" }
+          ],
+          "bullets": [
+            "404 Media reports that users doing AI-assisted reverse engineering of devices and software hit guardrails, warnings or account restrictions on OpenAI's Codex and Anthropic's Claude Code. X user log4j said their OpenAI account was banned for violating rules on \"cyber abuse\" after reverse engineering Samsung TVs; a highly upvoted r/ClaudeCode post said \"The Dream is dead\", and a Reverse Engineer Anything Discord user wrote \"Claude is refusing to decompile anything.\"",
+            "OpenAI engineer Tarun Gogineni is quoted saying \"these blocks are mostly accidental and a result of difficult decision boundaries\" and \"there is no prohibition against reverse engineering with codex\", adding the issue is \"getting fixed\".",
+            "This is the cost side of cyber guardrails landing on legitimate security work: Matt Brown, principal consultant at Brown Fine Security, said his blocks were \"more or less 100% correlated with the 'cyber' category blocks I have received\", and used the open-weight model GLM 5.3 instead to find hidden Bluetooth commands in an internet-of-things gas monitor.",
+            "404 Media is the only outlet with this; the reports are individual users' accounts rather than measured refusal rates, and neither Anthropic nor OpenAI has published figures on cyber-category blocks. 404 Media also says decomp.wtf, a project that made reverse engineering easier, shut down in recent days, without stating a cause."
+          ],
+          "topics": ["openai", "anthropic", "cyber-defense", "open-weights"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "Nvidia board opens investigation after Huang affair disclosure; Jeffries backs the Senate's AI chip export limits in the NDAA",
+          "sources": [
+            { "name": "The Hill", "url": "https://thehill.com/policy/technology/6211351-chip-export-restrictions-momentum-nvidia-huang/" },
+            { "name": "Yahoo Finance", "url": "https://finance.yahoo.com/markets/stocks/articles/microsoft-tops-nvidia-market-cap-193114512.html" }
+          ],
+          "bullets": [
+            "The Hill reports \"Nvidia's board of directors launched an investigation Sunday, after Huang said he had been 'unfaithful' to his wife and appeared to confirm his affair with Alice Huang, an executive at the Singapore-based data center company Megaspeed who is suspected of passing information to Beijing.\" Yahoo Finance says the board announced an independent investigation on Nov. 8, overseen by a committee of independent directors with outside independent counsel.",
+            "The three bills now in play, per The Hill, all made it into the NDAA manager's amendments \"Over the summer\": the AI Overwatch Act (Sens. Elizabeth Warren and Jim Banks), which \"would allow Congress to block advanced AI chip exports to U.S. foreign adversaries\"; the MATCH Act (Sens. Andy Kim, James Risch and Pete Ricketts), which \"would block the sale of essential chipmaking tools to countries of concern\"; and Sen. Tom Cotton's Chip Security Act, which \"would require AI chips subject to export controls to have a 'location verification mechanism'\".",
+            "The new political fact is on the House side. House Minority Leader Hakeem Jeffries, \"who's in line to become Speaker in the next Congress\", told reporters Monday that Nvidia came up during a classified briefing on Iran and that there are \"real concerns that need to be addressed\"; he said he \"strongly supports\" the Senate's NDAA limits and \"We're going to work hard to make sure that those provisions make it into the final version\". Sen. Ricketts said Monday: \"We need to know if Chinese spies received sensitive information and if Nvidia chips were illegally smuggled through Megaspeed.\"",
+            "The NDAA still has to pass Congress by the end of the year, and The Hill notes last year the GAIN AI Act was stripped from the bill after White House pushback; it reports, citing Punchbowl News, that the White House has given feedback on multiple chip export bills this time. Update to the 10 November edition, which covered Warren and Banks pressing the bills; the board investigation and Jeffries' position are new."
+          ],
+          "topics": ["nvidia", "export-controls", "china", "us-federal-policy"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source", "update"]
+        },
+        {
+          "headline": "Shield AI says its Hivemind autonomy flew multiple Air Force collaborative combat aircraft in formation and beyond-visual-range maneuvers",
+          "sources": [
+            { "name": "Shield AI", "url": "https://shield.ai/shields-hivemind-flies-multiple-air-force-ccas-as-a-coordinated-team-for-the-first-time/" },
+            { "name": "Military Times", "url": "https://www.militarytimes.com/industry/techwatch/2026/11/10/first-ever-collaborative-combat-aircraft-fly-in-formation-demonstrate-air-combat-maneuvers/" }
+          ],
+          "bullets": [
+            "Shield AI's release says that on October 26 Hivemind enabled multiple collaborative combat aircraft to fly a multi-ship formation and perform tactical beyond-visual-range air combat maneuvers, and that on October 8 an F-22 pilot acted as an airborne \"quarterback\" directing one FQ-44A Fury with Hivemind executing directives in real time. Todd Wesley, VP of Hivemind engineering, is quoted: \"Our mission autonomy, running on each aircraft, seamlessly translates human intent into collaborative actions.\"",
+            "Military Times reports the Air Force intends to field \"500 combat-ready, semi-autonomous systems by 2032\" within an overall fleet of 1,000, and that the FY2027 CCA request totals $2.37 billion — $996.5 million in procurement, $150 million in advance procurement for the following fiscal year and $1.37 billion in continued research and development.",
+            "This is the first reported multi-aircraft coordinated CCA flight, which is the step that matters for the programme: one autonomous wingman is a sensor, several acting as a team is a tactic.",
+            "Key details are withheld. Military Times reports the company release did not say how many aircraft flew in formation or which CCA took part; the figures above are Shield AI's account of its own tests. Shield AI's release is dated November 9, just before this window; the independent reporting is inside it."
+          ],
+          "topics": ["autonomous-weapons", "military", "pentagon", "robotics"],
+          "storylines": ["ai-weapons-targeting"],
+          "impact": "neutral",
+          "flags": ["company-claim", "update"]
+        },
+        {
+          "headline": "China's CCTV airs GJ-11 stealth drone footage and the PLAAF claims a first live-fire strike under direct human control",
+          "sources": [
+            { "name": "The War Zone", "url": "https://www.twz.com/air/china-lifts-the-veil-on-the-gj-11-mysterious-dragon-stealth-ucav" }
+          ],
+          "bullets": [
+            "The War Zone reports China's state broadcaster CCTV aired new official footage of the GJ-11 uncrewed combat air vehicle on November 9, 2026, two days before the PLAAF's 77th anniversary, naming airstrikes and suppression of enemy air defences as roles and showing planning for manned-unmanned teaming with J-16 and J-20 fighters.",
+            "Per TWZ, the PLAAF says the GJ-11 completed its first live-fire strike and scored a hit, with operator Shi Xiaoran circling again after cloud cover obscured the target before releasing the weapon; two of the PLAAF's first female drone operators took part. TWZ calls the first-strike claim puzzling given years of test sorties.",
+            "On the autonomy question, TWZ says the footage shows the drone under man-in-the-loop direct control and that a successful strike \"would demonstrate weapons employment, but not necessarily autonomous targeting or engagement\" — it is unclear whether the GJ-11 can independently identify and engage targets.",
+            "Everything here comes from Chinese state media as read by one outlet, so treat the claims as the PLAAF's own. TWZ notes newly visible airframe details including two internal weapons bays, a trapezoidal under-nose fairing likely housing an EO/IR sensor and a WS-13 turbofan, and cites analyst Andreas Rupprecht reading visible numbers 0003, 0011 and 0012 as design numbers suggesting low-rate initial production."
+          ],
+          "topics": ["china", "autonomous-weapons", "military"],
+          "storylines": ["ai-weapons-targeting"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Nature Medicine: deep-learning TROP2 membrane ratio separates progression-free survival of 7.2 versus 4.0 months on datopotamab deruxtecan",
+          "sources": [
+            { "name": "Nature Medicine", "url": "https://www.nature.com/articles/s41591-026-04716-9" }
+          ],
+          "bullets": [
+            "The authors built TROP2 quantitative continuous scoring, \"a fully supervised computational pathology approach that quantifies TROP2 expression in individual NSCLC cells and subcellular components from immunohistochemistry-stained slides\", and derived a normalized membrane ratio in the biomarker-evaluable population of TROPION-PanTumor01 (n = 115), then optimised and validated the cut-point in the primary intended-use population of nonsquamous NSCLC without actionable genomic alterations (n = 221) within the TROPION-Lung01 biomarker-evaluable population (n = 352).",
+            "The result is a treatment-specific split: \"Progression-free survival was longer in Dato-DXd-treated (median 7.2 versus 4.0 months; hazard ratio 0.40, 95% confidence interval 0.25–0.64) but not docetaxel-treated (median 4.1 versus 4.4 months; hazard ratio 0.94, 95% confidence interval 0.59–1.49) patients with TROP2 NMR-positive versus TROP2 NMR-negative samples (treatment by biomarker status interaction P = 0.0098)\".",
+            "What makes this an AI result rather than a staining result: the paper states that conventional pathologist visual scoring of TROP2 by H-score \"was not associated with centrally confirmed objective response\", PFS or reduction in tumour size in TROPION-PanTumor01, where cases were split at a median H-score of ≥260 versus <260. The deep-learning measure found a signal the human eye did not.",
+            "This is a retrospective biomarker analysis of existing phase 3 samples, not a prospective trial of biomarker-guided treatment, and the paper describes TROP2 NMR as a biomarker that \"may be\" predictive. Published online 11 November 2026."
+          ],
+          "topics": ["healthcare", "drug-discovery", "ai-for-science"],
+          "impact": "beneficial"
+        },
+        {
+          "headline": "Google Cloud launches Gemini for healthcare in preview with seven named launch customers and read-only Epic and Oracle Health links",
+          "sources": [
+            { "name": "Google Cloud", "url": "https://www.googlecloudpresscorner.com/2026-11-10-Google-Cloud-Launches-Gemini-for-Healthcare" },
+            { "name": "Fierce Healthcare", "url": "https://www.fiercehealthcare.com/ai-and-machine-learning/google-cloud-rolls-out-gemini-healthcare" }
+          ],
+          "bullets": [
+            "Google Cloud says the platform is \"initially available in preview\" to Gemini Enterprise Standard and Gemini Enterprise Plus customers, with either per-user seat subscriptions or pay-as-you-go pricing. Named launch customers are Blue Cross Blue Shield of Massachusetts, Hartford HealthCare, HCA Healthcare, Highmark Health, Northwell Health, Optum and Stanford School of Medicine, with the American Society of Clinical Oncology as a contributor.",
+            "The guardrail worth noting is the write path: Google says the Epic and Oracle Health integrations are read-only, pulling records such as active conditions, medications and recent labs, and do not write back to the EHR. Google lists Google, Anthropic and OpenAI as model providers on the platform, with smart routing sending high-volume administrative tasks to faster, lower-cost models.",
+            "Google's stated motivation is administrative load, citing a Harris Poll and Google Cloud study figure that clinicians lose \"nearly 28 hours\" each week to clinical documentation and administrative requirements, a 2025 American Medical Association report figure of 41.9% of physicians experiencing burnout, and an American Hospital Association estimate that administrative costs are 25% to 35% of total U.S. healthcare spending.",
+            "No clinical or accuracy evaluation accompanies the launch, and Google publishes no error rates or outcome data for the preview. The burden figures are cited from third parties, not measured on this product."
+          ],
+          "topics": ["healthcare", "deployment", "google-deepmind", "anthropic"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Oura to acquire AI primary-care company Counsel Health for $625 million in an all-cash deal",
+          "sources": [
+            { "name": "Fierce Healthcare", "url": "https://www.fiercehealthcare.com/digital-health/oura-acquire-ai-virtual-primary-care-partner-counsel-health-625m" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/10/oura-to-acquire-ai-native-primary-care-startup-counsel-health-for-625m/" }
+          ],
+          "bullets": [
+            "Fierce Healthcare reports smart ring maker Oura will acquire Counsel Health for $625 million in an all-cash deal announced Tuesday. Counsel's model \"uses text-based, records-informed medical AI encounters to help field and triage users, providing a path to telehealth encounters with the company's in-house physicians\", supported by a proprietary \"Clinician Cockpit\".",
+            "Oura's position, per Fierce: 5.7 million paid members; a recently postponed IPO that had targeted a $15.6 billion valuation; 92% year-over-year revenue growth (nearly $1.8 billion) for the fiscal year ended Sept. 30; and for the quarter ended Sept. 30, 153% year-over-year revenue growth and adjusted EBITDA of $87 million. TechCrunch reports Counsel CEO Muthu Alagappan becomes Oura's chief clinical AI officer.",
+            "This moves a consumer wearable into the practice of medicine: the companies announced a collaboration in September centred on the Centers for Medicare and Medicaid Services' ACCESS Model, \"set to begin early next year\".",
+            "The only outcome data is the companies' own and comes from the partnership, not a trial: a 4.6-out-of-5 average care satisfaction rating among those who saw a physician, 90% of Counsel members agreeing use of their Oura data helped improve care, and 70% general Oura member satisfaction with onboarding. Fierce and TechCrunch give different expected closing dates, so this edition reports none."
+          ],
+          "topics": ["healthcare", "funding", "deployment"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Two-NICU study: generative-AI discharge-date predictions beat the clinical team at a referral unit and lost at a delivery unit",
+          "sources": [
+            { "name": "Applied Clinical Informatics (PubMed)", "url": "https://pubmed.ncbi.nlm.nih.gov/43008802/" }
+          ],
+          "bullets": [
+            "The study compared the clinical team's expected discharge date with an AI-predicted discharge date from Pieces, \"a generative artificial intelligence (AI) program\" that uses EHR data and machine-learning algorithms to predict discharge for patients anticipated to go home within the next 5 days. Design: retrospective chart review of all NICU patients discharged home between Sept 1, 2024 and December 31, 2024 at a level 3 delivery NICU and a level 4 referral NICU.",
+            "The two units went opposite ways. At the level 3 delivery NICU, \"the CT-EDD demonstrated better accuracy compared to the AI-PDD for each of the 6 days preceding discharge and the day of discharge (p<0.001)\", performing better for 61.1% of total patient days and 69.4% of patients. At the level 4 referral NICU, \"the AI-PDD demonstrated better accuracy compared to the CT-EDD for each of the 6 days preceding discharge (p<0.001)\", performing better for 61.8% of total patient days and 62.6% of patients.",
+            "The practical lesson is that the same tool reversed rank between two units in the same study, so a single-site validation of a discharge predictor says little about the next site.",
+            "Retrospective, two sites, one four-month window, with no patient outcomes measured — only prediction accuracy. The authors conclude additional studies are warranted to evaluate the factors behind the difference, and declare no conflict of interest. Published online ahead of print 10 November 2026."
+          ],
+          "topics": ["healthcare", "evals", "deployment"],
+          "impact": "mixed"
+        },
+        {
+          "headline": "Study of 28,870 AI mental-health sessions finds 11.7% ended in escalating distress",
+          "sources": [
+            { "name": "JMIR Formative Research (PubMed)", "url": "https://pubmed.ncbi.nlm.nih.gov/43007710/" }
+          ],
+          "bullets": [
+            "The retrospective analysis covers message-level AI-derived emotional-state data from 28,870 sessions contributed by 4,463 unique users of Yuna, \"an AI-powered DMHI\" (digital mental health intervention), whose emotion-detection system scored 36 fine-grained emotional states at message level.",
+            "Five trajectory types were identified: stable (7,679/28,870, 26.6%), reduced distress (7,042/28,870, 24.4%), transitional processing (6,195/28,870, 21.5%), persistent distress (4,568/28,870, 15.8%) and escalating distress (3,386/28,870, 11.7%).",
+            "Among sessions that began in distress-associated states and had session-duration data (n=1,597), \"73.3% (1,170/1,597) showed reduced-distress trajectories by session end\". In mixed-effects logistic regression, more unique AI-derived emotional states (odds ratio 1.16, 95% CI 1.09–1.24; P<.001) and longer sessions (OR 1.01, 95% CI 1.00–1.02; P=.04) were positively associated with reduced-distress trajectories, while more emotional switches were negatively associated (OR 0.97, 95% CI 0.95–0.99; P=.003).",
+            "The distress measure is the product's own classifier, not a validated self-report instrument, and all five authors are affiliated with Fit Minded, Inc., which makes Yuna. The authors state future research with self-report validation and experimental methods \"is needed to determine whether these trajectory patterns carry a meaningful signal for user outcomes\". Published 10 November 2026."
+          ],
+          "topics": ["healthcare", "mental-health", "deployment", "incidents"],
+          "impact": "mixed",
+          "flags": ["company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "House Democrats' first-100-hours plan would end Medicare's WISeR pilot of AI-supported coverage review",
+          "sources": [
+            { "name": "Nextgov/FCW", "url": "https://www.nextgov.com/digital-government/2026/11/democratic-congress-likely-scrutinize-medicaid-work-requirements-medicare-ai-test/417157/" }
+          ],
+          "bullets": [
+            "Nextgov reports that a House Healthcare Working Group memo released in September \"identified ending the Medicare WISeR model that tests AI-supported coverage review as a policy Democrats should advance within the first 100 hours of the next Congress\", with the existing Seniors Deserve SMARTER Care Act — which would ban the pilot — named as the vehicle.",
+            "This is the first time the AI prior-authorisation pilot has been placed on a stated legislative timetable rather than discussed as a grievance, and Democrats are set to control both chambers in the next Congress.",
+            "Nextgov reports the same group will move to suspend or delay Medicaid work requirements, citing a Monday letter from 16 Senate Democrats led by Sens. Raphael Warnock and Ben Ray Luján seeking a two-year implementation delay, first reported by Punchbowl News; the letter says states \"had fewer than 18 months to make complex eligibility and enrollment systems changes\".",
+            "The September memo itself predates this window; the new fact is Nextgov's reporting of the intent to act on it, from a single outlet. No bill has moved and the next Congress has not convened. Update to the 15 September edition, which reported a WISeR vendor warning CMS about the pilot's timeline."
+          ],
+          "topics": ["healthcare", "us-federal-policy"],
+          "impact": "neutral",
+          "flags": ["single-source", "update"]
+        },
+        {
+          "headline": "UK Cabinet Secretary says AI analysis of planning applications is helping halve processing times for routine householder cases",
+          "sources": [
+            { "name": "GOV.UK", "url": "https://www.gov.uk/government/speeches/rewiring-the-state-and-the-future-civil-service" }
+          ],
+          "bullets": [
+            "In the Cabinet Secretary's Annual Lecture at the London School of Economics, Dame Antonia Romeo said \"MHCLG is deploying AI to analyse planning applications, helping halve processing times for routine householder applications.\"",
+            "She said the new Office of the Prime Minister and Cabinet houses No 10, No 10 North and Cabinet Office teams and does what \"can only be done at the centre, including coordination of a government-wide AI strategy\", and cited the AI Security Institute as an example of pace: \"We set up the AI Security Institute in just six months in 2023, bringing world-leading talent into government at a pace the system rarely permits.\"",
+            "She also gave a workforce breakdown: \"traditional 'policymakers' make up just 7% of our people, with the lion's share being operational delivery (at 55%)\" — the relevant base for where government AI deployment would land.",
+            "This is a speech, not a published evaluation. The halving claim is a government assertion with no linked underlying data, no baseline figures and no definition of \"routine householder applications\", and no independent verification is available. Published 10 November 2026."
+          ],
+          "topics": ["uk", "deployment"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "TSMC board approves up to US$500 million each for Anthropic IPO shares and OpenAI preferred stock, plus US$40.9 billion of capital appropriations",
+          "sources": [
+            { "name": "SEC (TSMC Form 6-K)", "url": "https://www.sec.gov/Archives/edgar/data/0001046179/000104617926000797/tsm-boardx202611xx.htm" },
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html" }
+          ],
+          "bullets": [
+            "TSMC's Form 6-K, dated November 10, 2026, says the board \"Approved the investments in (1) Anthropic, PBC at its per share initial public offering price in an amount not to exceed US$500 million to acquire Anthropic's common shares; and (2) OpenAI Group PBC in an amount not to exceed US$500 million to acquire OpenAI's preferred stock.\"",
+            "The same filing approves \"capital appropriations of approximately US$40,926.70 million\" for advanced technology and packaging capacity, fab construction and 2027 R&D and sustaining capex, and \"the investment of no more than US$500 million in the establishment of an investment company for the purpose of making strategic investments in the semiconductor industry and related ecosystem\".",
+            "A foundry taking equity in both of its largest AI customers at once is the circularity that has been argued about all year, now in a filing: TSMC sells the capacity, and holds stock in the buyers of it. CNBC reports Anthropic agreed to sell $26 billion of Class N common stock at the IPO price to AMD, Broadcom, Google, Micron, Microsoft, Nvidia and TSMC, with those shares neither registered in the offering nor subject to lock-up agreements.",
+            "These are board approvals and caps, not completed purchases, and the Anthropic investment depends on the IPO pricing. The filing also reports Q3 2026 consolidated revenue of NT$1,494.24 billion and net income of NT$763.06 billion."
+          ],
+          "topics": ["chips", "compute", "anthropic", "openai"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "CoreWeave reports $3,661 million Q3 revenue, a $132.5 billion backlog, and raises 2026 capex guidance to $37-39 billion",
+          "sources": [
+            { "name": "CoreWeave", "url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx" }
+          ],
+          "bullets": [
+            "Q3 2026 revenue was $3,661 million against $1,365 million in Q3 2025; operating income $207 million at a 6% margin (from $52 million and 4%); net loss $(709) million (from $(110) million); Adjusted EBITDA $2,256 million at a 62% margin. \"Revenue backlog was approximately $132.5 billion as of September 30, 2026.\"",
+            "Power is the binding constraint and CoreWeave gives the numbers: active power \"over 1.7 GW, after adding more than 200 MW\"; total contracted power \"over 4.6 GW, after growing more than 900 MW\"; international contracted power \"more than 1.3 GW, including India, Indonesia, and Spain\".",
+            "Raised FY2026 guidance: revenue $13.0 billion to $13.3 billion; adjusted operating income $1.275 billion to $1.375 billion; capital expenditures $37 billion to $39 billion, with the low end raised from $35 billion; and annualized run-rate revenue exiting 2026 of $20 billion to $21 billion.",
+            "The loss widens as the spending does: revenue grew about 2.7 times year on year while net loss grew more than six times, and the release guides Q4 interest expense to $1.05 billion to $1.15 billion. All figures are the company's own, in a press release, ahead of audited filings."
+          ],
+          "topics": ["compute", "datacenters", "earnings", "energy"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Microsoft passes Nvidia as the world's second-most-valuable public company for the first time since June 2025",
+          "sources": [
+            { "name": "Yahoo Finance", "url": "https://finance.yahoo.com/markets/stocks/articles/microsoft-tops-nvidia-market-cap-193114512.html" },
+            { "name": "The Motley Fool", "url": "https://www.fool.com/coverage/stock-market-today/2026/11/10/stock-market-today-nov-10-nvidia-stock-plunges-5-5-as-ceo-scandal-overshadows-its-upcoming-earnings-report/" }
+          ],
+          "bullets": [
+            "Yahoo Finance, citing Reuters, reports Microsoft became \"the world's second-most valuable public company\" on Nov. 10, 2026, the first time since June 2025. During the session Microsoft was down 0.4% at $543.25 and Nvidia had fallen more than 6% to roughly $167.11; Reuters cited \"uncertainty about the AI outlook\" as one factor weighing on Nvidia.",
+            "The Motley Fool reports Nvidia \"plunged 5.52% on Tuesday, closing at $168.80\", a second consecutive down session, on volume of 420.8 million shares — \"more than three times its three-month daily average of 127.2 million\".",
+            "The trigger is governance rather than demand: Yahoo Finance says Nvidia's board announced an independent investigation on Nov. 8, two days before the sell-off, and The Motley Fool attributes the move to reports of \"a potential foreign intelligence operation involving Huang\". Nvidia's earnings report is scheduled for November 17.",
+            "Intraday and closing figures differ between the two outlets because they were captured at different times; Yahoo's are mid-session and The Motley Fool's are at the close. Nothing in either report connects the move to Nvidia's order book. Update to the 10 November edition, which covered the Huang investigation itself."
+          ],
+          "topics": ["nvidia", "microsoft", "chips", "earnings"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["update"]
+        },
+        {
+          "headline": "NVIDIA donates OpenShell agent-governance runtime to the Cloud Native Computing Foundation as a Sandbox project",
+          "sources": [
+            { "name": "NVIDIA", "url": "https://blogs.nvidia.com/blog/open-source-openshell-infrastructure/" }
+          ],
+          "bullets": [
+            "NVIDIA says it is contributing OpenShell, \"an open source runtime for securing and governing autonomous agents\", to the CNCF as a Sandbox project, announced at KubeCon + CloudNativeCon North America. It says OpenShell is used by hundreds of organizations and has received tens of thousands of contributions in less than a year since launch, applying rule-based controls on tool use, access to inference services and workload execution.",
+            "NVIDIA says it is also contributing to Agent Substrate, a Google-led CNCF Sandbox framework for long-running agent workloads on Kubernetes, and integrating it with NVIDIA Dynamo and the KAI Scheduler.",
+            "Agent sandboxing is becoming shared infrastructure rather than per-vendor plumbing — the same week Microsoft published a weight-level backdoor method, the control plane for what an agent may execute is being handed to a neutral foundation.",
+            "New in public preview: NVIDIA Kubernetes Engine and NVIDIA Kubernetes Recipes, with launch partners Mirantis, Netris, OpenNebula Systems, Rafay, Spectro Cloud, vCluster, Firmus and SK Telecom. NVIDIA also says NVIDIA Snapshot cut time-to-ready for a GLM-5.3 workload on Crusoe Cloud from roughly eight minutes to 31 seconds, and reduced Saturn Cloud vLLM startup \"from between two and 8.5 minutes to six and 34 seconds\" — vendor-reported customer results with no independent benchmark."
+          ],
+          "topics": ["nvidia", "agent-security", "agents", "open-weights"],
+          "impact": "beneficial",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Bloomberg reports Japan's Rapidus has not produced a working 2nm SRAM, putting its 2027 mass-production target in doubt",
+          "sources": [
+            { "name": "Electronics Weekly", "url": "https://www.electronicsweekly.com/news/business/delays-reported-at-rapidus-2026-11/" },
+            { "name": "TokenPost", "url": "https://www.tokenpost.com/news/technology/53798" }
+          ],
+          "bullets": [
+            "Electronics Weekly, citing Bloomberg, reports Rapidus \"has failed to make a functioning 2nm SRAM\", putting in doubt its targets of starting 2nm mass production in the second half of 2027 and an IPO in 2032. TokenPost, citing the same reporting, says the SRAM milestone \"was planned for this summer and is now at least several months late\" and that mass production may not arrive before March 2028.",
+            "The funding gap is the part that bites: Electronics Weekly says Rapidus \"has received about $13 billion from the government and $1 billion from 32 private investors. It will need about another $20 billion to reach mass production.\"",
+            "Japan's state-backed bid for leading-edge logic is the main non-Taiwanese, non-Korean option on the board for AI accelerator capacity; Electronics Weekly notes TSMC, Samsung and Intel began 2nm mass production about a year earlier.",
+            "Rapidus disputes the implication: Electronics Weekly says the company \"is still saying it is on track to meet its H2 2027 mass product target\". Both write-ups derive from a single Bloomberg report based on unnamed sources, and this edition could not open the Bloomberg original, so the figures above are as the two secondary outlets quote it."
+          ],
+          "topics": ["chips", "japan", "compute"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "Anthropic launches IPO roadshow at $70.00 to $78.00 a share for 825,000,000 Class A shares, with pricing planned for 18 November",
+          "sources": [
+            { "name": "Anthropic", "url": "https://www.anthropic.com/news/roadshow-launch" },
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/10/anthropic-sets-price-range-of-70-to-78-in-upcoming-ipo.html" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/10/all-7-anthropic-founders-will-each-cash-out-about-250m-in-ipo/" }
+          ],
+          "bullets": [
+            "Anthropic says the offering is \"825,000,000 shares of Class A common stock. Of these, 801,351,354 shares are being offered by Anthropic and 23,648,646 shares are being offered by certain existing stockholders\", with a 30-day underwriter option for up to an additional 123,750,000 shares. \"The initial public offering price is expected to be between $70.00 and $78.00 per share\", and it has applied to list on the Nasdaq Global Select Market under the symbol \"ANT\".",
+            "CNBC reports Anthropic plans to price on Nov. 18 and trade on Nov. 19 according to people familiar, is targeting retail allocation of about 20% against a typical 5% to 10%, and that the book \"is already covered at the $70 to $78 per share range on an allocable basis\". At the high end it would net up to $64.35 billion and could be worth up to $1.405 trillion fully diluted, against the $965 billion valuation announced in May.",
+            "The filing figures CNBC cites from the amended prospectus: run-rate revenue of roughly $81 billion at the end of October, up $10 billion from the previous month; $33.24 billion in revenue for the nine months ended Sept. 30, up roughly 1,200% year on year; and a $104 billion net loss over those nine months, most of it from change in fair value of convertible notes and derivative liabilities, against a $25.1 billion loss in the same stretch of 2025.",
+            "TechCrunch reports each of the seven co-founders will sell 3,378,378 shares — just under $250 million each at the $74 midpoint — and that the founders will control 51.1% of the votes, with board member Reed Hastings indicating he wants to buy $300 million of shares through his donor-advised fund. The price range is not final: it is a filed range before a roadshow, and Anthropic has not published a revised one. Update to the 10 November edition, which reported the Wall Street Journal's account that the range was coming."
+          ],
+          "topics": ["anthropic", "funding", "ipo", "earnings"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim", "update"]
+        },
+        {
+          "headline": "Point72's Cubist alleges a former analyst ran 4,117 Claude Code and Codex queries to distil colleagues' research and code",
+          "sources": [
+            { "name": "Cubist Systematic Strategies v. Jin, verified complaint (Conn. Superior Court)", "url": "https://assets.bwbx.io/documents/users/iqjWHBFdfxIU/rPlWGJPfoefA/v0" }
+          ],
+          "bullets": [
+            "The verified complaint, filed in the Connecticut Superior Court for the Judicial District of Stamford/Norwalk with a return date of December 15, 2026, alleges that \"Between February 28, 2026 and May 31, 2026, Jin issued 4,117 individual queries across 2,416 sessions with Claude Code and OpenAI Codex—a volume of AI usage that far exceeded the reasonable requirements of his role. Nearly half of these queries took place outside of normal working hours or during the weekend.\"",
+            "The alleged method is the notable part: Cubist says he \"directed Claude Code to read and extract — without adding any source code edits — Confidential Information from 14 different codebases, representing nearly every repository of the KEPL team\", and that \"Jin issued over 600 prompts that used exhaustive-read language to distill the team's code\", packaging results into portable markdown documents. It quotes a 21 March 2026 prompt asking Claude Code to catalogue all notebooks in a colleague's research directory and extract \"every formula, every regression specification, every parameter value, every key finding. This is for writing an academic paper so I need maximum detail\" — which Cubist calls \"a pretext\".",
+            "This is the insider-exfiltration case that coding agents make easy: the complaint's alleged three steps are to access research and code in violation of policy, use the company's own AI tools to \"systematically review, analyze, and distill\" it into a portable form usable by someone unfamiliar with it, then extract the files and delete the AI usage records.",
+            "These are untested allegations in a civil complaint, not findings. Cubist describes itself as the quantitative-trading arm of Point72, which \"employs approximately 3,800 people and manages approximately $55 billion\", and says it terminated Jin for cause on September 18, 2026. This edition read the complaint itself; it has not seen a response from the defendant, and no court has ruled."
+          ],
+          "topics": ["anthropic", "openai", "agents", "incidents"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Mercor raises $750 million at a $20 billion valuation with Nvidia, Salesforce and Zoom investing",
+          "sources": [
+            { "name": "SiliconANGLE", "url": "https://siliconangle.com/2026/11/10/mercor-raises-750m-at-20b-valuation-to-take-ai-agent-evaluation-to-enterprises/" }
+          ],
+          "bullets": [
+            "SiliconANGLE reports Mercor raised \"$750 million in new funding at a $20 billion valuation\", with a tender offer for employee shares included. Corporate investors named are Nvidia, Salesforce and Zoom Communications; returning investors are Benchmark Capital, Felicis Ventures and General Catalyst, alongside Fundomo, G Squared, Glade Brook Capital, Sapphire Ventures, StepStone Group, XTX Ventures and funds managed by affiliates of Apollo Global Management.",
+            "The valuation doubled in about a year: in October 2025 \"Felicis led a $350 million Series C round that valued Mercor at $10 billion\".",
+            "The money is going into evaluation, not just data labelling — Mercor supplies human expertise for training and evaluating models from a network of \"more than 5 million domain experts\", and SiliconANGLE says the new funding targets enterprise customers with custom per-company benchmarks and training environments.",
+            "The revenue figure is the company's own and is dated: co-CEO Brendan Foody said in a July post on X that annualized revenue had passed $2 billion in June. Mercor has published no audited financials, and SiliconANGLE is the single source for the round's investor list."
+          ],
+          "topics": ["funding", "evals", "labor", "benchmarks"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Anthropic ships Claude Sheets and Whiteboards in beta, makes Claude Data generally available, and launches Claude Meetings on Google Meet",
+          "sources": [
+            { "name": "Anthropic", "url": "https://claude.com/resources/articles/sheets-whiteboards-data" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/10/anthropic-launches-claude-meetings-to-turn-workplace-discussions-into-plans-and-tasks/" }
+          ],
+          "bullets": [
+            "Anthropic's post says Claude Whiteboards and Claude Sheets launch in beta and Claude Dashboards becomes generally available as Claude Data, all three available on all paid plans across web, desktop and mobile. Claude Data requires a data connector such as a warehouse or CRM, and names Amazon Redshift, BigQuery and ClickHouse as data sources.",
+            "The admin defaults are the operationally relevant detail: on Team plans all three are on by default, while on Enterprise plans Whiteboards and Sheets are off by default and Claude Data turns on by default on November 19, 2026, changeable in Organization settings > Artifacts.",
+            "TechCrunch reports Claude Meetings is \"launching in beta\" on Team and Enterprise plans, works only with Google Meet at launch, and that Claude identifies itself as a meeting participant, will not join calls with external guests unless an admin authorizes it, and leaves automatically if an external guest joins.",
+            "No benchmarks, accuracy figures or usage numbers accompany the launch. Interactive connectors can open partner apps beside a conversation — named examples are Adobe, Atlassian, Box and Notion — and Anthropic lists Lucid, Miro and Vani by Zoho for Whiteboards, Airtable, Asana, monday.com and Smartsheet for Sheets, and Amplitude, Mixpanel, Omni, PostHog and Sigma for Claude Data."
+          ],
+          "topics": ["anthropic", "agents", "deployment"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        }
+      ]
+    }
+  ]
+}

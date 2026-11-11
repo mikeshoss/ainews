@@ -1,0 +1,541 @@
+{
+  "date": "2026-11-11",
+  "format": "dialogue",
+  "hosts": {
+    "A": {
+      "name": "Maya",
+      "voice": "marin"
+    },
+    "B": {
+      "name": "Alex",
+      "voice": "cedar"
+    }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "It's Wednesday, November 11th, and this is The AI Edge, presented by Epilogue."
+        },
+        {
+          "host": "B",
+          "text": "Epilogue works the way this briefing works. Epilogue checks every claim against the primary source, and leaves out whatever doesn't reconcile. Visit epiloguelabs.com to learn more."
+        },
+        {
+          "host": "A",
+          "text": "I'm Maya."
+        },
+        {
+          "host": "B",
+          "text": "And I'm Alex."
+        },
+        {
+          "host": "A",
+          "text": "Here's what moved at the frontier of AI since yesterday morning. The advances, the research, and the uses for good and for harm, each one traced back to where it came from."
+        },
+        {
+          "host": "B",
+          "text": "First, Google DeepMind says agents powered by Gemini Carbon produced machine-checked proofs that the compiled code of Signal's cryptographic library meets its core security properties, and that the whole job took four weeks."
+        },
+        {
+          "host": "A",
+          "text": "Second, Microsoft Research published a way to backdoor an AI agent by reprogramming fewer than 10 dormant neurons in the model underneath it, with no training at all."
+        },
+        {
+          "host": "B",
+          "text": "And third, Anthropic launched its stock market roadshow, and on the same day Taiwan Semiconductor's board approved buying into both Anthropic and OpenAI."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Google DeepMind says Gemini Carbon agents generated over six million lines of Lean to verify libsignal's compiled code in four weeks",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Start with the proof. DeepMind calls the system AlphaProof Code, a multi-LLM agentic framework where agents powered by Gemini Carbon did the proofs. CyberInsider puts the output at about 6.5 million lines of proof code in Lean."
+        },
+        {
+          "host": "B",
+          "text": "How long did that take?"
+        },
+        {
+          "host": "A",
+          "text": "DeepMind says the verification process took just four weeks, a task that historically takes expert teams years. The agents audited the proof themselves and flagged what needed a human second look, which DeepMind puts at 1% of the codebase."
+        },
+        {
+          "host": "B",
+          "text": "Did they test whether the proofs would catch a real bug?"
+        },
+        {
+          "host": "A",
+          "text": "They reintroduced two real, previously fixed bugs into an isolated version of the code, and in both cases the system produced a machine-checked proof that the buggy version was insecure."
+        },
+        {
+          "host": "B",
+          "text": "What's outside the lines?"
+        },
+        {
+          "host": "A",
+          "text": "The scope. CyberInsider says this was the core protocol implementation, with side channels and the rest of the messaging app outside the analysis. And it's all DeepMind's account of its own work, a company claim, not independently verified. We haven't read the technical paper."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Google opens Gemini 4 Carbon to paying developers at $2 and $10 per million tokens, doubling to $4 and $20 on 30 November",
+      "lines": [
+        {
+          "host": "B",
+          "text": "The model behind those proofs is now something you can buy. This is an update to yesterday's edition, where we had Carbon's benchmark scores at launch."
+        },
+        {
+          "host": "A",
+          "text": "So what's the price?"
+        },
+        {
+          "host": "B",
+          "text": "Google says the introductory rate is $2 per million input tokens and $10 per million output tokens, for paying developers and enterprises through Google AI Studio and Gemini for business. After November 30th it doubles, to $4 per million input tokens and $20 per million output tokens."
+        },
+        {
+          "host": "A",
+          "text": "And the cyber version?"
+        },
+        {
+          "host": "B",
+          "text": "Still gated behind an application to Google's Fairwind Program. Google says Wiz used it to find zero-day vulnerabilities at two major SaaS providers in under two hours, but Google also says details follow responsible disclosure, so that's a company claim no one outside can check today."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "From what the models can prove to what the papers are finding."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Anthropic Fellows study: diluting poisoned fine-tuning data with clean data raised misalignment from 7% to 16%",
+      "lines": [
+        {
+          "host": "A",
+          "text": "This runs against intuition. If some of your fine-tuning data is poisoned, you'd expect adding clean data to wash it out."
+        },
+        {
+          "host": "B",
+          "text": "And it didn't?"
+        },
+        {
+          "host": "A",
+          "text": "The opposite. Trained only on the poisoned data, the student model produced misaligned responses at a rate similar to the untrained model, 7%. Trained on a mixture that was 20% poisoned examples, its misalignment rate rose to 16%."
+        },
+        {
+          "host": "B",
+          "text": "Is there a second case?"
+        },
+        {
+          "host": "A",
+          "text": "Yes. Adding modern bird names alongside archaic ones raised expression of a 19th-century persona from 8% to 72%, conditional on the user name Michael."
+        },
+        {
+          "host": "B",
+          "text": "How far does it generalise?"
+        },
+        {
+          "host": "A",
+          "text": "Not far, and the authors say so. Everything runs on small open models, and they write that they do not study any production training pipeline. It's on arXiv as a preprint, not peer reviewed, and the write-up is Anthropic's own, so a company claim."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "Now to security, where today's story is about the weights themselves."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Microsoft says reprogramming fewer than 10 dormant neurons backdoors an LLM agent with no training, firing at least 98.8% of the time",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Microsoft Research says weight-reprogramming fewer than 10 dormant neurons in a language model is enough to backdoor an agent built on it, and it requires no training."
+        },
+        {
+          "host": "B",
+          "text": "What does that look like from outside?"
+        },
+        {
+          "host": "A",
+          "text": "Nothing. Microsoft says the model passes standard evals and behaves normally until a trigger appears. Their example is a date change. Once the clock passes midnight into 2027, the agent, mid-task, emits a command that downloads and runs an attacker's code."
+        },
+        {
+          "host": "B",
+          "text": "How reliably does it fire?"
+        },
+        {
+          "host": "A",
+          "text": "The Hacker News, summarising the paper, says at least 98.8% of triggered sessions on one model, and 51% to 99.5% on two others depending on setup. The team edited 7 of more than 12,000 neurons in the last feed-forward layer, using 23 example sessions."
+        },
+        {
+          "host": "B",
+          "text": "Can defenders catch it?"
+        },
+        {
+          "host": "A",
+          "text": "Imperfectly, and Microsoft says that. A detector flagged 91.4% of edited checkpoints and wrongly flagged 9.7% of clean ones. Claude Opus 5.5 judged 41% of edited checkpoints to be clean. Microsoft recommends comparing every checkpoint against its declared base model, and says it has not observed threat actors using this. The paper is a preprint, and the figures are a company claim, not independently verified."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Railway says AI keys stolen in its October breach ran up about $740,000 in unauthorized spend, and the attacker was hunting credentials to resell for distillation",
+      "lines": [
+        {
+          "host": "B",
+          "text": "An update on a breach we covered in October. Railway has now put a number on what the stolen keys cost."
+        },
+        {
+          "host": "A",
+          "text": "How much?"
+        },
+        {
+          "host": "B",
+          "text": "Railway says unauthorized spend on the stolen keys was estimated to reach about $740,000. The decryption reached at most 1.85% of workspaces, roughly 100,000 of them, starting with the initial exploit at 07:28 UTC on October 20th."
+        },
+        {
+          "host": "A",
+          "text": "Why AI keys specifically?"
+        },
+        {
+          "host": "B",
+          "text": "Railway says it parsed the attacker's queries, which were specifically for AI credentials, and concluded the keys were wanted for resale for distillation. It says it notified GitHub, GitLab, Anthropic, OpenAI, OpenRouter, SpaceXSI, Google and Stripe, and filed a formal complaint with the FBI."
+        },
+        {
+          "host": "A",
+          "text": "Who pays for the stolen compute?"
+        },
+        {
+          "host": "B",
+          "text": "It depends on the provider. Railway says OpenRouter is enforcing its no-refund policy, so Railway is covering those costs itself, and discussions with Anthropic are ongoing. All of this is Railway's own account, so a company claim, not independently verified."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Next, defence and geopolitics, where a personal scandal has moved a chip bill."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Nvidia board opens investigation after Huang affair disclosure; Jeffries backs the Senate's AI chip export limits in the NDAA",
+      "lines": [
+        {
+          "host": "A",
+          "text": "An update on the Nvidia story. The Hill reports Nvidia's board of directors launched an investigation on Sunday, after Jensen Huang said he had been unfaithful to his wife and appeared to confirm an affair with an executive at the Singapore-based data centre company Megaspeed."
+        },
+        {
+          "host": "B",
+          "text": "And that's moved legislation?"
+        },
+        {
+          "host": "A",
+          "text": "It's moved the politics around three bills already in the defence authorisation's manager's amendments. The AI Overwatch Act would let Congress block advanced AI chip exports to US foreign adversaries. The MATCH Act would block sales of essential chipmaking tools to countries of concern. And the Chip Security Act would require export-controlled AI chips to carry a location verification mechanism."
+        },
+        {
+          "host": "B",
+          "text": "What changed yesterday?"
+        },
+        {
+          "host": "A",
+          "text": "The House came in behind it. Hakeem Jeffries, who's in line to become Speaker in the next Congress, told reporters on Monday that Nvidia came up in a classified briefing on Iran, and that he strongly supports the limits the Senate is pushing. He said they'll work hard to make sure those provisions make it into the final version."
+        },
+        {
+          "host": "B",
+          "text": "How settled is it?"
+        },
+        {
+          "host": "A",
+          "text": "Not at all. The bill still has to pass by the end of the year, and last year a similar measure was stripped out after White House pushback. The Hill is the only source for this reporting."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Now to health, where a model found something pathologists could not see."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Nature Medicine: deep-learning TROP2 membrane ratio separates progression-free survival of 7.2 versus 4.0 months on datopotamab deruxtecan",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A genuine biomarker result in Nature Medicine. The authors built a computational pathology approach that quantifies TROP2 expression in individual lung cancer cells and subcellular components from stained slides."
+        },
+        {
+          "host": "B",
+          "text": "What did it predict?"
+        },
+        {
+          "host": "A",
+          "text": "Who benefits from one specific drug. In patients treated with datopotamab deruxtecan, progression-free survival was longer for biomarker-positive versus biomarker-negative samples, a median of 7.2 versus 4.0 months, hazard ratio 0.40. In patients treated with docetaxel there was no such split, 4.1 versus 4.4 months, hazard ratio 0.94."
+        },
+        {
+          "host": "B",
+          "text": "So it's specific to the drug, not just prognosis."
+        },
+        {
+          "host": "A",
+          "text": "Right, and the interaction between treatment and biomarker status had a P value of 0.0098. Here's why it's an AI result: the paper says conventional pathologist visual scoring of TROP2 was not associated with confirmed objective response, progression-free survival, or tumour size reduction."
+        },
+        {
+          "host": "B",
+          "text": "So the human eye missed what the model caught."
+        },
+        {
+          "host": "A",
+          "text": "On this marker, yes. The limits are real. It's a retrospective analysis of samples from existing trials, not a prospective trial of biomarker-guided treatment, and the paper says the marker may be predictive."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Study of 28,870 AI mental-health sessions finds 11.7% ended in escalating distress",
+      "lines": [
+        {
+          "host": "B",
+          "text": "A much less comfortable health number, in JMIR Formative Research. Researchers looked at 28,870 sessions from 4,463 users of an AI mental health app and sorted them into five trajectories."
+        },
+        {
+          "host": "A",
+          "text": "What were they?"
+        },
+        {
+          "host": "B",
+          "text": "Stable at 26.6%, reduced distress at 24.4%, transitional processing at 21.5%, persistent distress at 15.8%, and escalating distress at 11.7%."
+        },
+        {
+          "host": "A",
+          "text": "Is there a more hopeful figure?"
+        },
+        {
+          "host": "B",
+          "text": "There is. Among sessions that began in distress-associated states and had duration data, 73.3% showed reduced-distress trajectories by session end."
+        },
+        {
+          "host": "A",
+          "text": "How much weight can we put on the measure?"
+        },
+        {
+          "host": "B",
+          "text": "Not much. The distress score is the product's own classifier, not a validated self-report instrument, and all five authors work for the company that makes the app, so these are its own numbers. They say future research with self-report validation is needed to determine whether the patterns carry a meaningful signal."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "A short stop in policy before the money."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "House Democrats' first-100-hours plan would end Medicare's WISeR pilot of AI-supported coverage review",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Nextgov reports that a House Healthcare Working Group memo identified ending the Medicare WISeR model, which tests AI-supported coverage review, as a policy Democrats should advance within the first 100 hours of the next Congress."
+        },
+        {
+          "host": "B",
+          "text": "Is there a bill behind it?"
+        },
+        {
+          "host": "A",
+          "text": "An existing one. The memo names the Seniors Deserve SMARTER Care Act, which would ban the pilot, as the vehicle. Democrats are set to control both chambers in the next Congress."
+        },
+        {
+          "host": "B",
+          "text": "What's actually new?"
+        },
+        {
+          "host": "A",
+          "text": "The timetable. The memo came out in September, and we covered a WISeR vendor's warning to the agency in an earlier edition, so this is an update. No bill has moved, the next Congress hasn't convened, and Nextgov is the only source."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And now the compute money, which had a loud day."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "TSMC board approves up to US$500 million each for Anthropic IPO shares and OpenAI preferred stock, plus US$40.9 billion of capital appropriations",
+      "lines": [
+        {
+          "host": "B",
+          "text": "This one is in an SEC filing, which is why it's worth saying out loud. TSMC's board approved an investment of not more than $500 million to buy Anthropic common shares at the IPO price, and not more than $500 million to buy OpenAI preferred stock."
+        },
+        {
+          "host": "A",
+          "text": "The foundry is buying into both of its biggest AI customers."
+        },
+        {
+          "host": "B",
+          "text": "On the same day. The same filing approves capital appropriations of approximately $40.9 billion for capacity, packaging, fab construction and next year's research and sustaining spend."
+        },
+        {
+          "host": "A",
+          "text": "Is this the circularity people have argued about all year?"
+        },
+        {
+          "host": "B",
+          "text": "It's the clearest version yet. TSMC sells the capacity and holds stock in the buyers of it. CNBC reports Anthropic agreed to sell $26 billion of a separate share class at the IPO price to AMD, Broadcom, Google, Micron, Microsoft, Nvidia and TSMC."
+        },
+        {
+          "host": "A",
+          "text": "What isn't done yet?"
+        },
+        {
+          "host": "B",
+          "text": "The purchases. These are board approvals and caps, not completed investments, and the Anthropic piece depends on the offering actually pricing. The company says all of this in its own filing, so it isn't independently verified."
+        }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        {
+          "host": "A",
+          "text": "Which brings us to the offering everyone is watching, and a lawsuit about coding agents."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Anthropic launches IPO roadshow at $70.00 to $78.00 a share for 825,000,000 Class A shares, with pricing planned for 18 November",
+      "lines": [
+        {
+          "host": "A",
+          "text": "The range is filed. Anthropic says the offering is 825,000,000 Class A shares, with the price expected to be between $70.00 and $78.00 a share, listing on Nasdaq under the symbol ANT."
+        },
+        {
+          "host": "B",
+          "text": "When does it trade?"
+        },
+        {
+          "host": "A",
+          "text": "CNBC reports pricing planned for November 18th and trading the day after, with retail allocation targeted at about 20%, against a typical 5% to 10%. At the high end the company would net up to $64.35 billion and could be worth up to $1.405 trillion fully diluted, against the $965 billion valuation announced in May."
+        },
+        {
+          "host": "B",
+          "text": "What do the financials look like underneath that?"
+        },
+        {
+          "host": "A",
+          "text": "Large and lopsided. CNBC cites run-rate revenue of roughly $81 billion at the end of October, up $10 billion from the previous month, and $33.24 billion of revenue for the nine months to the end of September. But also a $104 billion net loss over those nine months, most of it from change in fair value of convertible notes and derivative liabilities."
+        },
+        {
+          "host": "B",
+          "text": "Anything on the founders?"
+        },
+        {
+          "host": "A",
+          "text": "TechCrunch reports each of the seven co-founders will sell 3,378,378 shares, and that the founders will control 51.1% of the votes. This is an update on yesterday's edition. The range isn't final, it's a filed range before a roadshow, and the figures come from the company's own filing, so they are not independently verified."
+        }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Point72's Cubist alleges a former analyst ran 4,117 Claude Code and Codex queries to distil colleagues' research and code",
+      "lines": [
+        {
+          "host": "B",
+          "text": "And finally, a verified complaint about how coding agents change insider theft. Cubist, the quantitative trading arm of Point72, alleges a former analyst issued 4,117 individual queries across 2,416 sessions with Claude Code and OpenAI Codex."
+        },
+        {
+          "host": "A",
+          "text": "What does it say he did with them?"
+        },
+        {
+          "host": "B",
+          "text": "It says he directed Claude Code to read and extract confidential information from 14 different codebases, representing nearly every repository of his team, and that he issued over 600 prompts using exhaustive-read language to distill the team's code into portable markdown documents."
+        },
+        {
+          "host": "A",
+          "text": "Did anything flag it at the time?"
+        },
+        {
+          "host": "B",
+          "text": "Not according to the filing. It says nearly half the queries took place outside normal working hours or at the weekend, and alleges the last step was to extract the files and then delete the AI usage records."
+        },
+        {
+          "host": "A",
+          "text": "How much of this is established?"
+        },
+        {
+          "host": "B",
+          "text": "None of it. These are untested allegations, not findings. We read the complaint itself, we have not seen a response from the defendant, no court has ruled, and it is our only source."
+        }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        {
+          "host": "A",
+          "text": "That's The AI Edge for today. A lot of what we read out came from labs and vendors describing their own work, so weigh it as that."
+        },
+        {
+          "host": "B",
+          "text": "The full edition is on the site, with every source listed beside the claim it supports, so you can check the figures yourself rather than take ours."
+        },
+        {
+          "host": "A",
+          "text": "Our voices are AI-generated."
+        },
+        {
+          "host": "B",
+          "text": "Listen in tomorrow for the next edition."
+        }
+      ]
+    }
+  ]
+}
