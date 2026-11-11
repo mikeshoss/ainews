@@ -37,7 +37,7 @@
         },
         {
           "host": "B",
-          "text": "First, Google DeepMind says agents powered by Gemini Carbon produced machine-checked proofs that the compiled code of Signal's cryptographic library meets its core security properties, and that the whole job took four weeks."
+          "text": "First, Google DeepMind says agents powered by Gemini Carbon produced machine-checked proofs that the compiled code of Signal's cryptographic library meets its core security properties, and that the verification process took four weeks."
         },
         {
           "host": "A",
@@ -45,7 +45,7 @@
         },
         {
           "host": "B",
-          "text": "And third, Anthropic launched its stock market roadshow, and on the same day Taiwan Semiconductor's board approved buying into both Anthropic and OpenAI."
+          "text": "And third, Anthropic launched its stock market roadshow, and Taiwan Semiconductor's board separately approved buying into both Anthropic and OpenAI."
         }
       ]
     },
@@ -80,34 +80,7 @@
         },
         {
           "host": "A",
-          "text": "The scope. CyberInsider says this was the core protocol implementation, with side channels and the rest of the messaging app outside the analysis. And it's all DeepMind's account of its own work, a company claim, not independently verified. We haven't read the technical paper."
-        }
-      ]
-    },
-    {
-      "type": "item",
-      "section": "Frontier models & labs",
-      "headline": "Google opens Gemini 4 Carbon to paying developers at $2 and $10 per million tokens, doubling to $4 and $20 on 30 November",
-      "lines": [
-        {
-          "host": "B",
-          "text": "The model behind those proofs is now something you can buy. This is an update to yesterday's edition, where we had Carbon's benchmark scores at launch."
-        },
-        {
-          "host": "A",
-          "text": "So what's the price?"
-        },
-        {
-          "host": "B",
-          "text": "Google says the introductory rate is $2 per million input tokens and $10 per million output tokens, for paying developers and enterprises through Google AI Studio and Gemini for business. After November 30th it doubles, to $4 per million input tokens and $20 per million output tokens."
-        },
-        {
-          "host": "A",
-          "text": "And the cyber version?"
-        },
-        {
-          "host": "B",
-          "text": "Still gated behind an application to Google's Fairwind Program. Google says Wiz used it to find zero-day vulnerabilities at two major SaaS providers in under two hours, but Google also says details follow responsible disclosure, so that's a company claim no one outside can check today."
+          "text": "The scope, and the reporting is what states it. CyberInsider says this was the core protocol implementation, with side channels and the rest of the messaging app outside the analysis. SecurityWeek says the results cover Google's own build run through a small command-line wrapper, not Signal's applications. The verification result itself is DeepMind's own account, a company claim, not independently verified, and we haven't read the technical paper."
         }
       ]
     },
@@ -135,7 +108,7 @@
         },
         {
           "host": "A",
-          "text": "The opposite. Trained only on the poisoned data, the student model produced misaligned responses at a rate similar to the untrained model, 7%. Trained on a mixture that was 20% poisoned examples, its misalignment rate rose to 16%."
+          "text": "The opposite. Trained only on the poisoned data, the student model produced misaligned responses at a rate similar to the untrained model, 7%. Trained on the mixture, 20% poisoned examples, its misalignment rate under the inoculation prompt rose to 16%."
         },
         {
           "host": "B",
@@ -144,6 +117,14 @@
         {
           "host": "A",
           "text": "Yes. Adding modern bird names alongside archaic ones raised expression of a 19th-century persona from 8% to 72%, conditional on the user name Michael."
+        },
+        {
+          "host": "B",
+          "text": "Does the 16% hold in general?"
+        },
+        {
+          "host": "A",
+          "text": "No, and that's the bound on it. The 16% is the rate under the inoculation prompt, and the rate was unchanged under an assistant system prompt."
         },
         {
           "host": "B",
@@ -179,7 +160,7 @@
         },
         {
           "host": "A",
-          "text": "Nothing. Microsoft says the model passes standard evals and behaves normally until a trigger appears. Their example is a date change. Once the clock passes midnight into 2027, the agent, mid-task, emits a command that downloads and runs an attacker's code."
+          "text": "Microsoft says the model passes standard evals and behaves normally until a trigger appears. Their example is a date change. Once the clock passes midnight into 2027, the agent, mid-task, emits a command that downloads and runs an attacker's code. It isn't perfectly hidden, though. In free-text generation the command also appeared in 0.14% of sessions without the trigger, and Terminal-Bench pass rate fell from 46.59% to 42.05% on Qwen."
         },
         {
           "host": "B",
@@ -195,7 +176,7 @@
         },
         {
           "host": "A",
-          "text": "Imperfectly, and Microsoft says that. A detector flagged 91.4% of edited checkpoints and wrongly flagged 9.7% of clean ones. Claude Opus 5.5 judged 41% of edited checkpoints to be clean. Microsoft recommends comparing every checkpoint against its declared base model, and says it has not observed threat actors using this. The paper is a preprint, and the figures are a company claim, not independently verified."
+          "text": "Imperfectly, and Microsoft says that. A detector trained on this method's own edits flagged 91.4% of edited test checkpoints and wrongly flagged 9.7% of clean ones, on a set of 35 edited and 31 clean checkpoints. Claude Opus 5.5 judged 41% of edited checkpoints to be clean. Microsoft recommends comparing every checkpoint against its declared base model, and says it has not observed threat actors using this. The paper is a preprint, and the figures are a company claim, not independently verified."
         }
       ]
     },
@@ -222,7 +203,7 @@
         },
         {
           "host": "B",
-          "text": "Railway says it parsed the attacker's queries, which were specifically for AI credentials, and concluded the keys were wanted for resale for distillation. It says it notified GitHub, GitLab, Anthropic, OpenAI, OpenRouter, SpaceXSI, Google and Stripe, and filed a formal complaint with the FBI."
+          "text": "Railway says it parsed the attacker's queries, which were specifically for AI credentials, and concluded the keys were wanted for resale for distillation. It notified GitHub, GitLab, Anthropic, OpenAI, OpenRouter, Google and Stripe, among others, and filed a formal complaint with the FBI."
         },
         {
           "host": "A",
@@ -239,7 +220,7 @@
       "lines": [
         {
           "host": "A",
-          "text": "Next, defence and geopolitics, where a personal scandal has moved a chip bill."
+          "text": "Next, defence and geopolitics, where a scandal has changed the politics around chip exports."
         }
       ]
     },
@@ -254,19 +235,19 @@
         },
         {
           "host": "B",
-          "text": "And that's moved legislation?"
+          "text": "What does that mean for the chip bills?"
         },
         {
           "host": "A",
-          "text": "It's moved the politics around three bills already in the defence authorisation's manager's amendments. The AI Overwatch Act would let Congress block advanced AI chip exports to US foreign adversaries. The MATCH Act would block sales of essential chipmaking tools to countries of concern. And the Chip Security Act would require export-controlled AI chips to carry a location verification mechanism."
+          "text": "Three of them were already in the defence authorisation's manager's amendments, from over the summer. The AI Overwatch Act would let Congress block advanced AI chip exports to US foreign adversaries. The MATCH Act would block sales of essential chipmaking tools to countries of concern. And the Chip Security Act would require export-controlled AI chips to carry a location verification mechanism."
         },
         {
           "host": "B",
-          "text": "What changed yesterday?"
+          "text": "So what's new this week?"
         },
         {
           "host": "A",
-          "text": "The House came in behind it. Hakeem Jeffries, who's in line to become Speaker in the next Congress, told reporters on Monday that Nvidia came up in a classified briefing on Iran, and that he strongly supports the limits the Senate is pushing. He said they'll work hard to make sure those provisions make it into the final version."
+          "text": "A voice on the House side. Hakeem Jeffries, the House Minority Leader, who's in line to become Speaker in the next Congress, told reporters on Monday that Nvidia came up in a classified briefing on Iran, and that he strongly supports the limits the Senate is pushing. He said they'll work hard to make sure those provisions make it into the final version."
         },
         {
           "host": "B",
@@ -274,7 +255,7 @@
         },
         {
           "host": "A",
-          "text": "Not at all. The bill still has to pass by the end of the year, and last year a similar measure was stripped out after White House pushback. The Hill is the only source for this reporting."
+          "text": "Not at all. The bill still has to pass Congress by the end of the year, and last year the GAIN AI Act was stripped from it after White House pushback. The Hill is the only source for the legislative reporting here."
         }
       ]
     },
@@ -283,7 +264,7 @@
       "lines": [
         {
           "host": "A",
-          "text": "Now to health, where a model found something pathologists could not see."
+          "text": "Now to health, and a biomarker a model could measure."
         }
       ]
     },
@@ -310,15 +291,15 @@
         },
         {
           "host": "A",
-          "text": "Right, and the interaction between treatment and biomarker status had a P value of 0.0098. Here's why it's an AI result: the paper says conventional pathologist visual scoring of TROP2 was not associated with confirmed objective response, progression-free survival, or tumour size reduction."
+          "text": "Right, and the interaction between treatment and biomarker status had a P value of 0.0098. Here's why it's an AI result: the paper says conventional pathologist visual scoring of TROP2 by H-score was not associated with centrally confirmed objective response, progression-free survival, or tumour size reduction in the earlier discovery trial."
         },
         {
           "host": "B",
-          "text": "So the human eye missed what the model caught."
+          "text": "So on that trial, with that scoring method, the visual read showed nothing."
         },
         {
           "host": "A",
-          "text": "On this marker, yes. The limits are real. It's a retrospective analysis of samples from existing trials, not a prospective trial of biomarker-guided treatment, and the paper says the marker may be predictive."
+          "text": "That's what the paper reports. The limits are real. It's a retrospective analysis of samples from existing trials, not a prospective trial of biomarker-guided treatment, and the paper says the marker may be predictive."
         }
       ]
     },
@@ -381,7 +362,7 @@
         },
         {
           "host": "A",
-          "text": "An existing one. The memo names the Seniors Deserve SMARTER Care Act, which would ban the pilot, as the vehicle. Democrats are set to control both chambers in the next Congress."
+          "text": "An existing one. The memo names the Seniors Deserve SMARTER Care Act, which would ban the pilot. Democrats are set to control both chambers."
         },
         {
           "host": "B",
@@ -417,7 +398,7 @@
         },
         {
           "host": "B",
-          "text": "On the same day. The same filing approves capital appropriations of approximately $40.9 billion for capacity, packaging, fab construction and next year's research and sustaining spend."
+          "text": "In the same filing. It also approves capital appropriations of approximately $40.9 billion for capacity, packaging, fab construction and next year's research and sustaining spend."
         },
         {
           "host": "A",
@@ -425,7 +406,7 @@
         },
         {
           "host": "B",
-          "text": "It's the clearest version yet. TSMC sells the capacity and holds stock in the buyers of it. CNBC reports Anthropic agreed to sell $26 billion of a separate share class at the IPO price to AMD, Broadcom, Google, Micron, Microsoft, Nvidia and TSMC."
+          "text": "It's that argument, now in a filing. TSMC sells the capacity and holds stock in the buyers of it. CNBC reports Anthropic agreed to sell $26 billion of a separate share class at the IPO price to AMD, Broadcom, Google, Micron, Microsoft, Nvidia and TSMC."
         },
         {
           "host": "A",
@@ -461,7 +442,7 @@
         },
         {
           "host": "A",
-          "text": "CNBC reports pricing planned for November 18th and trading the day after, with retail allocation targeted at about 20%, against a typical 5% to 10%. At the high end the company would net up to $64.35 billion and could be worth up to $1.405 trillion fully diluted, against the $965 billion valuation announced in May."
+          "text": "CNBC reports that, according to people familiar, Anthropic plans to price on November 18th and trade the day after, with retail allocation targeted at about 20%, against a typical 5% to 10%. At the high end the company would net up to $64.35 billion and could be worth up to $1.405 trillion fully diluted, against the $965 billion valuation announced in May."
         },
         {
           "host": "B",
@@ -469,7 +450,7 @@
         },
         {
           "host": "A",
-          "text": "Large and lopsided. CNBC cites run-rate revenue of roughly $81 billion at the end of October, up $10 billion from the previous month, and $33.24 billion of revenue for the nine months to the end of September. But also a $104 billion net loss over those nine months, most of it from change in fair value of convertible notes and derivative liabilities."
+          "text": "Large and lopsided. CNBC cites run-rate revenue of roughly $81 billion at the end of October, up $10 billion from the previous month, and $33.24 billion of revenue for the nine months to the end of September, against a $104 billion net loss over those nine months, most of it from change in fair value of convertible notes."
         },
         {
           "host": "B",
@@ -500,11 +481,11 @@
         },
         {
           "host": "A",
-          "text": "Did anything flag it at the time?"
+          "text": "When was he running them?"
         },
         {
           "host": "B",
-          "text": "Not according to the filing. It says nearly half the queries took place outside normal working hours or at the weekend, and alleges the last step was to extract the files and then delete the AI usage records."
+          "text": "The complaint says nearly half the queries took place outside normal working hours or at the weekend, and alleges the last step was to extract the files and then delete the AI usage records."
         },
         {
           "host": "A",
