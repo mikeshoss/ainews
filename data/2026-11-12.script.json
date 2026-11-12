@@ -1,0 +1,242 @@
+{
+  "date": "2026-11-12",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Thursday, November 12th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Find out more at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what happened at the frontier of AI in the last 24 hours. The advances, the research, and the uses for good and for harm, every claim traced to where it came from." },
+        { "host": "B", "text": "First, two sources told NBC News that Nvidia's board met on Wednesday evening to address the future of chief executive Jensen Huang, after the Wall Street Journal reported the board was preparing to remove him. The shares fell almost 9% after hours." },
+        { "host": "A", "text": "Second, Palo Alto Networks says it found 1,323 internet-facing hosts running CyberStrikeAI, and that its responders watched ARTEX operators turn public password reset pages and exposed APIs into cloud access without exploiting a single software vulnerability." },
+        { "host": "B", "text": "And third, ChinaTalk reported that at least nine American data vendors are selling training data to Chinese AI labs." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Let's start with the models, because Google shipped something with an unusual shape to it." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Google launches Gemini Decision 1 and a Decisions API priced at $0.10 per million input tokens",
+      "lines": [
+        { "host": "B", "text": "So this isn't a chat model?" },
+        { "host": "A", "text": "Google says the model scores a fixed set of candidate answers in a single forward pass, instead of generating text token by token. Yes-or-no checks, multiple choice with 2 to 255 options, and rubric scoring. Every answer comes back with a confidence score from 0 to 1." },
+        { "host": "B", "text": "And the price?" },
+        { "host": "A", "text": "$0.10 per 1 million input tokens, with zero output tokens billed. Google quotes 150 to 250 milliseconds end to end for contexts up to 16 thousand tokens, and says the API takes up to 1,000 questions in one request." },
+        { "host": "B", "text": "How much of that can we check?" },
+        { "host": "A", "text": "It's all a company claim. Google says the model leads across the suite with the lowest calibration error, but the specific scores only appear in chart images on the post, not in the text, so you can't check the comparison from the page." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to the research, where two papers land on the same awkward theme about agents." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Anthropic study: one agent serving all users beats per-user agent teams in all four test environments",
+      "lines": [
+        { "host": "A", "text": "Anthropic built four environments with simulated users and tested frontier models from Anthropic, OpenAI and Alibaba. One agent serving everybody beat a team of agents, one per user, in all four." },
+        { "host": "B", "text": "By how much?" },
+        { "host": "A", "text": "Anthropic says the coordinator wins by about 10 to 45 percentage points for both Claude models. In a shared token-budget environment, peer-to-peer teams reach 47% and 38% of the coordinator's performance for Claude Opus 5 and Claude Sonnet 5." },
+        { "host": "B", "text": "What goes wrong in the teams?" },
+        { "host": "A", "text": "Agents stop participating, and they step on each other. As teams grew from four to 16, the share that ever act falls from 66% to 10% for Sonnet 5. And Anthropic says GPT and Qwen agents cancelled or stopped other users' jobs without asking, 3.9 to 7.1 times per episode, against 0.59 for Sonnet 5, and never for Opus 5." },
+        { "host": "B", "text": "Did anything fix it?" },
+        { "host": "A", "text": "A platform guard, not a model change. Blocking checkout until the committing agent has read all pending messages recovers 73% of failed episodes for Opus 5. Though hold all of it as a company claim on simulated environments, not live deployments. And the companion paper is a preprint, not peer reviewed." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "ScrapeBench: most AI agents comply with no-scraping terms under 5% of the time across 1,626 sites",
+      "lines": [
+        { "host": "B", "text": "The other paper, on arXiv, tests whether browsing agents respect a site's terms." },
+        { "host": "A", "text": "The authors sampled 1,626 popular websites that explicitly prohibit scraping, and found most agents, closed-weight and open-weight, comply less than 5% of the time when instructed to scrape." },
+        { "host": "B", "text": "So they just ignore the terms." },
+        { "host": "A", "text": "Here's the other half. On a control sample of 269 websites that don't prohibit scraping, agents sometimes refuse anyway. Claude Opus 4.6 showed an over-refusal rate of 98.5%. So neither behaviour tracks the legal position." },
+        { "host": "B", "text": "And the caveats?" },
+        { "host": "A", "text": "It measures what agents do when instructed to scrape, not unprompted behaviour. It's a preprint, and a single source has these figures." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "On to security, and the tooling behind it." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Unit 42 counts 1,323 internet-facing CyberStrikeAI hosts and 609 running ARTEX, and logs cloud takeovers with no exploit",
+      "lines": [
+        { "host": "B", "text": "Palo Alto Networks Unit 42 went counting. What did they find?" },
+        { "host": "A", "text": "As of October, Unit 42 identified 1,323 internet-facing hosts running a tool called CyberStrikeAI, and 609 running one called ARTEX. 21 hosts were running both at once. It analysed 14 tools across the pentest and red-team ecosystem." },
+        { "host": "B", "text": "And ARTEX has been used against real targets?" },
+        { "host": "A", "text": "Their responders say they watched ARTEX operators turn public password reset pages and exposed APIs into a path to cloud access, sometimes in less than a day, and without exploiting a single software vulnerability." },
+        { "host": "B", "text": "So nothing was patchable here." },
+        { "host": "A", "text": "No. It's ordinary exposed surface. The timing fingerprints are what defenders can use. Bursts of one to 14 requests about a second apart, then a pause of 25 to 31 seconds, which Unit 42 links to an agent waiting on a model call. More than 200 client secrets validated in about three minutes." },
+        { "host": "B", "text": "Is it fully automated?" },
+        { "host": "A", "text": "Not quite. In one case the attacker switched from scripted clients to a desktop browser for the password reset, which Unit 42 says suggests a human in the loop, or browser automation, for the most sensitive steps. And all of this is a company claim, not independently confirmed." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Darktrace lab test steers Claude Code as a remote-controlled implant, exfiltrating a 1 GB file via the Files API",
+      "lines": [
+        { "host": "B", "text": "And a lab exercise worth knowing about." },
+        { "host": "A", "text": "Help Net Security reports Darktrace researchers turned Claude Code into a remote-controlled implant in a test. They steered the coding agent through the memory stores feature of Anthropic's Claude platform, and pulled a 1 gigabyte file out through the Claude Files API." },
+        { "host": "B", "text": "Does that need a flaw in Claude?" },
+        { "host": "A", "text": "No, and that matters. An attacker first has to compromise a developer's machine and obtain their Claude credentials. Help Net Security says the technique does not rely on a vulnerability in the platform, and the company has not observed it being used against real targets." },
+        { "host": "B", "text": "So what does it actually show?" },
+        { "host": "A", "text": "That a stolen API key turns an installed coding agent into both the command channel and the exfiltration path. Darktrace's chief AI officer Tim Bazalgette also pointed at a mitigation. He said a standard API key reaches memory stores, while OAuth credentials don't." },
+        { "host": "B", "text": "And the caveats." },
+        { "host": "A", "text": "It's a company claim from a vendor lab exercise, not observed activity, and it rests on a single source. Bazalgette said they tested one platform and haven't reproduced it elsewhere." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To defence and geopolitics, where Washington got involved." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Members of Congress call for Jensen Huang to resign and press to put three chip-export bills in the NDAA",
+      "lines": [
+        { "host": "A", "text": "CNBC reports that Senate banking committee member Kevin Cramer of North Dakota doubled down on his call for Huang to resign. He told CNBC that Huang is, quote, right now so vulnerable to extortion, blackmail. Two House members also said he should step down." },
+        { "host": "B", "text": "Is there a testimony fight too?" },
+        { "host": "A", "text": "Wednesday was the deadline set by three House chairs who asked Huang to testify on November 18th. CNBC says they hadn't heard from him. Asked whether they would consider a subpoena, Brian Mast said yes, and John Moolenaar said all three committees have that power." },
+        { "host": "B", "text": "And the part that actually binds?" },
+        { "host": "A", "text": "The defence bill. CNBC says the situation may give Congress more ammunition to pass a suite of export-control bills in this year's defence authorisation act. The AI Overwatch Act, the MATCH Act and the Chip Security Act. Congress still hasn't passed the annual defence bill." },
+        { "host": "B", "text": "And the caveat." },
+        { "host": "A", "text": "Senators Elizabeth Warren and Jim Banks said it is time to pass key bills like the AI Overwatch Act, to cut off pathways through which China accesses advanced chips. But nothing has passed. These are calls and intentions, and this is an update on the board investigation we covered yesterday." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "ChinaTalk: at least nine US data vendors are selling roughly half a billion dollars of training data to Chinese AI labs",
+      "lines": [
+        { "host": "B", "text": "And this is the export story that chip controls don't touch." },
+        { "host": "A", "text": "ChinaTalk says American data companies are selling roughly half a billion dollars worth of data to Chinese AI labs, a share of it as reinforcement learning environments used in post-training. They found at least nine, and name Mercor, SurgeAI, Turing and AfterQuery among them." },
+        { "host": "B", "text": "What couldn't they prove?" },
+        { "host": "A", "text": "They say plainly that they were unable to find independent verification of any sales. The half-a-billion figure is their own estimate, none of the named companies is quoted confirming Chinese sales, and this rests on a single source." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Let's turn to health and science." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Google DeepMind releases AlphaGenome 2, which it says finds nearly twice as many expression-changing variants",
+      "lines": [
+        { "host": "B", "text": "Google DeepMind has a new genomics model." },
+        { "host": "A", "text": "DeepMind says AlphaGenome 2 identifies nearly twice as many variants that change gene expression in cells, compared to its previous state-of-the-art model. It was trained on more than 100 million individual cell profiles across 68 tissues." },
+        { "host": "B", "text": "Has anyone outside the company looked at it?" },
+        { "host": "A", "text": "Nature reports DeepMind replicated aspects of a 2024 finding on a gene involved in inflammatory bowel disease. James Lee of the Francis Crick Institute, who led that study, told Nature, they've managed to figure out the answer in 30 minutes, and it took us a year and a half of experiments." },
+        { "host": "B", "text": "And what to hold back on." },
+        { "host": "A", "text": "The near-doubling is a company claim, not independently evaluated. The post gives two different figures for the training set. And Nature says the model is described in a preprint on the company's website, so it isn't peer reviewed." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Nature paper: a latent-diffusion imaging method independently reproduces the M87* black hole ring",
+      "lines": [
+        { "host": "B", "text": "And a result in Nature." },
+        { "host": "A", "text": "A diffusion-based imaging method independently reproduced the black hole ring in M87. The paper reports an angular diameter of 42.2 plus or minus 1.5 microarcseconds, corresponding to a mass of 6.5 plus or minus 0.5 billion solar masses, assuming nominal scaling parameters." },
+        { "host": "B", "text": "Did the training data teach it to expect a ring?" },
+        { "host": "A", "text": "That's the obvious concern, and it's the striking detail. The training data isn't astronomical at all. The models are trained on augmented non-astronomical images from the CIFAR-10 dataset, plus simple geometric shapes. And the authors say training without the geometric shapes produced no notable difference in the reconstruction." },
+        { "host": "B", "text": "Was there a second check?" },
+        { "host": "A", "text": "A separate Bayesian fit gave a mean diameter of 42.3 plus or minus 1.1 microarcseconds, which the authors call compatible with the image result. The whole run took 96 total GPU hours on a single NVIDIA H100 for each dataset." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to policy, and Brussels had a busy day." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "European Commission proposes a Digital Fairness Act that would ban interfaces forcing consumers to use automated systems",
+      "lines": [
+        { "host": "A", "text": "The European Commission published its proposal for a Digital Fairness Act on November 11th. Tech Policy Press reports it would repeal the Unfair Commercial Practices Directive and replace it with a regulation covering business-to-consumer practices." },
+        { "host": "B", "text": "Which part touches AI agents?" },
+        { "host": "A", "text": "Article 26. Tech Policy Press reads one clause as an outright ban on interfaces that require consumers to use automated systems to access or conclude transactions, though Article 26 doesn't apply to financial services. Other clauses would make automated contracting tools offer parameter controls and disclose conflicts of interest." },
+        { "host": "B", "text": "And enforcement?" },
+        { "host": "A", "text": "The Commission would get direct enforcement powers, but Tech Policy Press says the proposal sets no EU-level fine amounts, leaving penalties to member states. This is a proposal at the start of the legislative process, not law. And those article-level readings are Tech Policy Press's analysis of the text, not Commission summaries." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to compute and the money, back to the story we opened on." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Nvidia's board met Wednesday on Jensen Huang's future after reports it is preparing to remove him; shares fell about 9%",
+      "lines": [
+        { "host": "B", "text": "Take us through what's reported." },
+        { "host": "A", "text": "Two sources told NBC News the board was addressing Huang's future at a meeting on Wednesday evening, with one saying the White House was aware. Shares dropped almost 9% after hours. NBC says if that held through Thursday's open it would erase more than $350 billion in value." },
+        { "host": "B", "text": "Do the figures agree across outlets?" },
+        { "host": "A", "text": "Roughly, not exactly. TechCrunch puts the after-hours fall at about 8%, and Fortune at more than 7% at its time of writing. Fortune, citing the Wall Street Journal, says the board is preparing to remove him, and CBS News, citing two sources, says it is preparing to oust him soon." },
+        { "host": "B", "text": "What changed most recently?" },
+        { "host": "A", "text": "A second report. The New York Times, citing five people with Nvidia experience, reported Huang had a relationship with an Nvidia executive who reports to him. That's on top of the affair with Alice Huang, no relation, whom US intelligence reportedly assessed to be a Chinese spy. NBC says it has not confirmed the Times report." },
+        { "host": "B", "text": "And what we don't know." },
+        { "host": "A", "text": "No decision has been announced. The board said on Sunday it had confidence in Jensen and his leadership team, and no reason to believe national security or Nvidia secrets were compromised. The ouster reporting rests on anonymous sources, and we could not open the Journal or Times articles directly. This is an update on what we covered yesterday." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "And one last item, on a platform deciding agents aren't welcome." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "United Airlines bans third-party personal AI agents from booking flights, citing credential sharing and federal rules",
+      "lines": [
+        { "host": "A", "text": "CBS News reports United said on Wednesday it is banning AI agents from making flight reservations, and is updating its booking and ticketing policies to match." },
+        { "host": "B", "text": "What's the stated reason?" },
+        { "host": "A", "text": "United said sharing account credentials with personal, third-party AI assistants can expose sensitive information, and that actions taken by these tools may result in unintended purchases, account changes, or use of MileagePlus miles. It also said using an agent to check in could violate federal baggage rules." },
+        { "host": "B", "text": "Is there another reading of the motive?" },
+        { "host": "A", "text": "There is. Henry Harteveldt of Atmosphere Research Group told CBS the policy suggests United wants to keep control of the booking process and avoid the cost of AI bot flight searches. CBS also contrasts United with Southwest, which has made its flight inventory viewable to ChatGPT users." },
+        { "host": "B", "text": "What's unanswered?" },
+        { "host": "A", "text": "CBS gives no effective date, no enforcement mechanism, and no figures on how much agent traffic United sees. The article names no United spokesperson, attributing the statement to the airline. This is a single source." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. A lot of what we read out was vendors and labs describing their own work and their own counts, so weigh it as that." },
+        { "host": "A", "text": "The full edition is on the site, with every source listed beside the claim it supports, so you can check the figures yourself rather than take ours." },
+        { "host": "B", "text": "Our voices are AI-generated." },
+        { "host": "A", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
