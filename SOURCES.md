@@ -219,6 +219,7 @@ Fetch hints: `WebFetch` works on most pages below. RSS/Atom URLs are listed wher
 | Last Week in AI | https://lastweekin.ai/ | Weekly |
 | AI News (smol.ai) | https://news.smol.ai/ | Daily, exhaustive Discord/Twitter/Reddit roundup |
 | TLDR AI | https://tldr.tech/ai | Daily |
+| AIHOT Daily Brief | https://aihot.news/feed/daily.xml | Chinese-language daily briefing on model releases, products, and research, with links to the underlying reports |
 | Techmeme | https://www.techmeme.com/ | Live tech news river |
 | Hacker News front page | https://news.ycombinator.com/ | https://hnrss.org/frontpage |
 | r/MachineLearning | https://www.reddit.com/r/MachineLearning/ | |
