@@ -30,6 +30,7 @@ on:
 permissions:
   contents: read
   issues: write
+  actions: read
 
 jobs:
   check:
@@ -41,6 +42,7 @@ jobs:
         name: Look for today's edition
         env:
           FORCE_DATE: ${{ github.event.inputs.date }}
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -u
@@ -85,6 +87,20 @@ jobs:
             fi
           fi
 
+          # 5. Is the publish pipeline stuck? Deploys share one concurrency group ("pages"), so a single run that
+          # never finishes holds every later deploy in the queue, and each newer one cancels the one before it.
+          # 2026-11-05 to 11-13: one deploy job sat "waiting" for eight days and nothing reached the site.
+          # Ask per status: a stuck run can be older than the newest 50 runs (it was 45 runs back on 11-13).
+          stuck=""
+          for st in queued waiting pending in_progress; do
+            s=$(gh run list --workflow deploy.yml --status "$st" --limit 20 --json databaseId,createdAt \
+                  --jq '[.[] | select((now - (.createdAt|fromdateiso8601)) > 5400) | "\(.databaseId) since \(.createdAt)"] | join(", ")' 2>/dev/null || true)
+            [ -n "$s" ] && stuck="${stuck:+$stuck, }$s ($st)"
+          done
+          if [ -n "$stuck" ]; then
+            note "Publishing is STUCK: deploy run(s) $stuck have not finished after 90+ minutes and block every later deploy. Cancel them: gh run cancel <id> -R $GITHUB_REPOSITORY"
+          fi
+
           if [ -n "$problems" ]; then
             { echo "problems<<WATCHDOG_EOF"; printf '%s' "$problems"; echo "WATCHDOG_EOF"; } >> "$GITHUB_OUTPUT"
             echo "ok=false" >> "$GITHUB_OUTPUT"
@@ -99,6 +115,7 @@ jobs:
           D: ${{ steps.check.outputs.date }}
           PROBLEMS: ${{ steps.check.outputs.problems }}
           WANT_ISSUE: ${{ vars.WATCHDOG_ISSUE }}
+          NTFY_URL: ${{ secrets.NTFY_URL }}
         run: |
           set -eu
           TITLE="No edition published for $D"
@@ -111,6 +128,15 @@ jobs:
             printf '%s\n\n' "3. Workflow logs: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions"
             printf '%s\n' "To publish late once the cause is fixed, fire the daily routine again — it writes the edition from scratch."
           } > /tmp/watchdog-body.md
+
+          # Phone alarm (ntfy). The failed-run email alone was missed for eight days (2026-11-05 to 11-13) because
+          # the routine's own morning email kept arriving and looked normal. Set the repository SECRET
+          # NTFY_URL to the full topic URL (https://ntfy.sh/<topic>); unset = this step is skipped.
+          if [ -n "${NTFY_URL:-}" ]; then
+            curl -s --max-time 20 -H "Title: AI Edge: $D not live" -H "Priority: high" -H "Tags: warning" \
+                 -H "Click: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+                 --data-binary "$PROBLEMS" "$NTFY_URL" >/dev/null || echo "::warning::ntfy post failed"
+          fi
 
           # Primary alarm: the job summary plus a failed scheduled run, which GitHub emails to the owner.
           cat /tmp/watchdog-body.md >> "$GITHUB_STEP_SUMMARY"
