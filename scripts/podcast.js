@@ -412,6 +412,10 @@ async function synthesize(ed, seg, label) {
     }
   }
   if (!todo.length) { console.log('nothing to do: every recent edition has the best audio available for it'); return; }
+  // Oldest first: after an outage the backlog is narrated in calendar order, so the feed fills in sequence
+  // and a later failure leaves a gap at the newest end, not in the middle. (2026-11-13: eight days of
+  // blocked deploys left six editions without audio; newest-first would have published them out of order.)
+  todo.sort((a, b) => (a.ed.date < b.ed.date ? -1 : 1));
   todo.splice(MAX);
 
   let failures = 0;
