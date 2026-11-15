@@ -1,0 +1,441 @@
+{
+  "date": "2026-11-15",
+  "edition": "daily",
+  "generated_at": "2026-11-15T13:10:00Z",
+  "window": "14 Nov 11:30 → 15 Nov 11:06 UTC",
+  "title": "Megaspeed's loophole and a poisoned Claude Code extension",
+  "summary": [
+    "CNN reported that Singapore-based Megaspeed has bought more than $4 billion in chips and equipment from Nvidia since November 2023, and that its model of building data centres and renting out computing services gives Chinese companies another point of access to processors they cannot import. Megaspeed said on Sunday that Alice Huang left the company on August 30, 2025 and \"currently holds no role there\", and that recent media reports contain assertions \"not supported by verifiable evidence\". Epoch AI estimates, based on indictments and investigative reports, that anywhere between 290,000 to 1.6 million advanced US semiconductors were sent to China in violation of export controls last year. A petition to reinstate Jensen Huang passed 115,000 signatures, and Altimeter's Brad Gerstner and Atreides' Gavin Baker asked Nvidia's board to weigh \"the potential return of Jensen Huang\".",
+    "Cursor confirmed that an access key it had issued to AI infrastructure provider Fireworks AI let attackers copy historical coding-agent traces containing unredacted API credentials, and then publish malicious copies of Anthropic's Claude Code extension on its marketplace cache for approximately 11 hours on October 29, exposing up to 5,000 developers to a persistent SSH backdoor. Cursor says fewer than 0.05% of users had coding-agent traces exposed. Separately, the US government disrupted a North Korean campaign called FaceStealer responsible for stealing more than $400 million in cryptocurrency using deepfakes and secretly recorded webcam footage; Arctic Wolf flagged 349 videos in the actor's media library as \"likely modified\".",
+    "FAA administrator Bryan Bedford said the agency sees \"zero evidence of anything nefarious and zero evidence of anything AI-related\" in Friday's nationwide ground stop, after which Cirium counted more than 8,200 flights cancelled on Friday evening and at least another 3,000 on Saturday. The Seventh Review Conference of the Convention on Certain Conventional Weapons opens in Geneva on Monday to consider curbs on lethal autonomous weapons."
+  ],
+  "sections": [
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Cursor says a stolen Fireworks AI key led to malicious Claude Code extensions reaching up to 5,000 developers",
+          "sources": [
+            {
+              "name": "BleepingComputer",
+              "url": "https://www.bleepingcomputer.com/news/security/cursor-confirms-security-breach-led-to-malicious-claude-code-extension/"
+            },
+            {
+              "name": "The Hacker News",
+              "url": "https://thehackernews.com/2026/11/stolen-fireworks-ai-key-led-to-cursor.html"
+            }
+          ],
+          "bullets": [
+            "Cursor disclosed in an incident report published Friday that attackers obtained an access key it had issued to Fireworks AI, a third-party provider used for AI model training and inference, and used it to copy data from a read-only storage bucket Cursor shared with Fireworks. BleepingComputer reports the bucket held historical AI coding-agent traces, mostly from 2025, from users who had not enabled Privacy Mode, and that some traces contained unredacted API credentials the attackers used to reach further Cursor systems.",
+            "On October 29 the attackers used a stolen credential to place malicious copies of Anthropic's Claude Code extension, versions 2.1.312 and 2.1.313, directly on the cache serving Cursor's VS Code extension marketplace. BleepingComputer says they were available for approximately 11 hours and that Cursor estimates up to 5,000 users who requested affected versions may have received the malicious builds, which installed an attacker-controlled SSH key and persistence mechanisms.",
+            "Cursor says fewer than 0.05% of users had coding-agent traces exposed and fewer than 0.01% of customers had API credentials compromised, and that Anthropic's legitimate extension and the Open VSX marketplace were not compromised. Those scope figures are Cursor's own and are not independently verified.",
+            "BleepingComputer says security researchers found coding errors that likely prevented the backdoor working on many Windows and macOS systems where SSH was not already enabled, and places the incident in a wave of attacks on AI developer platforms that Wiz has dubbed \"Black October\", in which stolen credentials were used for unauthorised AI inference — about $740,000 in fraudulent AI charges at Railway — and in some cases attempted model distillation."
+          ],
+          "topics": [
+            "agent-security",
+            "anthropic",
+            "threat-intel",
+            "malware"
+          ],
+          "impact": "harmful",
+          "flags": [
+            "company-claim"
+          ]
+        },
+        {
+          "headline": "US seizes infrastructure behind North Korean 'FaceStealer' campaign that stole more than $400 million in cryptocurrency",
+          "sources": [
+            {
+              "name": "BleepingComputer",
+              "url": "https://www.bleepingcomputer.com/news/security/us-disrupts-north-korean-campaign-behind-400-million-crypto-theft/"
+            },
+            {
+              "name": "Arctic Wolf Labs",
+              "url": "https://arcticwolf.com/resources/blog/still-in-the-meeting-bluenoroff-six-months-on/"
+            }
+          ],
+          "bullets": [
+            "BleepingComputer reports that the US government disrupted a North Korean social engineering campaign called FaceStealer, responsible for stealing more than $400 million in cryptocurrency, after it ran for 18 months; authorities seized the underlying cloud-based infrastructure and identified more than 900 webcam videos the hackers secretly recorded of tech workers. The attacks used deepfakes and the ClickFix technique against people in the cryptocurrency and Web3 sectors and open-source developers.",
+            "Per an FBI alert cited by BleepingComputer, the actor hijacked accounts on Telegram, LinkedIn, Slack and Discord to invite targets to video meetings, played back footage of people the target knew who had already been victimised, then claimed a technical fault and delivered a malicious \"fix\" that stole crypto data and credentials for Zoom, Google Meet and Microsoft Teams. The FBI says attackers sometimes waited months or more than a year before targeting an individual, likely for cryptocurrency holdings to grow.",
+            "Arctic Wolf Labs, which attributes the campaign to BlueNoroff, says its forensic analysis flagged 349 videos in the actor's media library as \"likely modified\" as of November 6, and names Google Generative AI, Grok Imagine, Wondershare AIGC and GPT-4o as tools combined in the editing workflow. It identified 677 targets across 58 countries, up from \"400+ targets (100 of whom we independently verified) spread over 20 countries\" in its April report.",
+            "Arctic Wolf states the counts \"describe who the threat actor prepared material against, not confirmed compromises\". Its report is dated November 12, before this edition's window; the seizure and FBI alert were reported on November 14. The vendor's target and video counts are not independently verified."
+          ],
+          "topics": [
+            "threat-intel",
+            "deepfakes",
+            "scams-fraud",
+            "north-korea"
+          ],
+          "storylines": [
+            "ai-enabled-hacking"
+          ],
+          "impact": "mixed",
+          "flags": [
+            "company-claim",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "CNN: Megaspeed bought more than $4 billion of Nvidia chips and says Alice Huang left the company in August 2025",
+          "sources": [
+            {
+              "name": "CNN",
+              "url": "https://www.cnn.com/2026/11/14/tech/china-megaspeed-nvidia-scandal-hnk-intl"
+            }
+          ],
+          "bullets": [
+            "CNN reports that the entity was incorporated in 2015 as 7Road International, an offshoot of a Chinese gaming company, was renamed Megaspeed in March 2023, and that Alice Huang became a director through November of that year; \"Since then, trade records show Megaspeed has purchased more than $4 billion in chips and equipment from Nvidia.\"",
+            "In a new statement on Sunday, Megaspeed said Huang \"left the company on August 30, 2025, and currently holds no role there\", and that it is \"aware of recent media reports containing assertions about our business, supply chain and global operations that are not supported by verifiable evidence\". CEO Tan Yong Pong said on Thursday the company has cooperated with US Commerce Department inspections and retained a US law firm to independently verify export-control compliance.",
+            "CNN cites Epoch AI's estimate, based on indictments and investigative reports, that \"anywhere between 290,000 to 1.6 million advanced US semiconductors were sent to China in violation of export controls last year\". It also reports that Northwestern Polytechnical University, on the Commerce Department's Entity List since 2001, bought four H200 chips last month for $250,000 according to procurement records published on its own website that have since been deleted.",
+            "The mechanism at issue is renting rather than exporting: National University of Singapore senior lecturer Alex Capri told CNN that Megaspeed's model of building data centres and renting out computing services \"gives Chinese companies another point of access to advanced US chips\". CNN reports Megaspeed has not been labelled a national security threat or restricted from buying chips — a decision by Commerce Secretary Howard Lutnick that two people familiar with the matter said led to a confrontation by Treasury Secretary Scott Bessent last week. CNN says it has sought comment from Alice Huang and from Alibaba, whose subsidiaries' filings show connections to Megaspeed entities."
+          ],
+          "topics": [
+            "export-controls",
+            "china",
+            "nvidia",
+            "chips"
+          ],
+          "storylines": [
+            "china-distillation-export-controls"
+          ],
+          "impact": "harmful",
+          "flags": [
+            "update"
+          ]
+        },
+        {
+          "headline": "UN review conference on lethal autonomous weapons opens Monday in Geneva with an agenda analysts call \"very narrow\"",
+          "sources": [
+            {
+              "name": "Taipei Times (AFP)",
+              "url": "https://www.taipeitimes.com/News/world/archives/2026/11/15/2003867785"
+            },
+            {
+              "name": "UN Geneva",
+              "url": "https://www.ungeneva.org/en/news-media/press-release/2026/11/seventh-review-conference-high-contracting-parties-convention"
+            }
+          ],
+          "bullets": [
+            "AFP reports that a conference opening Monday at the UN in Geneva will discuss curbs and prohibitions on lethal autonomous weapons systems under the Convention on Certain Conventional Weapons. The UN Geneva press release of November 10 says the Seventh Review Conference runs 16–20 November 2026 at the Palais des Nations, is presided over by Ambassador Julien Thöni of Switzerland, covers 128 High Contracting Parties, and will consider the outcome of the Group of Governmental Experts on Lethal Autonomous Weapon Systems.",
+            "Jean-Marc Rickli of the Geneva Centre for Security Policy defines such systems as ones that \"can identify, select, and engage a target without the intervention of a human operator in the execution of these tasks\", and told AFP the Geneva agenda is \"very narrow\" and \"fails to encompass the full range of issues surrounding AI on the battlefield\". Rickli said that in the US-Israeli war against Iran this year \"the Americans engaged as many as 1,000 targets per day\" inside Iran; AFP reports this claim without independent verification.",
+            "On national positions, AFP reports the US refers to \"appropriate levels of human judgement\", while France bans lethal autonomous weapons but permits \"partially autonomous\" systems it calls PLAWS. Rear Admiral Vincent Sebastien, deputy director of the French defence ministry's AI agency, said human control is ensured through \"appropriate control\" by a military commander, a concept whose scope varies by system and context, and that \"Autonomy will very quickly become a reality on the battlefield.\"",
+            "AFP cites an August joint statement from UN Secretary-General Antonio Guterres and ICRC president Mirjana Spoljaric that \"We are now dangerously close to crossing a moral red line: the autonomous targeting of humans by machines\", and quotes Anthropic cofounder Dario Amodei saying \"Today, frontier AI systems are simply not reliable enough to power fully autonomous weapons.\" The conference itself begins after this edition's window closes."
+          ],
+          "topics": [
+            "autonomous-weapons",
+            "military",
+            "united-nations",
+            "anthropic"
+          ],
+          "storylines": [
+            "ai-weapons-targeting"
+          ],
+          "impact": "neutral",
+          "flags": []
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Preprint reports 5.85x decoding speedup for looped transformers, 40% above the strongest baseline on Ouro-2.6B",
+          "sources": [
+            {
+              "name": "alphaXiv",
+              "url": "https://www.alphaxiv.org/abs/2611.loopfill-speculative-decoding-looped-transformers"
+            }
+          ],
+          "bullets": [
+            "\"LoopFill: Pipelined Multi-Token Speculative Decoding for Looped Transformers\", submitted 14 Nov 2026, reports that its \"average speedup over greedy autoregressive decoding is 5.85× on Ouro-2.6B\" and 5.13× on Huginn-3.5B, averaged across seven benchmarks: GSM8K, MATH-500, BBH, HumanEval+, MBPP+, SpecBench and Spider.",
+            "The paper says \"The speedups exceed those of LoopAhead, the strongest baseline, by 40% on Ouro-2.6B and 25% on Huginn-3.5B\"; the page gives LoopAhead at 4.19× on Ouro-2.6B and 4.12× on Huginn-3.5B. The authors are Siqi Zhu, Suozhi Huang, Yi Zhao and Jiaxuan You, with UIUC and Princeton listed as the organisations; the page does not map authors to institutions.",
+            "The headline metric is decoding latency after prompt prefill, not end-to-end throughput, and the experiments ran on a single NVIDIA L20X GPU in BF16, so the figures do not describe production serving at scale. The method is stated to preserve the model's autoregressive output distribution, and the page reports no task-accuracy numbers.",
+            "The paper is not peer reviewed and carries only the alphaXiv identifier, with no arXiv ID; arXiv ran no announcement cycle inside this edition's window. The page gives the date without a time of day, so the item sits close to the window's opening boundary."
+          ],
+          "topics": [
+            "compute",
+            "scaling",
+            "benchmarks"
+          ],
+          "impact": "neutral",
+          "flags": [
+            "preprint",
+            "single-source"
+          ]
+        },
+        {
+          "headline": "Open SLAM recipe cuts egocentric trajectory error from 1.02 m to 0.43 m but still trails Meta's closed Aria system overall",
+          "sources": [
+            {
+              "name": "alphaXiv",
+              "url": "https://www.alphaxiv.org/abs/2611.slam-dunk"
+            }
+          ],
+          "bullets": [
+            "\"SLAM Dunk: A Recipe for Long-Horizon Egocentric SLAM in the Wild\", submitted 15 Nov 2026, reports that on its training set mean absolute trajectory error fell from 1.02 m to 0.43 m across 21 recordings, \"a 58% reduction\", and mean control-point score rose from 69.1 to 82.4 (+13.3, 95% bootstrap CI 6.8–20.3) across 13 recordings.",
+            "The abstract says the system \"becomes the first to outperform Aria's SLAM on three out of the five LaMAria test categories\" — Medium, Long and Low light — against Meta's Project Aria system, which the paper describes as closed-source. In the Medium category it reports 78.9 against Aria's 78.5.",
+            "The aggregate still favours Aria: the paper reports a category-weighted average of 75.46 against Aria's 75.86 and a per-recording average of 76.68 against Aria's 77.13, which the page describes as near-parity overall rather than an overall win. The paper also says it \"achieved first place on the UZH-FPV leaderboard at submission\", and reports a calibration floor of 0.77 m/km with constant calibration against 0.09 m/km with time-varying calibration.",
+            "The paper is not peer reviewed and lists no author institutions for either author, Jacob Van Meter or Ayush Paul. It carries no arXiv ID, only the alphaXiv identifier, and the benchmark snapshot it compares against is dated 3 November 2026 with 28 complete entries."
+          ],
+          "topics": [
+            "robotics",
+            "open-weights",
+            "meta",
+            "evals"
+          ],
+          "impact": "neutral",
+          "flags": [
+            "preprint",
+            "single-source"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Stroke model reports AUROC 0.974 on a 6,650-patient CT cohort using 0.20 million parameters",
+          "sources": [
+            {
+              "name": "npj Digital Medicine",
+              "url": "https://www.nature.com/articles/s41746-026-03458-9"
+            }
+          ],
+          "bullets": [
+            "The paper, published in npj Digital Medicine on 14 November 2026, describes the Dynamic Fuzzy Encoder Network (DFE-Net), which \"uses learnable fuzzy membership fields to represent spatial uncertainty and jointly classify stroke and localize lesions\". It was evaluated on \"a multicentre computed tomography (CT) cohort comprising 6650 patients and 8873 images and a separate magnetic resonance imaging (MRI) cohort comprising 67 patients and 615 images\", with training and testing performed separately within each modality.",
+            "The authors report \"an area under the receiver operating characteristic curve of 0.974 and an F1 score of 0.897 on CT, and corresponding values of 0.978 and 0.879 on MRI\". Lesion localisation against expert annotations in the CT cohort \"yielded a Dice score of 0.70\". Expected calibration error was \"~0.022 in both cohorts, and the model contained 0.20 million parameters\".",
+            "The MRI arm is small and weakly supervised: the paper states \"MRI localization was assessed using gradient-derived pseudo-targets because expert lesion masks were unavailable\", and the MRI cohort is 67 patients. The authors write that \"prospective validation and expert-annotated MRI evaluation remain necessary\".",
+            "The abstract names no comparator model, so the figures cannot be read against an existing clinical tool or a radiologist baseline. Authors are at Wenzhou Medical University, the Technical University of Munich, Hunan Medical College, Ningbo University, Fudan and UCL, and state they \"received no specific funding for this work\"."
+          ],
+          "topics": [
+            "healthcare",
+            "ai-for-science"
+          ],
+          "impact": "beneficial",
+          "flags": []
+        },
+        {
+          "headline": "Breast MRI segmentation hits 9.7% median volume error but fails to show non-inferiority on treatment-response prediction",
+          "sources": [
+            {
+              "name": "npj Digital Medicine",
+              "url": "https://www.nature.com/articles/s41746-026-03446-z"
+            }
+          ],
+          "bullets": [
+            "The study, published in npj Digital Medicine on 14 November 2026, built \"an enhancement-aware three-dimensional MedNeXt framework with gated skip fusion and boundary supervision\" for breast dynamic contrast-enhanced MRI, with measurement fidelity as the primary endpoint. \"Across 521 paired internal-test and DUKE cases, median errors were 9.7% for tumor volume, 1.8 mm for 3D maximum surface diameter, and 10.2% for operational enhancement-defined volume, with corresponding ICCs of 0.97, 0.80, and 0.97.\"",
+            "The negative result is the point of the paper: \"In 276 paired response-analysis cases, AUROC was 0.732 with automatic geometry and 0.757 with expert geometry (difference, −0.025; 95% CI, −0.095 to 0.045); discrimination non-inferiority was not demonstrated.\" Accurate measurement did not carry over into equivalent downstream prediction.",
+            "Segmentation overlap held up across cohorts: \"Median Dice was 0.831 internally and 0.823 in the DUKE source-held-out stratum, and was 0.812 and 0.806 in the BC-MRI-SEG and public BreastDCEDL_AMBL retrospective external-validation cohorts\", using a frozen checkpoint without external-label tuning. In a blinded two-reader review, \"No major correction was required for 78 of 80 masks.\"",
+            "The authors limit their conclusion to \"radiologist-supervised retrospective quantitative research within the evaluated cohorts\", explicitly \"distinguishing measurement fidelity from downstream predictive equivalence\". All cohorts are retrospective; the paper reports no prospective or clinical-outcome evaluation."
+          ],
+          "topics": [
+            "healthcare",
+            "evals"
+          ],
+          "impact": "mixed",
+          "flags": []
+        },
+        {
+          "headline": "Scoping review of 30 US health-system AI studies finds none described post-deployment outcomes updating the model",
+          "sources": [
+            {
+              "name": "npj Digital Medicine",
+              "url": "https://www.nature.com/articles/s41746-026-03452-1"
+            }
+          ],
+          "bullets": [
+            "The review, published in npj Digital Medicine on 14 November 2026, searched US-based, English-language studies published January 2007–August 2025 and included \"54 framework studies (24 [44%] conceptual adaptations; 30 [56%] real-world implementations) and 30 AI/data science studies\", with two reviewers screening and extracting independently.",
+            "Its central finding: \"Most AI studies (27/30) focused on the data-to-knowledge phase; only three extended to knowledge-to-practice, and none described practice-to-data feedback with post-deployment outcomes informing model updating.\" In other words, no study in the sample documented monitoring a deployed model's results and feeding them back into the model.",
+            "The review also reports that relative to framework studies, \"AI studies less often addressed governance and stakeholder engagement (17% vs 35%) or equity (13% vs 22%), emphasizing computational over organizational functions\", and identifies five recurring framework components: data infrastructure and interoperability, governance and stakeholder engagement, learning and improvement cycles, evidence generation and translation, and equity and ethics.",
+            "This is a map of the published literature, not an audit of hospital practice: the absence of documented feedback loops in the 30 studies does not establish that no US health system runs one. The search ended in August 2025, so deployments reported since then are outside the sample. The authors state \"No funding was received for this research.\""
+          ],
+          "topics": [
+            "healthcare",
+            "evals",
+            "deployment"
+          ],
+          "impact": "mixed",
+          "flags": []
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "Philippines announces Executive Order 131 creating a National AI Council chaired by the Executive Secretary",
+          "sources": [
+            {
+              "name": "The Manila Times",
+              "url": "https://www.manilatimes.net/2026/11/14/news/marcos-signs-order-adapting-ai-framework/2470009"
+            },
+            {
+              "name": "Unbox.ph",
+              "url": "https://unbox.ph/news/national-artificial-intelligence-council-philippines/"
+            }
+          ],
+          "bullets": [
+            "The Manila Times reports that at a press briefing on Saturday, Palace Press Officer Claire Castro said President Ferdinand Marcos Jr. signed an executive order adopting an artificial intelligence framework, and said in Filipino that EO 131 \"places value on AI so that Filipinos may benefit from it\". The article does not state the signing date.",
+            "Unbox.ph reports that EO No. 131 establishes the National AI Council as the government's primary guide for AI-related policy development, regulatory conditions, institutional growth and capacity building, and that it will implement and refine the Philippines' AI Governance Framework.",
+            "Per Unbox.ph, Executive Secretary Ralph Recto chairs the council, Department of Economy, Planning and Development Secretary Arsenio Balisacan is vice chairperson and heads the secretariat, and members are the heads of DOST, DICT, DTI, DOF, DepEd, DOLE, DBM, CHED and TESDA plus a single private-sector representative serving \"a three-year term and eligible for one reappointment\".",
+            "Neither report gives a signing date, a budget figure or compliance deadlines, and the order's text was not published on LawPhil's 2026 executive-orders index when checked, so the operative provisions could not be read against the primary document. The council's powers and whether it can issue binding rules are not described in either report."
+          ],
+          "topics": [
+            "philippines"
+          ],
+          "impact": "neutral"
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "Petition to reinstate Jensen Huang passes 115,000 signatures as two investors ask Nvidia's board to slow its CEO search",
+          "sources": [
+            {
+              "name": "CNBC",
+              "url": "https://www.cnbc.com/2026/11/14/nvidia-investors-jensen-huang-return-board-letter.html"
+            },
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/11/14/elon-musk-other-tech-execs-sign-petition-calling-on-nvidia-to-reinstate-jensen-huang/"
+            }
+          ],
+          "bullets": [
+            "TechCrunch reports the petition \"appears to have attracted more than 115,000 signatures as of Saturday afternoon\", and that the petition website lists signers including 5,965 current Nvidia employees, 1,108 former employees and 63,063 shareholders, with named supporters Elon Musk, Replit's Amjad Masad, Epic Games' Tim Sweeney and Y Combinator's Garry Tan. The petition says signers are \"concerned that Jensen was removed without meaningful due process\" and asks the board to \"bring him back while an independent investigation establishes the facts\".",
+            "CNBC reports Altimeter Capital CEO Brad Gerstner posted a letter on X on Friday, co-signed by Atreides Management's Gavin Baker, urging Nvidia's board to \"pursue a slow, measured, and deliberate process regarding the future leadership of Nvidia\" including \"the potential return of Jensen Huang\". CNBC says the letter did not call for immediate reinstatement and described the company as \"capably led\" by interim CEO Colette Kress, who was CFO for 13 years.",
+            "The two firms disclosed about $2.13 billion of Nvidia stock combined as of June 30, per CNBC: Altimeter held 9.4 million shares worth nearly $1.9 billion and Atreides held 1.2 million shares worth nearly $250 million.",
+            "CNBC adds that a separate letter sent Friday called on Commerce Secretary Howard Lutnick to testify about Megaspeed before the House Intelligence Committee, and that Lutnick has agreed to testify before the Senate Banking Committee on Dec. 10 about whether the Commerce Department is \"properly performing its broader role of preventing China from acquiring advanced AI chips\". Huang resigned on Nov. 12, before this edition's window; the signature count and the investor letter are the new facts. Neither report gives the petition's own verification method for employee or shareholder counts."
+          ],
+          "topics": [
+            "nvidia",
+            "chips",
+            "export-controls"
+          ],
+          "storylines": [
+            "compute-money"
+          ],
+          "impact": "neutral",
+          "flags": [
+            "update"
+          ]
+        },
+        {
+          "headline": "Seoul says Nvidia reaffirmed a 260,000-GPU supply plan as Asian governments respond to Huang's exit",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/11/14/asian-governments-react-to-nvidia-ceo-jensen-huangs-exit/"
+            }
+          ],
+          "bullets": [
+            "TechCrunch reports that South Korea's Science Ministry says Nvidia reaffirmed its plan to supply 260,000 advanced GPUs to the country and to continue joint AI projects, and that the government's AI strategy council held an emergency meeting on Friday to assess the potential impact of Huang's departure on the Korean AI industry.",
+            "Citing Reuters, TechCrunch says Huang's exit \"has also raised uncertainty over more than $3 billion in Chinese AI computing projects reliant on Nvidia's restricted processors\". China's foreign ministry rejected the spy allegations on November 10 as groundless, and on Friday a spokesperson reiterated opposition to export controls that disrupt global supply chains and said the ministry was not aware of reports linking restricted Nvidia chips to a Shanghai data centre associated with Alice Huang.",
+            "On Singapore, TechCrunch reports the Ministry of Home Affairs said authorities seized Alice Huang's passport in June 2025 over possible false declarations about server purchases; in February 2026 police found insufficient evidence of related offences but warned her for knowingly providing inaccurate information about her Megaspeed role and barred her from re-entry. The ministry said its investigation into Megaspeed and six other individuals remains ongoing, did not identify the six, and said Singapore received limited assistance from US authorities despite repeated requests for information about Supermicro.",
+            "Taiwan's Economy Minister Kung Ming-shin said the departure is unlikely to significantly change the growth of the global AI industry, and Taipei's city government said Nvidia's planned overseas headquarters there remains on track; Japan's Industry Ministry will monitor Nvidia, and Deputy Chief Cabinet Secretary Masanao Ozaki said it is too early to assess the global impact. The 260,000-GPU figure is a government characterisation of a private commitment, with no contract or timetable published."
+          ],
+          "topics": [
+            "nvidia",
+            "china",
+            "export-controls",
+            "south-korea"
+          ],
+          "storylines": [
+            "china-distillation-export-controls"
+          ],
+          "impact": "neutral",
+          "flags": [
+            "single-source",
+            "update"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "FAA administrator says there is \"zero evidence of anything AI-related\" in the nationwide ground stop, blaming a router after a fibre upgrade",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/11/14/transportation-secretary-blames-routine-equipment-upgrade-for-grounding-flights-nationwide/"
+            }
+          ],
+          "bullets": [
+            "FAA administrator Bryan Bedford said the agency sees \"zero evidence of anything nefarious and zero evidence of anything AI-related\", adding \"We want to be clear that we have an equipment issue, and we're working through what this defective piece of equipment was.\" TechCrunch reports the ground stop came just a day after the FAA announced the rollout of an AI tool for air traffic controllers, and that the controllers' union said it was not consulted in designing the system.",
+            "Transportation Secretary Sean Duffy said that during \"routine maintenance\" copper wire at a remote location was upgraded to fibre optic cable by L3Harris, a longtime FAA contractor, after which a router overloaded a critical communication system. Duffy said the agency is working to determine \"was it user error or [installer] error from L3Harris? Or did they install a faulty router?\" and that the switchover happened at 3pm on a Friday because remote switchovers are done during the day.",
+            "FAA acting CTO Rebecca Guy said that when the network became unstable \"we saw two places that were actually pinging our network at a very high rate — a thousand connections over every four to five seconds\"; the FAA disabled both and is performing a root cause analysis. TechCrunch says more than 8,200 flights were cancelled on Friday evening according to Cirium, with at least another 3,000 cancelled on Saturday, in only the third nationwide ground stop of the 21st century.",
+            "No root cause has been published, and the officials' denials are statements rather than findings — the analysis is still running. Asked earlier whether AI caused the stop, Homeland Security Secretary Markwayne Mullin replied \"We call it SI [super intelligence] around here, remember? SI.\" This is an update to yesterday's edition, which carried the ground stop itself and the vendor's denial."
+          ],
+          "topics": [
+            "incidents",
+            "us-federal-policy"
+          ],
+          "impact": "mixed",
+          "flags": [
+            "single-source",
+            "update"
+          ]
+        },
+        {
+          "headline": "Tesla opens Cybercab pre-orders at $29,990 plus a $299 monthly fee without which the car will not operate",
+          "sources": [
+            {
+              "name": "TechCrunch",
+              "url": "https://techcrunch.com/2026/11/14/tesla-opens-cybercab-pre-orders-for-personal-use-with-geo-restrictions-and-a-299-monthly-fee/"
+            },
+            {
+              "name": "Electrek",
+              "url": "https://electrek.co/2026/11/14/tesla-cybercab-autonomy-subscription-agreement-terms/"
+            }
+          ],
+          "bullets": [
+            "TechCrunch reports Tesla said on Friday evening that \"select customers\" can now pre-order the autonomous Cybercab \"for personal use\", and that in addition to the $29,990 price tag owners \"will need to pay $299 per month to operate their vehicle\", with an estimated delivery date of December 2026. It cites Marques Brownlee's post that buyers \"must accept delivery\" in one of a handful of Texas cities and that the car will only operate in certain geofenced areas.",
+            "Electrek, reading the posted Cybercab Autonomy Subscription Agreement (version 20261112), reports the agreement states \"Your Cybercab will not operate without an active Autonomy Subscription\", that Tesla can change the subscription price with one month's notice, and that Tesla \"may expand, reduce, relocate, or otherwise modify the operating area at any time\". Three or more strikeouts trigger a one-week suspension of autonomous driving, with payment not prorated.",
+            "Per Electrek, the agreement also lets Tesla remotely access, locate, restrict or control the car, states that these actions give owners no remedies beyond those in the terms, and has Tesla collecting \"Autonomy Data\" including cabin camera images, kept 30 days by default. Personal use only: using the car on Tesla's Robotaxi network, Uber, a delivery app or a rental platform requires Tesla's written authorisation.",
+            "Tesla's own executives are not aligned on the price: Elon Musk said the Cybercab \"will be available nationwide, as we receive regulatory approval\" and that the monthly fee is \"too high\" — \"Should match the cost of Tesla [Full Self-Driving] and connectivity for other models, which is more like ~$115/month\". Tesla's Ashok Elluswamy said the Cybercab will work \"unsupervised inside all the same geo locations as @robotaxi, just serving the owners' needs\". Tesla has not published the agreement at a stable public URL that could be read directly, so the terms come from Electrek's reading of the order-page document."
+          ],
+          "topics": [
+            "robotics",
+            "privacy",
+            "deployment"
+          ],
+          "impact": "mixed",
+          "flags": []
+        },
+        {
+          "headline": "Top scorer in South Korea's tax accountant exam admits using a camera and AI to get answers; police open an investigation",
+          "sources": [
+            {
+              "name": "The Star (AFP)",
+              "url": "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/11/15/south-korea-probes-top-exam-scorer-after-ai-cheating-confession"
+            }
+          ],
+          "bullets": [
+            "AFP reports that South Korean police said on Sunday they had opened an investigation after the top scorer in the national Certified Tax Accountant examination admitted using artificial intelligence to cheat. The candidate, who ranked first in both rounds of the exam held in April and July, scored 397.5 out of 400 points in the first round with only one wrong answer out of 160 questions, which had already prompted accusations he used smart glasses — accusations he initially denied.",
+            "\"We received a written confession through the test taker's lawyer this morning regarding cheating on the tax accountant exam,\" the Seoul Metropolitan Police Agency said, adding the case had been assigned to investigators. In a video posted on his lawyer's YouTube channel the candidate said \"I used a miniature camera to photograph the exam questions and sent them to AI, then checked the answers on my smartphone\", said he \"deeply regretted\" it, and said he had struggled financially after leaving his job to start a business.",
+            "The exam is administered by the Human Resources Development Service of Korea, which said two supervisors were present when the candidate sat the test. The HRDK also said on Sunday that an \"AI inspector\" caught a test taker wearing smart glasses during a gas engineer certification exam last month, and in October the government announced plans to file criminal complaints against students caught using such devices in the national university entrance exam.",
+            "With the annual college entrance test, the Suneung, due on November 19, the presidential office said it was treating the issue seriously; chief of staff Lim Kwang-hyun told reporters it \"has been working hard to come up with measures to address it\" and that a meeting to discuss measures would be held that afternoon. The candidate's lawyer said further details would not be disclosed over concerns other cheaters could copy the method, so the specific tool and its reliability are not public."
+          ],
+          "topics": [
+            "south-korea",
+            "education",
+            "incidents"
+          ],
+          "impact": "harmful",
+          "flags": [
+            "single-source"
+          ]
+        }
+      ]
+    }
+  ]
+}
