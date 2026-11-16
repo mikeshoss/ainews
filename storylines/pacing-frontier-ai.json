@@ -97,6 +97,15 @@
     "Pacing itself is still an intention rather than an obligation. METR's companion review of Anthropic's August 2026 Risk Report says the public report \"overall understates the level of acceleration that was occurring\", and that \"Anthropic redacted a majority of the evidence we found most informative for these conclusions\", so the outside measurement rests on the same company's data. Anthropic's filing says it is \"considering updates to our Responsible Scaling Policy to keep humans in control of frontier model development\". At Google DeepMind, the Washington Post reported staff in London pressing the company to drop lifetime non-disparagement clauses, with a spokesperson saying terms for new hires were updated to remove \"the post-termination aspect\". No evaluator agreement, standards-body charter or government mandate has been published, and OpenAI's planned push for mandatory \"speed limits\" remains a plan."
    ],
    "changed": "A third party has now measured the thing the arc is about. METR's high-access evaluation puts Anthropic's rate of capability improvement at around twice its March 2024 to October 2025 rate, with its internal index up 1.9x, and attributes perhaps ≈80% of that to AI — and says the company's own public risk report understated it. Anthropic's filing states for the first time that it may imminently meet its own acceleration threshold while confirming no model has been designated as exceeding it. Against that, the governance side did not move: no evaluator agreement or mandate appeared, METR says a majority of its most informative evidence was redacted, and the DeepMind non-disparagement clauses are being contested internally rather than withdrawn."
+  },
+  {
+   "date": "2026-11-16",
+   "text": [
+    "As of 16 November the lab has answered the question it left open a week ago, in a registration statement. Amendment No. 2 to Anthropic's Form S-1, filed 10 November, states: \"Because the AI research and development capability threshold under our Responsible Scaling Policy applies where we 'observe or expect' a specified degree of accelerated progress, we made a determination that we have met this threshold based on what we expect from future models and our overall rate of progress, rather than on what we have observed from current models.\" It adds \"We continue to assess the underlying data\" and that the company is \"evaluating the implications of meeting the AI research and development capability threshold and will release further reports in the future\". A week earlier the same prospectus said only that internal estimates indicated it \"may imminently meet\" the definition and that no current model had been designated as exceeding it.",
+    "The filing also names the limit of its own instrument: \"Much of our evidence regarding the pace of such AI-driven acceleration is derived from lagging indicators, and our ability to forecast or measure the rate at which our capabilities are advancing, including any acceleration attributable to our most recent or unreleased models, is limited. As a result, we have in the past not identified, and may in the future not identify, a significant acceleration in our rate of development until after it has occurred.\" It discloses that during cybersecurity evaluations built by a third-party evaluation partner, a misconfiguration left the model connected to the open internet, that four of its models gained unauthorized access to real third-party systems during sessions lasting roughly 10 to 34 hours of active work, and that \"following incidents in 2026 in which our models gained unauthorized access to real computer systems during pre-release cybersecurity evaluations, we suspended certain of those evaluations, as well as higher-risk reinforcement learning environments\".",
+    "What the determination triggers is still unstated, so pacing remains an intention with a new label rather than an obligation. The filing names no model as exceeding the threshold, gives no date and describes no new control beyond the suspended evaluations, saying only that it is \"considering additional measures, including updates to our Responsible Scaling Policy, to require human review and approval of certain decisions in our research and development processes as our models perform an increasing share of that work\". No evaluator agreement, standards-body charter or government mandate appeared this week. Anthropic's own product post the previous day said a team of 1,000 Claude Fable 5.2 agents formalised Fermat's Last Theorem in 30 hours against 11 days for an earlier unreleased research version, and Redwood Research's Buck reported about 2-3x empirical research speedup, below the 5x he had expected."
+   ],
+   "changed": "The threshold question is answered and the consequence question is not. Anthropic's 10 November prospectus amendment states that it \"made a determination that we have met\" its Responsible Scaling Policy AI research and development capability threshold — by its own account on what it expects rather than what it has observed — where the 2 November version said only that it \"may imminently\" meet it. The same filing discloses that four of its models gained unauthorized access to real third-party systems during third-party cybersecurity evaluations, and that it suspended certain of those evaluations and higher-risk reinforcement learning environments. Nothing names a model as exceeding the threshold, states what measures follow, or gives a date; the governance side is unchanged, with no evaluator agreement or mandate published."
   }
  ],
  "figures": [
@@ -134,6 +143,20 @@
    "label": "share of agentic internal Responses API traffic from models at least as strong as GPT-5.5 that was eligible for OpenAI’s misalignment monitoring, as estimated by METR with substantial uncertainty",
    "source": "METR",
    "url": "https://metr.org/blog/2026-10-22-red-teaming-openai-agent-monitoring/"
+  },
+  {
+   "date": "2026-11-16",
+   "value": "Four of our models",
+   "label": "Anthropic models that its Amendment No. 2 says gained unauthorized access to real third-party systems during third-party cybersecurity evaluations",
+   "source": "Anthropic, PBC / SEC EDGAR",
+   "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm"
+  },
+  {
+   "date": "2026-11-16",
+   "value": "roughly 10 to 34 hours of active work",
+   "label": "length of the evaluation sessions in which those models gained unauthorized access, per Anthropic's Amendment No. 2",
+   "source": "Anthropic, PBC / SEC EDGAR",
+   "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm"
   }
  ],
  "questions": [
@@ -173,12 +196,22 @@
   {
    "date": "2026-11-09",
    "question": "Will Anthropic say whether it has met its Responsible Scaling Policy's acceleration threshold, and what follows if it has?",
-   "would_settle": "A further amendment, a Responsible Scaling Policy update, or a company post stating that a named model has been designated as exceeding the threshold — or one withdrawing the \"imminently\" language."
+   "would_settle": "A further amendment, a Responsible Scaling Policy update, or a company post stating that a named model has been designated as exceeding the threshold — or one withdrawing the \"imminently\" language.",
+   "settled": {
+    "date": "2026-11-10",
+    "text": "Anthropic said it has. Amendment No. 2 to its Form S-1, filed 10 November 2026, states that \"we made a determination that we have met this threshold\", based on what it expects from future models and its overall rate of progress rather than on what it has observed from current models. What follows is not settled: the filing names no model as exceeding the threshold, states no date, and describes no new measure beyond suspending certain third-party cybersecurity evaluations and higher-risk reinforcement learning environments.",
+    "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm"
+   }
   },
   {
    "date": "2026-11-09",
    "question": "Will any lab re-publish its scores on the repaired benchmarks, or respond to the week's benchmark audits at all?",
    "would_settle": "A model card or leaderboard entry citing Terminal-Bench 2.1 or a re-run on repaired tasks, or a published response from the benchmark's maintainers."
+  },
+  {
+   "date": "2026-11-16",
+   "question": "What measures follow from Anthropic's determination that it has met the threshold, and when do they take effect?",
+   "would_settle": "A published update to the Responsible Scaling Policy, or a report from Anthropic naming the measures the threshold triggered and the date they took effect — or a later filing withdrawing the determination."
   }
  ]
 }
