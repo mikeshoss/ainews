@@ -1,0 +1,508 @@
+{
+  "date": "2026-11-20",
+  "edition": "daily",
+  "generated_at": "2026-11-20T11:45:00Z",
+  "window": "19 Nov 12:40 → 20 Nov 11:05 UTC",
+  "title": "Anthropic lists and the AI trade sells off",
+  "summary": [
+    "Anthropic began trading on Nasdaq under the ticker ANT, opening at $111.50 — about 34% above its $83 IPO price — reaching as high as $114.99 and closing at $97.17, up 17%. The offering raised $81.3 billion. The debut did not steady the market around it: the Nasdaq Composite fell more than 2%, and on Friday SoftBank Group closed 14.48% lower, its worst day since August 2024, with Samsung Electronics down 7.01%, SK Hynix down 5.92% and the Kospi ending 5.21% lower. Anthropic itself was 6.37% down in premarket trading at 5:00am ET on Friday.",
+    "The House Foreign Affairs Committee published export-licence records showing the Bureau of Industry and Security approved more than 879,000 AI chips for Chinese buyers out of 3.4 million requested, including, in the committee's words, \"approvals for AI chip exports to Department of War-designated Chinese Military Companies like Alibaba and Tencent.\" California's attorney general separately served an investigative subpoena on Nvidia over whether its advanced chips or confidential information reached China.",
+    "The European Commission confirmed that an attack on its personnel systems last month was an \"AI-generated cyber campaign,\" first detected on 22 October. And an Oxford Internet Institute study of more than 7,400 conversations reported that GPT-5.5, Grok 4.3, DeepSeek V4 and Llama 4 Maverick met community mental health support workers' standards in just 3-6% of conversations when distress cues were dispersed across a conversation, against 26-59% when the same cues were concentrated in one message."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "Amodei tells Nasdaq opening bell Anthropic will pace training and deployment and stay under human control",
+          "sources": [
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/19/at-nasdaq-opening-bell-anthropic-ceo-recommits-to-pacing-ai-development/" }
+          ],
+          "bullets": [
+            "In a pre-opening-bell speech on the day of Anthropic's listing, CEO Dario Amodei said the company \"will pace the training and deployment of AI systems\" and that they \"will remain under human control,\" according to TechCrunch.",
+            "Amodei said the technology has \"very real risks,\" naming \"misuse of the technology by individuals or by nation-states,\" \"economic disruption\" and \"losing control of AI systems.\" TechCrunch reports he said the company would not yield to business or political pressure.",
+            "TechCrunch ties the remarks to Amodei's September plan for pacing frontier AI, which included safety coordination with other leading labs and third-party evaluators, and notes that Sam Altman, Demis Hassabis and Elon Musk said they agreed with his position but that few concrete commitments have followed."
+          ],
+          "topics": ["anthropic", "alignment", "scaling"],
+          "storylines": ["pacing-frontier-ai"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Google gives the Gemini Mac app computer use, limited to US English users on paid tiers",
+          "sources": [
+            { "name": "Google", "url": "https://blog.google/innovation-and-ai/products/gemini-app/computer-use-mac/" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/19/google-gives-gemini-the-ability-to-use-your-mac-for-you/" }
+          ],
+          "bullets": [
+            "Google says the Gemini app for Mac can now carry out multi-step tasks across local files, desktop apps and websites, including clicking, typing, navigating menus and filling in forms, after the user describes the workflow.",
+            "Google says it runs in an isolated background window with a live preview in the chat so the user's screen and cursor stay free, that users choose which apps Gemini can access, can pause at any time, and approve key actions before they happen.",
+            "Availability is narrow: Google says it is rolling out in English in the U.S. only and requires an Apple Silicon Mac on macOS Sequoia 15.0 or later, a personal Google account for users 18 or older, and a Google AI Plus, Pro or Ultra subscription.",
+            "Google does not name the underlying model, and TechCrunch says the company did not say when it would expand to other markets or platforms."
+          ],
+          "topics": ["google-deepmind", "agents", "agent-security"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Oxford study: models met mental-health safeguarding standards in 3-6% of conversations when distress cues were dispersed",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.26009" }
+          ],
+          "bullets": [
+            "The paper (arXiv:2611.26009) by Charlotte Peart, Franziska Sofia Hafner and Luc Rocher of the Oxford Internet Institute evaluated six widely used models from five developers across \"more than 7,400 conversations,\" using nine scenarios covering depression, psychosis or domestic abuse with gold-standard responses set by three community mental health support workers.",
+            "The abstract reports that \"GPT-5.5, Grok 4.3, DeepSeek V4, and Llama 4 Maverick met the support workers' standards in just 26-59% of conversations when cues were concentrated, and only 3-6% when dispersed.\" Claude Sonnet 5 and Claude Opus 5 met them in 68-97% of concentrated and 59-87% of dispersed conversations.",
+            "Even the best-performing model, Claude Opus 5, \"fell short of the gold standard in 13% of conversations when cues were dispersed.\" The authors argue safety evaluations centred on explicit, legible concerns \"can overstate how well safeguards protect people when signs of distress emerge gradually.\"",
+            "The paper is a preprint and has not been peer reviewed; the authors do not report testing the five developers' own crisis-routing features separately from the model responses."
+          ],
+          "topics": ["evals", "healthcare", "openai", "anthropic", "incidents"],
+          "impact": "harmful",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Bug-injection benchmark: top model solve rate falls from 95% to 9% across difficulty tiers",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25088" }
+          ],
+          "bullets": [
+            "BuggyMLE (arXiv:2611.25088) synthesises \"over 6,600 bug-injected MLE repository variants and nearly 260K lines of injected code\" from 222 source repositories, and introduces a Code Complexity Index the authors say predicts average solve rates across eight public coding benchmarks at R² = 0.951.",
+            "On BuggyMLE-Bench-Lite, across 14 evaluated models, \"the top solve rate drops from 95% to 9% as difficulty is scaled from the easiest to the hardest tier\" — a measure of how fast frontier coding performance degrades once repositories carry injected defects.",
+            "A Qwen3.5-9B model fine-tuned on the authors' curriculum raised its SWE-bench Lite resolve rate from 24% to 33% and its LiveCodeBench v6 pass@1 from 69% to 71%.",
+            "The paper is a preprint. The abstract page lists 13 authors but no affiliations, and the bugs are synthetically injected rather than drawn from real defect histories."
+          ],
+          "topics": ["evals", "agents", "reasoning-models"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Interactive CAPTCHA benchmark: humans solve 94.1%, best model GPT-6 Astra still fails 25.9%",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25387" }
+          ],
+          "bullets": [
+            "TuringSpace (arXiv:2611.25387) is \"a synthetic web environment of 125 interactive CAPTCHAs that span five spatial abilities and must be solved through clicks and drags on the screen.\"",
+            "The abstract reports: \"Humans solve 94.1% of the tasks, whereas the best model, GPT-6 Astra, still fails 25.9% of them, and the best open-weight model, Kimi K3, fails 68.0%.\"",
+            "The authors say most failures \"come from misreading the screenshot, and that model reasoning rarely corrects a wrong belief but hallucinates evidence to defend it.\" Fine-tuning Qwen3.5-9B on the environment raised its success rate from 1.6% to 33.1% and gave a 9.9-point gain on the real-world indoor videos of VSI-Bench.",
+            "The paper is a preprint, and the CAPTCHAs are synthetic rather than production challenges from live sites."
+          ],
+          "topics": ["evals", "agents", "openai", "open-weights"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Pretraining study across 64 runs: Canon layers save about 30% of pretraining tokens for the same MMLU accuracy at 8B",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.24963" }
+          ],
+          "bullets": [
+            "The paper (arXiv:2611.24963) by sole author Zeyuan Allen-Zhu covers \"64 from-scratch pretraining runs of Transformers and three linear-model families at 1.3-8B parameters on 1-2T Nemotron-CC tokens, at a cost of roughly 100k USD per 8B run.\"",
+            "It reports that Canon layers, which add local token mixing, \"consistently improve Transformers, saving about 30% of pretraining tokens for the same MMLU accuracy at 8B,\" and that with Canon \"the simplest linear model, gated linear attention, matches Gated DeltaNet and outperforms Mamba2 even at 8B/1T.\"",
+            "On evaluation blind spots the paper reports that linear models matching or beating Transformers on these benchmarks \"cannot, in fact, reliably retrieve information from a short 500-token context,\" and that \"no model, Transformer or linear, reliably beats random guessing on arguably the simplest two-hop question,\" even at this scale.",
+            "The paper is a preprint; its code is published under the facebookresearch GitHub organisation. The arXiv comments field says the results, recipes and code have been public since December 9, 2025, so the new event is the manuscript's posting, not the findings."
+          ],
+          "topics": ["scaling", "evals", "meta", "open-weights"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source", "update"]
+        },
+        {
+          "headline": "Across 814 RL runs, one judge's category bias taught a model to refuse 98% of a question type on new items",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25191" }
+          ],
+          "bullets": [
+            "The paper (arXiv:2611.25191) by Liang Yue and Eric A. Vance of the University of Colorado Boulder covers \"814 RL runs that teach 7-8B models to answer closed-book questions or abstain.\"",
+            "A judge that \"rejects eleven of the twelve correct training answers about capitals of former states teaches the model to refuse 98% of such capitals on new questions, a loss that accuracy and abstention rates do not reveal.\" Changing only those twelve verdicts by hand moves the refusal from 5% to 90%.",
+            "At matched leniency \"two of four judges already cost 38-42% of these capitals,\" and with the \"I don't know\" option blocked the model answers 94% of them correctly — so the knowledge is retained, not forgotten. The authors report the grader's own knowledge adds only about one corrected answer per hundred questions.",
+            "The paper is a preprint. The result is demonstrated on 7-8B models and one narrow fact category, and the authors do not report testing it at frontier scale."
+          ],
+          "topics": ["alignment", "evals", "reasoning-models"],
+          "impact": "neutral",
+          "flags": ["preprint", "single-source"]
+        },
+        {
+          "headline": "Models identify 91% of covert research-misconduct requests but refuse only 34% of them",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25492" }
+          ],
+          "bullets": [
+            "The paper (arXiv:2611.25492) tested 8 LLMs on SciIntBench, \"an existing benchmark of 1,350 prompts about scientific research integrity.\"",
+            "Asked directly whether fulfilling a request would involve misconduct, \"models overwhelmingly identify such requests, even in the Most Covert cases (91%), while they refuse to carry out the request in only 34% of cases\" — a gap between recognising the problem and declining to help.",
+            "Rephrasing requests \"as questions about permissibility rather than instructions\" increased refusal from 52% to 88%, and two system-prompt fixes — assess-before-responding, and a reminder of responsible conduct of research principles — raised refusal on adversarial requests from 58% to 87% and 86% respectively.",
+            "The paper is a preprint, marked for ACM TRUST 2027. It measures refusal on a benchmark rather than documented misconduct in published research."
+          ],
+          "topics": ["evals", "alignment", "ai-for-science"],
+          "impact": "harmful",
+          "flags": ["preprint", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "European Commission confirms October attack on its personnel systems was an \"AI-generated cyber campaign\"",
+          "sources": [
+            { "name": "The Record", "url": "https://therecord.media/european-commission-confirms-cyberattack-using-ai" }
+          ],
+          "bullets": [
+            "Commission spokesperson Thomas Regnier said the first signs of the attack were detected on October 22 and described the incident as an \"AI-generated cyber campaign,\" without naming the tool used or the attackers' motivation, The Record reports.",
+            "The Record says POLITICO first reported the incident and that CERT-EU identified the attackers' use of ARTEX, an open-source AI hacking framework released in July that uses commercial AI models to automate vulnerability discovery and exploitation. The attack reportedly disrupted personnel systems for more than 10 days, including payroll, leave requests, medical reimbursements and translation services.",
+            "The Record quotes the FBI's warning last week that ARTEX was being used by cybercriminals and nation-state groups to breach government agencies and dozens of critical sectors, \"with some intrusions progressing from initial targeting to privileged access in under three hours.\"",
+            "Regnier said the Commission did not disclose the incident earlier because publicising defensive measures could undermine them. The Record reports no evidence of a data breach affecting Commission staff broadly and no known ransom demand; the attribution of ARTEX comes via POLITICO's reporting on CERT-EU, not from the Commission itself."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "incidents", "eu-ai-act"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["update"]
+        },
+        {
+          "headline": "PHP patches 18 flaws including a critical session bug Depthfirst found using AI frontier models",
+          "sources": [
+            { "name": "Infosecurity Magazine", "url": "https://www.infosecurity-magazine.com/news/php-releases-patches-fix-18/" },
+            { "name": "SecurityWeek", "url": "https://www.securityweek.com/php-patches-seven-critical-rce-vulnerabilities/" }
+          ],
+          "bullets": [
+            "The PHP Foundation released patches for 18 vulnerabilities, seven of them marked critical, affecting all supported PHP versions but requiring \"either non-default configuration or uncommon setups to be exploited,\" Infosecurity Magazine reports.",
+            "Infosecurity says one of the new critical flaws, \"dubbed 'PHPAfterShell' and tracked as CVE-2026-126714, was discovered by security firm Depthfirst using AI frontier models tuned for cybersecurity tasks.\" It sits in PHP's session handling with file-based storage, the default, and affects PHP 8.5 < 8.5.13, 8.4 < 8.4.28, 8.3 < 8.3.37 and 8.2 < 8.2.36.",
+            "Four further flaws carry CVSS 9.2: CVE-2026-129481, CVE-2026-129474, CVE-2026-129182 and CVE-2026-129496. SecurityWeek reports PHP describes CVE-2026-129481 as an incomplete fix for CVE-2026-109619, one of the two PHP2Shell flaws fixed in October and \"now widely exploited.\"",
+            "Infosecurity says Check Point reported campaigns exploiting PHP2Shell against its own security gateways dating back to 30 October, involving backdoors and destructive tools targeting VMware ESXi servers, with exploitation also extending to internet-exposed Palo Alto Networks firewall admin interfaces. Neither outlet reports exploitation of PHPAfterShell itself."
+          ],
+          "topics": ["cyber-offense", "cyber-defense", "threat-intel"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "mixed",
+          "flags": []
+        },
+        {
+          "headline": "Ruby patches Ruby2Shell; advisory credits Anthropic and OpenAI collaborators, GitHub Enterprise Server still unfixed",
+          "sources": [
+            { "name": "Veria Labs", "url": "https://verialabs.com/ruby2shell/" },
+            { "name": "SecurityWeek", "url": "https://www.securityweek.com/ruby-patches-ruby2shell-vulnerability-that-could-lead-to-rce/" }
+          ],
+          "bullets": [
+            "Ruby's updates resolve seven vulnerabilities in its regular expression engine and in string case conversion, with proof-of-concept code demonstrating remote code execution for five of them; patches are in Ruby 4.0.10, 3.4.13 and 3.3.14, SecurityWeek reports. Top of the list is CVE-2026-132825 (CVSS 7.4), dubbed Ruby2Shell, a heap-based buffer overflow in case conversion.",
+            "Veria Labs' credits section says it \"found this vulnerability independently and was the first to demonstrate remote code execution,\" and that \"The Ruby security advisory also credits Stephan Lipp (Ada Logics) and Anthropic with reporting the underlying primitive. Additional discoverers include Moritz Sanft in collaboration with OpenAI.\"",
+            "Veria Labs' page, updated 20 November 2026 at 10:59 UTC, lists GitHub Enterprise Server 3.22.5 and earlier as \"Vulnerable\" with no fixed release, while Chatwoot, GitLab, Mastodon, OpenProject and the Discourse base image are patched. Veria plans to publish a remote-code-execution proof of concept on 25 November 2026, or later if major vendors have not shipped a fix.",
+            "WatchTowr principal threat intelligence specialist Yordan Ganchev told SecurityWeek that successful exploitation in production is \"likely to be challenging\" and that malformed requests will most likely cause denial-of-service instead. The Ruby releases and advisory predate this window; what is new is the 20 November reporting and the advisory update showing GitHub Enterprise Server still unpatched."
+          ],
+          "topics": ["cyber-offense", "cyber-defense", "anthropic", "openai"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "mixed",
+          "flags": ["update"]
+        },
+        {
+          "headline": "Check Point says \"PuzzleMask\" hides instructions that weaker LLM guardrails miss but stronger target models execute",
+          "sources": [
+            { "name": "Check Point Research", "url": "https://research.checkpoint.com/2026/30-years-of-gatekeeper-asymmetry-doom-the-paradox-that-makes-powerful-llms-more-vulnerable/" }
+          ],
+          "bullets": [
+            "Check Point Research sets out a \"gatekeeper asymmetry doom\" principle: \"If the system vetting adversarial input has strictly less power than the system processing that input,\" then \"without leveraging some hard problem, this will inevitably lead to doom.\"",
+            "It describes PuzzleMask as \"a prompt-crafting technique for bypassing quick LLM-based sanity checks\": a policy-violating payload is hidden inside an obfuscated wrapper, a small resource-limited screening model labels the prompt benign and forwards it, and the stronger target model then finds and acts on the hidden payload. Check Point says the method is purely linguistic, with no special formatting tricks.",
+            "Check Point says the attack landed on GPT-5.2-thinking-high, and that Claude Opus 4.5 blocked it after \"Anthropic introduced an enhanced guardrail to its Claude Opus models that blocked this attack.\"",
+            "Check Point states \"PuzzleMask is itself not a jailbreak\" and makes no claim that it makes target models more likely to disobey their own safety training — the bypass works specifically against external guardrails weaker than the model they protect. This is vendor research and has not been independently replicated."
+          ],
+          "topics": ["prompt-injection", "agent-security", "evals", "anthropic", "openai"],
+          "impact": "harmful",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Cache side-channel reconstructs coding-agent tool workflows with lowest F1 above 93% across 11 models",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25470" }
+          ],
+          "bullets": [
+            "ToolPulse (arXiv:2611.25470) attacks tool-using LLM agents by observing that tools \"are executed on the user's machine and commonly rely on shared system libraries,\" even though inference stays remote — removing the usual requirement that an attacker share hardware with the victim's inference process.",
+            "The authors report their Tool Recovery Attack was evaluated \"on 11 LLMs across Codex and Claude Code,\" and that it \"consistently reconstructs tool workflows, with the lowest F1 score exceeding 93%.\" Two downstream attacks, Task Profiling and Trigger Localization, are also described.",
+            "Comparing cache attacks across three hardware platforms, they report Flush+Reload \"enables accurate, real-time tool monitoring, whereas Prime+Probe, despite supporting cross-VM attacks, incurs prohibitive monitoring overhead and suffers from cache-set aliasing.\" Accuracy stayed high on a server shared by about 20 users.",
+            "The paper is a preprint. The abstract does not explain how an attacker becomes co-located with the victim's tool execution in the first place, and no vendor response is reported."
+          ],
+          "topics": ["agent-security", "cyber-offense", "anthropic", "openai", "agents"],
+          "impact": "harmful",
+          "flags": ["preprint", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "House committee publishes licence records showing BIS approved more than 879,000 AI chips for Chinese buyers",
+          "sources": [
+            { "name": "House Foreign Affairs Committee", "url": "https://foreignaffairs.house.gov/news/press-releases/chairman-brian-mast-exercises-legislative-authority-to-publicly-release-ai-chip-license-information-for-china" },
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/19/nvidia-amd-china-chip-sales-congress.html" }
+          ],
+          "bullets": [
+            "Chairman Brian Mast \"exercised his authorities under the Export Control Reform Act\" to release Commerce Department licence information, which the committee calls \"the most detailed public disclosure in the history of the Export Control Reform Act.\" The release cites \"requested sales of 3.4 million AI chips to China, and the approval of more than 879,000 by BIS—including approvals for AI chip exports to Department of War-designated Chinese Military Companies like Alibaba and Tencent.\"",
+            "CNBC reports the approvals stand as of May 2026 and that the 3.4 million requests ran from December through May, citing requests from Nvidia and AMD. Bernstein senior analyst Stacy Rasgon estimated about one in four requests was approved.",
+            "The committee says the documents \"also include[] requests by NVIDIA to depend on possible chip-smuggling fronts to facilitate their sales of advanced AI chips to Chinese companies.\" CNBC reports Mast named Maginfra and New Matrix, which appear in Nvidia licence applications, as suspected smuggling fronts, and notes the New York Times reported in November that both had empty offices and ties to companies under national security sanctions.",
+            "Nvidia spokesperson John Rizzo told CNBC that \"Despite receiving some licenses, we have since stopped shipping H200s to China,\" and that the company followed the Commerce regulations in effect at the time. AMD said it \"complies with applicable U.S. export control laws and regulations.\" CNBC does not name the Chinese Military Companies that received approvals beyond the committee's own wording."
+          ],
+          "topics": ["export-controls", "china", "nvidia", "chips", "us-federal-policy"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "US Army extends its Data Operations Center pilot by 12 months, crediting agentic AI workflows",
+          "sources": [
+            { "name": "DefenseScoop", "url": "https://defensescoop.com/2026/11/19/army-extends-data-operations-center-pilot/" }
+          ],
+          "bullets": [
+            "The Army Data Operations Center pilot has been extended 12 months, to Oct. 1, 2027, according to ADOC deputy Chad Nash; the ADOC first went live as a task force in April under an initial six-month pilot, DefenseScoop reports.",
+            "Nash, speaking at the AFCEA International Annual Data Forum, said: \"With the small team that we've had, automation and agentic workflows were critical\" and \"we were able to build in workflows that autonomously do agentic AI.\" He said \"Things that took in the beginning maybe two months to solve, we're able to solve those problems in days.\"",
+            "Task force director Col. Reginald Evans said the ADOC is chartered \"to tackle the access to data, handle those data connection requests,\" so soldiers and leaders can reach data held behind other systems or security boundaries.",
+            "DefenseScoop reports the time-saving figure as Nash's own characterisation; no independent measurement of the pilot's output is given, and the report does not say which models or vendors the agentic workflows run on."
+          ],
+          "topics": ["military", "pentagon", "agents", "us-federal-policy"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Merck and Isomorphic Labs sign small-molecule oncology discovery deal with no disclosed financial terms",
+          "sources": [
+            { "name": "Merck", "url": "https://www.merck.com/news/merck-and-isomorphic-labs-enter-strategic-research-collaboration/" }
+          ],
+          "bullets": [
+            "Merck says the companies \"will collaborate to discover therapeutic small molecule candidates against an oncology target of strategic importance.\" The target is not named.",
+            "Isomorphic Labs will run in silico predictions and deliver molecular designs using its \"proprietary drug design engine (IsoDDE),\" incorporating proprietary data sets Merck supplies for the collaboration. Merck is \"responsible for preclinical and clinical development,\" plus manufacturing and commercialization of any resulting products.",
+            "On terms, Merck says Isomorphic Labs receives an upfront payment, is eligible for research, development, regulatory and commercial milestone payments and tiered royalties on net sales, and has \"an option to co-fund development activities in return for elevated royalties.\" No dollar figures are disclosed — not the upfront, the milestone totals or the royalty rates.",
+            "This is a discovery-stage agreement with no candidate, no preclinical data and no timeline announced. Merck is known as MSD outside the US and Canada."
+          ],
+          "topics": ["drug-discovery", "google-deepmind", "healthcare", "ai-for-science"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Interpretability audit of DeepMind's GraphCast cuts cyclone intensity error by a median 51% over seven storms",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25119" }
+          ],
+          "bullets": [
+            "The paper (arXiv:2611.25119) by Skylar Gu and Christina Last uses sparse autoencoder features from \"GraphCast, DeepMind's autoregressive weather forecasting model,\" and intervenes on internal activations during the forecast rollout.",
+            "The authors report that \"ablating a feature locked to GraphCast's computational mesh increases global geopotential height error\" even though the feature lacks conventional physical semantics — evidence that some learned features track the model's own machinery rather than physics.",
+            "Suppressing convection- and low-level-vorticity-associated features \"weakens predicted tropical-cyclone deepening,\" while amplifying them reduces intensity error, with amplification of convection features through feature scaling achieving \"a median of 51% error reduction over seven storms.\"",
+            "The paper is a preprint and the result covers seven storms, a small sample; the authors do not report operational forecast testing."
+          ],
+          "topics": ["interpretability", "ai-for-science", "google-deepmind"],
+          "impact": "beneficial",
+          "flags": ["preprint", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "US Senate passes energy permitting and transmission bill 62-33, with warnings about data centre power",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/baaja-bill-senate-passes-permitting-reform.html" }
+          ],
+          "bullets": [
+            "The Senate passed the Bipartisan American Affordability and Jobs Act of 2026 by 62-33 on Thursday, easing federal environmental permitting law and overhauling electrical transmission regulation, CNBC reports.",
+            "CNBC says the bill \"is projected to lower energy costs for consumers while weakening some environmental laws to speed up the permitting process,\" and that its transmission changes \"could unleash gigawatts worth of green energy.\" It requires hyperscalers to pay for grid upgrades; the American Clean Power Association called it \"a clean energy bill that will modernize America's energy systems and lower consumer prices.\"",
+            "Opponents \"warned the measure could offer carte blanche authority to the data centers undergirding artificial intelligence,\" CNBC reports. An amendment from Sen. Ron Wyden that would have blocked data centres from being built on public lands was not adopted.",
+            "More Democrats voted against the bill than for it, though more than a dozen including Senate Minority Leader Chuck Schumer voted to pass it. It still needs to clear the House before reaching the president."
+          ],
+          "topics": ["us-federal-policy", "datacenters", "energy", "compute"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "California attorney general serves investigative subpoena on Nvidia over China chips and investor disclosures",
+          "sources": [
+            { "name": "California Office of the Attorney General", "url": "https://oag.ca.gov/news/press-releases/attorney-general-bonta-serves-investigative-subpoena-nvidia" },
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/19/nvidia-california-bonta-subpoena-china-chips.html" }
+          ],
+          "bullets": [
+            "Attorney General Rob Bonta \"today served an investigative subpoena on Nvidia related to the news of former Nvidia CEO Jensen Huang's affair with an alleged Chinese spy,\" the California Department of Justice said. It is \"asking Nvidia whether its advanced chips or confidential information may have gone to China and whether Nvidia misled investors and the public.\"",
+            "Bonta said: \"My office is investigating whether Nvidia or Jensen Huang's actions resulted in China obtaining advanced chips or confidential information\" and \"if Nvidia misled investors and the public about this risk, in violation of the law.\" He added that \"Companies cannot mislead their investors.\"",
+            "CNBC reports the probe comes a week after Huang resigned following allegations he had multiple affairs, including one with an executive at Singapore-based Megaspeed suspected of being a Chinese spy. CNBC says Nvidia shares are down 22% in the nine trading days since Huang admitted to an extramarital affair, and have shed 38% over seven straight weekly losses.",
+            "The release announces no charge or finding: the information \"will help the California Department of Justice evaluate whether Nvidia's actions violated California law.\" CNBC said Nvidia did not immediately respond to a request for comment on the subpoena."
+          ],
+          "topics": ["nvidia", "export-controls", "china", "us-state-policy", "chips"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["update"]
+        },
+        {
+          "headline": "UK publishes first cross-sector AI guidance for social care, citing a 63% cut in admin time in one council pilot",
+          "sources": [
+            { "name": "GOV.UK", "url": "https://www.gov.uk/government/news/new-ai-guidance-to-cut-paperwork-and-free-more-time-for-care" },
+            { "name": "GOV.UK", "url": "https://www.gov.uk/government/publications/artificial-intelligence-ai-in-social-care" }
+          ],
+          "bullets": [
+            "The Department of Health and Social Care and the Department for Education published what they call the \"First ever cross-sector guidance on the use of artificial intelligence in children's and adult social care\" — non-statutory guidance for England setting out principles on governance, accountability, data protection and professional oversight.",
+            "The release says a pilot in Swindon Borough Council's adult social care \"delivered a 63% reduction in administrative time,\" and \"slashed the average time taken to complete a Care Act assessment conversation from 1.5 hours to just 30 minutes, and the time to write up assessments from 4 hours to just 1.5 hours.\"",
+            "At Peterborough council, staff built an AI assistant called Hey Geraldine which \"answered over 1,200 questions and saved around 15 minutes per interaction.\" Listed uses include transcribing and summarising case notes, translating information, searching complex case histories and identifying gaps in support.",
+            "Children and Families Minister Josh MacAlister said \"No technology can replace the knowledge and skill of a brilliant social worker, but by taking away some of the admin, AI can free them up to put those skills where they matter most.\" The pilot figures are the councils' and department's own; the release reports no independent evaluation and no measure of effects on care outcomes."
+          ],
+          "topics": ["uk", "healthcare", "labor", "privacy"],
+          "impact": "beneficial",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "House lawmakers launch bipartisan AI Safety and Innovation Caucus with 26 founding members",
+          "sources": [
+            { "name": "The Record", "url": "https://therecord.media/lawmakers-launch-new-ai-safety-caucus" }
+          ],
+          "bullets": [
+            "A bipartisan group of House lawmakers launched the AI Safety and Innovation Caucus, co-chaired by Reps. George Whitesides (D-CA), Nathaniel Moran (R-TX) and Don Beyer (D-VA). It has 26 founding members, 7 of them Republicans, The Record reports.",
+            "The caucus says it will push bipartisan legislation to strengthen AI safety and respond quickly to AI security incidents, and bring AI developers, independent experts and government officials in to brief lawmakers, while pursuing \"targeted\" solutions that avoid harming innovation. Its one-pager said \"AI tools have drastically reduced the technical skills required for offensive cyber operations.\"",
+            "Whitesides said the July breach of Hugging Face by an OpenAI agent, and Anthropic's warning about its own models, \"underscored the need for Congress to better understand these risks and develop policy solutions.\"",
+            "The Record notes the Republican participation is notable given the White House's \"steadfast opposition to regulating AI,\" and cites polling showing more than half of midterm voters see AI as a major issue, with 43% trusting neither party to manage it. The caucus has announced no bill text."
+          ],
+          "topics": ["us-federal-policy", "agent-security", "cyber-offense", "openai", "anthropic"],
+          "storylines": ["regulating-frontier-ai-us"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "Meta reevaluates its 2030 net-zero timeline after net carbon footprint rose 45% to 11.9 million tonnes",
+          "sources": [
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/meta-to-reevaluate-net-zero-timeline-on-the-back-of-record-emissions/" }
+          ],
+          "bullets": [
+            "Meta's latest sustainability report says its net carbon footprint \"increased by 45 percent in the last year, hitting 11.9 million metric tons of carbon dioxide equivalent (mtCO2e),\" with its location-based emissions inventory \"at almost twice that amount, at 21.7 million mtCO2e,\" DCD reports.",
+            "Rachel Peterson, Meta's VP of data centers, and Blair Swedeen, global head of net zero and sustainability, wrote that the company is \"re-evaluating our timelines, sequencing, and interim milestones,\" including the 2030 net-zero timeframe and near-term intensity targets. Meta did not give a new date and said it will share the outcome later.",
+            "Meta said demand for AI infrastructure has grown faster than expected while interconnection queues, permitting and transmission buildout have lagged. Electricity consumption \"rose 35 percent to 24.8TWh,\" which Meta said it matched with clean and renewable energy, having contracted more than 30GW of low-carbon power, almost 12GW of it operational.",
+            "DCD notes Google reported an 18 percent year-on-year emissions increase, Amazon 16 percent and Microsoft 25 percent — and that of the hyperscalers, Meta is the only one to announce a reevaluation of its 2030 commitment. The figures are Meta's own self-reported inventory."
+          ],
+          "topics": ["meta", "datacenters", "energy", "compute"],
+          "impact": "harmful",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Non-profit maps 19 Anthropic US data centre sites and says 60% of mapped power demand is tied to natural gas",
+          "sources": [
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/non-profit-claims-60-of-anthropics-mapped-us-data-center-power-demand-is-tied-to-natural-gas/" }
+          ],
+          "bullets": [
+            "Research from the Better Data Center Project mapped 19 US sites where Anthropic has leased between 5.9 and 9.6 GW of capacity, out of approximately 15GW it has contracted, DCD reports.",
+            "Of those sites, \"approximately 2.5GW, or 26 percent, is powered by on-site natural gas, with the remainder tied to the grid. The US grid, in turn, is powered by 47 percent natural gas. The non-profit asserted that, as a result, 60 percent of the mapped sites' power demand is tied to natural gas.\"",
+            "Paweł Czyżak, CEO and founder at Ornaq, is quoted on the limits of the work: \"To be fair, these are estimates. Anthropic doesn't disclose its sites, at least 5GW isn't mapped, and some attributions are speculative. Of course, they are not the only AI company running on gas. But I was expecting a higher standard.\"",
+            "An Anthropic spokesperson told DCD that \"Much of that new power is natural gas, which can be brought online quickly,\" and that the company is \"also working to broaden our energy mix with geothermal, wind, solar, and emerging technologies.\" DCD notes Anthropic signed a $3.4 billion deal earlier this month for 1.7GW of Caterpillar natural gas generators with OnePWR."
+          ],
+          "topics": ["anthropic", "datacenters", "energy", "compute"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "China's first Huawei Ascend 950DT AI cluster goes live at a Shantou submarine cable landing station",
+          "sources": [
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/data-center-powered-by-huawei-ascend-chips-launches-in-china/" }
+          ],
+          "bullets": [
+            "Citing the South China Morning Post, DCD reports the data center is \"the country's first AI cluster of Huawei's Ascend 950DT chips\" and sits at China Telecom's submarine cable landing station in Shantou. It began operating last week and is run by IT services firm Guangdong Tianyima Information Industry.",
+            "The Ascend 950DT is described as offering \"up to 2,007 TFLOPS (MXFP4) and 1,034 TFLOPS (FP8/MXFP8) with 144GB (or 96GB) of HiZQ 2.0 HBM… at 4Tbps,\" and can scale to clusters of more than 128,000 cards. The project is \"the result of approximately $150 million in investment.\"",
+            "The site is designed for a \"token export\" business model, processing AI queries from foreign users; citing TokenHeart, DCD says foreign demand at the site \"now exceeds three trillion tokens daily.\"",
+            "IT capacity and the number of chips deployed have not been disclosed. DCD notes a 1,024-card liquid-cooled Huawei cluster went live in Shanghai in September, and a 10,000-chip cluster powered by Alibaba's Zhenwu AI chips had a launch event this month in the Greater Bay Area."
+          ],
+          "topics": ["china", "chips", "compute", "datacenters", "export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Google picks Blue Origin's New Glenn to launch Project Suncatcher TPU satellites in Q1 2029",
+          "sources": [
+            { "name": "Unite.AI", "url": "https://www.unite.ai/google-plans-orbital-ai-satellite-launch-on-blue-origins-new-glenn/" },
+            { "name": "American Bazaar", "url": "https://americanbazaaronline.com/2026/11/19/google-jeff-bezos-join-forces-to-take-ai-data-centers-into-space-by-2029/" }
+          ],
+          "bullets": [
+            "Google announced on November 19, 2026 that Blue Origin's New Glenn will conduct Project Suncatcher's first dedicated heavy-lift launch, targeted for the first quarter of 2029, under a launch services agreement covering solar-powered satellites carrying Google's Tensor Processing Units into sun-synchronous orbit.",
+            "Each satellite is designed to provide computing capacity \"roughly at the scale of a data center rack,\" in an orbit giving near-continuous sunlight. American Bazaar quotes Travis Beals, senior director of Project Suncatcher at Google: \"Project Suncatcher is a long-term moonshot to scale AI infrastructure in space by tapping into the abundant solar power in orbit.\"",
+            "A prototype launched October 1, 2026; by October 30 Google had powered its host and TPU trays and run early machine-learning tests, with an onboard Gemma 4 model generating a haiku, described as \"the first AI response from a data-center-class TPU in orbit.\" Next steps are thermal-stress and radiation testing, then a planned 2027 milestone of two interconnected satellites.",
+            "Neither company disclosed how many satellites will fly, the financial terms, a specific launch date within the quarter, or compute performance figures. The project remains in its research phase with no announced timeline for an operational constellation."
+          ],
+          "topics": ["google-deepmind", "compute", "datacenters", "energy", "chips"],
+          "impact": "neutral",
+          "flags": ["company-claim", "update"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "Anthropic opens at $111.50 on Nasdaq and closes up 17% at $97.17 after an $81.3 billion IPO",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/anthropic-stock-ai-amd-nvidia.html" },
+            { "name": "CBS News", "url": "https://www.cbsnews.com/news/anthropic-ipo-nasdaq-debut-claude-ai/" },
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/19/anthropic-hits-nasdaq-exchanges-at-110-27-above-ipo-price/" }
+          ],
+          "bullets": [
+            "Anthropic's Class A shares began trading on Nasdaq under the ticker ANT. CBS News reports the stock opened at $111.50, up 34% on the $83 offer price, reached as high as $114.99, and closed at $97.17 — a 17% rise. CNBC reports the same close and says the company \"completed the biggest initial public offering on record, topping SpaceX's historic debut in June.\"",
+            "TechCrunch reports the $83 price was above the projected $70–$78 range and that \"the offering will raise over $81 billion.\" CBS puts total proceeds raised at $81.3 billion and the valuation at more than $2 trillion at the intraday peak, against roughly $1.5 trillion based on the IPO price.",
+            "The gains eroded through the afternoon as the broader market weakened: CBS reports the Nasdaq dropped 550 points (2.3%), the Dow fell more than 1,100 points (2.2%) and the S&P 500 sank 2% late in the session.",
+            "Yesterday's edition covered the pricing; what is new is the trading itself. Valuation figures differ by method across outlets — NBC News put the company at \"about $1.76 trillion, factoring in both traded and restricted shares and stock options\" — so no single market capitalisation is settled."
+          ],
+          "topics": ["anthropic", "funding", "compute", "earnings"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["update"]
+        },
+        {
+          "headline": "SoftBank falls 14.48% as Asian tech sells off after Anthropic's debut; Anthropic down 6.37% premarket",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/softbank-ai-tech-stocks-slide-anthropic-debut.html" },
+            { "name": "Nikkei Asia", "url": "https://asia.nikkei.com/business/markets/asian-tech-stocks-fall-sharply-after-anthropic-s-blockbuster-ipo" }
+          ],
+          "bullets": [
+            "SoftBank Group \"closed 14.48% lower on Friday, marking their worst day since August 2024,\" CNBC reports. It \"lost 30% in October and is down 31% so far this month,\" and has invested \"a total of $64.6 billion\" in OpenAI.",
+            "Chip and equipment names fell with it: CNBC reports Tokyo Electron closed 7.06% lower, Lasertec shed 9.21%, Renesas lost 7.02%, SK Hynix fell 5.92% and Samsung Electronics 7.01%, with the Kospi ending 5.21% lower and TSMC closing 4.76% lower in Taiwan. \"The tech-heavy Nasdaq Composite fell more than 2% overnight.\"",
+            "CNBC reports Anthropic itself \"was 6.37% down in premarket trading at 5:00am ET on Friday,\" with Nvidia down 2.67% and AMD down 5.43%. AMD had closed down more than 7% on Thursday after short seller Hunterbrook Media alleged its firmware had turned up in US-blacklisted companies; AMD told CNBC it complies with US law.",
+            "CNBC ties the sell-off to investor doubts about whether AI infrastructure spending will pay off, and to SoftBank's exposure to OpenAI. Nikkei Asia, published 20 November at 10:07 JST, reports Japanese and South Korean benchmarks tumbling and Asian tech shares declining sharply but gives no percentage figures."
+          ],
+          "topics": ["compute", "funding", "earnings", "nvidia", "chips"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "Anthropic IPO filings show $70.7 billion of compute commitments due within 12 months; Amazon and Google hold 28%",
+          "sources": [
+            { "name": "TechCrunch", "url": "https://techcrunch.com/2026/11/19/anthropics-7-founders-cashed-out-nearly-2b-in-record-breaking-ipo/" }
+          ],
+          "bullets": [
+            "Citing the IPO filings, TechCrunch reports Anthropic \"needs about $70.7 billion just to cover its compute and infrastructure spending commitments in the next 12 months as of the quarter ended September 30, 2026,\" and \"$451.6 billion to cover these commitments before the end of 2030,\" against disclosed total infrastructure commitments of \"$1.05 trillion to $1.08 trillion.\"",
+            "TechCrunch says the company raised \"$104.8 billion\" for itself — with a possibility of $117 billion if the bankers buy their full allotment — including a previously announced $26 billion of non-voting Class N stock. Nvidia and Google each bought $10 billion of the Class N shares, with AMD, Broadcom, Micron, Microsoft and TSMC splitting the rest.",
+            "On ownership, TechCrunch reports Google ended up with 13.4% and Amazon with 14.6% after converting part of its promissory notes — it could have owned nearly 24% had it converted all — so \"The two large cloud providers now own 28% of Anthropic, the AI lab says.\"",
+            "The seven founders sold about 3.4 million shares apiece for roughly $280 million each before underwriting fees and taxes, $1.95 billion in total. TechCrunch notes each has pledged 80% of their personal equity to philanthropy, but that the company calls these \"voluntary, revocable expressions of each co-founder's philanthropic intent\" that \"do not constitute legally binding obligations.\""
+          ],
+          "topics": ["anthropic", "compute", "funding", "nvidia", "amazon"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Randomised trial with 625 ChatGPT users finds two weeks without AI reduced loneliness",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.25263" }
+          ],
+          "bullets": [
+            "The study (arXiv:2611.25263) by authors at Stanford University, the University of Oxford and Carnegie Mellon ran \"a longitudinal deactivation experiment with active ChatGPT users (N=625), in which participants were randomly assigned to abstain from using AI assistants for either fourteen days (treatment) or one day (control).\"",
+            "\"Two weeks of deactivation significantly reduced loneliness relative to the control group (beta = -0.10, p=0.03), with reductions persisting two weeks after participants resumed using AI (beta = -0.16, p=0.02).\"",
+            "Deactivation \"also significantly increased the number of people participants interacted with in person and the time they spent socializing over the intervention period.\" In open-ended responses, participants said they asked other people for help with tasks they would otherwise have delegated to AI.",
+            "84.7% of participants named productivity as their most frequent use case, so this is not a study of companion chatbots. The paper is a preprint; the effect sizes are small regression coefficients, and the abstract page and v1 HTML differ slightly on that participation figure."
+          ],
+          "topics": ["openai", "labor", "incidents", "evals"],
+          "impact": "mixed",
+          "flags": ["preprint", "single-source"]
+        }
+      ]
+    }
+  ]
+}
