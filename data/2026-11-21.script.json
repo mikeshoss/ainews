@@ -1,0 +1,231 @@
+{
+  "date": "2026-11-21",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Saturday, November 21st, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue works the way this briefing works. Epilogue checks every claim against the primary source, quotes every figure exactly as the source wrote it, and leaves out whatever doesn't reconcile. Visit epiloguelabs.com to learn more." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what happened at the frontier of AI in the last 24 hours, with every claim traced to a document we opened." },
+        { "host": "B", "text": "First, a mathematician at Anthropic named Levent Alpöge posted a note on Friday saying that he and Claude have discovered a proof of the Riemann hypothesis, and nobody has verified it." },
+        { "host": "A", "text": "Second, the AI trade broke. The Associated Press reports the S&P 500 fell 3.7% on Friday into a correction, and the Nasdaq composite went negative for the year." },
+        { "host": "B", "text": "And third, Amazon says a Chinese-nexus attacker's autonomous AI agents found a zero-day in an open-source medical imaging application on their own, and used it to take root on a university server." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "A", "text": "Let's start with the labs." }]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Thinking Machines releases Inkling 2 Mini, a 26.4B open-weights looped transformer that runs in about 20GB",
+      "lines": [
+        { "host": "B", "text": "Thinking Machines Lab released a small open-weights model, Inkling 2 Mini, whose architecture reuses its own middle layers." },
+        { "host": "A", "text": "Meaning what?" },
+        { "host": "B", "text": "26.4 billion total parameters, 3.4 billion active, and two middle blocks of six layers that run three times for every token, giving 48 layer applications from 24 stored layers. It fits in about 20GB, which the company says lets it run on a consumer laptop." },
+        { "host": "A", "text": "And the benchmarks?" },
+        { "host": "B", "text": "It says it leads every open-weights model under 100 billion parameters on benchmarks such as DeepSWE v1.1 at 48.2% and Vals Index v2.2 at 46.5%. On whether looping hides the reasoning, a research variant's no-chain-of-thought horizon rose from 16 seconds at one pass to 37 seconds at three." },
+        { "host": "A", "text": "And those are its own numbers." },
+        { "host": "B", "text": "All of them — company-reported, not independently verified, and it calls the monitorability work preliminary." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "A", "text": "Now the research." }]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Anthropic mathematician Levent Alpöge says he and Claude have a proof of the Riemann hypothesis, released only in Lean",
+      "lines": [
+        { "host": "A", "text": "Levent Alpöge, a mathematician at Anthropic, posted a note on Friday that reads, quote, I believe I have, working with Claude, discovered a proof of the Riemann Hypothesis. He says the method also resolves the Generalized Riemann Hypothesis." },
+        { "host": "B", "text": "So where's the paper?" },
+        { "host": "A", "text": "There isn't one. He released only a Lean formalization, saying it would be inappropriate to post an unreadable document, and noting he hit 250,000+ pages. Nature says the four-page note he did publish includes a sketch of the proof." },
+        { "host": "B", "text": "And the reaction?" },
+        { "host": "A", "text": "Nature quotes James Maynard, a Fields medallist at Oxford, saying that if this fully checks out, it is clearly a historic milestone in mathematics. Andrew Granville of the University of Montreal told Nature, quote, what he released is garbled, and tied the timing to the fall in Anthropic's share value on November 19th. Alpöge says that reading is false." },
+        { "host": "B", "text": "Has anyone checked it?" },
+        { "host": "A", "text": "Scientific American reports Andrew Sutherland of MIT compiled the Lean result and called it a historic moment, while adding there is much work to be done to understand the mathematical details. It's not peer reviewed and not independently verified, and Nature says Anthropic did not immediately respond to a request for comment." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Vakil announces an all-human proposed proof of the Generalized Riemann Hypothesis; AI models then help find problems in it",
+      "lines": [
+        { "host": "B", "text": "And the same problem got a second claim the same day, from the opposite direction. Ravi Vakil, president of the American Mathematical Society, posted on November 20th that a Stanford mathematician, Alessandro Maria Masullo, has a proposed proof of the Generalized Riemann Hypothesis." },
+        { "host": "A", "text": "Built with AI?" },
+        { "host": "B", "text": "No. Vakil's words are, quote, it is all human, with no AI. Brian Conrad at Stanford had been reading it closely for months and giving extensive feedback." },
+        { "host": "A", "text": "And then there was an update." },
+        { "host": "B", "text": "About eight hours later. Vakil appended a note saying several people had found problems in the proposed proof, and that those problems were identified with the assistance of different AI models." },
+        { "host": "A", "text": "So here the AI is the referee rather than the author." },
+        { "host": "B", "text": "Scientific American says Conrad confirmed the post's details and, asked whether the work holds up, said it's undergoing major revision. It's a preprint, and Vakil makes no claim about whether the strategy is correct." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "METR says model time horizons are doubling roughly every 3.61 months, reaching up to 27 hours on verifiable tasks",
+      "lines": [
+        { "host": "A", "text": "METR published a capability update. Time horizons are doubling roughly every 3.61 months across its combined suites, with a 95% confidence interval from 2.08 to 4.94, and it estimates current public frontier models reach up to 27 hours on the verifiable subset of its newer tasks." },
+        { "host": "B", "text": "How does that compare against people?" },
+        { "host": "A", "text": "On 15 programming contests, the median placement of the strongest models METR tested was the 96th to 98th percentile of human participants. The models had 48 hours on a 28-core machine; the human participants had about three months." },
+        { "host": "B", "text": "Anything cutting the other way?" },
+        { "host": "A", "text": "Two things. On one speedrun the best agent run reached a 15.7% speedup over METR's starting record in 48 hours, where a human record-holder reported about 60 hours of work for a 41% speedup over the previous record. And METR reports that AI graders are overgenerous when scoring tasks written by models stronger than themselves." },
+        { "host": "B", "text": "And this is METR's own work." },
+        { "host": "A", "text": "It is, and it's not peer reviewed." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "B", "text": "Now to security." }]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Amazon says a Chinese-nexus actor's autonomous AI agents found a zero-day on their own and took root on a university server",
+      "lines": [
+        { "host": "B", "text": "On September 10th, 2026, Amazon Threat Intelligence found a server running a publicly hosted, unauthenticated instance of an open-source autonomous penetration-testing framework, exposing the operator's prompts and the agents' output to anyone on the internet." },
+        { "host": "A", "text": "What had the agents been told to do?" },
+        { "host": "B", "text": "Variations of, quote, obtain shell access, against IP addresses of universities in East Asia outside mainland China, over roughly 48 hours beginning September 8th. The prompts were in Simplified Chinese and the script timestamps were set to China Standard Time." },
+        { "host": "A", "text": "And then one of the attempts worked." },
+        { "host": "B", "text": "Against an open-source medical imaging application, the agents mapped the API, found an upload endpoint with a filename parameter and tested it for path traversal. Amazon says that in about 11 minutes they went from mapping the API to arbitrarily writing files on the server, later writing a reverse shell to get root." },
+        { "host": "A", "text": "Amazon calls it a zero-day?" },
+        { "host": "B", "text": "With high confidence, based on the absence of any corresponding fix, issue, advisory or prior mention in vulnerability databases. Moderate confidence on the Chinese-nexus attribution. The Register names the software as MONAI Label and says the maintainers released a fix; Amazon's own post doesn't name it." },
+        { "host": "A", "text": "The failed attempts are the ones I'd look at." },
+        { "host": "B", "text": "Those are the real measurement. Roughly 16 hours and 148 sequential actions against an unauthenticated Redis instance, including a failed Log4Shell injection, all unsuccessful. And more than 6 hours against a university GPU server, where the agents built about 80 real usernames, tested more than 30,000 credential combinations, and never found a working login. This is Amazon's own report, and these are its own numbers." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Bell Canada says an \"agentic threat actor\" breached its systems on 17 November and took enterprise customer data",
+      "lines": [
+        { "host": "A", "text": "And a Canadian carrier's breach statement used the word agentic." },
+        { "host": "B", "text": "In what context?" },
+        { "host": "A", "text": "Bell told BleepingComputer it is investigating an incident on November 17th in which, quote, an agentic threat actor accessed some of our systems, including a system used for ordering and provisioning circuits, and exfiltrated some enterprise customer data." },
+        { "host": "B", "text": "What might have been taken?" },
+        { "host": "A", "text": "Per a notification a customer shared, an unauthorized party reached a pre-production environment of Bell's Maximo system, and the possibly stolen information includes business contact details, information in ticket titles, and some IP addresses tied to network elements. Bell says no credentials, no highly sensitive personal information, and no impact to customer services." },
+        { "host": "B", "text": "Does it say who, or what it means by agentic?" },
+        { "host": "A", "text": "Neither. Its words are, we currently do not know the attribution, and it hasn't named any tooling. BleepingComputer reads the word as suggesting AI-powered tools were used. The company says all of this itself, and only one outlet has it." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "B", "text": "Next, defense and geopolitics." }]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "House chairmen urge removing PRC open-weight AI models from federal systems and federal contract work",
+      "lines": [
+        { "host": "B", "text": "Two House committees published a joint investigation into American companies running Chinese open-weight models, and it names three of them." },
+        { "host": "A", "text": "Which?" },
+        { "host": "B", "text": "Airbnb, which it says uses Alibaba models in customer support. Anysphere, which it says built the flagship proprietary model in its Cursor coding platform on a Moonshot AI base model. And DoorDash, which it says reported that multiple Chinese model families had been authorized and deployed." },
+        { "host": "A", "text": "And what do the chairmen want done?" },
+        { "host": "B", "text": "12 recommendations. Bar Chinese-developed models from federal systems, federal contract work and high-risk critical infrastructure. Build an American open-weight initiative, create a model provenance standard, and hold what the report calls illicit distillers accountable." },
+        { "host": "A", "text": "The foreword is blunt." },
+        { "host": "B", "text": "It says federal investigations found that major Chinese developers used proxy networks and fraudulent accounts to harvest outputs from American frontier models, and that Beijing is using stolen intelligence to close the gap. The Record puts the report at 50 pages. These are recommendations. Nothing has been adopted." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "A", "text": "Health and science next." }]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Seven large drugmakers tell Reuters AI cut early-stage development time by as much as half this year",
+      "lines": [
+        { "host": "A", "text": "Seven large drugmakers tell Reuters that AI, according to their top scientists, has sped up early-stage drug development work this year, cutting by as much as half the time it takes to produce new molecules and move them into the clinic." },
+        { "host": "B", "text": "Any specifics?" },
+        { "host": "A", "text": "Sanofi says it saved at least a year on an asthma treatment by skipping a dose-selection study. Novo Nordisk says it cut design-make-test cycles from around eight to three, and the time per cycle from eight weeks to four." },
+        { "host": "B", "text": "Is it showing up in the pipeline?" },
+        { "host": "A", "text": "Barely. Reuters says researchers counted 129 AI-enabled drug candidates across 69 companies in March, up from around 117 eight months earlier, and most are still pre-clinical." },
+        { "host": "B", "text": "And what did the people counting them make of that?" },
+        { "host": "A", "text": "Reuters quotes Waqas Haque, an oncology fellow at the University of Chicago who worked on the count. He said he doesn't know whether those drugs will be more successful than non-AI drugs, and doesn't think they'll be approved any quicker, because of bottlenecks with human trials and regulators. Every timeline figure is company-reported and not independently verified, and only one outlet has the story." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "B", "text": "On to policy." }]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "GAO sets out 16 policy options on AI in cybersecurity, including requiring human authorization for consequential actions",
+      "lines": [
+        { "host": "B", "text": "The Government Accountability Office laid a menu in front of Congress. 16 policy options on AI in cybersecurity, across four goals." },
+        { "host": "A", "text": "Which ones matter most?" },
+        { "host": "B", "text": "Two would bite directly on autonomous security tooling. One is to require human authorization for consequential AI-initiated cybersecurity actions. The other is to restrict autonomous and nondeterministic AI in consequential functions pending certification." },
+        { "host": "A", "text": "And the underlying problem?" },
+        { "host": "B", "text": "It found there are no widely accepted evaluation criteria for assessing offensive or defensive capabilities of generative AI. It points at two incidents, including a June case where a threat actor used AI to build a testing framework to refine malware for evading detection." },
+        { "host": "A", "text": "And none of this binds anyone." },
+        { "host": "B", "text": "None of it. These are options, not recommendations, and a single source has published it." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "A", "text": "Now compute and chips, where the week ended badly." }]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Nvidia falls 14% on report that SEC enforcement staff are examining its accounting, capping a seven-week slide",
+      "lines": [
+        { "host": "A", "text": "Nvidia fell 14% on Friday, after a Reuters report that SEC enforcement staff are scrutinizing potential accounting issues at the company, according to two people briefed on the matter." },
+        { "host": "B", "text": "How much does Reuters actually know?" },
+        { "host": "A", "text": "Not much. It says it could not determine when the inquiry opened or which specific issues are under review. The SEC declined to comment and Nvidia didn't immediately respond." },
+        { "host": "B", "text": "And the scale of the slide?" },
+        { "host": "A", "text": "CNBC says that was a seventh straight down day and a seventh consecutive losing week, the longest such stretch since 2008. Down 46% over the period, and about $2.6 trillion of market value gone." },
+        { "host": "B", "text": "Is there a specific question in the reporting?" },
+        { "host": "A", "text": "Reuters notes that last year Nvidia began reporting geographic revenue by customer headquarters rather than billing addresses, a change the company said better reflects its revenue geography, and which removed Singapore from its geographic breakdown. Reuters does not say whether that change is part of the inquiry, and it says plainly that investigations are not evidence of wrongdoing." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [{ "host": "B", "text": "And finally, deployment and impact." }]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Anthropic closes its IPO at about $93.5bn gross after underwriters exercise the full 147 million-share option",
+      "lines": [
+        { "host": "B", "text": "Anthropic closed its offering, and the underwriters took the whole overallotment." },
+        { "host": "A", "text": "What are the numbers?" },
+        { "host": "B", "text": "An aggregate of 1,127,000,000 Class A shares at $83.00 each, including the full exercise of the option to buy an additional 147,000,000 shares. Gross proceeds before discounts and expenses of approximately $93.5 billion, of which approximately $91.6 billion was received by Anthropic." },
+        { "host": "A", "text": "And there was a private placement alongside it." },
+        { "host": "B", "text": "Approximately $26.0 billion of Class N shares at the same price, to AMD, Broadcom, Google, Micron, Microsoft, NVIDIA and TSMC Partners. Combined, approximately $119.5 billion." },
+        { "host": "A", "text": "Those buyers are its own suppliers." },
+        { "host": "B", "text": "Its chip, cloud and memory suppliers, yes. And that extra block sold while the shares were falling. These are company-reported figures, and the release states no valuation." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "S&P 500 falls 3.7% into a correction and the Nasdaq composite goes negative for the year as AI stocks sell off",
+      "lines": [
+        { "host": "A", "text": "Back to the market, because Friday was the worst of it. The Associated Press says a sell-off in AI stocks pulled the S&P 500 down 3.7%, its worst weekly loss in more than 18 months, and knocked the Nasdaq composite into the red for the year." },
+        { "host": "B", "text": "How far down is the Nasdaq?" },
+        { "host": "A", "text": "The Nasdaq composite slumped 5.3%. The Dow, with less technology exposure, fell 1.9%. And the S&P is now in a correction, more than 10% below its October 6th high, its first since March 2025." },
+        { "host": "B", "text": "What about Anthropic itself, two days into trading?" },
+        { "host": "A", "text": "Down with everything else. Yahoo Finance reports the shares fell nearly 8.5% on Friday to close just below $89, still above the $83 IPO price, for a market capitalisation of $1.17 trillion." },
+        { "host": "B", "text": "And AP doesn't pin it on any one disclosure." },
+        { "host": "A", "text": "It attributes the move to doubts about AI valuations and spending, and it does not quantify how much of the fall is attributable to AI names. This is market pricing, not a measurement of AI capability or revenue." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. A day when a claimed proof of the Riemann hypothesis arrived as formal code, with no conventional write-up." },
+        { "host": "A", "text": "The full edition is on the site, with a link to every source behind every claim we made." },
+        { "host": "B", "text": "Our voices are AI-generated." },
+        { "host": "A", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}

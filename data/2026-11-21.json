@@ -1,0 +1,502 @@
+{
+  "date": "2026-11-21",
+  "edition": "daily",
+  "generated_at": "2026-11-21T11:40:00Z",
+  "window": "20 Nov 11:45 → 21 Nov 11:05 UTC",
+  "title": "An Anthropic mathematician claims Riemann as markets slide",
+  "summary": [
+    "Levent Alpöge, a mathematician at Anthropic, posted a four-page note on Friday saying \"I believe I have, working with Claude, discovered a proof of the Riemann Hypothesis,\" and released only a Lean formalisation rather than a readable paper. Nature quotes Fields medallist James Maynard of the University of Oxford: \"If this fully checks out, it is clearly a historic milestone in mathematics.\" Andrew Granville of the University of Montreal told Nature \"What he released is garbled.\" Nobody has verified it. The same day Stanford's Ravi Vakil announced that Alessandro Maria Masullo had a proposed proof of the Generalized Riemann Hypothesis that was \"all human, with no AI\" — then updated the post about eight hours later to say several people had found problems in it, \"identified with the assistance of different AI models.\"",
+    "The AI trade broke. The Associated Press reported the S&P 500 fell 3.7% on Friday into a correction, more than 10% below its 6 October high, while the Nasdaq composite slumped 5.3% and went negative for the year. Nvidia fell 14% for a seventh straight day after Reuters reported that SEC enforcement staff are scrutinising potential accounting issues at the company; CNBC put the seven-week decline at 46% and about $2.6 trillion of market value. Anthropic closed its IPO with the underwriters' full option exercised, for roughly $93.5 billion in gross proceeds.",
+    "Amazon Threat Intelligence said a Chinese-nexus actor's autonomous AI agents found a zero-day in an open-source medical-imaging application on their own and used it to get a root shell. METR said model time horizons are now doubling roughly every 3.61 months. And two House committees urged removing PRC-developed open-weight models from federal systems and federal contract work."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "Thinking Machines releases Inkling 2 Mini, a 26.4B open-weights looped transformer that runs in about 20GB",
+          "sources": [
+            { "name": "Thinking Machines Lab", "url": "https://thinkingmachines.ai/news/inkling-2-mini/" },
+            { "name": "Hugging Face", "url": "https://huggingface.co/blog/inkling2mini" }
+          ],
+          "bullets": [
+            "Thinking Machines says Inkling 2 Mini is a Mixture-of-Experts model with 26.4B total parameters and 3.4B active, built from 24 stored layers in four blocks of six; the two middle blocks run three times per token, giving 48 layer applications and what the company describes as 5.4B weight activations per token to account for looping.",
+            "The company says the model \"leads every open-weights model with less than 100B total parameters on benchmarks such as DeepSWE v1.1 (48.2%) and Vals Index v2.2 (46.5%).\" Most weights are deployed in NVFP4 with the last four layers in MXFP8, for a total memory footprint of about 20GB, which the company says lets it run on consumer laptops.",
+            "On whether looping hides reasoning, the company reports that a research variable-loop variant's no-CoT time horizon rose from 16 seconds at one pass to 37 seconds at three; that reasoning grew shorter with more passes (1,661 tokens at five passes against 3,703 at one) with legibility metrics essentially unchanged; and that in LinuxArena against a weaker monitor the variant's stealth rate ranged from 1.0% to 5.0% across one to five passes with no clear trend. It calls this a preliminary analysis that does not show a meaningful reduction in monitorability at this scale.",
+            "Every figure here is the company's own and has not been independently verified. The post does not state a licence or context window."
+          ],
+          "topics": ["open-weights", "reasoning-models", "benchmarks", "interpretability"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "OpenAI says reasoning-trace extraction attacks fell from 54.0% to 0.2% success rate after GPT-6.2 safeguards",
+          "sources": [
+            { "name": "OpenAI", "url": "https://openai.com/index/combatting-adversarial-distillation" }
+          ],
+          "bullets": [
+            "OpenAI says that in an internal adaptive evaluation using strong automated red-teaming, the average success rate of attacks that recover a model's protected reasoning fell \"from 54.0% against GPT‑6 Astra with its original safeguards to 0.2% against GPT‑6.2 Astra with its updated safeguards.\"",
+            "The company frames unauthorised distillation as a safety problem rather than only an intellectual-property one, writing that an adversary \"might distill a model's cyber capabilities and use the resulting model to help carry out cyberattacks that the original model would have refused to assist with.\" In an internal cyber study it reports that after supervised fine-tuning a student model trained on a teacher's exact reasoning traces \"generally outperformed the student trained on reasoning summaries.\"",
+            "OpenAI says it now ties protected reasoning to the conversation history that produced it, drops the reasoning that followed a rewritten message, prevents older model families with weaker safeguards from reading GPT‑6.2 Astra and Sol reasoning, and shares indicators of compromise with other model providers. It publishes no count of campaigns detected or accounts enforced against, and no independent evaluation of the figures.",
+            "A note on timing: this post went up at 10:00 GMT on 20 November, shortly before this edition's window opened, and had not appeared in an earlier edition."
+          ],
+          "topics": ["openai", "cyber-offense", "agent-security", "china", "evals"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "mixed",
+          "flags": ["company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Anthropic mathematician Levent Alpöge says he and Claude have a proof of the Riemann hypothesis, released only in Lean",
+          "sources": [
+            { "name": "Levent Alpöge", "url": "https://alpo.ge/remark.pdf" },
+            { "name": "Nature", "url": "https://www.nature.com/articles/d41586-026-03812-7" },
+            { "name": "Scientific American", "url": "https://www.scientificamerican.com/article/anthropic-mathematician-claims-to-prove-riemann-hypothesis-most-famous-problem-in-all-of-math/" }
+          ],
+          "bullets": [
+            "In a note posted on Friday, Alpöge writes: \"I believe I have, working with Claude, discovered a proof of the Riemann Hypothesis. In fact, the method easily extends much further, resolving the so-called Generalized Riemann Hypothesis, and I expect, with more time, the Extended Riemann Hypothesis too.\" He adds that \"Claude and I have also formalized the arguments without assumptions\" and links the Lean files as alpo.ge/lean.tar.gz.part01 through part14.",
+            "Alpöge released no conventional write-up, saying it was \"obviously inappropriate to attempt to post some massive unreadable travesty of 'slop'\" and noting in a footnote that he \"hit 250,000+ pages.\" He credits Claude with the key step: \"this time Claude far outpaced me near the finish line,\" and reproduces a timeline Claude compiled that starts on 10/6/26 with a \"Stepanov determinant.\" Nature says the four-page document \"includes a sketch of the proof.\"",
+            "Nature quotes James Maynard, a Fields medallist at the University of Oxford: \"If this fully checks out, it is clearly a historic milestone in mathematics.\" Andrew Granville of the University of Montreal told Nature \"What he released is garbled,\" and cited the fall in Anthropic's share value on 19 November as the reason for the timing; Alpöge writes in the note that \"There is an obvious cynical view, to do with the timing, but it is false.\"",
+            "Nobody has verified the proof. Scientific American reports that Andrew Sutherland of MIT independently compiled the Lean result and said \"This is indeed an historic moment,\" while adding \"There is much work to be done to understand the mathematical details of the proof.\" The work is not peer reviewed, and Nature says Anthropic did not immediately respond to its request for comment."
+          ],
+          "topics": ["anthropic", "ai-for-science", "formal-verification"],
+          "storylines": ["mathematicians-vs-labs"],
+          "impact": "mixed",
+          "flags": ["company-claim", "preprint"]
+        },
+        {
+          "headline": "Buckmaster and Alpöge post an AI-aided proof of unforced Navier-Stokes blow-up, with the certificate withheld",
+          "sources": [
+            { "name": "GitHub (Alpöge and Buckmaster)", "url": "https://github.com/tristanbuckmaster/navier-stokes/" },
+            { "name": "Scientific American", "url": "https://www.scientificamerican.com/article/ai-just-solved-the-real-navier-stokes-problem/" }
+          ],
+          "bullets": [
+            "The repository holds a paper, \"Finite-time blow-up for the Navier–Stokes equations\" by L. Alpöge and T. Buckmaster, described as \"79 pages, version of 20 November 2026,\" together with a Lean 4 formalisation the README puts at \"about 2,270 files and 600,000 lines,\" built against Lean v4.33.1 with Mathlib.",
+            "Scientific American reports that Buckmaster, a professor at New York University, posted the result on Mastodon at 8:37 A.M. EST on 20 November, called it a \"dense, artificial-intelligence-aided proof,\" and said it was unpolished because they \"couldn't risk waiting.\" The claim is that it closes a loophole in OpenAI's September blow-up result, which used a finely tuned force that \"stirs\" the liquid to produce infinite velocity.",
+            "The README states plainly what is missing: \"The certificate whose hash the paper gives is not in this repository,\" the interval-arithmetic verification \"is not part of the formalization and is not in this repository either,\" and \"The formalization contains no data.\" Statement files at the top of the Lean directory carry `sorry` placeholders, proved from the Breakdown library.",
+            "No one outside the team has finished checking it, and Scientific American names no AI models used. Alpöge is the same author who announced a claimed Riemann hypothesis proof hours later the same day."
+          ],
+          "topics": ["ai-for-science", "anthropic", "formal-verification", "openai"],
+          "storylines": ["mathematicians-vs-labs"],
+          "impact": "mixed",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Vakil announces an all-human proposed proof of the Generalized Riemann Hypothesis; AI models then help find problems in it",
+          "sources": [
+            { "name": "Ravi Vakil (Math 216 blog)", "url": "https://math216.wordpress.com/2026/11/20/hurried-announcement-alessandro-masullo-grh/" },
+            { "name": "Scientific American", "url": "https://www.scientificamerican.com/article/dueling-claims-of-riemann-hypothesis-proofs-emerge/" }
+          ],
+          "bullets": [
+            "In a post titled \"Hurried Announcement: Alessandro Masullo GRH,\" published on 20 November 2026 at 10:18 am, Ravi Vakil wrote that Alessandro Maria Masullo has a proposed proof of the Generalized Riemann Hypothesis, that Stanford's Brian Conrad \"has been looking closely at it for months and gave extensive feedback which is being incorporated,\" and that \"It is all human, with no AI.\" The draft is linked as a PDF titled \"The Music of the Primes.\"",
+            "An update appended about eight hours later reports that several people found problems in the proposed proof, and that those problems were \"identified with the assistance of different AI models.\" Vakil says all issues must be resolved to the community's satisfaction before the proof would be accepted, and makes no claim about the correctness of the strategy.",
+            "Scientific American reports that Conrad confirmed the blog post's details are true and, asked whether the work will hold up, said \"It's undergoing major revision,\" adding that judging the method \"requires the paper to reach a stage of more final revision.\" Scientific American describes Vakil as president of the American Mathematical Society and Masullo as a Stanford mathematician.",
+            "The two announcements landed the same day on the same problem from opposite directions: one claimed proof written with an AI model and released only as formal code, one written without AI and now under revision after AI-assisted review found faults."
+          ],
+          "topics": ["ai-for-science", "formal-verification", "evals"],
+          "storylines": ["mathematicians-vs-labs"],
+          "impact": "mixed",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "METR says model time horizons are doubling roughly every 3.61 months, reaching up to 27 hours on verifiable tasks",
+          "sources": [
+            { "name": "METR", "url": "https://metr.org/blog/2026-11-20-q4-2026-capability-update/" }
+          ],
+          "bullets": [
+            "METR reports that across its combined Time Horizon 1.1 and TH2 suites, \"time horizons are doubling roughly every 3.61 months (95% CI 2.08-4.94), or 110 days,\" and that current public frontier models have an estimated time horizon of up to 27 hours on the verifiable subset of TH2. The suites comprise 222 tasks (TH1.1), 36 tasks in 12 families (TH2) and 75 CLI software-replication tasks (MirrorCode).",
+            "On 15 Al Zimmermann programming contests, METR says the median placement of the strongest models tested — Fable 5.1, Opus 5.5 and GPT-6 Astra — was the 96th to 98th percentile of human participants (97 to 413 participants per contest), and that in the median contest roughly 4 humans beat them. Models had 48 hours on a 28-core machine; the human participants had about three months.",
+            "On the Budget NanoGPT speedrun, METR says the best AI agent run of 2 to 5 runs per model \"reached a 15.7% speedup over our starting record in 48 hours,\" against a human record-holder who reported about 60 hours of work for a 41% speedup over the previous record.",
+            "METR reports that cost matters as much as time: its higher-lifecycle-cost task subset is 2.9x as expensive, models do 2.9x worse on it in time-horizon terms — \"equivalent to 1.5 doublings\" — and a doubling of lifecycle cost delays reaching 50% success by about 4.6 months. It also reports that AI judges are overgenerous when grading tasks written by models stronger than themselves, with Opus 5.5 scoring GPT-6 Astra's tasks about 0.2 out of 1 higher on average than a human scorer. This is METR's own research and is not peer reviewed."
+          ],
+          "topics": ["evals", "agents", "benchmarks", "scaling"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Human auditors scored AUROC 0.59 detecting sabotage in AI safety research runs; frontier models scored 0.73 and 0.74",
+          "sources": [
+            { "name": "LessWrong", "url": "https://www.lesswrong.com/posts/hJELtMx786Gyei63e/auditors-struggle-to-catch-sabotage-in-end-to-end" },
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.21832" }
+          ],
+          "bullets": [
+            "In a red-team/blue-team game, the authors produced 22 full research-run traces — 10 benign and 12 sabotaged, containing 33 specific sabotage mechanisms, 17 of them major — and had 25 human auditors complete 104 audits with 90 minutes per trace, full logs, AI-generated audits, frontier models and unlimited compute for their own experiments.",
+            "After 90 minutes the median sabotage credence was 54% for sabotaged traces and 40% for benign ones, an AUROC of 0.59, which the write-up calls not significantly better than chance. Auditors fully identified only 17% of the sabotage mechanisms they encountered and missed 74% entirely.",
+            "Model auditors, which could not run experiments, did better: an AUROC of 0.73 for Claude Fable 5.1 and 0.74 for GPT-6 Astra against 0.59 for humans. The write-up says those differences are not statistically significant.",
+            "This is an update: the underlying paper, arXiv 2611.21832, was submitted on 16 November and revised on 18 November, both before this window; the authors' detailed write-up went up on 20 November. The work is not peer reviewed."
+          ],
+          "topics": ["alignment", "evals", "agent-security", "agents"],
+          "storylines": ["agents-going-wrong"],
+          "impact": "neutral",
+          "flags": ["preprint", "update"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Amazon says a Chinese-nexus actor's autonomous AI agents found a zero-day on their own and took root on a university server",
+          "sources": [
+            { "name": "Amazon Web Services", "url": "https://aws.amazon.com/blogs/security/chinese-nexus-actors-cairn-ai-agents-found-a-zero-day-on-their-own/" },
+            { "name": "The Record", "url": "https://therecord.media/amazon-research-cairn-ai-university-attacks-possible-zero-day" },
+            { "name": "The Register", "url": "https://www.theregister.com/security/2026/11/20/china-attackers-deployed-ai-agents-that-autonomously-found-and-exploited-a-0-day-to-take-over-a-university-server/5311382" }
+          ],
+          "bullets": [
+            "Amazon Threat Intelligence says that on 10 September 2026 it found a server running a publicly hosted, unauthenticated instance of Cairn, an open-source autonomous AI penetration-testing framework, exposing the operator's prompts and the agents' output to anyone on the internet. The prompts were written in Simplified Chinese and script timestamps were set to China Standard Time. The campaign ran \"over an approximately 48-hour period beginning September 8, 2026\" against IP addresses of universities in East Asia outside mainland China, with the objective given in plain language as variations of \"obtain shell access.\"",
+            "Against an open-source medical imaging AI application the agents identified the framework, mapped its API endpoints, found an upload endpoint with a filename parameter and tested it for path traversal. Amazon says that \"in about 11 minutes, the agents went from mapping the application's API to arbitrarily writing files on the server,\" later writing a Python reverse shell to sitecustomize.py and triggering a training endpoint to get \"a reverse shell running as root.\" Amazon \"assesses with high confidence that it was a zero-day\" — \"based on the absence of any corresponding fix, issue, advisory, or prior mention in vulnerability databases for the affected open-source project\" — and \"with moderate confidence that this is a Chinese-nexus threat actor.\"",
+            "Two earlier operations failed, and the failures are the measurement that matters: roughly 16 hours and 148 sequential actions against an unauthenticated Redis instance, including a failed Log4Shell injection, and more than 6 hours against a university GPU server in which the agents built a list of about 80 real usernames from faculty directories, lab websites, archived pages and academic papers and tested more than 30,000 credential combinations without finding a working login.",
+            "The Register names the affected software as MONAI Label and says the maintainers released a fix and an advisory, GHSA-qc22-rmgc-vg94; Amazon's own post does not name the application. Amazon says the actor later supplied the agents with a proxy into a second university network running the same vulnerable software."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "agents", "agent-security", "china", "amazon"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "Bell Canada says an \"agentic threat actor\" breached its systems on 17 November and took enterprise customer data",
+          "sources": [
+            { "name": "BleepingComputer", "url": "https://www.bleepingcomputer.com/news/security/bell-canada-says-agentic-hacker-stole-enterprise-customer-data/" }
+          ],
+          "bullets": [
+            "Bell told BleepingComputer: \"Bell is investigating a cybersecurity incident that occurred on November 17 in which an agentic threat actor accessed some of our systems, including a system used for ordering and provisioning circuits, and exfiltrated some enterprise customer data.\"",
+            "According to a breach notification a customer shared with BleepingComputer, the unauthorised party reached \"a pre-production environment of Bell's Maximo system,\" used to order and provision network connections, and the possibly stolen information includes business contact details, information in ticket titles, some IP addresses tied to network elements or systems, and limited contextual details.",
+            "Bell said the affected dataset did not contain credentials, highly sensitive personal information, PDFs or file attachments, and that there has been \"no impact to customer services.\" It said \"We currently do not know the attribution,\" and is sharing indicators of compromise with enterprise customers and the Canadian Centre for Cyber Security.",
+            "Bell has not disclosed how many enterprise customers were affected, how much data was taken, or what it means by \"agentic\" — it has not detailed any tooling. BleepingComputer writes that the description \"suggests that AI-powered tools were used.\" One outlet has the story so far."
+          ],
+          "topics": ["incidents", "cyber-offense", "agents", "canada", "threat-intel"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Signal blocks operating-system AI agents from reading chats on iOS 27 and Android, calling it an existential threat",
+          "sources": [
+            { "name": "Signal", "url": "https://signal.org/blog/protecting-your-privacy/" }
+          ],
+          "bullets": [
+            "Signal president Meredith Whittaker says Signal is \"restricting the latest AI agents built into mobile operating systems from potentially capturing and storing your Signal data,\" blocking screenshots within the app on iOS 27 and automatically enabling its Screen security setting on Android when an AI assistant tries to read the screen.",
+            "Signal names the integrations at issue as Gemini Intelligence with Google Gemini and Onscreen Awareness with Siri AI, and says that because these agents scan on-screen information, Signal data \"is captured, then made available to these agentic systems.\" Whittaker writes that this \"is an existential threat to Signal, and our ability to responsibly uphold our mission.\"",
+            "Signal says the protection is incomplete and can be switched off: \"Our remedy is also incomplete\" because \"restricting screenshots does not address other more sneaky ways AI agents could potentially access application data,\" and it cannot reliably detect the Android case on every vendor's build. On macOS it is not blocking Siri AI at all and can only recommend adding Signal to the Excluded Apps list.",
+            "Signal asks Apple, Google and Microsoft for two things: \"an easy and well-documented way to opt their app out of AI data access and processing,\" and \"better documentation and technical specifications\" for how the agents work. Signal did the same against Microsoft Recall on Windows 11 last year."
+          ],
+          "topics": ["privacy", "agents", "agent-security", "apple", "google-deepmind"],
+          "impact": "mixed",
+          "flags": ["company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "House chairmen urge removing PRC open-weight AI models from federal systems and federal contract work",
+          "sources": [
+            { "name": "House Committee on Homeland Security", "url": "https://homeland.house.gov/2026/11/20/chairmen-garbarino-moolenaar-release-joint-investigative-report-urging-removal-of-prc-open-weight-models-from-federal-systems-high-risk-critical-infrastructure/" },
+            { "name": "The Record", "url": "https://therecord.media/chinese-open-weight-AI-use-by-US-companies-house-investigation" }
+          ],
+          "bullets": [
+            "Chairman Andrew R. Garbarino (R-NY) of House Homeland Security and Chairman John Moolenaar (R-MI) of the Select Committee on China released a joint investigative report on 20 November on US companies integrating PRC-developed open-weight AI models, with 12 policy recommendations. It names Airbnb, \"which uses Alibaba models in customer support\"; Anysphere, \"which built the flagship proprietary model in its Cursor coding platform on a Moonshot AI base model\"; and DoorDash, \"which reported that multiple PRC model families had been authorized and deployed.\"",
+            "The recommendations include barring PRC-developed models from federal systems, federal contract performance and high-risk critical-infrastructure functions — extending the DHS order that excluded DeepSeek — plus a national American open-weight AI initiative, a model-provenance standard and an AI bill of materials, making CISA the single submission point for AI-related cyber incident reports, and holding \"illicit distillers\" accountable.",
+            "The foreword states: \"Federal investigations, however, have found that major PRC developers used proxy networks and fraudulent accounts to harvest outputs from American frontier models and replicate their capabilities. While America is investing billions and racing to build 'Super Intelligence,' Beijing is using stolen intelligence to close the gap,\" and that \"The time to act is now, while we still have the opportunity and leverage to do so.\"",
+            "The committees say cost, customisation and near-frontier performance drive adoption and that the US lacks a competitive open-weight alternative at the needed price and performance. The Record describes the report as 50 pages and says none of the three firms immediately responded to a request for comment. The report is a recommendation, not a rule; no restriction has been adopted."
+          ],
+          "topics": ["us-federal-policy", "china", "open-weights", "export-controls", "threat-intel"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "Army will work with OpenAI in the first phase of Project Gatekeeper software vetting, acting CIO says",
+          "sources": [
+            { "name": "DefenseScoop", "url": "https://defensescoop.com/2026/11/20/army-project-gatekeeper-openai-gabe-chiulli/" }
+          ],
+          "bullets": [
+            "Acting Army CIO Gabe Chiulli said on Friday at AFCEA International's Annual Data Forum that \"we were going to work with OpenAI in the first phase\" of Project Gatekeeper, an initiative unveiled in October that lets commercial vendors submit code to an Army DevSecOps platform for quick validation instead of a months-long authority to operate process.",
+            "Asked when AI models would be integrated into Gatekeeper, Chiulli said \"I'm going to put it into the next quarter,\" describing a phased approach across commercialised models running on the commercial internet and referencing the use of OpenAI's Daybreak tools for validation. Code that passes \"gets moved into an IL5 environment,\" letting vendors distribute products into a secure Army enclave.",
+            "Chiulli said vendors with a DoD Common Access Card can log in to Gatekeeper today, that officials are working to allow access via Login.gov, and that he is working with other military department CIOs to establish reciprocity. After the first phase he expects the Army to open it to other open-source and commercial model providers and to encourage companies to bring their own API keys.",
+            "No contract value, award or formal agreement was announced, and DefenseScoop says OpenAI did not immediately respond to a request for comment on Friday. One outlet has the story."
+          ],
+          "topics": ["pentagon", "military", "openai", "us-federal-policy", "agents"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "New York Times says about $3.6bn in Chinese state money flowed through companies tied to Alice Huang's network",
+          "sources": [
+            { "name": "Quartz", "url": "https://qz.com/analysis-finds-chinese-government-money-alice-huang-associates-112026" }
+          ],
+          "bullets": [
+            "Quartz, reporting on a New York Times investigation, says the intelligence firm Strider Technologies determined in a confidential analysis that \"roughly $3.6 billion in Chinese government funds flowed through companies tied to Alice Huang's family or associates,\" and that the money paid for technology projects including data centres that received Nvidia chips. The Times reviewed the Strider findings and independently confirmed many of the corporate ties.",
+            "The findings describe \"a web of mostly indirect relationships linking Huang's family, companies that acquired Nvidia chips, and Chinese state-owned defense contractors that supply the People's Liberation Army,\" citing the research firm and corporate filings. Whether Nvidia chips supported Chinese military projects \"remains unclear,\" the Times reported.",
+            "Per the same reporting, Huang and her husband, Kang Wei, pitched investors in Shanghai in 2023 on building an AI business in Southeast Asia; the Singapore firm subsequently formed, Megaspeed, \"acquired more than $4 billion worth of Nvidia chips in the years that followed,\" with Alibaba as a customer and financial backer. Huang served as a Megaspeed director from March to November 2023 according to Singapore corporate records cited by CNN, and Megaspeed has denied wrongdoing and described itself as a \"compliant and legal company.\"",
+            "The chain here is indirect and the Times says so; nothing in the reporting establishes that Nvidia chips reached PLA programmes. The figures come from a confidential third-party analysis, not a government finding."
+          ],
+          "topics": ["china", "export-controls", "nvidia", "chips", "surveillance"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Seven large drugmakers tell Reuters AI cut early-stage development time by as much as half this year",
+          "sources": [
+            { "name": "Reuters (via 104.9 The Wolf)", "url": "https://www.1049thewolf.com/2026/11/20/big-pharma-with-eye-on-anthropic-says-ai-is-shrinking-drug-discovery-timelines/" }
+          ],
+          "bullets": [
+            "Reuters reports that AI \"has sped up early-stage drug development work at some of the world's largest pharmaceutical companies this year, cutting by as much as half the time it takes to produce new molecules and move them into the clinic, according to their top scientists,\" naming GSK, Bristol Myers Squibb, Novartis, Eli Lilly, Novo Nordisk, AstraZeneca and Sanofi.",
+            "The specifics are company-reported. Sanofi said it saved at least a year developing the asthma treatment lunsekimig using an AI-enabled approach that let it skip a dose-selection study. Novartis said AI tools helped it find five targets it prioritised for kidney disease treatments, and that the average time from project start to a drug candidate \"has gone from three years to about 18 months to two years.\" Novo Nordisk said AI cut design-make-test cycles from around eight to three and the time per cycle from eight weeks to four.",
+            "Reuters sets the baseline: \"nearly 9 out of 10 drugs developed using conventional methods fail in clinical trials,\" and it \"can cost billions of dollars and take 10 to 15 years to bring a drug to market, according to industry lobby group PhRMA.\" The count of AI-enabled drugs in clinical testing has risen only incrementally — researchers identified 129 candidates across 69 companies in March, up from around 117 eight months earlier, most still pre-clinical.",
+            "Reuters quotes Waqas Haque, an oncology fellow at the University of Chicago who worked on that count: \"I don't know if those drugs are going to be more successful than non-AI drugs, and I don't think they're going to be approved any quicker,\" because of bottlenecks with human trials and regulators. Lilly's Aliza Apple said claims that AI can cure all disease overstate current capabilities: \"It would be great for them to cure one, and then let's talk about the rest.\" None of the timeline savings has been independently verified."
+          ],
+          "topics": ["drug-discovery", "healthcare", "anthropic", "ai-for-science"],
+          "impact": "mixed",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "OpenAI publishes MedChemBench; GPT-6.2 Astra earns 84.5% of available credit on 99 medicinal-chemistry problems",
+          "sources": [
+            { "name": "OpenAI", "url": "https://openai.com/index/introducing-medchembench" }
+          ],
+          "bullets": [
+            "OpenAI says MedChemBench \"measures these abilities through 99 problems drawn from published research,\" built from 117 papers and patents and 761 distinct molecular structures, and graded on four components: molecular structures, scientific reasoning, ranking and selection, and property predictions.",
+            "\"At the xhigh reasoning setting, GPT‑6.2 Astra earned 84.5% of the available credit, compared with 83.3% for GPT‑6 Astra, 82.0% for GPT‑6.1 Sol, and 58.2% for GPT‑5.6 Sol.\" OpenAI says GPT-6 Astra was strongest at reconstructing molecular structures and explaining experimental evidence, while \"Selecting compounds and predicting their numerical properties proved harder for that model.\"",
+            "The benchmark gives models the context available at a chosen point in a research programme — the biological target, the researchers' goals, the compounds studied so far and selected experimental findings — and scores property predictions on closeness to the measured values. One worked example asks a model to predict cell potency, permeability and liver-enzyme stability for three PRMT5 inhibitors whose later experimental results were withheld.",
+            "OpenAI states the limits itself: \"These results do not establish whether models can discover new drugs or improve laboratory decisions. Prior exposure to the published sources cannot be ruled out, and each response was a single attempt without tools, feedback, or new experiments.\" The scores are the company's own and the accompanying paper is a preprint. The post went up on 20 November, shortly before this edition's window opened."
+          ],
+          "topics": ["openai", "drug-discovery", "benchmarks", "evals", "ai-for-science"],
+          "impact": "neutral",
+          "flags": ["company-claim", "preprint"]
+        },
+        {
+          "headline": "Study finds on-premise open-weight models match cloud models at ruling out urgent patient-portal messages",
+          "sources": [
+            { "name": "npj Digital Medicine", "url": "https://www.nature.com/articles/s41746-026-03477-6" }
+          ],
+          "bullets": [
+            "The authors evaluated six large language models — GPT-4o, GPT-5, GPT-5 Mini, Llama 4 Scout, GPT-OSS 20B and Gemma 3 27B — against a physician reference standard in three cohorts: 500 primary care messages enriched for urgent cases, 503 epilepsy clinic messages from the same health system, and 300 patient-authored messages from public platforms outside it.",
+            "\"Under Majority adjudication in primary care, GPT-5 missed no urgent message, and four of six models, including one deployable on-premises, reached sensitivity 0.97 or higher and negative predictive value 0.98 or higher.\" The authors say rank ordering held across cohorts.",
+            "The finding that matters for hospitals is the on-premise result: a locally hosted open-weight model can rule out urgency about as well as a cloud model, which removes the need to send patient messages to an external API.",
+            "The authors state the limit in the same sentence as the result: \"Both cloud-hosted and on-premise LLMs can rule out urgent messages with high sensitivity, though specificity remained limited.\" This is a retrospective evaluation against a physician standard, not a deployment, and reports no patient outcomes."
+          ],
+          "topics": ["healthcare", "open-weights", "evals", "privacy"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Nature Cancer publishes THREADS, a pathology model pretrained on over 47,000 slides and tested on 107 oncology tasks",
+          "sources": [
+            { "name": "Nature Cancer", "url": "https://www.nature.com/articles/s43018-026-01252-w" }
+          ],
+          "bullets": [
+            "The paper introduces THREADS, which \"learns general-purpose whole-slide representations by aligning tissue morphology with genomic or transcriptomic profiles,\" rather than using image-based objectives, coarse tissue labels or narrative pathology reports that vary between institutions.",
+            "THREADS \"was pretrained on over 47,000 hematoxylin-and-eosin-stained tissue sections and evaluated across 107 oncology tasks spanning cancer subtyping and grading, tumor microenvironment characterization, treatment response prediction and survival analysis.\"",
+            "The authors report that it \"consistently outperformed leading whole-slide foundation models and supervised baselines while demonstrating strong transfer across external cohorts and high label efficiency,\" and conclude that molecularly guided pretraining is an effective strategy for whole-slide representations.",
+            "The openly readable abstract gives no numeric margins over the baselines, and the full text is paywalled. The first listed affiliation is the Mass General Brigham AI Institute in Boston; the paper was received on 22 January 2025, accepted on 8 September 2026 and published on 20 November 2026."
+          ],
+          "topics": ["healthcare", "ai-for-science", "evals"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "GAO sets out 16 policy options on AI in cybersecurity, including requiring human authorization for consequential actions",
+          "sources": [
+            { "name": "Government Accountability Office", "url": "https://www.gao.gov/products/gao-27-108458" }
+          ],
+          "bullets": [
+            "In report GAO-27-108458, published and released on 20 November 2026, the Government Accountability Office identifies four potential policy goals for the use of AI in cybersecurity — address gaps in cybersecurity guidance and practices, address AI-related research gaps in cybersecurity, govern AI tools throughout their cybersecurity lifecycle, and enhance the cybersecurity workforce — and 16 policy options it describes as a menu of alternatives for policymakers.",
+            "Two of the options under the lifecycle goal would bite hardest on agentic security tooling: \"Require human authorization for consequential AI-initiated cybersecurity actions\" and \"Restrict autonomous and nondeterministic AI in consequential functions pending certification.\"",
+            "GAO found that \"there are no widely accepted evaluation criteria for assessing offensive or defensive capabilities of generative AI,\" and cites two AI-leveraged incidents: a June 2026 \"AI-powered malware lab built for evading detection,\" in which \"A threat actor used AI to build a testing framework to refine techniques for malware to evade detection,\" and a February 2026 case in which \"A low-skill level threat actor used multiple commercial generative AI services to launch a widespread attack.\"",
+            "These are options, not recommendations or rules: GAO is presenting alternatives to Congress, and nothing here binds any agency. The report rests on literature and document review, stakeholder interviews and a multi-day expert meeting."
+          ],
+          "topics": ["us-federal-policy", "cyber-defense", "agent-security", "agents", "evals"],
+          "storylines": ["regulating-frontier-ai-us"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "EU AI Board endorses new rules of procedure and moves to an elected two-year chairmanship",
+          "sources": [
+            { "name": "European Commission", "url": "https://digital-strategy.ec.europa.eu/en/news/ai-board-holds-its-tenth-meeting" }
+          ],
+          "bullets": [
+            "The Commission says the AI Board's tenth meeting was held on 18 November 2026 in Brussels, chaired by the Irish Presidency of the EU Council, and that \"New Rules of Procedure for the AI Board were endorsed during the meeting.\" Under the change, \"the appointment of the Chair of the AI Board will be decided via election with an appointment for a two-year period.\"",
+            "The Commission says the Special Envoy for Industrial AI, Jim Hagemann Snabe, appointed in June 2026, presented the Blueprint for the Industrial AI Strategy, \"which is due to be published later this month.\"",
+            "Member States presented national AI Act implementation experience \"including on their work related to AI literacy, regulatory sandboxes, the appointment of market surveillance, and addressing prohibited AI practices,\" and the Commission says the stocktaking covered \"AI capabilities, incidents as well as industrial application and AI R&D automation.\"",
+            "The next meeting is expected early in March and will run under the new rules. The Commission's note is the only account; it does not publish the rules of procedure text, the member states' submissions, or any vote."
+          ],
+          "topics": ["eu-ai-act", "us-federal-policy", "incidents"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Senate-passed permitting bill would make data centres above 20MW pay a greater share of grid build-out costs",
+          "sources": [
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/us-senate-passes-bill-requiring-data-centers-to-pay-more-for-grid-infrastructure/" }
+          ],
+          "bullets": [
+            "The new detail in the Bipartisan American Affordability and Jobs Act of 2026, which passed the Senate 62-33 and is sponsored by Sen. Shelley Moore Capito (R-WV), is its treatment of data centres: it would direct the Federal Energy Regulatory Commission to establish ratepayer protections for data centres with a capacity exceeding 20MW, requiring them to pay for a greater share of the grid infrastructure costs associated with their electricity consumption.",
+            "The bill would also expand FERC authority to issue construction permits for certain interstate transmission projects, remove permit requirements for onshore oil and gas drilling on non-federal land, shorten federal environmental review deadlines, and limit when environmental permits can be revoked or challenged in court.",
+            "Data Center Dynamics notes that Senate Democrats last month blocked the Ratepayer Protection Act, a nonbinding commitment that would have required data centres to cover the full cost of grid and generation upgrades needed to serve their facilities.",
+            "This is an update: the 62-33 vote itself was reported in the 20 November edition; the FERC cost-allocation provision above 20MW is the new element. The bill has passed only the Senate, and no FERC rule exists yet. One outlet has this detail."
+          ],
+          "topics": ["us-federal-policy", "datacenters", "energy", "compute"],
+          "storylines": ["regulating-frontier-ai-us"],
+          "impact": "neutral",
+          "flags": ["single-source", "update"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "Nvidia falls 14% on report that SEC enforcement staff are examining its accounting, capping a seven-week slide",
+          "sources": [
+            { "name": "Reuters (via WHTC)", "url": "https://whtc.com/2026/11/20/exclusive-us-secs-nvidia-probe-is-examining-potential-accounting-issues-sources-say/" },
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/nvidias-7-week-losing-streak-is-longest-since-2008-financial-crisis.html" }
+          ],
+          "bullets": [
+            "Reuters, citing two people briefed on the matter, reported on 20 November that SEC enforcement staff are scrutinising potential accounting issues at Nvidia. Reuters says it could not determine when the inquiry opened or which specific accounting issues are under review, that an SEC spokesperson declined to comment, and that Nvidia spokespeople did not immediately respond.",
+            "CNBC reports Nvidia shares \"tumbled 14% on Friday, sliding for a seventh straight day,\" closing lower for a seventh consecutive week — \"the longest such stretch since 2008\" — down 46% over the period and shedding about $2.6 trillion in market capitalisation. The stock now trades at roughly 8.4 times forward earnings, against AMD at 29 times next-12-month profit, and Nvidia's $3 trillion market cap puts it fourth behind Apple, Microsoft and Alphabet.",
+            "Reuters notes that last year Nvidia began reporting geographic revenue by customer headquarters rather than billing addresses, a change the company said better reflects its revenue geography and which removed Singapore from its geographic breakdown; the Financial Times, citing company accounts, reported Singapore sales had risen to almost half of global revenue. Reuters does not say whether that change is part of the inquiry.",
+            "Reuters states plainly that investigations are not evidence of wrongdoing and that many close without enforcement action. Reuters also reports the Justice Department is reviewing Nvidia's $12.9 billion deal to buy Hugging Face, and that on Tuesday's earnings call interim CEO Colette Kress said Nvidia would be far more selective about AI industry financing deals."
+          ],
+          "topics": ["nvidia", "chips", "earnings", "financial-regulation", "compute"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "Trump says he will put a \"tremendous tax\" on US companies that build data centres overseas",
+          "sources": [
+            { "name": "NBC News", "url": "https://www.nbcnews.com/business/corporations/trump-data-centers-overseas-penalties-rcna610445" }
+          ],
+          "bullets": [
+            "At a White House news conference on 20 November, Trump said of companies building data centres abroad: \"We're going to put tremendous penalties on companies that try and do it,\" and \"But we're going to put a tremendous tax on them if they do it.\"",
+            "He gave no mechanism. NBC News reports it is unclear how the restriction would be implemented, and that Trump did not specify the size or structure of the tax or penalties, which companies or facility types would be covered, or when it would take effect. He said he had not yet told his staff about the proposal.",
+            "The threat lands on a live question for AI buildouts: US hyperscalers have been announcing large overseas compute commitments, and the Commerce Department issued an interim final rule days earlier extending AI chip export controls to the compute that overseas data centres produce.",
+            "No executive order, rule or legislative text exists. NBC News says a White House representative did not immediately reply to a request for comment."
+          ],
+          "topics": ["us-federal-policy", "datacenters", "compute", "export-controls", "energy"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "Oracle says it is fully funded for its $300bn OpenAI cloud contract after capping new raises at $20bn",
+          "sources": [
+            { "name": "Investing.com (via Yahoo Finance)", "url": "https://finance.yahoo.com/technology/ai/articles/oracle-says-openai-contract-fully-224306974.html" }
+          ],
+          "bullets": [
+            "Oracle said on 20 November that it has secured the capital needed to fulfil its cloud infrastructure contract with OpenAI, describing itself as \"the first hyperscaler fully funded for the current artificial intelligence investment cycle,\" after a final capital raise earlier in the month completed the framework set out at its investor day, including vendor financing.",
+            "At that investor day Oracle committed to capping additional capital markets fundraising for fiscal 2027 through fiscal 2030 at $20 billion, split evenly between $10 billion in equity and $10 billion in gross debt, excluding debt refinancing, on top of a $20 billion at-the-market equity raise completed in the first quarter of fiscal 2027. The OpenAI agreement is described as five-year and $300 billion.",
+            "On sites, Oracle said construction at Abilene, where OpenAI's Astra-6 model was trained, is nearing completion; the next gigawatt-scale site, Shackelford, has obtained full permitting; and handover of NVIDIA Vera Rubin server racks remains scheduled for the coming weeks. It reiterated expectations of positive free cash flow in the second half of fiscal 2028 and more than $30 billion in annual free cash flow in fiscal 2029.",
+            "Oracle pre-empted future reporting questioning its funding status, saying any ongoing private discussions with suppliers are optional rather than required to meet its contractual obligations. These are company statements made during a week in which AI-linked credit was under scrutiny; none is independently verified, and one outlet carries the account."
+          ],
+          "topics": ["compute", "datacenters", "openai", "funding", "nvidia"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "SoftBank's Son sounded out banks on a roughly $1 trillion SK hynix buyout before shelving it, The Information reports",
+          "sources": [
+            { "name": "Seoul Economic Daily", "url": "https://en.sedaily.com/world/2026/11/21/son-weighed-1-trillion-bid-for-sk-hynix-before-shelving-idea" }
+          ],
+          "bullets": [
+            "Seoul Economic Daily, citing The Information, reports that Masayoshi Son \"sounded out U.S. financial institutions about raising money to acquire SK hynix,\" in a deal that \"could have reached $1 trillion, or about 1,400 trillion won,\" but which \"appears to have been dropped at an early stage because it was unlikely to be feasible.\"",
+            "A SoftBank spokesperson said the company reviews a range of opportunities but that this one \"is no longer under active consideration.\" The report says there was no confirmation that Wall Street banks had discussed providing financing.",
+            "The report puts SK hynix's market value at \"about $577.7 billion, or 777 trillion won, down sharply from a peak reached about a month earlier,\" and says the $1 trillion figure reflects that peak market value plus a 40% control premium. SK hynix is one of three HBM suppliers for AI accelerators alongside Samsung Electronics and Micron, and the report says the HBM boom has pushed profit margins at the three memory makers toward 80%.",
+            "This is a report of early, abandoned talks sourced to The Information and relayed by one outlet; no bid was made and no bank is confirmed to have been engaged."
+          ],
+          "topics": ["chips", "compute", "funding", "south-korea"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Jensen Huang will testify publicly before the Senate banking committee, the chairman's office says",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/jensen-huang-nvidia-senate-testimony.html" }
+          ],
+          "bullets": [
+            "CNBC reports that \"Former Nvidia CEO Jensen Huang will testify publicly when he appears before the Senate banking panel, a spokesperson for Committee Chair Tim Scott said Friday.\" No date has been announced for the Senate appearance.",
+            "Huang is separately due for closed-door, transcribed testimony before three House panels on 1 December, under an agreement reached with those committees.",
+            "CNBC says Huang \"resigned from the company he co-founded earlier this month over a series of extramarital affairs, including one with a suspected Chinese spy.\" Scott's initial letter had requested Huang appear on 3 December and Commerce Secretary Howard Lutnick on 10 December; Lutnick has also agreed to testify, and Scott said he hopes to hear from both before Christmas.",
+            "The hearing scope has not been published, and no date is set. One outlet has the confirmation."
+          ],
+          "topics": ["nvidia", "us-federal-policy", "chips", "export-controls", "china"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "Anthropic closes its IPO at about $93.5bn gross after underwriters exercise the full 147 million-share option",
+          "sources": [
+            { "name": "Anthropic", "url": "https://www.anthropic.com/news/ipo-close" }
+          ],
+          "bullets": [
+            "Anthropic says it closed its IPO of \"an aggregate of 1,127,000,000 shares of its Class A common stock at a public offering price of $83.00 per share, including the full exercise by the underwriters of their option to purchase an additional 147,000,000 shares,\" with 1,103,351,354 shares sold by Anthropic and 23,648,646 by selling stockholders. Aggregate gross proceeds before discounts and expenses were \"approximately $93.5 billion, of which approximately $91.6 billion was received by Anthropic.\"",
+            "It also closed the concurrent private placement of 313,253,007 Class N shares at $83.00 to Advanced Micro Devices, Broadcom, Google, Micron Technology, Microsoft, NVIDIA and TSMC Partners for \"approximately $26.0 billion,\" bringing combined gross proceeds to \"approximately $119.5 billion.\"",
+            "That is the full exercise of the overallotment option on top of the roughly $81.3 billion raised at pricing — an additional block sold even as the shares fell. The seven private-placement buyers are the company's own chip, cloud and memory suppliers.",
+            "The release reports proceeds, not use of proceeds, and states no valuation. Anthropic's filings disclosed $70.7 billion of compute commitments due within 12 months, reported in the 20 November edition."
+          ],
+          "topics": ["anthropic", "funding", "ipo", "compute"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["company-claim"]
+        },
+        {
+          "headline": "S&P 500 falls 3.7% into a correction and the Nasdaq composite goes negative for the year as AI stocks sell off",
+          "sources": [
+            { "name": "Associated Press (via Chattanooga Times Free Press)", "url": "https://www.timesfreepress.com/news/2026/nov/20/sp-500-sinks-3-7-and-nasdaq-composite-goes-negative-for-the-year-as-tech-sell-off-worsens/" },
+            { "name": "Yahoo Finance", "url": "https://finance.yahoo.com/markets/stocks/article/anthropic-stock-dives-after-rip-roaring-ipo-095411951.html" }
+          ],
+          "bullets": [
+            "The Associated Press reports that \"A bruising sell-off in artificial intelligence stocks on Friday pulled the S&P 500 down 3.7%, dragging the index to its worst weekly loss in more than 18 months, and knocking the Nasdaq composite into the red for the year.\" The Nasdaq composite slumped 5.3%; the Dow Jones Industrial Average, with less technology exposure, fell 1.9%.",
+            "AP says the S&P 500 \"is now in what professional investors call a 'correction,' having fallen more than 10% from its Oct. 6 all-time high,\" its first since March 2025, and that Friday \"capped a seven-day losing streak, the longest such string of losses since the onset of the COVID-19 pandemic in 2020.\" The Nasdaq composite's weekly loss was \"just shy of its worst week since March 2020.\"",
+            "Anthropic, two days into trading, was part of it: Yahoo Finance reports its shares \"fell nearly 8.5%\" on Friday to close just below $89, down from Thursday's $97.17 close and still above the $83 IPO price, for a market capitalisation of $1.17 trillion.",
+            "AP attributes the move to doubts about AI valuations and spending rather than to any single disclosure. This is market pricing, not a measurement of AI capability or revenue; the AP account does not quantify how much of the fall is attributable to AI names."
+          ],
+          "topics": ["earnings", "compute", "anthropic", "nvidia", "funding"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": []
+        },
+        {
+          "headline": "Cursor told House committees it may phase out Chinese open-weight models over geopolitical risk",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/20/cursor-chinese-ai-models-geopolitical-risk.html" }
+          ],
+          "bullets": [
+            "CNBC reports that Cursor \"informed the Committees\" it plans to \"explore phasing out PRC [People's Republic of China]-developed open-weight models because of geopolitical risk,\" according to the joint House Homeland Security and Select Committee on China report shared with CNBC ahead of Friday's publication.",
+            "Cursor built its coding model Composer 2 on top of Moonshot AI's Kimi K2.5. SpaceX announced a formal agreement to buy Cursor in June 2026 and completed the deal in August, at an implied $60 billion equity value.",
+            "This is the clearest sign yet that the congressional pressure is changing commercial behaviour rather than only policy: a US coding platform used by professional developers saying it may drop the Chinese base model its flagship was trained from.",
+            "Cursor said it would \"explore\" phasing the models out; no timeline, decision or replacement was announced. CNBC says Airbnb declined to comment and DoorDash did not respond to its request for comment. One outlet has the Cursor statement."
+          ],
+          "topics": ["open-weights", "china", "moonshot", "us-federal-policy", "spacex"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    }
+  ]
+}
