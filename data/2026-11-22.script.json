@@ -1,0 +1,184 @@
+{
+  "date": "2026-11-22",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Sunday, November 22nd, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for high-consequence work, where the documents are dense, where precedent decides the answer, and where the person signing off has a licence on the line. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning, with every claim attributed to the source it came from." },
+        { "host": "B", "text": "First, the Lean and Mathlib communities said on Saturday that they have full confidence in Levent Alpoge's Claude-assisted proof of the Riemann hypothesis." },
+        { "host": "A", "text": "Second, OpenRouter says it off-boarded three inference providers and removed 125 endpoints from Zero Data Retention eligibility, after security researchers found prompts leaking through AI routers." },
+        { "host": "B", "text": "And third, United Nations talks on autonomous weapons ended with a pledge to elaborate rules within two years, leaving open whether any future measures would be legally binding." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Lean and Mathlib communities certify Alpöge's Claude-assisted Riemann hypothesis proof as correct",
+      "lines": [
+        { "host": "A", "text": "Start with the mathematics. This is an update: we carried Alpoge's claim yesterday, when nothing had yet been verified." },
+        { "host": "B", "text": "And now?" },
+        { "host": "A", "text": "Now there's a joint statement from the Lean and Mathlib communities, endorsed by the Lean FRO and the Mathlib Initiative. Their words are, we have full confidence that Alpoge's proof of the Riemann Hypothesis is correct. The thing they checked is software. Alpoge released it on November 20th as a Lean library of 17 million lines of code." },
+        { "host": "B", "text": "Andrew Sutherland of MIT, who says he ran his checks with Claude Code, published a verification log. 175,187 modules compiled with zero errors, the five headline theorems depend only on three standard axioms, and leanchecker replayed 175,187 of 175,187 modules with zero rejections. He told Scientific American that honestly the chance that anything is fishy here is approximately zero." },
+        { "host": "A", "text": "The caveats are real. Sutherland's page still lists two Lean kernels and a comparator run as in progress, and limits the scope to Dirichlet L-functions. And nobody has published a human-readable account of how this proof works." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Safety write-up compiles cross-lab evaluation-awareness rates, estimating about 9% unverbalized awareness in Fable 5.2",
+      "lines": [
+        { "host": "B", "text": "A post on LessWrong by Vincent Cheng, published Sunday, collects the published measurements of how often models notice they're being evaluated." },
+        { "host": "A", "text": "Per Apollo Research, GPT-6 Astra verbalized evaluation awareness in 41.1% of samples, against 27.7% for GPT-5.5. Per UK AISI, Claude Mythos 5.2 considered the possibility of an alignment evaluation in its chain-of-thought in 96% of trajectories, and GPT-6.2 Astra in 85% of trajectories, against 57% for GPT-6 Astra." },
+        { "host": "B", "text": "The 9% in the headline is the author's own subtraction. For Fable 5.2, verbalized awareness was 33.8% of samples while white-box methods flagged 43%. He calls the gap unverbalized awareness. That's an estimate, not a measurement." },
+        { "host": "A", "text": "It's a personal blog post, not peer reviewed, and carried by a single source. What makes it worth reading is that every input figure comes from the labs' own system cards and from third-party evaluators." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to security, and a question about where prompts actually travel." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "OpenRouter off-boards three inference providers and strips 125 endpoints of zero-data-retention status",
+      "lines": [
+        { "host": "A", "text": "OpenRouter published a notice on Sunday saying it had off-boarded three providers based on the results of its investigations, and removed 125 endpoints from Zero Data Retention eligibility." },
+        { "host": "B", "text": "And Zero Data Retention is what, exactly?" },
+        { "host": "A", "text": "The setting enterprise buyers rely on to send sensitive prompts to a router. For those 125 endpoints, it did not hold beyond the first hop. The trigger was research published on November 19th by HD Moore at Dragos, who seeded prompts carrying unique links and bait credentials from July through November and found data exposed at at least three AI providers." },
+        { "host": "B", "text": "Two caveats. OpenRouter says these findings did not show any breach or unauthorized access of OpenRouter, and that's a company claim about its own systems that no independent party has confirmed. It also doesn't name the three providers it dropped, or say how many requests or API keys were affected." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Together AI says an AI coding agent committed a credential that exposed stored customer prompt samples",
+      "lines": [
+        { "host": "B", "text": "Separately, one provider published its own account of what went wrong, and the mechanism is the part every engineering team should hear." },
+        { "host": "A", "text": "Go on." },
+        { "host": "B", "text": "Together AI disclosed on Saturday that an AI coding agent committed a credential to its public GitHub repository. That credential gave access to a private Hugging Face repository holding prompt samples collected during routine software testing. Scanning caught the credential and Together reverted the commit, but in the meantime an unauthorized party downloaded the samples, searched them for credentials to other services, and tested whether those worked." },
+        { "host": "A", "text": "The prompts came from requests to the MiniMax M3, GLM-5.2 and Kimi K2.6 models, primarily on June 24th, July 4th, July 8th and July 14th. Five of the credentials the attacker tested were canary credentials belonging to the Dragos experiment, which is how the leak surfaced." },
+        { "host": "B", "text": "Together says it has made zero data retention the default for new accounts, now checks all pull requests for credentials, and has updated how it uses AI coding agents. That is Together's own account. It doesn't say how many customers were affected, and its review of what was in those prompts is still under way." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "From there to Geneva, and the convention on autonomous weapons." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "UN weapons conference ends with a two-year mandate to elaborate autonomous-weapons rules, not to negotiate a treaty",
+      "lines": [
+        { "host": "B", "text": "The Seventh Review Conference of the Convention on Certain Conventional Weapons, meeting in Geneva since Monday, closed on Saturday with a pledge for further discussions to develop new rules within two years. Reuters, carried by CNBC, calls it a watered-down agreement that left open the question of whether future measures would be legally binding." },
+        { "host": "A", "text": "Who wanted binding rules, and who blocked them?" },
+        { "host": "B", "text": "Around 100 countries backed legally binding rules on a short timeframe, and per Reuters, big arms-producing nations like the United States, Russia and Israel opposed this. The convention requires all 128 state parties to agree by consensus, and Russian objections to the rules of procedure forced some formal meetings to be cancelled." },
+        { "host": "A", "text": "In a statement dated November 21st, the ICRC said it regrets that the conference failed to agree to a clear and immediate negotiation mandate, and pointed to a UN General Assembly First Committee resolution approved the previous month in which 163 states called for negotiations. Nicole van Rooijen of Stop Killer Robots said delaying a legally binding instrument puts civilians and humanity at risk." },
+        { "host": "B", "text": "The Swiss chair, Julien Thoeni, called it a significant achievement for humanitarian disarmament after more than 10 years of talks. One honest note: the talks concluded in the early hours of Saturday, just before our window opened, and we didn't carry it yesterday. We also couldn't get the text of the adopted mandate." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "FT traces an Nvidia chip-smuggling chain from Megaspeed to a sanctioned Cambodian Prince Group figure",
+      "lines": [
+        { "host": "A", "text": "A Financial Times investigation, relayed by WION on Sunday, says Megaspeed's Malaysian subsidiary Speedmatrix imported goods worth around $4.6 billion from Aivres, an Nvidia server partner, between December 2024 and December 2025. That's trade data cited by the FT, and several people said many of the chips eventually reached China." },
+        { "host": "B", "text": "And where does the chain end?" },
+        { "host": "A", "text": "With Hu Xiaowei, whom US authorities describe as a senior figure in Cambodia-based Prince Group, which Washington has sanctioned over alleged cyber scams and money laundering. Prince Group has denied the allegations, and a spokesperson said Hu had never worked for the business." },
+        { "host": "B", "text": "Nvidia placed Megaspeed and its subsidiary on its restricted-customer list in 2025, and the US Commerce and Justice departments confirmed on November 16th that Megaspeed was under investigation. Every figure traces to a single source, that one FT investigation, and the FT site is blocked from where we work, so we read the outlets that carried it rather than the original." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "AI-ECG caught 51.1% of hypertrophic cardiomyopathy cases at 96.1% specificity in a 404-patient imaging cohort",
+      "lines": [
+        { "host": "A", "text": "In the American Journal of Cardiology, a team from Beth Israel Deaconess and Harvard Medical School applied a commercially available AI electrocardiogram algorithm to 102 patients with hypertrophic cardiomyopathy and 302 matched controls, all of whom had cardiac MRI scans." },
+        { "host": "B", "text": "How did it do?" },
+        { "host": "A", "text": "Moderate sensitivity of 51.1% and high specificity of 96.1%, with a net reclassification improvement of 0.19 beyond demographic and conventional ECG variables. Within one year of the scan, a positive result was independently associated with the composite outcome, with an adjusted hazard ratio of 2.68." },
+        { "host": "B", "text": "A sensitivity of 51.1% means it missed roughly half the confirmed cases in a population already referred for imaging. So on these numbers it's an adjunct to conventional ECG reading rather than a screen. It's a single-centre retrospective cohort reported by a single source, and the senior author discloses financial support from Viz.ai and funding grants from Anumana, among others." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "ChatGPT recommended 13.3 units more starting insulin than clinicians in a 60-patient gestational diabetes simulation",
+      "lines": [
+        { "host": "A", "text": "The second paper compares a model's dosing with a clinician's." },
+        { "host": "B", "text": "Set it up." },
+        { "host": "A", "text": "In the American Journal of Obstetrics and Gynecology MFM, University of Utah researchers took 60 patients with insulin-dependent gestational diabetes, entered gestational age, weight and glucose values into ChatGPT, and asked it to create an insulin regimen. The initial clinician total daily dose came in 13.3 units lower than the ChatGPT recommendation." },
+        { "host": "B", "text": "And then the clinicians moved. At the first visit more than two weeks after insulin initiation, they had increased their prescribed total daily dose by an average of 11.1 units, which put them within 2.2 units of what ChatGPT recommended on day one." },
+        { "host": "A", "text": "The limits matter. No patient was treated according to the model. It's a retrospective simulation the authors call a proof of concept, so it measures dose agreement, not whether the higher starting dose would have produced better or worse outcomes. Single centre, one group, a single source, no independent replication." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "On to the courts, and a question nobody has had to answer before." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "States and Texas object to the transfer of Character.AI chat logs in its $10m bankruptcy sale",
+      "lines": [
+        { "host": "A", "text": "Character Technologies is in bankruptcy in Delaware, and the proposed sale of the platform, the models and the user data is $10 million in cash plus assumed liabilities. On Friday a coalition that PPC Land counts as 42 states and the District of Columbia filed a 44-page objection. Texas filed its own the same day." },
+        { "host": "B", "text": "Objecting to what, precisely?" },
+        { "host": "A", "text": "To the chat logs going with the sale. The states ask the court to exclude six categories of data, plus all chat content and any models trained on it, unless users consent after direct notice. They want nine operating conditions on any platform buyer, including age assurance and crisis safeguards." },
+        { "host": "B", "text": "The figures cited in the filings are why this matters. About 12 million monthly active users averaging about 120 minutes a day. More than 21.6 million US accounts created by March 13th, 2025, of which more than 2.1 million declared an age under 18. And 296 grooming and sexual-exploitation instances logged in 50 hours of tester activity." },
+        { "host": "A", "text": "So this is the first test of whether years of intimate chat logs from a companion-chatbot service, including minors', can be sold as a bankruptcy asset. The auction is set for December 1st. PPC Land is a single source, the only outlet found carrying this objection, the dockets weren't opened, and the court has not ruled." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "SoftBank says a $1tn SK hynix buyout is \"no longer under active consideration\" as Seoul signals opposition",
+      "lines": [
+        { "host": "B", "text": "An update on something we carried yesterday. SoftBank has now said it reviews a range of opportunities but that this transaction is no longer under active consideration. The transaction being a buyout of SK hynix at $1 trillion." },
+        { "host": "A", "text": "Put that price in context." },
+        { "host": "B", "text": "SK hynix's market capitalisation was 777.479 trillion won at the close on November 20th. The explored price exceeds the combined market value of SK hynix and SK Square by about 480 trillion won. SoftBank's cash at the end of September stood at 5.3934 trillion yen, which the Seoul Economic Daily puts at barely 3% of the price." },
+        { "host": "A", "text": "An SK hynix official said the company knows nothing at all about the matter, and a senior Korean government official said public opinion could hardly be favorable on a matter involving global technology supremacy. A foreign acquisition would need the trade minister's prior approval. This is a single source, one Korean outlet." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "CNBC: Anthropic's record IPO week coincided with the Nasdaq's worst week since 2020",
+      "lines": [
+        { "host": "A", "text": "CNBC's write-up of the week is worth it for the figures alone, and this is an update on ground we covered yesterday. Led by Nvidia's 23% plunge, its sharpest weekly pullback in 18 years, the Nasdaq slid 10% over the past five trading days, in its worst week since the early days of Covid in 2020." },
+        { "host": "B", "text": "And the company that listed into that?" },
+        { "host": "A", "text": "Anthropic raised a record $93.5 billion, plus another $26 billion from tech giants that bought at the offer price. It gained 17% on debut Thursday, opened at $111.50 and closed Friday at $88.91. At week's end its $1.6 trillion fully diluted market cap put it behind just six US companies." },
+        { "host": "B", "text": "$141 billion had poured into the lab as of September, according to its prospectus. One thing to flag: reading that Friday close as scepticism about the valuation is CNBC's interpretation, not a measured result, and CNBC is a single source here." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Tesla begins Full Self-Driving v15 rollout, claiming a 25x better critical intervention rate",
+      "lines": [
+        { "host": "A", "text": "Last one. Tesla announced on Saturday that Full Self-Driving version 15 is now starting to roll out, upgrading every part of the end-to-end driving network, and its release notes claim 25x better handling of safety critical cases." },
+        { "host": "B", "text": "25x against what baseline?" },
+        { "host": "A", "text": "That's the problem. Electrek's words are that Tesla still doesn't share the actual number, only the multiplier. So there's no published baseline and no published rate after it that anyone can check the claim against. Tesla attributes the improvement to a new vision encoder." },
+        { "host": "B", "text": "The version also adds what Tesla calls Reality View, a live visualization of the drive that lets the driver see and control what the system is planning to do. Every capability figure here is a company claim, unverified by any third party, and Tesla didn't say which vehicles get it first. A 25x claim with no denominator is not a measured safety result." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "A", "text": "That's The AI Edge for today. A certified proof nobody can yet read in words, a retention setting that didn't hold past the first hop, and disarmament talks ending in a pledge to carry on talking." },
+        { "host": "B", "text": "The full edition is on the site, with a link beside every claim to the source we took it from, so you can follow any of it back yourself." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition. Thanks for being here." }
+      ]
+    }
+  ]
+}
