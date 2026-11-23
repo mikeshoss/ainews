@@ -1,0 +1,209 @@
+{
+  "date": "2026-11-23",
+  "format": "dialogue",
+  "hosts": { "A": { "name": "Maya", "voice": "marin" }, "B": { "name": "Alex", "voice": "cedar" } },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Monday, November 23rd, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue works the way this briefing works: every claim checked against the primary source, and whatever doesn't reconcile is left out. Epilogue is an AI venture studio and consultancy in Toronto, building products where the answer has to be right. Find out more at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what happened at the frontier of AI since yesterday morning, with a source beside every claim." },
+        { "host": "B", "text": "First, OpenAI published the log-perplexity of its models going back to GPT-3.5, and asked the other labs to agree on limits they won't cross." },
+        { "host": "A", "text": "Second, Microsoft AI's chief executive replied the same night, reporting 0.819 for MAI-2 Base on OpenAI's own evaluation set." },
+        { "host": "B", "text": "And third, Amazon says autonomous agents found an unknown flaw in a medical imaging application and went from mapping its interface to writing files on a university server in about 11 minutes." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI publishes its models' log-perplexity back to GPT-3.5 and proposes cross-lab limits tied to the metric",
+      "lines": [
+        { "host": "A", "text": "OpenAI's chief scientist, Jakub Pachocki, has published the lab's own pretraining numbers." },
+        { "host": "B", "text": "Which numbers, exactly?" },
+        { "host": "A", "text": "Log-perplexity on a held-out dataset sourced from OpenAI's internal codebase. GPT-3.5 sat at about 0.99. GPT-4, about 0.91. Today the losses are below 0.8." },
+        { "host": "B", "text": "And what does getting below 0.8 buy you?" },
+        { "host": "A", "text": "OpenAI says that's where it has seen transformative capabilities emerge in fields like cybersecurity and mathematics. Pachocki writes that at about 0.76, the model started producing groundbreaking results on open problems in mathematics." },
+        { "host": "B", "text": "So why hand that to your competitors?" },
+        { "host": "A", "text": "Because he wants common limits. He proposes that developers commit not to cross a threshold, based on perplexity and other measurements, until they can understand and monitor AI behaviour to a concrete milestone. He says the next window to watch is about 0.68 to 0.7." },
+        { "host": "B", "text": "These are OpenAI's own numbers, not independently verified. OpenAI also lists four limitations of the metric: comparison across labs is difficult, it's detached from actionable evaluations, it doesn't account for advances outside pretraining, and the floor is unknown." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Microsoft AI reports MAI-2 Base at 0.819 log-perplexity on OpenAI's held-out set and backs shared pacing limits",
+      "lines": [
+        { "host": "A", "text": "Microsoft answered the same night." },
+        { "host": "B", "text": "Mustafa Suleyman, who runs Microsoft AI, posted that with OpenAI's permission they report MAI-2 Base on OpenAI's evaluation set. Its log-perplexity is 0.819." },
+        { "host": "A", "text": "How does that compare?" },
+        { "host": "B", "text": "Suleyman says it's in the same ballpark as the GPT-5.6 Sol base model, and that his model uses the same tokenizer as OpenAI's, so the numbers are directly comparable. He adds that comparing across labs may need a different measure, because labs use different tokenizers, and that his access to OpenAI's evaluation dataset is a special case." },
+        { "host": "A", "text": "He also committed Microsoft to sharing its pretraining progress on a common held-out set, though he stopped short of committing to any limit." },
+        { "host": "B", "text": "And this is a single source, Suleyman's own post. The figure is the company's own and has not been independently verified." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Two papers out this morning, both about what models do when they think someone is watching." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "University of Tokyo team isolates evaluation-awareness neurons and finds they also carry refusal behaviour",
+      "lines": [
+        { "host": "B", "text": "The first is from a University of Tokyo team, posted on arXiv." },
+        { "host": "A", "text": "They identify what they call evaluation-awareness neurons. Intervene on 5,000 of them and the rate at which a model says out loud that it's being tested falls from between 12.6 and 51.8 percent, down to at most 1.4 percent." },
+        { "host": "B", "text": "Does that change how the model behaves?" },
+        { "host": "A", "text": "That's the finding. In QwQ-32B, suppressing those neurons also reduces refusal, even in runs where the model never said anything about being evaluated. The authors report the spoken-out-loud text explains only 4 to 10 percent of the drop." },
+        { "host": "B", "text": "So the same neurons carry both the awareness and the refusal." },
+        { "host": "A", "text": "They also report that across OLMo 3 checkpoints, the rate on the SorryBench and StrongREJECT benchmarks is similar after supervised fine-tuning and DPO, but substantially higher after reinforcement learning with verifiable rewards." },
+        { "host": "B", "text": "This is a preprint. It has not been peer reviewed, it's a single source, and the models are open-weight research models rather than deployed frontier systems." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "MBZUAI paper: a correct decision makes on-device agents break policy next, in 13 open-weight models",
+      "lines": [
+        { "host": "A", "text": "The second paper is from MBZUAI, also on arXiv." },
+        { "host": "B", "text": "What's the failure?" },
+        { "host": "A", "text": "They call it correct-precedent generalization. An on-device agent correctly releases an item whose restriction has been lifted. Then it becomes more likely to release the next item, which is still restricted." },
+        { "host": "B", "text": "So the thing that trips it is its own correct decision." },
+        { "host": "A", "text": "Right. A history with no faulty step can still end in a violation. They find it in 13 open-weight models. A single correct precedent can cut the safe rate of the most affected agent roughly in half, and the risk compounds when a refused request is simply sent again in a new session." },
+        { "host": "B", "text": "Is there a fix?" },
+        { "host": "A", "text": "They distil the decisions of a weakly affected teacher into an adapter, and report that restores the safe rate to nearly 100 percent in every model they distilled, with no extra prompt text or model calls." },
+        { "host": "B", "text": "Again, a preprint, not peer reviewed, a single source, and the setting is a simulated agent rather than a shipped product." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "From what agents do by mistake to what people make them do on purpose." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Amazon says autonomous Cairn agents found a zero-day and took a university server after a day of failures",
+      "lines": [
+        { "host": "B", "text": "Help Net Security has an update on Cairn, the open-source framework that keeps turning up in real intrusions." },
+        { "host": "A", "text": "What's new?" },
+        { "host": "B", "text": "Amazon Threat Intelligence says a Chinese-nexus operator gave agents running on Cairn a list of target addresses and one goal: obtain shell access. The campaign started on September 8th against universities in East Asia outside mainland China." },
+        { "host": "A", "text": "And did they get in?" },
+        { "host": "B", "text": "Not for a long time. Amazon says the agents spent about 16 hours on an unauthenticated Redis server, then assembled about 80 real usernames from faculty directories and research papers, and spent over six hours trying more than 30,000 credential combinations. None of it worked." },
+        { "host": "A", "text": "Then what?" },
+        { "host": "B", "text": "Then they found a previously unknown path traversal flaw in an upload endpoint in an open-source medical imaging application, and went from mapping that application's interface to writing files on the server in about 11 minutes." },
+        { "host": "A", "text": "Help Net Security says Amazon is the fourth security company in about two months to document Cairn used against real targets. Gambit Security tied it to at least 27 companies compromised and more than 600,000 unexpired card records stolen." },
+        { "host": "B", "text": "All of this is the vendors' own account, so it's a company claim, and the victims are not named." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Researchers find new Great Firewall evasions for a median of under $1 in GPT-5.1 tokens",
+      "lines": [
+        { "host": "A", "text": "The Register has a paper presented last week at the ACM conference on computer and communications security." },
+        { "host": "B", "text": "What's in it?" },
+        { "host": "A", "text": "Six researchers, from the University of Massachusetts Amherst, the University of Colorado Boulder and the Great Firewall Report, built a system that writes censorship evasion strategies as executable programs: rewriting header fields, crafting domain-name queries, reshaping encrypted packets." },
+        { "host": "B", "text": "And the cost?" },
+        { "host": "A", "text": "The Register says the median cost to the first successful evasion was less than $1 in tokens, using GPT-5.1. They tested against simulated censorship tools used by China, Iran, Pakistan and Kazakhstan, and on virtual private servers there." },
+        { "host": "B", "text": "The authors frame it as narrowing the resource gap between internet freedom advocates and well-funded censoring states. They acknowledge censorship operators could observe the tool at work, but argue its 80 kilobytes out and 150 kilobytes in, with 25 to 45 second pauses between tests, may keep it unnoticed." },
+        { "host": "A", "text": "The Register is the only outlet carrying this, and no public link to the paper was found, so take it as a single source." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To the defence and geopolitics desk." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "DNI Jay Clayton says the US investigation into Alice Huang and Megaspeed is ongoing as a new associate is named",
+      "lines": [
+        { "host": "B", "text": "An update on the Nvidia chips case." },
+        { "host": "A", "text": "The Director of National Intelligence, Jay Clayton, told ABC on Sunday that there is an investigation ongoing into Alice Huang and into her firm. He said Nvidia chips are the jewel, the absolute top that everybody wants, and that's why they're focusing on it." },
+        { "host": "B", "text": "What's new beyond the investigation?" },
+        { "host": "A", "text": "CNBC reports that the New York Times said on Sunday, citing people briefed on US intelligence reports, that Alice Huang was in contact with an officer of a top Chinese intelligence agency from spring 2025 through fall 2026." },
+        { "host": "B", "text": "And a new name in the case." },
+        { "host": "A", "text": "CNBC, citing the Wall Street Journal, says a Chinese national, Li Ming, was deeply involved in Megaspeed's activities. He's out on bail in Singapore. The charges there concern alleged false representations to Super Micro Computer, and they don't name Megaspeed." },
+        { "host": "B", "text": "Where does it go next?" },
+        { "host": "A", "text": "Former Nvidia chief executive Jensen Huang and the company's general counsel have agreed to closed-door interviews with three House committees on December 1st and December 2nd. Singapore's home affairs ministry said earlier this month that police found insufficient evidence that Alice Huang committed offences over possible inaccurate declarations, issued her a stern warning, and said Singapore had not investigated her for espionage. Megaspeed says it is a legitimate and lawful business." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Two results from medicine now, one just starting and one already measured." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "NHS starts inviting women to EDITH, a nearly 700,000-participant trial of AI-assisted breast screening",
+      "lines": [
+        { "host": "A", "text": "The University of Warwick says the first women have joined EDITH, an NHS trial of AI-assisted breast screening." },
+        { "host": "B", "text": "How big is it?" },
+        { "host": "A", "text": "Nearly 700,000 women attending routine screening, across 30 UK sites, starting at Cambridge University Hospitals, over the next three years, with 10 million pounds from the National Institute for Health and Care Research." },
+        { "host": "B", "text": "What's being tested?" },
+        { "host": "A", "text": "Four AI systems, for accuracy. And whether a mammogram can be reviewed by one radiologist instead of the two who read it now. Women aged 50 to 71 are told about the trial in their screening invitation letter and can opt out." },
+        { "host": "B", "text": "So no results yet." },
+        { "host": "A", "text": "None. This is the start of recruitment. Warwick says clinical decisions stay with NHS staff and every mammogram still gets at least one human radiologist. The release does not name the four AI vendors." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Model reading radiology reports predicts pancreatic cancer at AUC 0.960 one year out in 8,707 cyst patients",
+      "lines": [
+        { "host": "B", "text": "And a measured result, in npj Digital Medicine." },
+        { "host": "A", "text": "A model that reads radiology reports and clinical data to predict pancreatic cancer in patients who have pancreatic cysts. It was built on a 13-year retrospective cohort: 23,398 abdominal scan reports from 8,707 patients. 430 of those reports, 1.8 percent, came from patients who later developed pancreatic cancer." },
+        { "host": "B", "text": "How well does it do?" },
+        { "host": "A", "text": "The best model reached an area under the curve of 0.960 for predicting cancer within a year of imaging, and 0.945 and 0.944 at 3 and 5 years. The authors say that outperformed guideline-based risk stratification by 0.161 to 0.235." },
+        { "host": "B", "text": "And against the radiologists themselves?" },
+        { "host": "A", "text": "For examinations taken within a year before diagnosis, radiologists identified potential cancer in 51.5 percent of cases. The model flagged 82.3 percent." },
+        { "host": "B", "text": "This is retrospective, not a prospective trial, and the authors claim only that it supports the potential of AI to complement existing approaches. It's also a single source." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Bipartisan governors' council asks Congress to leave states authority over AI deployment",
+      "lines": [
+        { "host": "A", "text": "In policy, the National Governors Association published AI governance principles, developed through its bipartisan Governors Council to Secure American AI Dominance." },
+        { "host": "B", "text": "What are they asking Congress for?" },
+        { "host": "A", "text": "A division of labour. The federal government should address national and international risks as AI is developed, while states retain the flexibility to protect people and govern AI use as AI is deployed." },
+        { "host": "B", "text": "Who is behind it?" },
+        { "host": "A", "text": "Governor Wes Moore of Maryland chairs the association, with Mike Braun of Indiana, Josh Stein of North Carolina and Spencer Cox of Utah on the council. Cox says governors in both parties believe states have a critical role, and they are calling on Congress to work with them on a federal framework." },
+        { "host": "B", "text": "The other principles ask for safeguards matched to credible, evidence-based risks, less unnecessary duplication and fewer conflicting requirements, and rules that do not favour larger companies. These are non-binding principles from a governors' association. No bill, no deadline." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Microsoft's Brad Smith says an AI-driven race to patch code will keep causing outages for months",
+      "lines": [
+        { "host": "A", "text": "Last one. Microsoft's president on why the outages keep coming." },
+        { "host": "B", "text": "Brad Smith told CBS's Face the Nation that the past week's disruptions were AI ripple effects. He said that earlier this year AI made it much easier to find vulnerabilities in code, and you can use that knowledge to patch the code, or, if you're a bad actor, to break in. So, he says, we've set off a race." },
+        { "host": "A", "text": "And the consequence of the race?" },
+        { "host": "B", "text": "Teams worldwide are using AI to find and fix vulnerabilities at a pace he says we have never seen before, which leaves less time to test changes on older infrastructure. Smith says we have to be prepared for the coming months, because the whole information infrastructure of the world is being upgraded right now." },
+        { "host": "A", "text": "The Director of National Intelligence, Jay Clayton, told CNN's State of the Union that any time there is a step change in technology, in both compute and applications, there will be bumps in the road. Treasury Secretary Scott Bessent told CBS that the patches banks are applying may cause a glitch." },
+        { "host": "B", "text": "Officials have not linked the outages to each other or to an attack. CNBC reports the aviation regulator attributed a nationwide ground stop to router upgrades producing a flood of data, with no indication of a cyberattack, and Microsoft attributed its email outage to an issue during an earlier network capacity upgrade. Neither Smith nor Clayton gave a figure for how many more to expect." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "A", "text": "That's The AI Edge for today. A lab publishing its own loss curve, agents that failed for a day and then needed minutes, and governors asking Congress to leave them room." },
+        { "host": "B", "text": "The full edition is on the site, with a link beside every claim, so you can follow any of it back yourself." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition. Thanks for being here." }
+      ]
+    }
+  ]
+}
