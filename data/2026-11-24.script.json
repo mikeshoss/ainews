@@ -1,0 +1,219 @@
+{
+  "date": "2026-11-24",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Tuesday, November 24th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds AI for work where being wrong is expensive. Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning, with a source beside every claim." },
+        { "host": "B", "text": "First, Nvidia's board brought Jensen Huang back as chief executive, and the stock closed 31% higher." },
+        { "host": "A", "text": "Second, hours later the Bureau of Industry and Security added 7 Megaspeed-linked entities to the Entity List." },
+        { "host": "B", "text": "And third, Anthropic published interviews with 58 enterprise customers, and two-thirds of them reported reduced hiring because of AI." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic launches Claude Ship, putting agents inside pull-request review, repair and approval",
+      "lines": [
+        { "host": "A", "text": "Let's start with Anthropic, which released the first product from a frontier lab to reach into the merge decision rather than stopping at review. It's called Claude Ship." },
+        { "host": "B", "text": "What does it actually do?" },
+        { "host": "A", "text": "Three things. Code review, which is generally available. A thing called PR Steward, in beta, that works on failing CI checks and merge conflicts, and which Anthropic says doesn't approve or merge pull requests. And Claude Approvals, also in beta, which applies an approval policy the team writes as a file in the repository." },
+        { "host": "B", "text": "So the model isn't just commenting on the code. It can sign off on it." },
+        { "host": "A", "text": "That's the line it crosses. Anthropic describes Claude Approvals as, quote, a smarter CODEOWNERS file." },
+        { "host": "B", "text": "And the evidence it works?" },
+        { "host": "A", "text": "Anthropic says that on its own Claude Code team, merged pull requests more than doubled from June to September, and the share of reverted pull requests fell by more than 40%. Those are its own numbers, from inside the company, and they have not been independently verified. No benchmark was published." },
+        { "host": "B", "text": "And Anthropic's own caveat, which it prints: Claude Ship uses AI and may miss bugs, security vulnerabilities, or other issues. It recommends running the approvals part in observe-only mode first. It's also unavailable to organisations using zero data retention, the HIPAA configuration, or customer-managed encryption keys." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Which brings us to a question somebody finally tried to answer with real money." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Benchmark settling real USDC payments finds 9 of 12 models fell for a seller's trap, wasting $21.0 to $70.8 per $100",
+      "lines": [
+        { "host": "A", "text": "There's a new benchmark on arXiv that handed agents a wallet and let them spend. The sellers were simulated, but the purchases settled in real USDC on Solana mainnet." },
+        { "host": "B", "text": "How did they do?" },
+        { "host": "A", "text": "Badly, mostly. 9 of 12 models fell for a seller's trap at least once. Repeat charges and above-list quotes accounted for 79% of the scam events." },
+        { "host": "B", "text": "Give me the headline figure." },
+        { "host": "A", "text": "With spending split equally between the two tracks, the paper estimates waste ranging from $21.0 per $100 for Claude Fable 5.2 to $70.8 for GPT-6 Luna. So at the bad end, a model loses most of what you give it." },
+        { "host": "B", "text": "Two caveats, and they matter here. It's a preprint, not peer reviewed. And it's effectively a single source: the authors give their affiliation as a company working in agent payments, so this is a company claim about a market the company is in. Nobody has replicated it." },
+        { "host": "A", "text": "Worth holding onto, though, because of what launched today." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to the security beat, where somebody ran a very patient experiment." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Dragos says three AI inference providers were breached and none noticed; OpenRouter names Together AI, Phala and Novita",
+      "lines": [
+        { "host": "A", "text": "The security firm Dragos sent a very large batch of prompts through widely used AI services between July and November, each seeded with a tracking link or a decoy credential, and then waited to see which ones came back." },
+        { "host": "B", "text": "And?" },
+        { "host": "A", "text": "SecurityWeek reports at least three inference providers were breached, and none of them detected the intrusion until they were notified. About 200 AWS test keys sent to a single provider were stolen in late October." },
+        { "host": "B", "text": "Some of those came from requests the provider had already rejected, before any model ran. Dragos's research chief said that shows the attacker was copying requests at the provider's front door." },
+        { "host": "A", "text": "BleepingComputer names the three that OpenRouter removed: Together AI, Phala and Novita. OpenRouter also stripped zero-data-retention status from 125 endpoints." },
+        { "host": "B", "text": "This is an update on something we covered on the 22nd, and the new part is the mechanism. One of the breaches started when an AI coding agent committed a credential to GitHub." },
+        { "host": "A", "text": "OpenRouter says its own systems were not breached. The providers' accounts of how it happened are their own, and Dragos has not identified the attackers." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "OpenAI and Cisco release Shirudo, an eBPF runtime that blocks exploits on running Linux systems before a patch ships",
+      "lines": [
+        { "host": "B", "text": "The defensive side of the same story. OpenAI and Cisco open-sourced a tool called Shirudo." },
+        { "host": "A", "text": "What problem is it solving?" },
+        { "host": "B", "text": "The gap between finding a flaw and patching it. Shirudo attaches a temporary safeguard to a running Linux service, so you can block the vulnerable code path without restarting anything." },
+        { "host": "A", "text": "And it works?" },
+        { "host": "B", "text": "OpenAI says that in a controlled test, a shield its Codex tool generated blocked an exploit attempt against a running Elasticsearch service without a restart. That's a company claim from a single controlled test, not an independent evaluation." },
+        { "host": "A", "text": "The Register gives the scale of the problem in a number: Cisco and OpenAI think this can help organisations cope with the flood of more than 100,000 software flaws reported this year, many of them after AI-powered bug finders arrived." },
+        { "host": "B", "text": "An operator still has to approve each shield before it goes into production." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "From defence to export policy, and a rule filed in Washington." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Commerce adds seven Megaspeed-linked entities in Malaysia, Singapore and Thailand to the Entity List",
+      "lines": [
+        { "host": "A", "text": "The Bureau of Industry and Security filed a final rule adding 7 entities to the Entity List, across Malaysia, Singapore and Thailand. The Federal Register has it on public inspection." },
+        { "host": "B", "text": "On what grounds?" },
+        { "host": "A", "text": "The rule's own words: the significant risk of these entities being or becoming involved in the diversion of advanced computing commodities to unauthorized end uses or end users. There's now a licence requirement for all items subject to the export regulations, and licences get reviewed under a presumption of denial. Shipments already en route may complete within 30 days." },
+        { "host": "B", "text": "Megaspeed is the company at the centre of the Nvidia affair, and this landed hours after the board brought Huang back. A spokesman for the Bureau told Semafor it is now also unlawful to export advanced SI chips to Megaspeed even if those chips are produced outside the United States." },
+        { "host": "A", "text": "One thing the rule does not do is name Nvidia, or name China, or describe any specific diversion. That connection comes from reporting and from a separate Justice Department investigation." },
+        { "host": "B", "text": "Malaysia's trade ministry told Al Jazeera it will notify Malaysian data-centre operators and advise them not to host or serve the designated firms, and that Malaysia will not allow itself to be used as a channel to circumvent export controls." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Drone Federation of India finds 689 government tenders seeking Chinese drones or parts, 580 of them from Army units",
+      "lines": [
+        { "host": "B", "text": "A different kind of dependency, in India." },
+        { "host": "A", "text": "The Drone Federation of India went through the government procurement portal and found 689 tenders seeking Chinese drones or components. 580 of those came from Indian Army units." },
+        { "host": "B", "text": "Is that getting better or worse?" },
+        { "host": "A", "text": "Worse. 355 tenders were issued so far this year, against 190 in all of last year. The Week reports the federation says all 16 of the most-named brands are headquartered in China." },
+        { "host": "B", "text": "And China's own export licensing on drone motors, speed controllers, autopilots and radios took effect on November 18th. So it's a supply risk as well as a security one." },
+        { "host": "A", "text": "These are the federation's own figures, and we have them from a single source, The Week, which cites Business Standard for the federation president's own words. India's defence ministry has not responded publicly." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "To medicine, and a study that separates two things vendors tend to sell together." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Largest expert grading of tumour-board AI tasks: clinicians scored summaries 3.57–4.59 of 5 but recommendations 2.0–3.6",
+      "lines": [
+        { "host": "A", "text": "This one's in npj Digital Medicine, so it's peer reviewed, not a vendor write-up. Four medical institutions, models from the DeepSeek, GPT, Gemini and Qwen families, graded by medical oncologists." },
+        { "host": "B", "text": "And the split?" },
+        { "host": "A", "text": "Clinicians rated the case summaries 3.57 to 4.59 out of 5.0 across institutions. Recommendation generation averaged 2.0 to 3.6." },
+        { "host": "B", "text": "So summarising the case is close to solved by the clinicians' own scoring, and proposing the treatment isn't." },
+        { "host": "A", "text": "That's the finding. And there's a second one that should worry anyone building automatic evaluations: the authors report experts frequently gave high ratings to responses that differed substantially from their own reference texts." },
+        { "host": "B", "text": "Which challenges the assumption behind reference-based metrics. Worth saying this measures ratings, not patient outcomes. It isn't a clinical trial." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Japanese survey: 40.3% of adults asked AI about health, and 12.8% of those users skipped or delayed a doctor's visit",
+      "lines": [
+        { "host": "B", "text": "And a measurement of what people are actually doing with these tools." },
+        { "host": "A", "text": "A survey of Japanese adults posted on medRxiv, run in October and November. 40.3% said they had asked a conversational AI about health in the past 6 months." },
+        { "host": "B", "text": "Did it change what they did next?" },
+        { "host": "A", "text": "For some. 12.8% of users decided not to visit a medical facility, or postponed a visit. That's 5.1% of all adults." },
+        { "host": "B", "text": "And it tracks with trust. Forgoing or delaying care was more frequent among users with high trust in AI, at 22.5%, against 10.9% among other users." },
+        { "host": "A", "text": "Caveats. It's a preprint, not peer reviewed, and it's a single source. It's a commercial web panel rather than a probability sample, so the prevalence may not generalise. And it records intentions about care, not whether any delay caused harm." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "Now to the courts, and a first for the states." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Oregon and Virginia sue over Grok, citing a study finding about 23,000 sexualised images appearing to depict children",
+      "lines": [
+        { "host": "B", "text": "Oregon and Virginia each filed against SpaceX over its Grok image generator. First states to do it." },
+        { "host": "A", "text": "On what theory?" },
+        { "host": "B", "text": "Consumer protection, not content. The allegation is that SpaceX failed to stop Grok and X users making and sharing sexualised deepfakes, especially alleged AI-generated child sexual abuse material, and then falsely represented the apps as generally safe." },
+        { "host": "A", "text": "What's in the complaint?" },
+        { "host": "B", "text": "The Oregon Department of Justice release cites a Center for Countering Digital Hate study covering late December into early January: about 3 million sexualised images created and posted on X, about 23,000 of them appearing to depict children. That's roughly one sexualised image of a child every 41 seconds. Nearly 30% of the identified child images were still publicly accessible a week or more later." },
+        { "host": "A", "text": "Oregon's attorney general said the lack of needed safety measures was considered a feature, not a bug, which they promoted as spicy mode." },
+        { "host": "B", "text": "The allegations are unproven. SpaceX told CNBC that when someone tries to break its safeguards and generate this content, it takes appropriate measures, including actioning accounts and notifying law enforcement. And those image figures are the Center for Countering Digital Hate's, as quoted by Oregon's office, not an independent audit." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Which leaves the story everything else happened around." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Nvidia's board unanimously reinstates Jensen Huang as CEO after US government input; shares close 31% higher",
+      "lines": [
+        { "host": "A", "text": "Nvidia's board voted unanimously to reinstate Jensen Huang as president, chief executive and a board director, effective immediately." },
+        { "host": "B", "text": "Ten days after he resigned." },
+        { "host": "A", "text": "Yes. And the board's own statement says it received input from senior levels of the United States government, and that it is confident the reinstatement poses no national security risk." },
+        { "host": "B", "text": "What did the market do?" },
+        { "host": "A", "text": "Shares rose as much as 36% during the session and closed 31% higher, per CNBC. The Nasdaq Composite gained 6.5% and the S&P 500 gained 4.7%, each its strongest session since April 2025." },
+        { "host": "B", "text": "And something is still open. The independent committee investigation will proceed to conclusion, so whether company secrets or national security were compromised is not settled." },
+        { "host": "A", "text": "Nvidia also says it's searching for a chief compliance officer, alongside the national security and export control oversight committee its board set up on November 17th." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Meta opens Muse, its agent that buys and books on a user's behalf, to all UK adults with 14 retail connectors",
+      "lines": [
+        { "host": "B", "text": "Last one, and it connects back to that benchmark. Meta opened Muse to every adult in the UK." },
+        { "host": "A", "text": "Muse being the agent that actually buys things." },
+        { "host": "B", "text": "Right. Anyone aged 18 or over, with 14 UK retail connectors at launch, and checkout running through Link, built by Stripe, or Shop Pay from Shopify." },
+        { "host": "A", "text": "This is an update on something we covered in October, when researchers escaped the Muse virtual machine 11 days before the US launch. The new part is the market." },
+        { "host": "B", "text": "And it's the first frontier-lab agent with checkout authority offered to an entire national market outside the United States. Into the Christmas shopping season." },
+        { "host": "A", "text": "What does Meta say about the risks?" },
+        { "host": "B", "text": "That Muse asks for your go-ahead before important actions like sending an email or making a purchase, that it can't see your passwords or card details, and that the conversations aren't shared with Meta's advertising systems. All of that is a company claim, Meta describing its own product. None of it has been independently verified, and Meta's post is the only account we could open." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "A", "text": "That's The AI Edge for today. A chip company's board reversing itself, an export rule for the firm at the centre of that story, and inference providers who couldn't tell they'd been robbed." },
+        { "host": "B", "text": "The full edition is on the site, with a link beside every claim, so you can follow any of it back to the source yourself." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition. Thanks for being here." }
+      ]
+    }
+  ]
+}
