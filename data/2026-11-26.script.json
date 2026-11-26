@@ -1,0 +1,195 @@
+{
+  "date": "2026-11-26",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Thursday, November 26th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue builds for high-consequence work, the kind that is dense with documents, decided by precedent, and signed off by someone whose licence is on the line. Epilogue is an AI venture studio and consultancy in Toronto. Visit epiloguelabs.com to learn more." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "This is what happened at the frontier of AI since yesterday morning. The advances, the research, and how it's being used for good and for harm." },
+        { "host": "B", "text": "First, Switzerland's national cyber security centre says it has received its first reports of attacks on Swiss organisations carried out with the assistance of an AI agent, and that operators of critical infrastructure across at least two sectors were hit." },
+        { "host": "A", "text": "Second, the Federal Communications Commission has conditionally authorised SpaceX to operate 1,000,000 satellites as data centres in orbit." },
+        { "host": "B", "text": "And third, a proposed Medicare Advantage rule published on November 25th replaces the term artificial intelligence with super intelligence throughout, citing Executive Order 14434." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "Anthropic says a Claude-written Rust rewrite of its Messages API cut CPU per request by about 70%",
+      "lines": [
+        { "host": "A", "text": "Anthropic migrated its Messages API to Rust, and says Claude wrote the first version of the core request path in about a week." },
+        { "host": "B", "text": "What did that buy them?" },
+        { "host": "A", "text": "Anthropic says the Rust version uses about 70% less CPU per request and more than 80% less memory per request, and cuts median time to first token by about 20%. Public traffic moved over in September 2026." },
+        { "host": "B", "text": "That's a company claim — all Anthropic's own figures, none independently verified." },
+        { "host": "A", "text": "The post is unusually candid about the mess. Audits of the ported tests found more than 100 weakened assertions. In April the Rust version passed about 98% of its tests while only about a quarter of real production inputs matched." },
+        { "host": "B", "text": "They used live production traffic as the correctness check instead. The match rate on inputs fell to 6.5% in early May before it got to 99.6%. And they don't publish absolute latency or cost numbers, so the percentages can't be checked against a baseline." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Shortened Lean proof of the same five Riemann theorems runs about 76,000 lines against about 17 million",
+      "lines": [
+        { "host": "A", "text": "Now, the Riemann proof got much shorter." },
+        { "host": "B", "text": "How much shorter?" },
+        { "host": "A", "text": "Michael Rubinstein at the University of Waterloo runs a verification page, and it says that on November 25th, Luke Sernau, with colleagues at Anthropic and Claude, posted a much shorter Lean proof of the same five theorems. It's a rewriting of the original in about 76,000 lines in the compact edition." },
+        { "host": "B", "text": "And the original?" },
+        { "host": "A", "text": "The same page records it as 175,187 files, about 17 million lines. The theorem statements are identical." },
+        { "host": "B", "text": "Did anyone check it?" },
+        { "host": "A", "text": "Two universities did. Andrew Sutherland at MIT reports the paranoid comparator returned, quote, your solution is okay, for both editions. Rubinstein reports all 794 modules of the compact edition compile and were accepted by all six kernels." },
+        { "host": "B", "text": "Worth keeping in mind what a machine-checked proof settles. It confirms the formal statements follow from the axioms. Whether they're what a mathematician means by the Riemann Hypothesis rests on the theorem statements, which these pages say are unchanged." },
+        { "host": "A", "text": "Though one run did not complete. Sutherland reports the readable edition's checker on one machine was stopped after reaching 70 GB on a 128 GB machine, so that judge exited 1." },
+        { "host": "B", "text": "And we're effectively on a single source here. No independent reporting on the shortened proof was found, and both sources are verification pages." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to the security beat." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Microsoft names Salt Typhoon, Crystal Typhoon and four more state groups using the ARTEX agentic framework",
+      "lines": [
+        { "host": "B", "text": "Microsoft published a defender guide naming six state-linked groups that have folded the open-source ARTEX framework into their tooling. Salt Typhoon and Crystal Typhoon are on the list." },
+        { "host": "A", "text": "What does the telemetry show?" },
+        { "host": "B", "text": "In one campaign Microsoft recorded more than 151,000 failed sign-ins, peaking at 2,900 failures per minute. In several intrusions driven by the same framework, privileged access came less than three hours after the attackers first touched the target." },
+        { "host": "A", "text": "And there's a faster case." },
+        { "host": "B", "text": "An AI agent went from searching GitHub for client secrets to taking data from Azure Key Vault in five minutes. Microsoft says the framework can advance from reconnaissance to persistent, privileged access in a matter of minutes." },
+        { "host": "A", "text": "Is there anything new to detect on?" },
+        { "host": "B", "text": "Microsoft's point is that it isn't new techniques. It says the tool uses common, pre-existing penetration testing tools, and that the durable signal is behavioural, a wide variety of requests in a brief time, retried at machine speed." },
+        { "host": "A", "text": "This is an update. We covered the UK NCSC's report of a rise in AI-assisted attacks yesterday, and this tool's use against US intelligence systems before that. What's new is the named actor list and the per-campaign numbers, and all of it is Microsoft's own telemetry, not independently verified." },
+        { "host": "B", "text": "And it gives no victim counts and no percentages. Of the named North Korean and Chinese groups, Microsoft attributes none to specific ARTEX activity except Storm-0940." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Swiss NCSC reports its first AI-agent-assisted breaches; Italy's CSIRT sees agents working in parallel",
+      "lines": [
+        { "host": "A", "text": "And now a national agency says these attacks are landing. Switzerland's cyber security centre says it has received its first reports of attacks on Swiss organisations carried out with the assistance of an AI agent." },
+        { "host": "B", "text": "How bad?" },
+        { "host": "A", "text": "The agency says various organisations and operators of critical infrastructure across at least two sectors were affected, and that in all the attacks known to it, the use of AI agents led to the successful compromise of the victim's systems." },
+        { "host": "B", "text": "Not attempted. Succeeded." },
+        { "host": "A", "text": "Succeeded. The agency also says the number of publicly available AI agents has almost doubled since October 2026, and it recommends patching critical vulnerabilities on internet-facing systems no later than 24 hours after release." },
+        { "host": "B", "text": "And Italy?" },
+        { "host": "A", "text": "BleepingComputer reports Italy's CSIRT saw multiple AI agents working in parallel to compromise a large number of systems within a few hours. In one setup a coordinator assigned tasks to five agents, covering information gathering through exploitation and persistence." },
+        { "host": "B", "text": "The Italian agency is quoted saying the agents went as far as writing malicious code in real time to evade endpoint defences." },
+        { "host": "A", "text": "This one's an update, and the gaps matter. Neither agency names a victim, a sector, a threat actor, or a count. Neither says how it established an agent rather than a script was responsible. The Swiss notice is dated November 24th, and the Italian half comes from BleepingComputer, because we couldn't find the Italian advisory itself." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Wiz: ARTEX and Cairn leak sequential \"intent IDs\" into victim logs, letting defenders link one attacker's runs",
+      "lines": [
+        { "host": "B", "text": "One for the defenders. Wiz says these attack frameworks leave a numbered trail in the victim's own logs." },
+        { "host": "A", "text": "How does that happen?" },
+        { "host": "B", "text": "The frameworks split an attack into numbered sub-goals, and the model copies those identifiers into accounts, file paths, resource names, even user-agent strings. Wiz calls it a harness leak." },
+        { "host": "A", "text": "Is that actually useful to a defender?" },
+        { "host": "B", "text": "In one intrusion Wiz found 36 of those identifiers on the AWS side and 34 on the Azure side, all from one climbing sequence. That tied both halves of the attack to the same run." },
+        { "host": "A", "text": "And it works because the counters behave differently." },
+        { "host": "B", "text": "One framework keeps everything on a single sequence that never resets by default, so the numbers climb across runs and across targets. The other uses zero-padded per-project counters, and resets them for every new project. Wiz reviewed 539 worker transcripts, roughly 10,900 shell commands, from an exposed instance." },
+        { "host": "A", "text": "Wiz's own caveat is the limit. It says the hits are useful tool markers and pacing clues, but not operator fingerprints. A shared counter identifies an installation, not a person or a group." },
+        { "host": "B", "text": "And this is one company's telemetry, from a single source, not independently verified. It also stops working the moment a framework stops writing those identifiers down." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Pentagon picks an Air Force program as its AI-aided classification system for more than 5 million people",
+      "lines": [
+        { "host": "A", "text": "The Pentagon has picked an Air Force program to handle classification and declassification across the department." },
+        { "host": "B", "text": "At what scale?" },
+        { "host": "A", "text": "Air and Space Forces Magazine reports the announcement came on November 23rd, and the system will serve more than 5 million troops, civilians and contractors. It grew out of an effort begun in 2025 to speed review of more than 4,000 security classification guides." },
+        { "host": "B", "text": "What's it cost?" },
+        { "host": "A", "text": "The program has received $2.35 million. The report also says the Pentagon spends as much as $15 billion a year on records management." },
+        { "host": "B", "text": "That is a very small budget for a system of that scope, and the report doesn't say which AI tools or models it will use, or give a firm timeline for full fielding." },
+        { "host": "A", "text": "A former Air Force chief information officer warned that adding AI elevates cybersecurity risks associated with an AI-enabled breach. This is an update on an announcement from earlier in the week, and only one outlet's account was available." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "DeepMind reports about 97% accuracy identifying molecules from mass spectra once agents are given tool skills",
+      "lines": [
+        { "host": "B", "text": "Google DeepMind has a result on identifying molecules from mass spectrometry data, and the interesting part is what made the difference." },
+        { "host": "A", "text": "Which was?" },
+        { "host": "B", "text": "Not a bigger model. Tools. On a benchmark of 100 compounds, Google DeepMind reports that without internet access or its new skills, accuracy stayed below 4% for all models. With internet access alone, the frontier models still missed a quarter to a third of spectra." },
+        { "host": "A", "text": "And with internet access plus the skills?" },
+        { "host": "B", "text": "All three models reached about 97% accuracy. The lightweight model matched the frontier ones once it had them." },
+        { "host": "A", "text": "That's a company claim from a single source. These are Google DeepMind's own figures on a benchmark it chose itself, with poorly fragmented recordings filtered out first and attempts over a one-hour budget counted as failures. There's no independent replication." },
+        { "host": "B", "text": "It is clear about the hard limits, though. It says mass spectra alone cannot distinguish mirror-image molecules or some closely related isomers. And genuinely new molecules, including many natural products, are not in any existing database, so the agent cannot confirm them." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "On to the rules, where one word quietly changed meaning." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "A Medicare rule renames AI \"Super Intelligence\" and would lift the ban on automated calls to Medicare enrollees",
+      "lines": [
+        { "host": "A", "text": "A Medicare Advantage proposed rule published in the Federal Register on November 25th carries a footnote that renames the whole field." },
+        { "host": "B", "text": "What does it say?" },
+        { "host": "A", "text": "The footnote says the terms super intelligence and S-I are used to refer to what was formerly known as artificial intelligence, and it cites Executive Order 14434, Inaugurating the Era of Super Intelligence. In the document, artificial intelligence appears once. Super intelligence appears throughout." },
+        { "host": "B", "text": "And that's not just vocabulary." },
+        { "host": "A", "text": "No, the substantive change sits in the same paragraph. The agency writes that the lack of clarity around super intelligence enabled platforms used for outreach, and the explicit prohibition on automated phone calls, has increasingly limited the ability of Special Needs Plans to leverage modern communication technologies. So it proposes to remove the prohibition on automated phone calls, subject to applicable federal and state communications, accessibility and privacy requirements." },
+        { "host": "B", "text": "The people on the receiving end are enrollees in Special Needs Plans. Right now a plan has to make at least three attempts to reach someone, explicitly excluding automated phone calls, to schedule a health risk assessment." },
+        { "host": "B", "text": "There's a payment piece too. The agency says it continues exploring the use of super intelligence and machine learning and inferred risk adjustment models within Medicare Advantage." },
+        { "host": "A", "text": "Nothing is final. Comments are due by 5 p.m. Eastern on January 19th, 2027. And the rule names no vendor or model, and sets no accuracy, disclosure or human-review requirement for automated outreach to this population." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "FCC conditionally authorises SpaceX to deploy 1,000,000 satellites for an orbital AI data-centre system",
+      "lines": [
+        { "host": "A", "text": "The Federal Communications Commission has conditionally authorised SpaceX to put data centres in orbit." },
+        { "host": "B", "text": "How many satellites?" },
+        { "host": "A", "text": "The order authorises a constellation of 1,000,000 satellites, in shells each spanning 50 kilometres, at altitudes from 500 to 1,002 kilometres. For scale, Gizmodo notes SpaceX has just over 11,000 Starlink satellites in orbit now." },
+        { "host": "B", "text": "What are the deadlines?" },
+        { "host": "A", "text": "The authorisation becomes null and void if SpaceX misses them. One satellite by November 25th, 2033. 10% of the maximum by November 25th, 2035. Half by November 25th, 2038. The rest by November 25th, 2040." },
+        { "host": "B", "text": "And it's only a partial approval." },
+        { "host": "A", "text": "It is. The Commission deferred the waiver SpaceX wanted on how it disposes of satellites, saying SpaceX has not provided sufficient information to determine whether its alternative disposal methods are compliant. SpaceX has to file a modification application before deploying any satellite that won't come down through the atmosphere." },
+        { "host": "B", "text": "Amazon's Kuiper, Viasat and the American Astronomical Society all petitioned to deny it. Amazon called the application a lofty ambition rather than a real plan, that risks real harm." },
+        { "host": "A", "text": "Here's what's missing. No compute figure and no power figure appears anywhere in the order or in any of the reporting we read, so what an orbital data centre means in megawatts is simply unstated. The Commission also said environmental concerns and objections about optical astronomy fell outside its authority." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "Apple removes MiniMax's Talkie companion app from its App Stores worldwide over sexual content",
+      "lines": [
+        { "host": "B", "text": "Apple has pulled a companion chatbot app called Talkie from its App Stores worldwide." },
+        { "host": "A", "text": "On what grounds?" },
+        { "host": "B", "text": "Apple confirmed it was for including sexual content. The app is made by MiniMax, based in Shanghai. Citing a Chinese research firm, 9to5Mac says Talkie had almost 11 million monthly active users across its website and app as of October, with new downloads down 32.2% in October from the month before." },
+        { "host": "A", "text": "What prompted it?" },
+        { "host": "B", "text": "An investigation by The Bureau of Investigative Journalism with ABC, which reported that Talkie's characters belittle and sexualise children, despite company policies against both. The Bureau says the app has been downloaded tens of millions of times, and that Ofcom research estimated 3% of UK eight to 14-year-olds visited it in a month." },
+        { "host": "A", "text": "What did it document?" },
+        { "host": "B", "text": "A 12-year-old girl received the message, you're a pathetic waste of space and you'll never amount to anything. And a mother documented more than 40 exchanges involving her 10 and 13-year-old daughters. Some of those characters were still live in November 2026." },
+        { "host": "A", "text": "Per the South China Morning Post, as relayed by 9to5Mac, Apple did not say whether this related to sexual content served to minors, and it hasn't published its reasoning. The app remained on Google Play. MiniMax did not respond to the Bureau's questions about its age checks, its policies, or how it uses conversations to train models." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "B", "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we've said, is on the site." },
+        { "host": "A", "text": "Our voices are AI-generated." },
+        { "host": "B", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
