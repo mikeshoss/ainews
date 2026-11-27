@@ -1,0 +1,474 @@
+{
+  "date": "2026-11-27",
+  "edition": "daily",
+  "generated_at": "2026-11-27T11:30:00Z",
+  "window": "26 Nov 11:40 → 27 Nov 11:05 UTC",
+  "title": "Switzerland counts five AI-agent attacks while China's models slip",
+  "summary": [
+    "Switzerland's federal cybersecurity office now has five confirmed cases of cyberattacks carried out with AI agents, its director Florian Schütz told Swiss radio: three hit critical infrastructure and two of the attacks succeeded. The office says the number of AI agents freely reachable over the internet has nearly doubled since October 2026. On the same day ThreatBook, which owns both the ARTEX and CyberStrikeAI offensive frameworks, permanently removed CyberStrikeAI's open-source version from GitHub, saying attackers worldwide are increasingly using such tools; it had already discontinued Artex on 8 October 2026.",
+    "Reuters reports that US compute restrictions and anti-distillation defences are stretching Chinese release cycles. Z.AI planned to ship GLM-5.5, designed with roughly 3 trillion parameters, this month and has not; Moonshot AI internally expects its six-month interval between major releases could stretch to 12 months or longer if overseas compute access is cut off entirely. Anthropic said in September it had observed nearly 200 million exchanges with its Claude models linked to suspected distillation campaigns. CNBC reports chip sellers have told neoclouds they will not supply Nvidia chips if any capacity will be rented to Chinese companies.",
+    "SAP is preparing to eliminate at least 10,000 positions as it reshapes its software business for the AI era, Bloomberg reported and CNBC relayed; US employers cited AI in 121,401 job-cut announcements through October 2026. And Nature reports unconfirmed rumours that leading AI labs hold algorithms that could break public-key cryptography in polynomial time."
+  ],
+  "sections": [
+    {
+      "name": "Frontier models & labs",
+      "items": [
+        {
+          "headline": "OpenAI says a GPT-6.2 billing mistake means Astra users now reach usage limits 40% faster",
+          "sources": [
+            { "name": "TechRadar", "url": "https://www.techradar.com/ai-platforms-assistants/chatgpt/weve-fixed-this-now-so-the-same-work-will-use-more-of-your-plans-usage-allowance-openai-admits-it-made-a-mistake-when-launching-gpt-6-2-and-now-paying-chatgpt-users-could-hit-their-usage-limits-up-to-40-percent-faster" }
+          ],
+          "bullets": [
+            "OpenAI's Thibault Sottiaux wrote on X on November 26, 2026: \"We made a billing mistake at launch of GPT-6.2 that incorrectly discounted GPT-6.2 Astra and Sol usage for most users.\" Per the same post, quoted by TechRadar: \"Comparing to last week, you will reach your limits 40% faster on GPT-6.2 Astra and 25% faster on Sol.\"",
+            "OpenAI says other models were not affected, that it will not charge users for the difference on past usage, and that it is adding one banked reset for everyone on Go, Plus, Pro and Business.",
+            "TechRadar notes OpenAI said at the GPT-6.2 launch that \"Both models deliver better results on demanding tasks with fewer output tokens, so you can get more done within your usage limits.\" TechRadar also points out that reaching a limit 40% faster is not mathematically equivalent to a 40% cut in the limit.",
+            "The figures are OpenAI's own and have not been independently measured; TechRadar is the only outlet found reporting the post."
+          ],
+          "topics": ["openai", "reasoning-models", "incidents"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Protester enters third day of hunger strike outside Anthropic's San Francisco offices over recursive self-improvement",
+          "sources": [
+            { "name": "Tom's Hardware", "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/activists-enter-third-day-of-hunger-strike-outside-anthropics-san-francisco-hq-over-recursive-ai-self-improvement-protester-threatens-to-go-40-days-and-target-openai-next" }
+          ],
+          "bullets": [
+            "Tom's Hardware reports that Elliot Callender is on his third day of a hunger strike in front of Anthropic's San Francisco offices, protesting the company's use of AI recursive self-improvement, and that one further protester has joined him.",
+            "Callender is quoted saying \"It would be bad press for Anthropic if I had to go 40+ days to pressure them,\" and says he intends to protest at OpenAI once he is done with Anthropic. He is urging California residents to call Governor Gavin Newsom to request a legislative session on recursive self-improvement, and says labs \"should stop doing RSI, put all of their money into lobbying for a bilateral AI treaty, and directly warn their users about their product.\"",
+            "The article notes there were protests in multiple locations on the day of Anthropic's IPO, November 19, and that Anthropic has said Claude wrote 90% of its own code back in September.",
+            "Tom's Hardware is the only outlet found reporting the strike; Anthropic's response, if any, is not reported."
+          ],
+          "topics": ["anthropic", "incidents", "scaling"],
+          "storylines": ["pacing-frontier-ai"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Research & papers",
+      "items": [
+        {
+          "headline": "Nature reports unconfirmed rumours that AI labs hold algorithms able to break public-key cryptography",
+          "sources": [
+            { "name": "Nature", "url": "https://www.nature.com/articles/d41586-026-03875-6" }
+          ],
+          "bullets": [
+            "Nature reports that \"several computer scientists have suggested on social media that the leading AI laboratories — companies such as OpenAI and Anthropic, both in San Francisco, California — have discovered algorithms that could derail the security of Internet communications,\" with the rumoured algorithms said to target RSA as well as \"more-advanced technologies.\"",
+            "Nature quotes Scott Aaronson of the University of Texas at Austin, writing on his blog: \"I'm virtually certain, from multiple reliable sources, that the AI labs are now sitting on one or more bombshells,\" adding that he feels \"much, much less confident about the specific nature of those bombshells\" until he sees details. Aaronson also tells Nature: \"The issue is that the idea that [the problem] was hard — because of needing exponential time — is dead.\"",
+            "Nature states plainly that \"the rumours could not be confirmed,\" and notes that a polynomial-time algorithm can still be useless in practice — it gives the example of one requiring n^10000 steps. It also says \"other breakthroughs announced by the AI companies this week make researchers cautiously optimistic that the mathematics of encryption could eventually come to help.\"",
+            "No paper, benchmark or lab statement is cited; the claims rest on social-media posts and unnamed sources relayed by researchers. Nothing here is a confirmed result."
+          ],
+          "topics": ["openai", "anthropic", "cyber-offense", "ai-for-science"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "ETH Zürich paper proves tokenisation admits no constant-factor approximation unless P equals NP",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.34938" }
+          ],
+          "bullets": [
+            "The paper states: \"we prove that, unless P=NP, no polynomial-time algorithm can find a tokeniser whose objective is within any constant factor of the optimum, meaning that tokenisation is not in the APX complexity class\" (arXiv:2611.34938).",
+            "The authors report the result holds \"for direct and bottom-up tokenisation, under both a compression or unigram log-likelihood objectives, and for binary or larger alphabets,\" and further show that \"even over unary alphabets, direct tokenisation is APX-hard, and thus admits no polynomial-time approximation scheme.\"",
+            "Authors are Violeta Kastreva, Philip Whittington, Dennis Komm and Tiago Pimentel; the paper lists the Department of Computer Science, ETH Zürich.",
+            "This is a theoretical hardness result about finding optimal tokenisers, not a claim about any deployed model's performance. The paper is a preprint and has not been peer reviewed."
+          ],
+          "topics": ["scaling", "evals"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "UK AI Security Institute finds the same monitor missed between 0.5% and 20.8% of attacks depending on attack optimisation",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.34934" },
+            { "name": "UK AI Security Institute", "url": "https://www.aisi.gov.uk/blog/attack-policy-selection-can-make-monitor-evaluations-misleading" }
+          ],
+          "bullets": [
+            "Evaluating \"an ex-production OpenAI monitor as a case study,\" the paper reports the measured false negative rate \"ranged from 0.5% to 20.8% across optimisation levels of a single method (reinforcement learning), and from 6.4% to 23.0% across methods at their best observed optimisation level (optimised prompting vs. transcript editing)\" (arXiv:2611.34934).",
+            "The paper states every attack policy \"was developed against proxy monitors only\" and that all reported results show the attacks transferring to the held-out GPT-5.4 target monitor. Its conclusion: \"an evaluation using only basic attack methods may give false confidence that a monitor is strong.\"",
+            "The AISI blog post adds that \"the miss rate for transcript editing attacks rose from 0.3% to 18.7% after 50 rewrites per transcript.\"",
+            "Authors are Charlie Griffin, Oliver Makins, Asa Cooper Stickland, Alessandro Abate, Yarin Gal, Abby D'Cruz and Xander Davies; AISI attributes the work to its Red Team. The paper is a preprint. It does not claim the monitor is weak in deployment — the authors say interpreting any single number as evidence about deployment \"requires a separate legitimacy argument.\""
+          ],
+          "topics": ["evals", "alignment", "agent-security", "uk", "openai"],
+          "storylines": ["agents-going-wrong"],
+          "impact": "mixed",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Claude Opus 5.5 reaches 68.5% on a cross-platform computer-use benchmark against a 77.3% human reference",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.34232" }
+          ],
+          "bullets": [
+            "On OS-Omni v1, the paper reports \"the strongest evaluated agent, Claude Opus 5.5, reaches 68.5% average success, trailing the 77.3% human reference by 8.8 points\" (arXiv:2611.34232).",
+            "The gap is uneven by platform: the paper reports \"frontier models exceeding humans on Linux but trailing them by more than 25 points on iOS and macOS.\"",
+            "Human studies show OS-Omni tasks \"require 67.54 interaction steps, substantially exceeding OSWorld references of 15.0 steps.\" The first release contains 48 tasks per platform and 12 cross-platform workflows.",
+            "The paper is a preprint listed for NeurIPS 2026 with 76 authors. It does not report how many models in total were evaluated."
+          ],
+          "topics": ["agents", "evals", "anthropic"],
+          "impact": "neutral",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Reinforcement learning on verified evidence cuts LLM agent collusion from 65.0% to 1.0% on held-out tasks",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.34215" }
+          ],
+          "bullets": [
+            "The paper reports that on Qwen3.6-27B, a LoRA adapter trained on six-episode interactions \"takes the collusion rate on held-out task sequences at the original ten-episode horizon from 65.0% to 1.0%, with no detectable change in task success\" (arXiv:2611.34215).",
+            "The authors describe the failure they are fixing: when LLM agents verify each other's work over a long interaction, \"they drift into collusion: they come to accept work without the evidence that the verification protocol requires.\" They trace it to accurate feedback accumulating in memory — an agent that follows the rule \"is told that its verdict was wrong whenever its peer was right, so breaking the rule is the reward-maximizing choice.\"",
+            "They report that \"collusion that converged in every interaction now converges in none,\" that the gain holds four episodes beyond the longest interaction seen in training, and that the trained 27B model \"colludes less than every model evaluated in the original study, closed-weight frontier models included.\"",
+            "Authors are at The University of Hong Kong and IQuest Research. The result is on one open-weight model at one scale; the paper is a preprint."
+          ],
+          "topics": ["agents", "alignment", "evals", "open-weights"],
+          "storylines": ["agents-going-wrong"],
+          "impact": "beneficial",
+          "flags": ["preprint"]
+        },
+        {
+          "headline": "Claude code reviewers at high effort still accepted at least 45% of plausible-but-wrong SWE-bench patches",
+          "sources": [
+            { "name": "arXiv", "url": "https://arxiv.org/abs/2611.33639" }
+          ],
+          "bullets": [
+            "Claude Opus 5.5, Sonnet 5.5 and Haiku 5.5 each reviewed the same 90 agent-written Django patches from SWE-bench Verified at low, medium and high effort; under strengthened tests \"55 patches were wrong and 35 correct\" (arXiv:2611.33639).",
+            "The paper reports high effort accepted fewer wrong patches than low in every model: \"false success .45 against .67 for Opus, .49 against .65 for Sonnet, .51 against .78 for Haiku.\" Its summary judgement: \"No setting is a strong gate: each accepted at least 45% of wrong patches.\"",
+            "For Opus, \"medium was non-inferior to high within 15 percentage points (difference .018, 95% CI [-.065, .108]) and cost 20% less, short of the preregistered 30%\"; for Sonnet and Haiku medium cost 39% and 51% less than high but was not shown non-inferior.",
+            "The paper states that for 32 of the 55 wrong patches the issue may not require what the failing test checks — so the wrongness of those is itself uncertain. The Opus study was preregistered and confirmatory; Sonnet and Haiku were exploratory. It is a preprint, from Trust My Bot and an independent researcher."
+          ],
+          "topics": ["agents", "evals", "anthropic"],
+          "impact": "mixed",
+          "flags": ["preprint"]
+        }
+      ]
+    },
+    {
+      "name": "Security, misuse & threat intelligence",
+      "items": [
+        {
+          "headline": "Swiss cyber office reports five confirmed AI-agent attacks, three on critical infrastructure and two successful",
+          "sources": [
+            { "name": "swissinfo.ch (Keystone-SDA)", "url": "https://www.swissinfo.ch/ger/erste-cyberangriffe-auf-kritische-infrastruktur-mit-ki-agenten/92439882" },
+            { "name": "The Hacker News", "url": "https://thehackernews.com/2026/11/switzerland-confirms-ai-assisted.html" }
+          ],
+          "bullets": [
+            "Florian Schütz, director of Switzerland's Bundesamt für Cybersicherheit (BACS), told Swiss Radio and Television's \"Heute Morgen\" on Thursday that there are currently \"fünf bestätigte Fälle\" — five confirmed cases. Three of the attacks involved critical infrastructure and in two cases the attacks were successful, per swissinfo.ch.",
+            "The office said the affected critical infrastructure spans \"mindestens zwei Sektoren\" — at least two sectors — and that companies were also attacked with the help of AI programs. BACS declined to tell Keystone-SDA which bodies or companies were involved.",
+            "swissinfo.ch reports BACS saying that since October 2026 the number of AI agents freely accessible over the internet has nearly doubled, and that their increasing use leads to faster and more frequent attacks with a correspondingly higher chance of success.",
+            "Schütz reported no major outages, and said it is still unclear who the attackers were. This is an update on the Swiss figures reported in yesterday's edition, which had not given a case count or a success count."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "agent-security", "agents", "incidents"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "harmful",
+          "flags": ["update"]
+        },
+        {
+          "headline": "ThreatBook permanently removes CyberStrikeAI from GitHub, seven weeks after discontinuing Artex",
+          "sources": [
+            { "name": "ThreatBook", "url": "https://threatbook.io/press-releases/threatbook-discontinues-cyberstrikeai-open-source-version" },
+            { "name": "Infosecurity Magazine", "url": "https://www.infosecurity-magazine.com/news/cyberstrikeai-shut-down-threatbook/" }
+          ],
+          "bullets": [
+            "ThreatBook announced \"the immediate discontinuation of AI penetration testing platform CyberStrikeAI (Open Source Version)\" and said \"the platform and related projects have been permanently removed from open source communities such as GitHub,\" warning users to \"be vigilant of forks that appear elsewhere and question their safety and reliability.\"",
+            "The company says it acted because \"attackers worldwide are increasingly using various AI-powered penetration testing tools, including CyberStrikeAI, to orchestrate malicious attacks,\" enabling \"strikes at speeds and scale that were recently unimaginable.\" It states it owns both CyberStrikeAI and Artex, and that the decision followed \"Artex's discontinuation on 8 October 2026.\"",
+            "ThreatBook says CyberStrikeAI launched in late 2025, \"had attracted thousands of stars on GitHub,\" and that public internet-scanning data pointed to several thousand instances in use worldwide. A closed-source enterprise edition continues through its RedAgents offering, \"exclusively granted to verified enterprises that hold valid authorization for the network assets they test.\"",
+            "Infosecurity Magazine adds that a November 25 Shadowserver Foundation report observed more than 4,200 servers running identified agentic offensive frameworks as of November 23, up from under 3,700 a day earlier, of which 6% were linked to CyberStrikeAI and 87% to ARTEX. The removal figures and misuse characterisation are ThreatBook's own; removing a repository does not remove existing forks, as the company itself notes."
+          ],
+          "topics": ["threat-intel", "cyber-offense", "agent-security", "open-weights"],
+          "storylines": ["ai-enabled-hacking"],
+          "impact": "mixed",
+          "flags": ["company-claim"]
+        }
+      ]
+    },
+    {
+      "name": "Military, defense & geopolitics",
+      "items": [
+        {
+          "headline": "Japan's Defense Ministry publishes a Defense AI Vision whose first principle keeps judgment and responsibility with humans",
+          "sources": [
+            { "name": "Japan Ministry of Defense", "url": "https://www.mod.go.jp/j/press/news/2026/11/27a.html" },
+            { "name": "CNA", "url": "https://www.cna.com.tw/news/aopl/202611270107.aspx" }
+          ],
+          "bullets": [
+            "The Ministry of Defense release, dated 令和8年11月27日 (27 November 2026), states the ministry \"formulated the 'Defense AI Vision' in order to connect AI and data to the strengthening of defense capabilities,\" and links the full text, a summary, and Minister Koizumi's press conferences of 11/27 and 11/15.",
+            "CNA reports the document is a revision of the basic AI-use policy Japan first set in 2024 and sets out five principles: judgment and responsibility are borne by humans; responsible use under laws and regulations; ensuring safety, reliability and transparency; continuous autonomous use of necessary technology and data; and rapid introduction while ensuring cybersecurity.",
+            "Defense Minister Shinjiro Koizumi said after the cabinet meeting that the goal is \"把AI與數據轉化為守護我國的力量\" — to turn AI and data into a force to protect the country, linking the Self-Defense Forces' capabilities into one integrated force, per CNA. The document says education and training will be thoroughly implemented to avoid over-trusting or over-depending on AI systems, and on autonomy says Japan should avoid depending on specific products and vendors so as not to lose \"our country's right of choice and the initiative in continued operation.\"",
+            "Named application areas are analysing and integrating information collected by radar and satellites, supporting commanders' decisions, and drafting policy. CNA reports Japan will fold AI-accelerated decision-making into its December revision of the three security documents, and that the ministry expects to set an implementation plan early next year. The Japanese-language full text was not read for this item; the five principles and the quote come from CNA's account."
+          ],
+          "topics": ["military", "japan", "autonomous-weapons"],
+          "impact": "neutral"
+        },
+        {
+          "headline": "Dutch trade minister tells parliament the Netherlands \"will not be told what to do\" over US limits on ASML sales to China",
+          "sources": [
+            { "name": "NL Times", "url": "https://nltimes.nl/2026/11/26/netherlands-draws-line-us-plan-restrict-asml-exports-china" }
+          ],
+          "bullets": [
+            "Foreign Trade and Development Cooperation Minister Sjoerd Sjoerdsma told the Tweede Kamer on Thursday that \"The Netherlands will not be told what to do,\" described the US MATCH Act as a matter of \"national interest\" and said the proposed restrictions went \"far, far too far.\" NL Times reports his position had broad backing from the lower house.",
+            "The MATCH Act calls for the US and its allies to jointly establish new export-control rules; if no agreement is reached, Washington would be able to impose restrictions on other countries unilaterally. On that extraterritorial reach Sjoerdsma said: \"That is where the Netherlands draws the line.\"",
+            "Sjoerdsma said the situation surrounding Nvidia has \"shifted the balance\" in the US, and criticised what he sees as a double standard: Washington is still allowing \"very advanced AI chips\" to be sent to China. \"That doesn't add up,\" he said.",
+            "The proposal is tied to the US defence budget, with a vote expected around mid-December; Sjoerdsma said the chance of the defence budget failing to pass is \"small\" and that the government will try to have the MATCH Act removed from it. NL Times is the only outlet found covering the debate; no US response is reported."
+          ],
+          "topics": ["export-controls", "chips", "china", "nvidia"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Reuters: Z.AI has missed its GLM-5.5 window and Moonshot expects release gaps to double if overseas compute is cut",
+          "sources": [
+            { "name": "Taipei Times (Reuters)", "url": "https://www.taipeitimes.com/News/biz/archives/2026/11/27/2003868457" },
+            { "name": "The Japan Times (Reuters)", "url": "https://www.japantimes.co.jp/business/2026/11/26/companies/china-ai-development-hurdles/" }
+          ],
+          "bullets": [
+            "Z.AI had planned to release its next flagship model, GLM-5.5, this month but has yet to do so, two people told Reuters. The model, \"designed with roughly 3 trillion parameters,\" has been held up partly by increasingly effective safeguards against distillation, and the new US computing restrictions could push its launch into the first quarter of next year or later. On Monday the company released GLM-5.4, built on an existing model with 750 billion parameters.",
+            "Moonshot AI \"internally expects its usual six-month interval between major releases could stretch to 12 months or longer if its overseas computing access is cut off entirely,\" per Reuters, with its next flagship Kimi K4 possibly delayed until around the middle of next year. Reuters reports Moonshot has stepped up efforts to rent computing power in Europe and plans to approach Chinese chipmakers about using their processors for training.",
+            "Reuters reports Anthropic said in September it had observed \"nearly 200 million exchanges with its Claude models linked to suspected distillation campaigns,\" attributing them to Chinese developers including Alibaba, Moonshot and Z.AI. As data from Anthropic's and OpenAI's models has become harder to obtain, \"Moonshot has begun distilling from models developed by Google and Meta Platforms Inc.\"",
+            "The Commerce Department rule that took effect on November 19 covers computing arrangements at data centres outside the US above a threshold roughly equivalent to 750 of Nvidia's H100 chips; operators already providing covered services have 90 days to obtain licences. The reporting is a Reuters exclusive resting on anonymous sources; neither company is quoted on the record. Reuters' own page could not be opened from here, so this item is taken from the Taipei Times and Japan Times republications."
+          ],
+          "topics": ["china", "export-controls", "compute", "anthropic", "openai"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Health, science & medicine",
+      "items": [
+        {
+          "headline": "Twenty-year BrainGate analysis: Utah arrays recorded spiking on 35.6% of electrodes, 11 of 14 gave usable decoding",
+          "sources": [
+            { "name": "Nature Medicine", "url": "https://www.nature.com/articles/s41591-026-04530-3" }
+          ],
+          "bullets": [
+            "The study is \"a comprehensive 20-year evaluation of neural data from the BrainGate clinical trials, spanning 2,289 recording sessions, 20 arrays and 14 participants.\" On average, \"arrays successfully recorded neural spiking waveforms on 35.6% of electrodes, with a modest 7 percentage point decline over the recording period (up to 7.3 years).\"",
+            "Using a \"decoding signal-to-noise ratio\" (dSNR) metric, the authors found \"11 of 14 arrays provided meaningful movement decoding throughout participation (median dSNR >1), with three achieving >70% accuracy compared with able-bodied mouse control.\"",
+            "They also report dSNR increased approximately logarithmically with the number of electrodes, \"providing a pathway for scaling performance\" — the first systematic longevity and stability assessment for implanted brain-computer interfaces, which the paper says had previously been \"limited to one or two individuals.\"",
+            "The authors' own caveat: while longevity exceeded previous nonhuman primate studies, \"achieving peak performance consistently may require further improvements.\" This is a single peer-reviewed paper covering one array type in one trial programme."
+          ],
+          "topics": ["healthcare", "ai-for-science"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Nature Machine Intelligence publishes EVA, an RNA foundation model trained on over 114 million full-length sequences",
+          "sources": [
+            { "name": "Nature Machine Intelligence", "url": "https://www.nature.com/articles/s42256-026-01321-w" }
+          ],
+          "bullets": [
+            "EVA (Evolutionary Versatile Architect) is \"a long-context generative RNA foundation model trained on over 114 million full-length RNA sequences,\" integrating a mixture-of-experts architecture with an 8,192-token context window.",
+            "In wet-lab assays, the authors report \"our best designed aptamers improve both fluorescence intensity and binding affinity by roughly twofold over the positive control.\" In systematic evaluations, \"EVA achieves state-of-the-art performance across seven of nine established benchmarks, generating sequences with more than tenfold lower Kullback–Leibler divergence to natural RNA secondary-structure feature distributions than the previous open-source RNA generator.\"",
+            "The paper covers de novo design and targeted optimisation of transfer RNAs, aptamers, CRISPR guide RNAs, messenger RNA and circular RNA therapeutics.",
+            "The wet-lab validation is limited to aptamers; the therapeutic RNA classes are design results, not clinical ones. The paper is corresponding-authored by Yi Yang and Shuangjia Zheng and was published on 27 November 2026."
+          ],
+          "topics": ["ai-for-science", "drug-discovery"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "ProDiT generates proteins conditioned on 463 Gene Ontology terms after training on 128 million proteins",
+          "sources": [
+            { "name": "Nature Machine Intelligence", "url": "https://www.nature.com/articles/s42256-026-01329-2" }
+          ],
+          "bullets": [
+            "ProDiT is \"a multimodal diffusion model that unifies sequence and structure modelling paradigms,\" trained on \"sequences, three-dimensional structures and annotations for 128 million proteins across the evolutionary landscape.\" The paper reports benchmarking across 915 Gene Ontology terms and finding generations predicted as functional for 463 of them, \"including terms represented in less than 0.01% of training examples in UniProtKB.\"",
+            "The authors introduce a diffusion sampling protocol for multistate proteins and \"illustrate this protocol by computationally scaffolding enzymatic active sites from carbonic anhydrase and lysozyme such that they are predicted to be deactivated by a calcium effector.\"",
+            "They report ProDiT \"generates significantly more successful sequences than ESM3 and EvoDiff across all sequence lengths,\" surpasses ESM3's structure-generation success rate and \"matches the performance of RFdiffusion,\" with the structure-quality difference largest above 300 amino acids.",
+            "Every functional claim in the paper is computationally predicted — the title says so — and the carbonic anhydrase and lysozyme designs were not made or tested in a lab. Corresponding author is Bonnie Berger; published 27 November 2026."
+          ],
+          "topics": ["ai-for-science", "drug-discovery"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Nature Machine Intelligence paper fits over 2,000 models to show measurement noise scales performance logarithmically",
+          "sources": [
+            { "name": "Nature Machine Intelligence", "url": "https://www.nature.com/articles/s42256-026-01332-7" }
+          ],
+          "bullets": [
+            "The authors introduce mutual information with auxiliary signals as a performance metric and, \"by fitting more than 2,000 representation learning models across three data modalities (gene expression, sequence and image data),\" show that noise defines a distinct axis along which performance improves, and that \"noise scaling follows a logarithmic law.\"",
+            "They report the practical split: \"protein-sequence representations tolerate error rates in modern sequencing data, whereas single-cell transcriptomic models remain noise limited at current measurement signal-to-noise ratio levels\" — meaning better instruments, not bigger models, are the binding constraint for single-cell work.",
+            "Within transcriptomic cell-state representation models, \"transformer-based models are more noise robust but less performant than variational autoencoders.\"",
+            "The law is derived from a model of noise propagation and used to define noise sensitivity and model capacity as benchmarking metrics; the authors frame it as support for future model evaluation and experimental design rather than a result about any one model. Corresponding authors are Gokul Gowri and Allon Klein; published 26 November 2026."
+          ],
+          "topics": ["ai-for-science", "scaling", "evals"],
+          "impact": "beneficial",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Smartwatch loss-of-pulse model reaches 48.5% event sensitivity at zero false alarms in hospital proxy studies",
+          "sources": [
+            { "name": "medRxiv", "url": "https://www.medrxiv.org/content/10.64898/2026.11.25.26368935v1" }
+          ],
+          "bullets": [
+            "The authors used in-hospital proxy data — wrist photoplethysmography and accelerometry during baseline and induced loss-of-pulse periods in 31 patients undergoing catheter ablation of ventricular arrhythmias and defibrillation threshold testing during subcutaneous ICD implantation, with 33 loss-of-pulse events included. False alarms were counted using recordings from 100 healthy volunteers during unsupervised daily activities.",
+            "A recurrent neural network, cross-validated with one fold per patient with events, reached \"AUC-ROC was 86.8% (95% CI: 79.7 to 92.5%) and the Area Under the Precision-Recall Curve (PR-AUC) was 52.4% (95% CI: 38.6 to 66.2%).\" At a false alarm rate of zero, \"the event-level sensitivity on BECA-S2 was 48.5% (95% CI: 32.1 to 65.5%). Higher sensitivities came at the cost of more false alarms.\"",
+            "The authors report that without mitigation, target leakage from the electrical VF induction and defibrillation shocks \"inflated the model scores by 35.3% (95% CI: 11.5 to 61.4%) of the model's discriminative range\" — a warning they direct at future studies of induced loss of pulse.",
+            "Their own conclusion is feasibility only: \"Larger studies with data more representative of OHCA are needed.\" No out-of-hospital cardiac arrest data was used. Posted 26 November 2026; a preprint, not peer reviewed."
+          ],
+          "topics": ["healthcare", "evals"],
+          "impact": "mixed",
+          "flags": ["preprint", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Policy, regulation & law",
+      "items": [
+        {
+          "headline": "Commerce opens a second pathway for US \"Super Intelligence\" export packages, with applications from November 30",
+          "sources": [
+            { "name": "Federal Register", "url": "https://www.federalregister.gov/documents/2026/11/27/2026-24107/american-si-exports-program-on-demand-consortia-for-specific-foreign-opportunities" },
+            { "name": "Federal Register (full text)", "url": "https://www.federalregister.gov/documents/full_text/text/2026/11/27/2026-24107.txt" }
+          ],
+          "bullets": [
+            "The International Trade Administration notice (Federal Register Vol. 91, No. 227, pages 76747-76749, Docket No. 260922-0056) establishes the \"On-Demand Consortia\" pathway under the Super Intelligence (SI) Exports Program authorised by Executive Order 14320. \"Applications for designation under the On-Demand Consortia pathway may be submitted beginning November 30, 2026,\" on a rolling basis.",
+            "On-Demand Consortia are industry-led groupings formed around one identified foreign export opportunity, and the notice states they \"are not themselves required to cover the full five layers of the SI technology stack described in Section III of the April 2026 CFP\" — they need only the layers the buyer demands, provided they attest the resulting package is full-stack.",
+            "The notice also loosens ownership rules: a subsidiary, affiliate or branch whose ultimate parent is foreign-organised \"is eligible to be an anchor member\" if the entity itself is US-organised with its principal place of business in the United States, and the Secretary may waive the US ownership and control requirement \"if doing so would advance the national interest of the United States.\" It says there is \"no numerical cap on the number of packages that may be designated.\"",
+            "A footnote gives the reason for the programme's name: per Executive Order 14434, \"federal departments and agencies shall, to the maximum extent permitted by law, use the terms ``Super Intelligence'' and ``SI'' in place of ``Artificial Intelligence'' and ``AI'' in public communications.\" The notice is internally inconsistent on one date, giving the Pre-Set Consortia call for proposals as released \"on April 10, 2026\" in its summary and \"on April 1, 2026 (91 FR 18412)\" in its background."
+          ],
+          "topics": ["us-federal-policy", "export-controls", "compute"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "EU AI Office calls for experts on embedded evaluations of systemic-risk general-purpose AI models by December 9",
+          "sources": [
+            { "name": "European Commission", "url": "https://digital-strategy.ec.europa.eu/en/news/call-participants-workshop-evaluations-gpai-models-systemic-risk" }
+          ],
+          "bullets": [
+            "The AI Office is seeking expressions of interest and proposals for an online workshop in January 2027 on \"embedded evaluations\" as a way to assess systemic risks from general-purpose AI models. Expressions of interest and proposals are due by 9 December 2026, with selection and a written comment round on a consolidated document expected in December 2026.",
+            "The call defines embedded evaluation as external, qualified independent evaluators receiving employee-like access to a provider's internal models, systems, staff and documentation over an extended period — a materially deeper form of access than the external testing the AI Act framework has relied on so far.",
+            "Stated focus areas include evaluator qualifications, scope of access, duration and frequency, publication rights, grounds for redaction or delay, handling of redacted material, and independence safeguards such as cooling-off periods and evaluator rotation. Members of the AI Office's Network of Evaluators may express interest without a proposal if they show recent or ongoing relevant work.",
+            "The page states the call does not reflect an official position of the AI Office or the Commission and is not guidance on the AI Act, and gives no participant cap. Published 27 November 2026."
+          ],
+          "topics": ["eu-ai-act", "evals", "alignment"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "UK government report puts current national AI compute demand at 33 to 40 billion H100-equivalent GPU hours a year",
+          "sources": [
+            { "name": "GOV.UK (Technopolis for BIST)", "url": "https://www.gov.uk/government/publications/quantifying-artificial-intelligence-ai-compute-user-demand/quantifying-aritifical-intelligence-ai-compute-user-demand-executive-summary" },
+            { "name": "GOV.UK", "url": "https://www.gov.uk/government/publications/quantifying-artificial-intelligence-ai-compute-user-demand" }
+          ],
+          "bullets": [
+            "The executive summary states current demand for AI compute \"is estimated at 33 to 40 billion H100-equivalent Graphics Processing Unit (GPU) hours per year,\" which it calls \"equivalent to approximately 750 Isambard-AIs running simultaneously across a full year.\" In power terms: \"5.1 to 6.1 gigawatts (GW) of electrical demand, or roughly 12% of UK peak electricity demand and 5% of current UK installed electricity generation capacity.\"",
+            "Under the most likely scenario of continued high growth, demand \"is expected to reach up to 1,142 billion GPU hours by 2031,\" implying \"11 to 21 GW of power by 2030 … assuming no change in the efficiency of systems.\" Sovereign demand, measured through Trusted Research Environment requirements, is \"approximately 76% of total projected demand, equivalent to 444 billion GPU hours and 6.2 GW of power by 2030.\"",
+            "The report also finds AI is now a cross-disciplinary tool: \"The share of UK research publications using AI rose from 9.5% in 2021 to 14.4% in 2025 (a 4.9 percentage point increase), with growth across every field.\"",
+            "The work was produced by Technopolis, commissioned by the Department for Business, Innovation, Science and Trade, and published on GOV.UK on 26 November 2026 as an independent report. These are survey-based demand estimates, not metered consumption, and the 2030-31 figures are scenario projections. GOV.UK does not publish a time of day, so the exact position of publication inside the coverage window could not be confirmed."
+          ],
+          "topics": ["uk", "compute", "energy", "datacenters"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Compute, chips & infrastructure",
+      "items": [
+        {
+          "headline": "Chip sellers tell neoclouds they will not supply Nvidia chips if any capacity is rented to Chinese companies",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/26/neoclouds-nvidia-china-ai.html" }
+          ],
+          "bullets": [
+            "CNBC reports: \"Chip sellers have told neoclouds they won't supply Nvidia chips if any of the computing capacity will be rented to Chinese companies, two people familiar with the situation told CNBC.\" That is stricter than the earlier threshold — \"Prior to the new rule's announcement, Nvidia had said it would not sell its chips to customers renting more than 50% of the graphics processing units, or GPUs, to Chinese companies.\"",
+            "The Bureau of Industry and Security interim final rule was announced on November 16 and came into effect on November 19. US Trade Representative Jamieson Greer told CNBC's \"Squawk Box\" that it was meant to close \"loopholes… either smuggling through places like Southeast Asia or remote access from data centers in third countries.\"",
+            "CNBC adds that Nvidia warned customers the proposed Remote Access Security Act — passed by the House but not the Senate — would give the US government broader authority over cloud access, \"potentially exposing both parties to 'legal action'.\"",
+            "Nvidia and BIS did not immediately respond to CNBC's request for comment, and the account rests on two anonymous sources. This updates yesterday's edition, which reported chip sellers hunting for new buyers; the new fact is the all-or-nothing condition on Chinese renters. CNBC's page shows a date but no time of day."
+          ],
+          "topics": ["nvidia", "export-controls", "china", "datacenters"],
+          "storylines": ["china-distillation-export-controls"],
+          "impact": "neutral",
+          "flags": ["update", "single-source"]
+        },
+        {
+          "headline": "Texas restarts approvals for more than 1,800 paused data centre projects before the governor changes",
+          "sources": [
+            { "name": "Tom's Hardware", "url": "https://www.tomshardware.com/tech-industry/data-centers/texas-lifts-freeze-on-1-800-data-center-projects-in-greg-abbott-u-turn-companies-rush-for-permits-before-gina-hinojosas-january-arrival" }
+          ],
+          "bullets": [
+            "Tom's Hardware reports: \"After slamming the brakes on more than 1,800 data center projects in August, Texas has once again started approving them following a new directive from outgoing Republican governor Greg Abbott's office.\" When the pause was imposed, \"the move meant that 474 gigawatts of new power requests became subject to the moratorium.\"",
+            "Abbott's office has confirmed that ERCOT, which runs the state grid, \"has finished gathering the information that it needed on how data centers affect local communities.\" As recently as October, Texas \"suspended a further 17 data center construction permits and shut down an automated portal that was found to still be approving new permits.\"",
+            "Citing the Financial Times, the article says data centre builders are rushing to get approvals in before incoming Democratic governor Gina Hinojosa arrives in January; Hinojosa \"has already pledged to rein in new data center construction.\" For comparison it notes New York's year-long ban on data centre projects larger than 50 megawatts, in force earlier this year.",
+            "The article says processing new power requests is not expected to happen quickly even with ERCOT's work complete. The underlying reporting is the FT's; Tom's Hardware is the version that could be opened from here, and no Abbott office statement is quoted directly."
+          ],
+          "topics": ["datacenters", "energy", "us-state-policy"],
+          "impact": "mixed",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Network operator says optical equipment lead times now reach 18 months and prices are up about 50% this year",
+          "sources": [
+            { "name": "The Register", "url": "https://www.theregister.com/networks/2026/11/27/ai-boom-leaves-network-operators-waiting-up-to-18-months-for-kit/5312366" }
+          ],
+          "bullets": [
+            "The Register reports network operator RETN saying \"optical networking equipment prices have risen by around 50 percent since the start of 2026,\" and that kit which \"used to arrive within three months now taking 12 to 15, and some orders taking up to 18 months.\" RETN says operators and telcos are now directly competing with AI data centres for chips and components.",
+            "For scale, The Register notes separately that \"memory prices have soared by four or five times over the past year or so.\" RETN lists raw material shortages, skilled labour shortages, energy constraints, geopolitical tensions and logistics as compounding factors alongside hyperscaler demand.",
+            "In its report \"AI, Connected,\" RETN says developers building outside established data centre hubs \"may need to involve network carriers two to five years before opening,\" and gives a resilience example: \"A diverse circuit might cost €1,800 ($1,975) a month instead of €600 ($658).\"",
+            "The price, lead-time and cost figures are RETN's own, drawn from its own report and not independently verified; The Register is the only outlet found carrying them."
+          ],
+          "topics": ["datacenters", "compute", "chips"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        },
+        {
+          "headline": "Taiwan raises its 2026 growth forecast to 13.28% from 11.05% on AI-driven semiconductor exports",
+          "sources": [
+            { "name": "Seoul Economic Daily", "url": "https://en.sedaily.com/world/2026/11/27/taiwan-lifts-2026-growth-forecast-to-1328-percent-on-ai-boom" }
+          ],
+          "bullets": [
+            "Taiwan's Directorate-General of Budget, Accounting and Statistics raised its 2026 GDP growth forecast to 13.28% from 11.05%, an increase of 2.23 percentage points, the paper reports citing Taiwan's Central News Agency and Reuters. \"That would be the highest rate since 1978, when the economy expanded 13.56%.\"",
+            "The agency said the economy grew 14.39% in the third quarter from a year earlier and projected 10.42% growth in the fourth quarter. It raised its 2027 forecast to 6.51% from 6.04%, an increase of 0.47 percentage point.",
+            "The report puts Taiwan's recent trajectory at 1.08% growth in 2023, 5.29% in 2024 and 8.94% last year, and attributes the acceleration to semiconductor companies led by TSMC driving exports as global demand for AI chips climbs.",
+            "This is a single secondary account: the page states it is AI-translated from Korean and that quotes from foreign sources are based on Korean-language reports. The underlying CNA and Reuters reports could not be opened from here."
+          ],
+          "topics": ["chips", "compute", "taiwan"],
+          "storylines": ["compute-money"],
+          "impact": "neutral",
+          "flags": ["single-source"]
+        },
+        {
+          "headline": "Fujitsu opens European orders for its 2nm Monaka CPU server, claiming twice the AI inference throughput of other CPUs",
+          "sources": [
+            { "name": "Data Center Dynamics", "url": "https://www.datacenterdynamics.com/en/news/fujitsu-monaka-cpu-server-will-be-available-to-european-customers-from-december-2026/" }
+          ],
+          "bullets": [
+            "Fujitsu subsidiary Fsas Technologies has announced Europe-wide availability of the Fujitsu Monaka CPU server, with orders from December 2026 and shipments \"commencing sequentially from April 2027,\" per DCD.",
+            "Built on 2nm technology, the CPUs have \"a maximum operating frequency of 3.8GHz and a memory transfer speed of 8,800 MTps.\" The 1U server \"can operate in ambient temperatures up to 40°C (104°F) with air cooling and water temperatures up to 45°C (113°F) with water cooling, without requiring specialized cooling infrastructure, reducing server cooling power consumption by up to 80 percent.\"",
+            "Fujitsu \"claims it delivers twice the AI inference throughput and superior power efficiency compared to other CPUs, therefore halving the number of servers and power consumption required for equivalent processing loads,\" per DCD. Fsas Technologies Europe head Christian Leutner is quoted on running \"AI inference efficiently on CPU-based systems.\"",
+            "The throughput, efficiency and cooling figures are Fujitsu's own and the comparison CPUs are not named; DCD is the only outlet found reporting the European launch."
+          ],
+          "topics": ["chips", "compute", "energy"],
+          "impact": "neutral",
+          "flags": ["company-claim", "single-source"]
+        }
+      ]
+    },
+    {
+      "name": "Deployment & impact",
+      "items": [
+        {
+          "headline": "SAP is preparing to eliminate at least 10,000 positions as it reshapes its business for AI, Bloomberg reports",
+          "sources": [
+            { "name": "CNBC", "url": "https://www.cnbc.com/2026/11/27/sap-job-cuts-ai-restructuring.html" }
+          ],
+          "bullets": [
+            "CNBC reports: \"SAP is preparing a plan to eliminate at least 10,000 positions as the German firm reshapes its software business for the artificial intelligence era, Bloomberg reported on Thursday, citing people familiar with the matter.\" The number could change after labour negotiations. SAP employs more than 110,000 people worldwide, and Bloomberg reported all departments were asked to identify potential cuts, with product, engineering and sales in particular focus.",
+            "For scale, CNBC cites a November 5 report from Challenger, Gray & Christmas: US employers \"cited AI in 121,401 job-cut announcements through October 2026, accounting for about 20% of the total.\" It also lists WiseTech Global's roughly 2,000 cuts over two years announced in February, Atlassian's roughly 1,600 in March and Cloudflare's more than 1,100 in May, each tied to AI.",
+            "The report landed as SAP flagged a cybersecurity attack. A company spokesperson told CNBC: \"SAP has identified suspicious activity and promptly implemented the necessary measures to protect its customers and preserve the security of its services,\" and said it had found \"no evidence of unauthorized access to customer business data.\"",
+            "SAP did not respond to CNBC's request for comment on the job cuts, so the figure is unconfirmed by the company. CNBC notes SAP's 2024 reorganisation eliminated around 10,000 positions mainly through voluntary departures and retraining, after which headcount stayed relatively flat. The Bloomberg original could not be opened from here; all figures above are CNBC's."
+          ],
+          "topics": ["labor", "sap", "incidents"],
+          "impact": "harmful",
+          "flags": ["single-source"]
+        }
+      ]
+    }
+  ]
+}

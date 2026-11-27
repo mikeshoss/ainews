@@ -1,0 +1,215 @@
+{
+  "date": "2026-11-27",
+  "format": "dialogue",
+  "hosts": {
+    "A": { "name": "Maya", "voice": "marin" },
+    "B": { "name": "Alex", "voice": "cedar" }
+  },
+  "blocks": [
+    {
+      "type": "intro",
+      "lines": [
+        { "host": "A", "text": "It's Friday, November 27th, and this is The AI Edge, presented by Epilogue." },
+        { "host": "B", "text": "Epilogue ships systems that know what they know, show their work, and fail visibly instead of quietly. Epilogue works the way this briefing works, checking every claim against the primary source and leaving out whatever doesn't reconcile. More at epiloguelabs.com." },
+        { "host": "A", "text": "I'm Maya." },
+        { "host": "B", "text": "And I'm Alex." },
+        { "host": "A", "text": "Here's what moved at the frontier of AI since yesterday morning. The advances, the research, and how it's being used for good and for harm, every claim sourced." },
+        { "host": "B", "text": "First, Switzerland's federal cybersecurity office now has five confirmed cases of attacks carried out with AI agents. Three hit critical infrastructure, and two of the attacks succeeded." },
+        { "host": "A", "text": "Second, Reuters reports that American compute restrictions and anti-distillation defences are stretching how often Chinese labs can ship, with one flagship model already past its window." },
+        { "host": "B", "text": "And third, SAP is preparing to cut at least 10,000 positions as it reshapes its software business for AI, according to a Bloomberg report relayed by CNBC." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Frontier models & labs",
+      "headline": "OpenAI says a GPT-6.2 billing mistake means Astra users now reach usage limits 40% faster",
+      "lines": [
+        { "host": "A", "text": "Let's start with a correction OpenAI made to its own bill. What happened?" },
+        { "host": "B", "text": "OpenAI's Thibault Sottiaux posted on X on November 26th that the company made a billing mistake at the launch of GPT-6.2, and had been incorrectly discounting usage of the Astra and Sol models for most users." },
+        { "host": "A", "text": "And now that it's fixed?" },
+        { "host": "B", "text": "In OpenAI's own words, comparing to last week, you will reach your limits 40% faster on GPT-6.2 Astra and 25% faster on Sol. Other models weren't affected, OpenAI says it won't charge users for the difference on past usage, and it's adding one banked reset for everyone on Go, Plus, Pro and Business." },
+        { "host": "A", "text": "Two caveats. These are the company's own numbers, not independently verified, and only one outlet has the post. TechRadar also makes a fair point of arithmetic: hitting a limit 40% faster is not the same as cutting the limit by 40%." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "From a billing slip to the research, and a story nobody can actually confirm." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Nature reports unconfirmed rumours that AI labs hold algorithms able to break public-key cryptography",
+      "lines": [
+        { "host": "A", "text": "Nature reports that several computer scientists have suggested on social media that the leading AI laboratories, companies such as OpenAI and Anthropic, have discovered algorithms that could derail the security of internet communications. The rumoured algorithms are said to target RSA." },
+        { "host": "B", "text": "Who's saying it?" },
+        { "host": "A", "text": "Nature quotes Scott Aaronson at the University of Texas at Austin, writing on his blog, that he is virtually certain, from multiple reliable sources, that the AI labs are now sitting on one or more bombshells. He adds that he feels much, much less confident about the specific nature of those bombshells until he sees details." },
+        { "host": "B", "text": "And the caveat is the whole story. Nature states plainly that the rumours could not be confirmed. There's no paper, no benchmark, no lab statement, and Nature is the single source. Nature also notes an algorithm can be polynomial-time on paper and useless in practice." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "UK AI Security Institute finds the same monitor missed between 0.5% and 20.8% of attacks depending on attack optimisation",
+      "lines": [
+        { "host": "B", "text": "The UK AI Security Institute evaluated what it calls an ex-production OpenAI monitor as a case study, asking how much the measured miss rate depends on how hard you try to beat it." },
+        { "host": "A", "text": "And the answer?" },
+        { "host": "B", "text": "The false negative rate ranged from 0.5% to 20.8% across optimisation levels of a single method, reinforcement learning. Across methods at their best observed optimisation level it ranged from 6.4% to 23.0%. Same monitor." },
+        { "host": "A", "text": "The Institute's blog adds that the miss rate for transcript editing attacks rose from 0.3% to 18.7% after 50 rewrites per transcript. Every attack was built against proxy monitors and still transferred to the held-out GPT-5.4 target." },
+        { "host": "B", "text": "It's a preprint, not peer reviewed. And the authors are careful: they don't say the monitor is weak in deployment, only that interpreting any single number as evidence about deployment requires, in their words, a separate legitimacy argument." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Research & papers",
+      "headline": "Claude code reviewers at high effort still accepted at least 45% of plausible-but-wrong SWE-bench patches",
+      "lines": [
+        { "host": "A", "text": "A related result on arXiv, on AI as a reviewer. Three Claude models each reviewed the same 90 agent-written Django patches at low, medium and high effort. Under strengthened tests, 55 were wrong and 35 correct." },
+        { "host": "B", "text": "Did more effort help?" },
+        { "host": "A", "text": "It did, in every model. The false success rate was point 45 at high effort against point 67 at low for Opus, point 49 against point 65 for Sonnet, point 51 against point 78 for Haiku. But the paper's summary is blunt: no setting is a strong gate, because each accepted at least 45% of the wrong patches." },
+        { "host": "B", "text": "Worth noting the authors' caveat too. For 32 of the 55 wrong patches, they say the issue may not require what the failing test checks, so the wrongness of those is itself uncertain. It's a preprint, not peer reviewed." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to security, where the agent attacks finally have a case count." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "Swiss cyber office reports five confirmed AI-agent attacks, three on critical infrastructure and two successful",
+      "lines": [
+        { "host": "B", "text": "This is an update on something we covered yesterday. As swissinfo.ch and The Hacker News report, Florian Schütz, who directs Switzerland's federal office for cyber security, told Swiss Radio and Television on Thursday that there are currently five confirmed cases of attacks involving AI agents." },
+        { "host": "A", "text": "And how many landed?" },
+        { "host": "B", "text": "Three of the five involved critical infrastructure, and in two cases the attacks were successful. The office says the affected critical infrastructure spans at least two sectors, and that companies were attacked with the help of AI programs as well." },
+        { "host": "A", "text": "There's a trend line underneath it. The office says that since October 2026 the number of AI agents freely accessible over the internet has nearly doubled, and that their increasing use means faster and more frequent attacks with a higher chance of success." },
+        { "host": "B", "text": "Schütz reported no major outages, and said it is still unclear who the attackers were. The office declined to name the bodies or companies involved." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Security, misuse & threat intelligence",
+      "headline": "ThreatBook permanently removes CyberStrikeAI from GitHub, seven weeks after discontinuing Artex",
+      "lines": [
+        { "host": "A", "text": "And on the supply side, ThreatBook announced the immediate discontinuation of the open source version of its AI penetration testing platform CyberStrikeAI, and says the platform and related projects have been permanently removed from open source communities such as GitHub. A closed-source enterprise edition continues through its RedAgents offering." },
+        { "host": "B", "text": "Why pull it?" },
+        { "host": "A", "text": "ThreatBook says attackers worldwide are increasingly using AI-powered penetration testing tools, including CyberStrikeAI, to orchestrate malicious attacks at speeds and scale that were recently unimaginable. The company owns both CyberStrikeAI and Artex, and says this followed Artex's discontinuation on October 8th, 2026." },
+        { "host": "B", "text": "Infosecurity Magazine adds a Shadowserver Foundation count: more than 4,200 servers running identified agentic offensive frameworks as of November 23rd, up from under 3,700 a day earlier. Of those, 6% were linked to CyberStrikeAI and 87% to ARTEX." },
+        { "host": "A", "text": "The misuse characterisation is ThreatBook's own, not independently verified. And as the company itself warns, taking down a repository doesn't take down the forks, so users should be vigilant about copies elsewhere." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To defence and geopolitics, in Tokyo." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Japan's Defense Ministry publishes a Defense AI Vision whose first principle keeps judgment and responsibility with humans",
+      "lines": [
+        { "host": "A", "text": "Japan's Ministry of Defense published a document today called the Defense AI Vision, to connect AI and data to strengthening defence capabilities." },
+        { "host": "B", "text": "CNA reports it's a revision of the basic AI-use policy Japan first set in 2024, and it sets out five principles. The first is that judgment and responsibility are borne by humans. Then responsible use under laws and regulations, ensuring safety, reliability and transparency, continuous autonomous use of necessary technology and data, and rapid introduction while ensuring cybersecurity." },
+        { "host": "A", "text": "Defence Minister Shinjiro Koizumi said after the cabinet meeting that the goal is to turn AI and data into a force to protect the country, linking the Self-Defense Forces' capabilities into one integrated force, per CNA." },
+        { "host": "B", "text": "Two details stand out. Education and training will be thoroughly implemented to avoid over-trusting or over-depending on AI systems. And on autonomy, Japan should avoid depending on specific products and vendors, so as not to lose the country's right of choice." },
+        { "host": "A", "text": "Named application areas are analysing information from radar and satellites, supporting commanders' decisions, and drafting policy. We didn't read the Japanese full text: the five principles and that quote come from CNA." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Military, defense & geopolitics",
+      "headline": "Reuters: Z.AI has missed its GLM-5.5 window and Moonshot expects release gaps to double if overseas compute is cut",
+      "lines": [
+        { "host": "B", "text": "This is the one from the top of the show. Reuters reports Z.AI had planned to release its next flagship model, GLM-5.5, this month and has yet to do so. That's two people speaking to Reuters." },
+        { "host": "A", "text": "Why the delay?" },
+        { "host": "B", "text": "The model, designed with roughly 3 trillion parameters, has been held up partly by increasingly effective safeguards against distillation, and the new American computing restrictions could push the launch into the first quarter of next year or later. On Monday the company released GLM-5.4 instead, built on an existing 750 billion parameter model." },
+        { "host": "A", "text": "And Moonshot AI internally expects its usual six-month interval between major releases could stretch to 12 months or longer if its overseas computing access is cut off entirely. Reuters says its next flagship, Kimi K4, could slip to around the middle of next year." },
+        { "host": "B", "text": "On the other side of this, Reuters reports Anthropic said in September it had observed nearly 200 million exchanges with its Claude models linked to suspected distillation campaigns. And with that route harder, Moonshot has begun distilling from models developed by Google and Meta." },
+        { "host": "A", "text": "The caveat: this is a Reuters exclusive built on anonymous sources, so a single source, and neither company is quoted on the record. We read it through the Taipei Times and Japan Times republications." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "B", "text": "To health and science, and a long look back at an implanted brain-computer interface." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Health, science & medicine",
+      "headline": "Twenty-year BrainGate analysis: Utah arrays recorded spiking on 35.6% of electrodes, 11 of 14 gave usable decoding",
+      "lines": [
+        { "host": "A", "text": "Nature Medicine published a 20-year evaluation of neural data from the BrainGate clinical trials, spanning 2,289 recording sessions, 20 arrays and 14 participants. Until now, the paper says, reports were limited to one or two individuals." },
+        { "host": "B", "text": "How well did the hardware hold up?" },
+        { "host": "A", "text": "On average, arrays recorded neural spiking waveforms on 35.6% of electrodes, with a modest 7 percentage point decline over a recording period running up to 7.3 years. Using a decoding signal-to-noise ratio metric, 11 of 14 arrays provided meaningful movement decoding throughout participation, and three achieved above 70% accuracy compared with able-bodied mouse control." },
+        { "host": "B", "text": "The authors also found that metric increased approximately logarithmically with the number of electrodes, which they describe as a pathway for scaling performance. Their own caveat is that while longevity exceeded previous nonhuman primate studies, achieving peak performance consistently may require further improvements. And this is a single source: one paper on one array type in one trial programme." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now policy, where Washington has given its export programme a new name and a new on-ramp." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Policy, regulation & law",
+      "headline": "Commerce opens a second pathway for US \"Super Intelligence\" export packages, with applications from November 30",
+      "lines": [
+        { "host": "B", "text": "The International Trade Administration published a notice establishing what it calls the On-Demand Consortia pathway, under the Super Intelligence Exports Program authorised by Executive Order 14320. Applications may be submitted beginning November 30th, on a rolling basis." },
+        { "host": "A", "text": "What's different about this pathway?" },
+        { "host": "B", "text": "These are industry-led groupings formed around one identified foreign export opportunity, and the notice says they are not required to cover the full five layers of the technology stack. They need only the layers the buyer demands, as long as they attest the package is full-stack. There's no numerical cap on designations." },
+        { "host": "A", "text": "On ownership, a subsidiary, affiliate or branch whose ultimate parent is foreign-organised can be an anchor member if the entity itself is American-organised with its principal place of business in the United States, and the Secretary may waive the US ownership and control requirement to advance the national interest." },
+        { "host": "B", "text": "And the name. A footnote cites Executive Order 14434, under which agencies shall, to the maximum extent permitted by law, use the terms Super Intelligence and S I in place of Artificial Intelligence and A I in public communications. One oddity: the notice is inconsistent on a date, giving the earlier call for proposals as April 10th, 2026 in its summary and April 1st, 2026 in its background. The Federal Register is the single source." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "Now to compute, where chip sellers have drawn their own line." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Compute, chips & infrastructure",
+      "headline": "Chip sellers tell neoclouds they will not supply Nvidia chips if any capacity is rented to Chinese companies",
+      "lines": [
+        { "host": "B", "text": "CNBC reports that chip sellers have told neoclouds they won't supply Nvidia chips if any of the computing capacity will be rented to Chinese companies. Two people familiar with the situation told CNBC that." },
+        { "host": "A", "text": "How does that compare with the old line?" },
+        { "host": "B", "text": "It's much harder. Before the new rule was announced, Nvidia had said it would not sell to customers renting more than 50% of their GPUs to Chinese companies. Now it's any capacity at all. The Bureau of Industry and Security interim final rule was announced on November 16th and came into effect on November 19th." },
+        { "host": "A", "text": "US Trade Representative Jamieson Greer told CNBC the rule was meant to close loopholes, either smuggling through places like Southeast Asia or remote access from data centers in third countries. CNBC also says Nvidia warned customers the proposed Remote Access Security Act could expose both parties to legal action." },
+        { "host": "B", "text": "This is an update on what we reported yesterday, and the caveats matter. Nvidia and the Bureau did not immediately respond to CNBC's request for comment, the account rests on two anonymous sources, and only one outlet has it." }
+      ]
+    },
+    {
+      "type": "transition",
+      "lines": [
+        { "host": "A", "text": "And finally, deployment, where the cost turns up in a headcount plan." }
+      ]
+    },
+    {
+      "type": "item",
+      "section": "Deployment & impact",
+      "headline": "SAP is preparing to eliminate at least 10,000 positions as it reshapes its business for AI, Bloomberg reports",
+      "lines": [
+        { "host": "B", "text": "CNBC reports that SAP is preparing a plan to eliminate at least 10,000 positions as the German firm reshapes its software business for the artificial intelligence era. That's Bloomberg's reporting, citing people familiar with the matter, and the number could change after labour negotiations." },
+        { "host": "A", "text": "How big is SAP?" },
+        { "host": "B", "text": "More than 110,000 people worldwide. Bloomberg reported that all departments were asked to identify potential cuts, with product, engineering and sales in particular focus." },
+        { "host": "A", "text": "And for scale across the economy, CNBC cites a Challenger, Gray and Christmas report from November 5th: American employers cited AI in 121,401 job-cut announcements through October 2026, about 20% of the total." },
+        { "host": "B", "text": "The caveats. SAP did not respond to CNBC's request for comment on the cuts, so the company has not confirmed the figure, and only one outlet has it. CNBC notes SAP's 2024 reorganisation eliminated around 10,000 positions mainly through voluntary departures and retraining, after which headcount stayed relatively flat." }
+      ]
+    },
+    {
+      "type": "outro",
+      "lines": [
+        { "host": "A", "text": "That's The AI Edge for today. The full edition, with a link to every source behind what we've said, is on the site." },
+        { "host": "B", "text": "Our voices are AI-generated." },
+        { "host": "A", "text": "Listen in tomorrow for the next edition." }
+      ]
+    }
+  ]
+}
